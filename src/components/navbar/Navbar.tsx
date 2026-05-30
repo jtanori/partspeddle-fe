@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { UserSession } from '../../types';
 import { NavbarSearch } from './NavbarSearch';
+import { UserRolePanel } from './shared/UserRolePanel';
 import LiveSearchDropdown from './LiveSearchDropdown';
 import BottomTabBar from './BottomTabBar';
 // @ts-ignore
@@ -368,132 +369,25 @@ export default function Navbar({
                   </div>
 
                   <div className="py-1">
-                    {userRole === 'buyer' ? (
-                      <>
-                        <button 
-                          onClick={() => { onChangeView('settings'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <User className="w-4 h-4 text-rust-copper" />
-                          <span>My Profile</span>
-                        </button>
-                        <button 
-                          onClick={() => { showToast('Watchlist functionality.'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <Heart className="w-4 h-4 text-rose-500" />
-                          <span>Watchlist</span>
-                        </button>
-                        <button 
-                          onClick={() => { onChangeView('orders'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <History className="w-4 h-4 text-rust-copper" />
-                          <span>My Orders</span>
-                        </button>
-                        <button 
-                          onClick={() => { onOpenSupport(); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <SupportIcon className="w-4 h-4 text-warm-gray" />
-                          <span>Support Center</span>
-                        </button>
-                        
-                        <div className="border-t border-oil-dark my-1"></div>
-
-                        <button
-                          onClick={() => {
-                            onChangeUserRole('seller');
-                            if (onSetSellerTab) onSetSellerTab('listings');
-                            onChangeView('listings');
-                            setIsUserMenuOpen(false);
-                            showToast('Switched to Seller Portal.');
-                          }}
-                          className="w-full text-left px-4 py-2 font-sans text-sm text-rust-copper hover:bg-oil-dark/50 hover:text-rust-copper/80 transition-colors duration-150 flex items-center gap-2.5 font-bold cursor-pointer font-sans"
-                        >
-                          <ArrowRight className="w-4 h-4 text-rust-copper" />
-                          <span>Switch to Seller View</span>
-                        </button>
-
-                        <div className="border-t border-oil-dark my-1"></div>
-
-                        <button
-                          onClick={() => {
-                            setIsUserMenuOpen(false);
-                            onLogout();
-                          }}
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors duration-150 flex items-center gap-2.5 cursor-pointer"
-                        >
-                          <LogOut className="w-4 h-4 text-rose-500" />
-                          <span>Log Out</span>
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button 
-                          onClick={() => { onChangeView('settings'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <User className="w-4 h-4 text-rust-copper" />
-                          <span>My Profile</span>
-                        </button>
-                        <button 
-                          onClick={() => { if (onSetSellerTab) onSetSellerTab('listings'); onChangeView('listings'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <List className="w-4 h-4 text-warm-gray" />
-                          <span>Dashboard</span>
-                        </button>
-                        <button 
-                          onClick={() => { if (onSetSellerTab) onSetSellerTab('listings'); onChangeView('listings'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <List className="w-4 h-4 text-warm-gray" />
-                          <span>Inventory</span>
-                        </button>
-                        <button 
-                          onClick={() => { if (onSetSellerTab) onSetSellerTab('listings'); onChangeView('listings'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <ShoppingCart className="w-4 h-4 text-warm-gray" />
-                          <span>Orders</span>
-                        </button>
-                        <button 
-                          onClick={() => { if (onSetSellerTab) onSetSellerTab('listings'); onChangeView('listings'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <List className="w-4 h-4 text-warm-gray" />
-                          <span>Listings</span>
-                        </button>
-                        
-                        <div className="border-t border-oil-dark my-1"></div>
-                        
-                        <button 
-                          onClick={() => { onOpenSupport(); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer font-sans"
-                        >
-                          <SupportIcon className="w-4 h-4 text-warm-gray" />
-                          <span>Support Center</span>
-                        </button>
-                        <button 
-                          onClick={() => { onChangeUserRole('buyer'); onChangeView('home'); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-2.5 font-sans text-sm text-rust-copper hover:bg-oil-dark/50 transition-colors flex items-center gap-2 font-semibold cursor-pointer font-sans"
-                        >
-                          <ArrowRight className="w-4 h-4 text-rust-copper" />
-                          <span>Switch to Buyer View</span>
-                        </button>
-
-                        <div className="border-t border-oil-dark my-1"></div>
-
-                        <button 
-                          onClick={() => { onLogout(); setIsUserMenuOpen(false); }} 
-                          className="w-full text-left px-4 py-2 font-sans text-sm text-rose-400 hover:bg-rose-500/10 hover:text-rose-450 transition-colors flex items-center gap-2 cursor-pointer font-sans"
-                        >
-                          <LogOut className="w-4 h-4 text-rose-500" />
-                          <span>Log Out</span>
-                        </button>
-                      </>
-                    )}
+                    <UserRolePanel
+                      userRole={userRole}
+                      profile={profile}
+                      onChangeUserRole={onChangeUserRole}
+                      onChangeView={onChangeView}
+                      onSetSellerTab={onSetSellerTab}
+                      onClose={() => setIsUserMenuOpen(false)}
+                      showToast={showToast}
+                    />
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="w-full text-left px-4 py-1.5 font-sans text-sm text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors duration-150 flex items-center gap-2.5 cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 text-rose-500" />
+                      <span>Log Out</span>
+                    </button>
                   </div>
                 </div>
               )}
