@@ -343,7 +343,7 @@ export default function ProductListing({
   const getConditionColor = (cond: string) => {
     const c = cond.toLowerCase();
     if (c.includes('oem original') || c.includes('original')) {
-      return 'bg-[#B87333]';
+      return 'bg-rust-copper';
     }
     if (c.includes('excellent')) {
       return 'bg-[#8B6239]';
@@ -1151,7 +1151,7 @@ export default function ProductListing({
                 : 'All Available Auto Parts'}
           </h1>
           <p className="text-xs text-zinc-500 mt-1.5 font-sans">
-            Displaying <span className="font-mono font-bold text-[#B87333]">{matchingParts.length}</span> matching OEM parts listings
+            Displaying <span className="font-mono font-bold text-rust-copper">{matchingParts.length}</span> matching OEM parts listings
           </p>
         </div>
 
@@ -1160,7 +1160,7 @@ export default function ProductListing({
           {/* Mobile Refine button */}
           <Sheet>
             <SheetTrigger
-              className="lg:hidden bg-zinc-900 border border-zinc-800 hover:border-[#B87333] text-white hover:text-[#B87333] tracking-wider text-xs font-bold uppercase py-2 px-3 rounded transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:translate-y-0.5"
+              className="lg:hidden bg-zinc-900 border border-zinc-800 hover:border-rust-copper text-white hover:text-rust-copper tracking-wider text-xs font-bold uppercase py-2 px-3 rounded transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:translate-y-0.5"
             >
               <Sliders className="w-3 h-3 text-[#C4A882]" />
               <span>Filter</span>
@@ -1177,7 +1177,7 @@ export default function ProductListing({
             <select 
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-zinc-100 border border-zinc-200 rounded-lg py-2 px-3 text-sm text-zinc-800 focus:outline-none focus:border-[#B87333]"
+              className="bg-zinc-100 border border-zinc-200 rounded-lg py-2 px-3 text-sm text-zinc-800 focus:outline-none focus:border-rust-copper"
             >
               <option value="relevance">Sort: Relevance</option>
               <option value="price-low">Price: Low - High</option>
@@ -1252,7 +1252,7 @@ export default function ProductListing({
                     <div
                       key={part.id}
                       onClick={() => onSelectPart(part.id)}
-                      className="bg-white border border-[#B87333]/15 rounded-[8px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-[2px] transition-all duration-200 cursor-pointer group flex flex-row sm:flex-col h-full"
+                      className="bg-white border border-rust-copper/15 rounded-[8px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-[2px] transition-all duration-200 cursor-pointer group flex flex-row sm:flex-col h-full"
                       id={`catalog-grid-card-${part.id}`}
                     >
                       {/* 2. Image Area (Top Section - responsive aspect / height) */}
@@ -1283,7 +1283,7 @@ export default function ProductListing({
                           onClick={(e) => { e.stopPropagation(); toggleFavorite(part.id); }}
                           className="absolute top-2 right-2 sm:top-3 sm:right-3 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/90 border border-black/10 flex items-center justify-center hover:bg-white hover:scale-110 transition-all z-20 shadow-sm"
                         >
-                          <Heart className={`w-3 h-3 sm:w-4 sm:h-4 stroke-[1.5] ${isFavorite ? 'fill-[#B87333] text-[#B87333]' : 'text-[#1E1E1E]'}`} />
+                          <Heart className={`w-3 h-3 sm:w-4 sm:h-4 stroke-[1.5] ${isFavorite ? 'fill-rust-copper text-rust-copper' : 'text-[#1E1E1E]'}`} />
                         </button>
 
                         {/* 3. Condition Badge (Image Overlay) */}
@@ -1297,9 +1297,9 @@ export default function ProductListing({
                         <div className="flex items-center gap-[6px] mb-[6px]">
                           {(() => {
                             const IconComp = getSystemIcon(part.system);
-                            return <IconComp className="w-[16px] h-[16px] text-[#B87333]" />;
+                            return <IconComp className="w-[16px] h-[16px] text-rust-copper" />;
                           })()}
-                          <span className="text-[0.8rem] text-[#B87333] font-semibold uppercase tracking-[0.05em]">{part.system}</span>
+                          <span className="text-[0.8rem] text-rust-copper font-semibold uppercase tracking-[0.05em]">{part.system}</span>
                         </div>
                         <h2 className="font-display font-bold text-[1.25rem] text-[#1E1E1E] leading-[1.2] mb-[6px] line-clamp-2 h-12">
                           {cleanedTitle}
@@ -1324,7 +1324,7 @@ export default function ProductListing({
                           </span>
                           <div className="flex items-center gap-1.5">
                             <span className="text-[0.875rem] text-[#1E1E1E] font-sans">{partSeller?.name?.split(' ')[0]}</span>
-                            <Star className="w-[14px] h-[14px] text-[#B87333] fill-[#B87333]" /> 
+                            <Star className="w-[14px] h-[14px] text-rust-copper fill-rust-copper" /> 
                             <span className="text-[0.875rem] text-[#1E1E1E] font-sans font-bold">{partSeller?.rating}</span>
                           </div>
                         </div>
@@ -1342,7 +1342,7 @@ export default function ProductListing({
                   <div
                     key={part.id}
                     onClick={() => onSelectPart(part.id)}
-                    className="bg-white border border-[#B87333]/15 rounded-[8px] p-4 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center cursor-pointer hover:border-rust-copper transition-all duration-200 animate-fade-in shadow-[0_2px_8px_rgba(0,0,0,0.08)] w-full group"
+                    className="bg-white border border-rust-copper/15 rounded-[8px] p-4 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center cursor-pointer hover:border-rust-copper transition-all duration-200 animate-fade-in shadow-[0_2px_8px_rgba(0,0,0,0.08)] w-full group"
                     id={`catalog-card-${part.id}`}
                   >
                     <div className="w-full sm:w-48 aspect-video relative overflow-hidden bg-[#2D2D2D] rounded-lg shrink-0 flex items-center justify-center">
@@ -1366,7 +1366,7 @@ export default function ProductListing({
                     </div>
                     
                     <div className="flex-grow space-y-1.5 py-1">
-                      <div className="flex items-center gap-1 text-[0.75rem] text-[#B87333] font-semibold uppercase tracking-wider">
+                      <div className="flex items-center gap-1 text-[0.75rem] text-rust-copper font-semibold uppercase tracking-wider">
                         <Zap className="w-3.5 h-3.5" />
                         <span>{part.system}</span>
                       </div>
@@ -1382,7 +1382,7 @@ export default function ProductListing({
                         <div className="text-[12px] text-[#1E1E1E] font-medium flex items-center gap-1.5">
                           <span>{partSeller?.name}</span>
                           <div className="flex items-center gap-0.5">
-                            <Star className="w-3 h-3 text-[#B87333] fill-[#B87333]" /> 
+                            <Star className="w-3 h-3 text-rust-copper fill-rust-copper" /> 
                             <span className="font-bold">{partSeller?.rating}</span>
                           </div>
                         </div>
@@ -1394,7 +1394,7 @@ export default function ProductListing({
                         <span className="text-2xl font-display font-bold text-[#1E1E1E]">${part.price.toFixed(2)}</span>
                         <span className="text-[11px] text-[#8A8A8A] font-sans">Ships from {partSeller?.location || 'Detroit, MI'}</span>
                       </div>
-                      <button className="text-[#B87333] text-[10px] font-black uppercase tracking-wider bg-[#B87333]/5 px-4 py-2 rounded-md border border-[#B87333]/20 hover:bg-[#B87333] hover:text-white transition-all cursor-pointer">VIEW DETAILS</button>
+                      <button className="text-rust-copper text-[10px] font-black uppercase tracking-wider bg-rust-copper/5 px-4 py-2 rounded-md border border-rust-copper/20 hover:bg-rust-copper hover:text-white transition-all cursor-pointer">VIEW DETAILS</button>
                     </div>
                   </div>
                 );
@@ -1402,14 +1402,14 @@ export default function ProductListing({
             </div>
           ) : (
             <div className="p-12 text-center bg-white border border-zinc-200 rounded max-w-md mx-auto space-y-4 font-sans shadow-xs">
-              <AlertTriangle className="w-12 h-12 text-[#B87333] mx-auto animate-bounce" />
+              <AlertTriangle className="w-12 h-12 text-rust-copper mx-auto animate-bounce" />
               <h3 className="font-display text-lg font-bold uppercase text-zinc-850">Empty Inventory Match</h3>
               <p className="text-xs text-zinc-500 leading-relaxed font-medium">
                 We couldn't locate any auto parts matches inside this yard matrix. Try modifying your dynamic search query, selecting another category, or resting fitments.
               </p>
               <button 
                 onClick={clearAllFilters}
-                className="bg-[#B87333] hover:bg-[#8B6239] text-white text-xs font-display font-extrabold uppercase py-3 px-8 rounded-sm transition-all shadow-md active:translate-y-0.5"
+                className="bg-rust-copper hover:bg-[#8B6239] text-white text-xs font-display font-extrabold uppercase py-3 px-8 rounded-sm transition-all shadow-md active:translate-y-0.5"
               >
                 Reset Search Filters
               </button>
