@@ -28,6 +28,14 @@ interface AuthPageProps {
 }
 
 export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPageProps) {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        window.location.href = '/';
+      }
+    });
+  }, []);
+
   const [isSignUp, setIsSignUp] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('signup') === 'true' || params.get('mode') === 'signup';
