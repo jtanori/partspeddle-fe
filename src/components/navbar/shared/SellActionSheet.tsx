@@ -18,6 +18,16 @@ export const SellActionSheet: React.FC<SellActionSheetProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const onSelectManualCreateWithEvent = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelectManualCreate();
+  };
+
+  const onTriggerSnapCameraWithEvent = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onTriggerSnapCamera();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-steel-black/80 backdrop-blur-xs">
       {/* Tap Backdrop Closer */}
@@ -39,7 +49,7 @@ export const SellActionSheet: React.FC<SellActionSheetProps> = ({
         <div className="space-y-3">
           {/* Path 1: Immersive AI Snap To List Engine */}
           <button
-            onClick={onTriggerSnapCamera}
+            onClick={onTriggerSnapCameraWithEvent}
             className="w-full bg-rust-copper hover:bg-bronze text-steel-black p-4 rounded-xl flex items-center justify-center gap-3 active:scale-[0.99] transition-all cursor-pointer group"
           >
             <Camera className="w-5 h-5" />
@@ -56,7 +66,7 @@ export const SellActionSheet: React.FC<SellActionSheetProps> = ({
 
           {/* Path 2: Classic Manual Assembly */}
           <button
-            onClick={onSelectManualCreate}
+            onClick={onSelectManualCreateWithEvent}
             className="w-full bg-transparent border border-oil-dark text-base-cream p-4 rounded-xl flex items-center justify-center gap-3 hover:bg-steel-black active:scale-[0.99] transition-all cursor-pointer group"
           >
             <Pencil className="w-5 h-5 text-warm-gray group-hover:text-rust-copper transition-colors" />
