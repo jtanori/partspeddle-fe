@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Search, ArrowRight, Cog, Compass, Disc, Zap, Car, Armchair, Wrench, FolderOpen, ArrowRightLeft } from 'lucide-react';
-import { MOCK_PARTS, SYSTEMS_TAXONOMY } from '../services/db';
-import { PARTS_FALLBACK_IMAGE } from '../types';
+import { MOCK_PARTS, SYSTEMS_TAXONOMY } from "../../services/db";
+import { PARTS_FALLBACK_IMAGE } from "../../types";
 
 interface LiveSearchDropdownProps {
   query: string;
