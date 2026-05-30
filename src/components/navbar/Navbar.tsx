@@ -17,14 +17,14 @@ import {
   Settings,
   HelpCircle as SupportIcon
 } from 'lucide-react';
-import { UserSession } from '../types';
+import { UserSession } from '../../types';
 import { NavbarSearch } from './NavbarSearch';
 import LiveSearchDropdown from './LiveSearchDropdown';
 import BottomTabBar from './BottomTabBar';
 // @ts-ignore
-import logoImg from '../assets/images/logo_rusty.png';
+import logoImg from '../../assets/images/logo_rusty.png';
 // @ts-ignore
-import iconRustyImg from '../assets/images/icon_rusty.png';
+import iconRustyImg from '../../assets/images/icon_rusty.png';
 
 interface NavbarProps {
   currentView: string;
