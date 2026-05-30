@@ -28,6 +28,8 @@ export default function SellerDashboard() {
     { id: 'listings', label: 'Inventory', icon: Package },
     { id: 'create', label: 'Add Listing', icon: Plus },
     { id: 'snap', label: 'AI Snap', icon: Sparkles },
+    { id: 'orders', label: 'Orders', icon: ShoppingBag },
+    { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
     { id: 'settings', label: 'Yard Settings', icon: Settings },
   ];
 
@@ -118,6 +120,8 @@ export default function SellerDashboard() {
             {activeSellerTab === 'listings' && <InventoryTable />}
             {activeSellerTab === 'snap' && <ListingWizard />}
             {activeSellerTab === 'settings' && <SettingsForm />}
+            {activeSellerTab === 'orders' && <div className="p-12 text-center text-zinc-500">Orders view coming soon</div>}
+            {activeSellerTab === 'dashboard' && <div className="p-12 text-center text-zinc-500">Dashboard overview coming soon</div>}
             {activeSellerTab === 'create' && (
               <div className="bg-white p-20 rounded-2xl border border-zinc-200 border-dashed text-center space-y-4">
                 <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
