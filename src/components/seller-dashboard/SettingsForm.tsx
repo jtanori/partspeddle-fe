@@ -11,11 +11,14 @@ export const SettingsForm: React.FC = () => {
   const handleSave = async () => {
     setSaveStatus('saving');
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
+
       // 1. Update users table (email, name)
       const { error: userError } = await supabase
         .from('users')
         .update({ email: localProfile.email, full_name: localProfile.name })
-        .eq('id', localProfile.user_id);
+        .eq('id', user.id);
       if (userError) throw userError;
 
       // 2. Update seller_profiles table
@@ -26,7 +29,7 @@ export const SettingsForm: React.FC = () => {
           location: localProfile.location,
           whatsapp: localProfile.whatsapp
         })
-        .eq('user_id', localProfile.user_id);
+        .eq('user_id', user.id);
       if (sellerError) throw sellerError;
 
       setProfile(localProfile);
