@@ -63,6 +63,13 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
                 </div>
             </button>
         </div>
+
+        <button 
+            onClick={() => { setMode('component'); setCurrentStep(2); setIsAiVetted(false); }}
+            className="w-full mt-6 py-3 border border-zinc-800 text-warm-gray font-mono uppercase text-[11px] hover:text-base-cream transition-colors"
+        >
+            Bypass Optical Scans / Manual Matrix Mode
+        </button>
       </div>
     );
   }

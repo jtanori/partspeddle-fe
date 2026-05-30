@@ -39,8 +39,7 @@ export default function SellerDashboard() {
         { id: 'inventory-sold', label: 'Sold' },
         { id: 'inventory-archived', label: 'Archived' }
     ]},
-    { id: 'create', label: 'Add Listing', icon: Plus },
-    { id: 'snap', label: 'AI Snap', icon: Sparkles },
+    { id: 'create', label: 'Create Listing', icon: Plus },
     { id: 'orders', label: 'Orders', icon: ShoppingBag },
     { id: 'settings', label: 'Yard Settings', icon: Settings },
   ];
@@ -146,8 +145,7 @@ export default function SellerDashboard() {
           {/* Dynamic Views */}
           <div className="animate-fade-in">
             {activeSellerTab === 'listings' && <InventoryTable />}
-            {activeSellerTab === 'snap' && <ListingWizard />}
-            {activeSellerTab === 'create' && <ListingWizard />}
+            {activeSellerTab === 'create' && <ListingWizard onClose={() => setActiveSellerTab('dashboard')} />}
             {activeSellerTab === 'settings' && <SettingsForm />}
           </div>
         </div>
