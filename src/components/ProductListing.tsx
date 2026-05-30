@@ -1223,11 +1223,8 @@ export default function ProductListing({
                     )}
                   </span>
             ))}
-             <button onClick={clearAllFilters} className="text-xs text-zinc-500 underline hover:text-rust-copper">
-                Clear All
-            </button>
-         </div>
-      )}
+          </div>
+       )}
 
       {/* 3. Main Catalog Feed Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" id="catalog-main-layout">
