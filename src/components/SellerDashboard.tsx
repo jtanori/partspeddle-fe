@@ -147,18 +147,8 @@ export default function SellerDashboard() {
           <div className="animate-fade-in">
             {activeSellerTab === 'listings' && <InventoryTable />}
             {activeSellerTab === 'snap' && <ListingWizard />}
+            {activeSellerTab === 'create' && <ListingWizard />}
             {activeSellerTab === 'settings' && <SettingsForm />}
-            {activeSellerTab === 'orders' && <div className="p-12 text-center text-zinc-500">Orders view coming soon</div>}
-            {activeSellerTab === 'dashboard' && <div className="p-12 text-center text-zinc-500">Dashboard overview coming soon</div>}
-            {activeSellerTab === 'create' && (
-              <div className="bg-white p-20 rounded-2xl border border-zinc-200 border-dashed text-center space-y-4">
-                <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
-                  <Plus className="w-8 h-8 text-zinc-300" />
-                </div>
-                <h3 className="font-display font-bold uppercase text-zinc-500">Manual Entry Form Implementation</h3>
-                <p className="text-sm text-zinc-400 max-w-sm mx-auto">Manual listing entry is currently being migrated to the standardized Supabase schema.</p>
-              </div>
-            )}
           </div>
         </div>
       </main>
