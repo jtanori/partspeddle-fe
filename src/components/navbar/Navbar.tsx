@@ -20,6 +20,7 @@ import {
 import { UserSession } from '../../types';
 import { NavbarSearch } from './NavbarSearch';
 import { UserRolePanel } from './shared/UserRolePanel';
+import { UserMenuDrawer } from './shared/UserMenuDrawer';
 import LiveSearchDropdown from './LiveSearchDropdown';
 import BottomTabBar from './BottomTabBar';
 // @ts-ignore
