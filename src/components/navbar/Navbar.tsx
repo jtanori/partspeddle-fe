@@ -378,6 +378,54 @@ export default function Navbar({
                       onClose={() => setIsUserMenuOpen(false)}
                       showToast={showToast}
                     />
+
+                    {/* Restored Menu Items */}
+                    <div className="border-t border-oil-dark my-1"></div>
+                    {userRole === 'buyer' ? (
+                      <>
+                        <button 
+                          onClick={() => { onChangeView('settings'); setIsUserMenuOpen(false); }} 
+                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer"
+                        >
+                          <User className="w-4 h-4 text-rust-copper" />
+                          <span>My Profile</span>
+                        </button>
+                        <button 
+                          onClick={() => { showToast('Watchlist functionality.'); setIsUserMenuOpen(false); }} 
+                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer"
+                        >
+                          <Heart className="w-4 h-4 text-rose-500" />
+                          <span>Watchlist</span>
+                        </button>
+                        <button 
+                          onClick={() => { onChangeView('orders'); setIsUserMenuOpen(false); }} 
+                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer"
+                        >
+                          <History className="w-4 h-4 text-rust-copper" />
+                          <span>My Orders</span>
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={() => { if (onSetSellerTab) onSetSellerTab('listings'); onChangeView('listings'); setIsUserMenuOpen(false); }} 
+                          className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer"
+                        >
+                          <List className="w-4 h-4 text-warm-gray" />
+                          <span>Dashboard/Listings</span>
+                        </button>
+                      </>
+                    )}
+                    <button 
+                      onClick={() => { onOpenSupport(); setIsUserMenuOpen(false); }} 
+                      className="w-full text-left px-4 py-1.5 font-sans text-sm text-base-cream hover:bg-oil-dark/50 hover:text-rust-copper transition-colors duration-150 flex items-center gap-2.5 cursor-pointer"
+                    >
+                      <SupportIcon className="w-4 h-4 text-warm-gray" />
+                      <span>Support Center</span>
+                    </button>
+                    
+                    <div className="border-t border-oil-dark my-1"></div>
+
                     <button
                       onClick={() => {
                         setIsUserMenuOpen(false);
