@@ -537,10 +537,10 @@ export default function Navbar({
           <UserMenuDrawer 
             isOpen={isUserMenuDrawerOpen}
             onClose={() => setIsUserMenuDrawerOpen(false)}
-            user={user}
-            userRole={userRole}
-            onChangeUserRole={onChangeUserRole}
+            user={{ email: user?.email || '', name: profile?.name }}
+            profile={profile}
             onChangeView={onChangeView}
+            onSetSellerTab={onSetSellerTab}
             onLogout={onLogout}
           />
 
