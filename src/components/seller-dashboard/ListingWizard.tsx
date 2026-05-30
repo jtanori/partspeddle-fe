@@ -30,13 +30,21 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   
   const [manifest, setManifest] = useState<Record<string, ManifestStatus>>({'Alternator': 'active', 'Starter': 'active'});
 
+import { compressImage } from '../../lib/image-utils';
+
+// ...
   const handleImageUpload = async (file: File) => {
-    const fileExt = file.name.split('.').pop();
+    // 1. Compress the file on the client side
+    const compressedBlob = await compressImage(file);
+    const compressedFile = new File([compressedBlob], file.name, { type: 'image/jpeg' });
+    
+    // 2. Upload the compressed blob
+    const fileExt = compressedFile.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
     
     const { data, error } = await supabase.storage
         .from('listing-images')
-        .upload(fileName, file);
+        .upload(fileName, compressedFile);
 
     if (error) {
         console.error('Upload error:', error);
