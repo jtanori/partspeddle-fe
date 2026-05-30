@@ -6,20 +6,22 @@ interface ListingWizardProps {
   onClose: () => void;
 }
 
-// Tri-state toggle type
 type ManifestStatus = 'active' | 'sold' | 'damaged';
 
 export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   const [mode, setMode] = useState<'none' | 'vehicle' | 'component'>('none');
   const [currentStep, setCurrentStep] = useState(1);
   const [isScanning, setIsScanning] = useState(false);
-  const [isAiVetted, setIsAiVetted] = useState(false);
-  const [confidenceScore, setConfidenceScore] = useState(0.85); // Mode B demo value
+  const [confidenceScore, setConfidenceScore] = useState(0.85); 
   
-  const [manifest, setManifest] = useState<Record<string, ManifestStatus>>({
-      'Alternator': 'active',
-      'Starter': 'active'
+  const [formData, setFormData] = useState<any>({
+      system: '', category: '', title: '', brand: '', model: '',
+      oem_part_number: '', weight: '', voltage: '', amperage: '',
+      pulley_type: '', make: '', year: '', vin: '', condition: 'Used OEM',
+      price_mxn: 0, stock_number: ''
   });
+  
+  const [manifest, setManifest] = useState<Record<string, ManifestStatus>>({'Alternator': 'active', 'Starter': 'active'});
 
   const toggleManifestStatus = (part: string) => {
       setManifest(prev => {
@@ -45,7 +47,6 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
             <h2 className="font-display text-xl font-black uppercase tracking-wider text-rust-copper">Select Ingestion Pathway</h2>
             <button onClick={onClose} className="text-warm-gray hover:text-base-cream"><X className="w-5 h-5" /></button>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <button onClick={() => setMode('vehicle')} className="bg-steel-black border border-oil-dark p-6 rounded-xl hover:border-rust-copper transition-all text-left space-y-4 group">
                 <Truck className="w-8 h-8 text-rust-copper" />
@@ -67,7 +68,7 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   }
 
   return (
-    <div className="bg-charcoal border border-oil-dark rounded-2xl p-6 shadow-2xl text-base-cream font-sans">
+    <div className="bg-charcoal border border-oil-dark rounded-2xl p-6 shadow-2xl text-base-cream font-sans max-h-[90vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-8 border-b border-oil-dark pb-4">
         <h2 className="font-display text-lg font-black uppercase tracking-wider text-rust-copper">
           {mode === 'vehicle' ? 'Vehicle Listing' : 'Component Listing'} — Step {currentStep} of 5
@@ -84,7 +85,6 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
                     <span className='text-xs font-bold uppercase tracking-widest text-warm-gray'>Upload Image</span>
                 </div>
             </div>
-          
           <button onClick={() => setIsScanning(true)} className="w-full bg-charcoal border border-rust-copper text-rust-copper hover:bg-rust-copper hover:text-steel-black font-display font-bold uppercase py-3 rounded-xl transition-all flex items-center justify-center gap-2">
             <Sparkles className={isScanning ? "animate-spin" : ""} />
             {isScanning ? 'Analyzing...' : 'Execute Optical OCR Analysis Layer'}
@@ -92,30 +92,50 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
         </div>
       )}
 
-      {/* Mode A: Manifest Grid (Vehicle) */}
-      {mode === 'vehicle' && currentStep === 2 && (
-          <div className="space-y-4">
-              <h4 className="text-sm font-display font-bold uppercase text-base-cream">Vehicle Manifest Projection</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {Object.keys(manifest).map(part => (
-                      <button key={part} onClick={() => toggleManifestStatus(part)} className={`p-3 rounded border text-xs font-bold uppercase tracking-wider ${getStatusStyle(manifest[part])}`}>
-                          {part} - {manifest[part]}
-                      </button>
-                  ))}
-              </div>
+      {/* Step 2: Taxonomy */}
+      {currentStep === 2 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <select value={formData.system} onChange={(e) => setFormData({...formData, system: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
+                  <option value="">Select System</option>
+                  {Object.keys(SYSTEM_CATEGORIES).map(sys => <option key={sys} value={sys}>{sys}</option>)}
+              </select>
+              <input type="text" placeholder="Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
           </div>
       )}
 
-      {/* Mode B: Confidence Gauge (Component) */}
-      {mode === 'component' && currentStep === 2 && (
+      {/* Step 3: Tech Specs */}
+      {currentStep === 3 && (
           <div className="space-y-4">
-              <h4 className="text-sm font-display font-bold uppercase text-base-cream">AI Verification Layer</h4>
-              <div className={`p-4 rounded-lg border ${confidenceScore >= 0.7 ? 'bg-sage-green/10 border-sage-green/30' : 'bg-rust-copper/10 border-rust-copper/30'}`}>
-                  <span className={`text-xs font-mono font-bold ${confidenceScore >= 0.7 ? 'text-sage-green' : 'text-rust-copper'}`}>
-                      [{Math.round(confidenceScore * 100)}% Accuracy Match]
-                  </span>
-              </div>
+              <input type="text" placeholder="OEM Part Number" value={formData.oem_part_number} onChange={(e) => setFormData({...formData, oem_part_number: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+              {(formData.system === 'Electrical System') && (
+                <div className="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Voltage" value={formData.voltage} onChange={(e) => setFormData({...formData, voltage: e.target.value})} className="w-full bg-charcoal border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+                    <input type="text" placeholder="Amperage" value={formData.amperage} onChange={(e) => setFormData({...formData, amperage: e.target.value})} className="w-full bg-charcoal border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+                </div>
+              )}
           </div>
+      )}
+
+      {/* Step 4: Fitment */}
+      {currentStep === 4 && (
+        <div className="space-y-4">
+            <input type="text" placeholder="VIN (Optional)" value={formData.vin} onChange={(e) => setFormData({...formData, vin: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+            <input type="text" placeholder="Make" value={formData.make} onChange={(e) => setFormData({...formData, make: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+        </div>
+      )}
+
+      {/* Step 5: Pricing */}
+      {currentStep === 5 && (
+        <div className="space-y-6">
+            <div className="flex flex-wrap gap-2">
+              {['New Old Stock', 'Excellent', 'Used OEM', 'For Parts'].map(cond => (
+                <button key={cond} onClick={() => setFormData({...formData, condition: cond})} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase ${formData.condition === cond ? 'bg-rust-copper text-steel-black' : 'bg-charcoal text-warm-gray border border-oil-dark'}`}>
+                  {cond}
+                </button>
+              ))}
+            </div>
+             <input type="number" placeholder="Price (MXN)" value={formData.price_mxn} onChange={(e) => setFormData({...formData, price_mxn: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+        </div>
       )}
 
       {/* Navigation Footer */}
