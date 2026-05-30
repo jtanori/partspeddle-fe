@@ -2,31 +2,20 @@ import { supabase } from '../lib/supabase';
 import { Part, Seller, SearchFilters, Category } from '../types';
 
 // Helper to map snake_case DB rows to camelCase TS interfaces
-const mapListingToPart = (row: any): Part => ({
+const mapPartToPart = (row: any): Part => ({
   id: row.id,
-  trackingNumber: row.tracking_number,
   title: row.title,
-  subtitle: row.subtitle,
-  system: row.system_name,
-  category: row.category_name,
-  partType: row.part_type_name,
-  oemPartNumber: row.oem_part_number,
-  interchangePartNumbers: row.interchange_part_numbers || [],
-  price: parseFloat(row.price),
-  originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
-  condition: row.condition,
-  mileage: row.mileage ?? 'Unknown',
-  fits: row.fits,
-  description: row.description,
-  notes: row.notes,
-  images: row.images || [],
+  subtitle: `${row.brand || ''} ${row.model || ''} ${row.year || ''}`,
+  price: row.price_mxn / 20,
+  condition: row.status === 'draft' ? 'Used' : 'Excellent', // Placeholder
+  system: 'Powertrain', // Placeholder based on new schema
   sellerId: row.seller_id,
   compatibility: row.compatibility || [],
-  stockNumber: row.stock_number,
-  dateRemoved: row.date_removed,
-  vinRemovedFrom: row.vin_removed_from,
-  views: row.views,
-  featured: row.featured,
+  images: [], // Needs mapping from part_images table in a real query
+  description: row.description,
+  brand: row.brand,
+  model: row.model,
+  year: row.year,
 });
 
 const mapSellerToSeller = (row: any): Seller => ({
@@ -65,65 +54,36 @@ export const supabaseDb = {
   },
 
   // Centralized Search & Filter Logic (Replacing algoliaMock)
-  searchListings: async (filters: SearchFilters): Promise<Part[]> => {
+  searchParts: async (filters: SearchFilters): Promise<Part[]> => {
     let query = supabase
-      .from('listings')
+      .from('parts')
       .select('*');
 
     // Text Search
     if (filters.query.trim()) {
-      // Using the GIN index for full text search if possible, 
-      // or simple ilike for basic title/description matching
-      query = query.or(`title.ilike.%${filters.query}%,description.ilike.%${filters.query}%,oem_part_number.ilike.%${filters.query}%`);
-    }
-
-    // System/Category Filter
-    if (filters.system && !['All Parts', 'All Systems'].includes(filters.system)) {
-      query = query.eq('system_name', filters.system);
-    }
-    if (filters.category && !['All Parts', 'All Categories'].includes(filters.category)) {
-      query = query.eq('category_name', filters.category);
+      query = query.or(`title.ilike.%${filters.query}%,description.ilike.%${filters.query}%`);
     }
 
     // Part Types Filter
     if (filters.partTypes.length > 0) {
-      query = query.in('part_type_name', filters.partTypes);
+      query = query.in('title', filters.partTypes); // Simplified mapping
     }
 
     // Price Range
-    query = query.gte('price', filters.priceRange[0]).lte('price', filters.priceRange[1]);
+    query = query.gte('price_mxn', filters.priceRange[0]).lte('price_mxn', filters.priceRange[1]);
 
-    // Conditions
-    if (filters.conditions.length > 0) {
-      query = query.in('condition', filters.conditions);
-    }
-
-    // Featured
-    if (filters.featured) {
-      query = query.eq('featured', true);
-    }
-
-    // Trusted Sellers
-    if (filters.sellerType === 'trusted') {
-      const trustedIds = ['seller_ras', 'seller_mas', 'seller_bpc'];
-      query = query.in('seller_id', trustedIds);
-    }
-
-    // Fitment Filters (Make, Model, Year, Engine)
-    // Since compatibility is JSONB, we can use JSON path queries
+    // Fitment Filters
     if (filters.fitmentMake && filters.fitmentMake !== 'All Makes') {
       query = query.contains('compatibility', [{ make: filters.fitmentMake }]);
     }
     if (filters.fitmentModel && filters.fitmentModel !== 'All Models') {
       query = query.contains('compatibility', [{ model: filters.fitmentModel }]);
     }
-    // Note: Year and Engine filtering on JSONB arrays can be complex in PostgREST 
-    // without custom RPCs or complex filters. For a prototype, we'll focus on Make/Model.
 
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
 
-    return (data || []).map(mapListingToPart);
+    return (data || []).map(mapPartToPart);
   },
 
   // Fetch single part by ID
