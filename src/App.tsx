@@ -11,6 +11,7 @@ import ComponentLibrary from './components/ComponentLibrary';
 import GuidedTour from './components/GuidedTour';
 import SearchModal from './components/SearchModal';
 import SellerDashboard from './components/SellerDashboard';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { X, CheckCircle2, ShoppingBag, Trash2, HelpCircle, Mail, Info, FileCode2, ShieldCheck } from 'lucide-react';
 import { useAppStore } from './store/useAppStore';
 
