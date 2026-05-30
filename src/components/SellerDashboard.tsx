@@ -116,7 +116,7 @@ export default function SellerDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow ml-64 p-12 bg-base-cream">
+      <main className="flex-grow ml-64 p-12 bg-steel-black">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Header */}
           <div className="flex items-end justify-between border-b-2 border-oil-dark pb-8">
@@ -124,7 +124,7 @@ export default function SellerDashboard() {
               <span className="text-rust-copper font-display font-bold uppercase tracking-widest text-sm">
                 {sidebarItems.find(i => i.id === activeSellerTab)?.label || 'Dashboard'}
               </span>
-              <h1 className="text-4xl font-display font-black uppercase text-steel-black tracking-tight">
+              <h1 className="text-4xl font-display font-black uppercase text-base-cream tracking-tight">
                 {activeSellerTab === 'listings' && "Yard Inventory"}
                 {activeSellerTab === 'create' && "Manual Listing Entry"}
                 {activeSellerTab === 'snap' && "Gemini AI Snap"}
