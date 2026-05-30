@@ -7,13 +7,15 @@ interface BottomTabBarProps {
   onChangeView: (view: string) => void;
   user: any;
   showToast: (msg: string) => void;
+  onSetSellerTab?: (tab: 'listings' | 'create' | 'settings' | 'snap') => void;
 }
 
 export default function BottomTabBar({
   currentView,
   onChangeView,
   user,
-  showToast
+  showToast,
+  onSetSellerTab
 }: BottomTabBarProps) {
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
 
@@ -76,11 +78,13 @@ export default function BottomTabBar({
         onClose={() => setIsActionSheetOpen(false)}
         onSelectManualCreate={() => {
             setIsActionSheetOpen(false);
-            onChangeView('listings');
+            if (onSetSellerTab) onSetSellerTab('create');
+            window.location.href = '/dashboard';
         }}
         onTriggerSnapCamera={() => {
             setIsActionSheetOpen(false);
-            onChangeView('listings');
+            if (onSetSellerTab) onSetSellerTab('snap');
+            window.location.href = '/dashboard';
             showToast("Initializing AI vision modules...");
         }}
       />
