@@ -72,6 +72,7 @@ export default function Navbar({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isUserMenuDrawerOpen, setIsUserMenuDrawerOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState(searchTextValue);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
