@@ -455,9 +455,8 @@ export default function Navbar({
             )}
           </button>
 
-          {/* User auth Menu/Hamburger triggers */}
-          {user ? (
-            /* Authenticated User: Avatar triggers bottom sheet */
+          {/* Authenticated user Avatar triggers bottom sheet */}
+          {user && (
             <button 
               onClick={() => setIsBottomSheetOpen(true)}
               className="relative cursor-pointer"
@@ -471,15 +470,6 @@ export default function Navbar({
                   referrerPolicy="no-referrer"
                 />
               </div>
-            </button>
-          ) : (
-            /* Guest / Non-Auth Trigger Bottom Sheet for Login */
-            <button 
-              onClick={() => setIsBottomSheetOpen(true)}
-              className="bg-charcoal metal-border rounded-lg w-10 h-10 text-base-cream hover:bg-oil-dark hover:text-rust-copper flex items-center justify-center cursor-pointer transition-colors duration-150"
-              title="Account Menu"
-            >
-              <User className="w-5 h-5" />
             </button>
           )}
           
