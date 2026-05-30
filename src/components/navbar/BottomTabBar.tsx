@@ -50,9 +50,9 @@ export default function BottomTabBar({
                 }
                 setIsActionSheetOpen(true);
             }}
-            className="w-12 h-12 rounded-xl bg-rust-copper hover:bg-bronze text-steel-black shadow-lg shadow-rust-copper/20 flex items-center justify-center border-4 border-steel-black cursor-pointer transform active:scale-95 transition-transform"
+            className="w-14 h-14 rounded-full bg-rust-copper hover:bg-bronze text-steel-black shadow-lg shadow-rust-copper/40 flex items-center justify-center border-4 border-steel-black cursor-pointer transform active:scale-90 transition-transform"
           >
-            <Plus className="w-6 h-6 stroke-[3]" />
+            <Plus className="w-8 h-8 stroke-[3]" />
           </button>
         </div>
 
