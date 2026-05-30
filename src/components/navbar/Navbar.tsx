@@ -130,7 +130,7 @@ export default function Navbar({
   const handleAvatarClick = () => {
     const isMobileOrTablet = window.innerWidth < 1024;
     if (isMobileOrTablet) {
-      setIsBottomSheetOpen(true);
+      setIsUserMenuDrawerOpen(true);
     } else {
       setIsUserMenuOpen(!isUserMenuOpen);
     }
@@ -531,6 +531,17 @@ export default function Navbar({
               <Menu className="w-5 h-5" />
             </button>
           )}
+
+          {/* User Menu Drawer for Mobile/Tablet */}
+          <UserMenuDrawer 
+            isOpen={isUserMenuDrawerOpen}
+            onClose={() => setIsUserMenuDrawerOpen(false)}
+            user={user}
+            userRole={userRole}
+            onChangeUserRole={onChangeUserRole}
+            onChangeView={onChangeView}
+            onLogout={onLogout}
+          />
 
         </div>
       </div>      {/* Slide-In Mobile Navigation Drawer (Right Side Drawer) - For Non-Auth Users */}
