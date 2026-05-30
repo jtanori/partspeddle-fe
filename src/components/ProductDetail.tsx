@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Heart, CheckCircle2, ShieldCheck, Mail, SlidersHorizontal, ArrowRight, DollarSign, Lock, AlertTriangle, RefreshCw, Send, X } from 'lucide-react';
 import { MOCK_SELLERS, MOCK_PARTS, offersMock } from '../services/db';
-import { Part, Offer, PARTS_FALLBACK_IMAGE } from '../types';
+import { supabaseDb } from '../services/supabase-db';
+import { Part, Seller, Offer, PARTS_FALLBACK_IMAGE } from '../types';
 
 interface ProductDetailProps {
   partId: string;
@@ -11,18 +12,56 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ partId, onBack, onAddToCart, onSelectPart }: ProductDetailProps) {
-  // Locate part & seller
-  const part = MOCK_PARTS.find((p) => p.id === partId) || MOCK_PARTS[0];
-  const seller = MOCK_SELLERS.find((s) => s.id === part.sellerId) || MOCK_SELLERS[0];
+  const [part, setPart] = useState<Part | null>(null);
+  const [seller, setSeller] = useState<Seller | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Component state
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
-  const [offerPrice, setOfferPrice] = useState<number>(Math.round(part.price * 0.85));
+  const [offerPrice, setOfferPrice] = useState<number>(0);
   const [offerMessage, setOfferMessage] = useState("Hi builder! Submitting an offer for my vintage restorers stack.");
   const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
   const [negotiationState, setNegotiationState] = useState<'idle' | 'sending' | 'replied'>('idle');
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const partData = await supabaseDb.getPartById(partId);
+        if (partData) {
+          setPart(partData);
+          setOfferPrice(Math.round(partData.price * 0.85));
+          const sellerData = await supabaseDb.getSellerById(partData.sellerId);
+          setSeller(sellerData);
+        }
+      } catch (err) {
+        console.error('Failed to load part detail:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [partId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F0EB]">
+        <div className="w-8 h-8 border-4 border-[#B87333] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!part) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F0EB] text-zinc-500 space-y-4">
+        <AlertTriangle className="w-12 h-12 text-[#B87333]" />
+        <h2 className="text-xl font-display font-bold uppercase">Part Not Found</h2>
+        <button onClick={onBack} className="text-[#B87333] hover:underline uppercase text-sm font-bold">Back to Marketplace</button>
+      </div>
+    );
+  }
 
   // Multi-angle imagery mapping for each specific part to keep illustrations fully themed
   const detailPartImages: Record<string, string[]> = {

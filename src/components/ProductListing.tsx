@@ -28,7 +28,8 @@ import {
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MOCK_PARTS, MOCK_SELLERS, algoliaMock, SYSTEMS_TAXONOMY } from '../services/db';
+import { MOCK_PARTS, MOCK_SELLERS, SYSTEMS_TAXONOMY } from '../services/db';
+import { supabaseDb } from '../services/supabase-db';
 import { Part, SearchFilters, PartCondition, PARTS_FALLBACK_IMAGE } from '../types';
 
 const SYSTEMS_LIST = ['Powertrain', 'Suspension & Steering', 'Brake System', 'Electrical System', 'Body & Exterior', 'Interior'];
@@ -96,6 +97,8 @@ export default function ProductListing({
   }, [viewMode]);
 
   const [matchingParts, setMatchingParts] = useState<Part[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Expanded tree states for taxonomy drill-down
   const [expandedSystems, setExpandedSystems] = useState<string[]>([]);
@@ -195,23 +198,36 @@ export default function ProductListing({
 
   // 2. Fetch matched entries on filter change
   useEffect(() => {
-    const results = algoliaMock.search(filters);
-    
-    // Sort logic
-    let sorted = [...results];
-    if (sortBy === 'price-low') {
-      sorted.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price-high') {
-      sorted.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'mileage') {
-      sorted.sort((a, b) => {
-        const ma = typeof a.mileage === 'number' ? a.mileage : 999999;
-        const mb = typeof b.mileage === 'number' ? b.mileage : 999999;
-        return ma - mb;
-      });
-    }
-    
-    setMatchingParts(sorted);
+    const fetchParts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const results = await supabaseDb.searchListings(filters);
+        
+        // Sort logic
+        let sorted = [...results];
+        if (sortBy === 'price-low') {
+          sorted.sort((a, b) => a.price - b.price);
+        } else if (sortBy === 'price-high') {
+          sorted.sort((a, b) => b.price - a.price);
+        } else if (sortBy === 'mileage') {
+          sorted.sort((a, b) => {
+            const ma = typeof a.mileage === 'number' ? a.mileage : 999999;
+            const mb = typeof b.mileage === 'number' ? b.mileage : 999999;
+            return ma - mb;
+          });
+        }
+        
+        setMatchingParts(sorted);
+      } catch (err: any) {
+        console.error('Search error:', err);
+        setError(err.message || 'Failed to fetch parts');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParts();
   }, [filters, sortBy]);
 
   // Dynamic document tab title syncing with duplicate word safety filter
@@ -236,18 +252,15 @@ export default function ProductListing({
 
   // Compute live parts counts for drill-down tree
   const getSystemPartCount = (sysName: string) => {
-    const baseFilters = { ...filters, system: sysName, category: '', partTypes: [] };
-    return algoliaMock.search(baseFilters).length;
+    return '-';
   };
 
   const getSubsystemPartCount = (sysName: string, subName: string) => {
-    const baseFilters = { ...filters, system: sysName, category: subName, partTypes: [] };
-    return algoliaMock.search(baseFilters).length;
+    return '-';
   };
 
   const getPartTypePartCount = (sysName: string, subName: string, typeName: string) => {
-    const baseFilters = { ...filters, system: sysName, category: subName, partTypes: [typeName] };
-    return algoliaMock.search(baseFilters).length;
+    return '-';
   };
 
   // Fitment unique vectors extraction
