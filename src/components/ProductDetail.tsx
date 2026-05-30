@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Star, Heart, CheckCircle2, ShieldCheck, Mail
 import { MOCK_SELLERS, MOCK_PARTS, offersMock } from '../services/db';
 import { supabaseDb } from '../services/supabase-db';
 import { Part, Seller, Offer, PARTS_FALLBACK_IMAGE } from '../types';
+import { NegotiationModal } from './catalog/detail/NegotiationModal';
 
 interface ProductDetailProps {
   partId: string;
@@ -26,23 +27,25 @@ export default function ProductDetail({ partId, onBack, onAddToCart, onSelectPar
   const [negotiationState, setNegotiationState] = useState<'idle' | 'sending' | 'replied'>('idle');
 
   useEffect(() => {
+    let isCurrentFetch = true;
     const loadData = async () => {
       setLoading(true);
       try {
         const partData = await supabaseDb.getPartById(partId);
-        if (partData) {
+        if (isCurrentFetch && partData) {
           setPart(partData);
           setOfferPrice(Math.round(partData.price * 0.85));
           const sellerData = await supabaseDb.getSellerById(partData.sellerId);
-          setSeller(sellerData);
+          if (isCurrentFetch) setSeller(sellerData);
         }
       } catch (err) {
         console.error('Failed to load part detail:', err);
       } finally {
-        setLoading(false);
+        if (isCurrentFetch) setLoading(false);
       }
     };
     loadData();
+    return () => { isCurrentFetch = false; };
   }, [partId]);
 
   if (loading) {
@@ -572,183 +575,29 @@ export default function ProductDetail({ partId, onBack, onAddToCart, onSelectPar
       )}
 
       {/* 4. Interactive Make Offer Chat Dialog Overlay */}
-      {isOfferModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 transition-all">
-          <div className="bg-[#2D2D2D] text-white border-2 border-[#B87333] rounded-md max-w-lg w-full p-6 shadow-2xl relative font-sans space-y-6">
-            {/* Rivets decoration */}
-            <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full absolute top-2 right-2 shadow"></div>
-            <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full absolute top-2 left-2 shadow"></div>
-            <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full absolute bottom-2 right-2 shadow"></div>
-            <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full absolute bottom-2 left-2 shadow"></div>
+      <NegotiationModal
+        isOpen={isOfferModalOpen}
+        onClose={() => {
+          setIsOfferModalOpen(false);
+          setNegotiationState('idle');
+          setActiveOffer(null);
+        }}
+        part={part}
+        activeOffer={activeOffer}
+        offerPrice={offerPrice}
+        setOfferPrice={setOfferPrice}
+        offerMessage={offerMessage}
+        setOfferMessage={setOfferMessage}
+        onSubmitOffer={triggerSendOffer}
+        onAcceptCounter={(price) => {
+          onAddToCart({ ...part, price });
+          setIsOfferModalOpen(false);
+          setNegotiationState('idle');
+        }}
+        negotiationState={negotiationState}
+        sellerName={seller.name}
+      />
 
-            <div className="flex items-center justify-between border-b border-[#3D3632] pb-3 mr-4">
-              <div className="space-y-0.5">
-                <h3 className="font-display text-lg font-bold uppercase text-white tracking-wider">
-                  Make Offer — Live Negotiations
-                </h3>
-                <p className="text-[10px] text-zinc-400 uppercase font-mono font-bold tracking-tight">
-                  DIRECT CHANNEL TO: {seller.name}
-                </p>
-              </div>
-              <button 
-                onClick={() => {
-                  setIsOfferModalOpen(false);
-                  setNegotiationState('idle');
-                  setActiveOffer(null);
-                }}
-                className="p-1 text-zinc-400 hover:text-white rounded"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Target Item block info */}
-            <div className="flex items-center gap-3 bg-zinc-950/40 p-3 rounded border border-zinc-800">
-              <img 
-                src={inlinePartImages[0]} 
-                alt={part.title} 
-                className="w-16 h-12 object-cover rounded text-xs" 
-                referrerPolicy="no-referrer"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = PARTS_FALLBACK_IMAGE;
-                }}
-              />
-              <div className="space-y-0.5">
-                <h4 className="font-display text-sm font-bold text-white uppercase">{part.title}</h4>
-                <p className="text-[10px] text-zinc-500 font-sans">Stock Ask: ${part.price.toFixed(2)}</p>
-              </div>
-            </div>
-
-            {negotiationState === 'idle' && (
-              <form onSubmit={triggerSendOffer} className="space-y-4 font-sans">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <label className="text-xs uppercase font-display font-bold text-zinc-350">
-                      Your Offer Price
-                    </label>
-                    <span className="font-mono text-lg font-black text-[#C4A882]">
-                      ${offerPrice}
-                    </span>
-                  </div>
-
-                  {/* Drag Slider to negotiate */}
-                  <input
-                    type="range"
-                    min={Math.round(part.price * 0.5)}
-                    max={Math.round(part.price * 1.1)}
-                    value={offerPrice}
-                    onChange={(e) => setOfferPrice(Number(e.target.value))}
-                    className="w-full accent-[#B87333] cursor-pointer h-1.5 bg-zinc-850"
-                  />
-                  
-                  <div className="flex justify-between text-[10px] font-mono text-zinc-550">
-                    <span>Lowball (${Math.round(part.price * 0.5)})</span>
-                    <span>Realistic (${Math.round(part.price * 0.85)})</span>
-                    <span>Overpay (${Math.round(part.price * 1.1)})</span>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs uppercase font-display font-bold text-zinc-350 block">
-                    Comment to Seller
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={offerMessage}
-                    onChange={(e) => setOfferMessage(e.target.value)}
-                    placeholder="Wrenching a Chevy C10 restoration on my garage..."
-                    className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-sm text-zinc-200 focus:outline-[#B87333]"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-[#B87333] hover:bg-amber-600 font-display font-bold uppercase tracking-wider text-xs py-3 rounded-sm flex items-center justify-center gap-2 transition-all active:translate-y-0.5 cursor-pointer"
-                >
-                  <Send className="w-3.5 h-3.5 text-white" />
-                  <span>Send Offer to Yard Owner</span>
-                </button>
-              </form>
-            )}
-
-            {/* Waiting loader block */}
-            {negotiationState === 'sending' && (
-              <div className="py-12 text-center space-y-4">
-                <div className="w-10 h-10 border-2 border-t-[#B87333] border-zinc-800 rounded-full animate-spin mx-auto"></div>
-                <div className="space-y-1">
-                  <h4 className="font-display text-sm font-semibold uppercase tracking-widest text-[#C4A882]">
-                    Transmitting Specs to Yard
-                  </h4>
-                  <p className="text-[10px] text-zinc-400 font-sans">
-                    Inspecting current yard floor registers & counter balances... Jess is looking it up!
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Seller Response Chat feedback */}
-            {negotiationState === 'replied' && activeOffer && (
-              <div className="space-y-5">
-                <div className="p-4 rounded border font-sans text-xs flex flex-col space-y-3 bg-zinc-950/40 border-zinc-800">
-                  <div className="flex justify-between items-center">
-                    <span className="font-display font-bold uppercase tracking-wider text-[#C4A882] text-xs">
-                      {seller.name} Representative
-                    </span>
-                    <span className={`px-2 py-0.5 rounded font-display font-bold text-[9px] uppercase ${activeOffer.status === 'Accepted' ? 'bg-[#7A8B6F] text-white' : activeOffer.status === 'Counter-Offer' ? 'bg-[#C4A882] text-zinc-950' : 'bg-red-800 text-white'}`}>
-                      {activeOffer.status}
-                    </span>
-                  </div>
-
-                  {/* Comment message */}
-                  <p className="text-zinc-300 leading-relaxed text-sm p-3.5 bg-zinc-950 rounded border border-zinc-900 font-mono">
-                    "{activeOffer.replyMessage}"
-                  </p>
-
-                  {/* Counter action buttons if applicable */}
-                  {activeOffer.status === 'Counter-Offer' && activeOffer.counterPrice && (
-                    <div className="pt-3 border-t border-zinc-900 flex justify-end gap-3">
-                      <button 
-                        onClick={() => {
-                          onAddToCart({
-                            ...part,
-                            price: activeOffer.counterPrice || part.price
-                          });
-                          setIsOfferModalOpen(false);
-                          setNegotiationState('idle');
-                        }}
-                        className="bg-[#7A8B6F] hover:bg-[#5B7B6F] text-white font-display text-xs font-bold uppercase tracking-widest py-2 px-4 rounded-sm"
-                      >
-                        Accept Counter & Buy (${activeOffer.counterPrice})
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-between items-center pt-2">
-                  <button 
-                    onClick={() => setNegotiationState('idle')}
-                    className="text-xs text-zinc-400 hover:text-white font-semibold uppercase tracking-wider"
-                  >
-                    Adjust Offer
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setIsOfferModalOpen(false);
-                      setNegotiationState('idle');
-                      setActiveOffer(null);
-                    }}
-                    className="bg-zinc-850 hover:bg-zinc-800 text-zinc-300 font-display text-xs uppercase py-2 px-5 rounded border border-zinc-750"
-                  >
-                    Done
-                  </button>
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
 
     </div>
   );
