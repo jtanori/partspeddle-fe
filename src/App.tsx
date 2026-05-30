@@ -164,7 +164,14 @@ function AppContent() {
       <main className="flex-grow transition-opacity duration-300">
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/listing" element={<ProductListing initialSearchText={searchQueryText} initialCategory={searchCategory} onSelectPart={(id) => navigate(`/detail/${id}`)} />} />
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+
+// ... (inside AppContent component)
+          <Route path="/listing" element={
+            <ErrorBoundary>
+              <ProductListing initialSearchText={searchQueryText} initialCategory={searchCategory} onSelectPart={(id) => navigate(`/detail/${id}`)} />
+            </ErrorBoundary>
+          } />
           <Route path="/detail/:id" element={<ProductDetailWrapper />} />
           <Route path="/auth" element={<AuthPage onSuccess={() => navigate('/')} onCancel={() => navigate('/')} />} />
           <Route path="/dashboard" element={user ? <SellerDashboard /> : <Navigate to="/auth" />} />
