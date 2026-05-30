@@ -5,6 +5,7 @@ import { analyzeListingImage } from '../../services/ai-vision';
 import { AIAnalysisResult } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { useAppStore } from '../../store/useAppStore';
+import { compressImage } from '../../lib/image-utils';
 
 interface ListingWizardProps {
   onClose: () => void;
@@ -30,9 +31,6 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   
   const [manifest, setManifest] = useState<Record<string, ManifestStatus>>({'Alternator': 'active', 'Starter': 'active'});
 
-import { compressImage } from '../../lib/image-utils';
-
-// ...
   const handleImageUpload = async (file: File) => {
     // 1. Compress the file on the client side
     const compressedBlob = await compressImage(file);
