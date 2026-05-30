@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Camera, X, Sparkles, Upload, Package, Truck, Zap, Pencil, ShieldCheck } from 'lucide-react';
 import { SYSTEM_CATEGORIES } from '../../services/db';
+import { analyzeListingImage } from '../../services/ai-vision';
+import { AIAnalysisResult } from '../../types';
 
 interface ListingWizardProps {
   onClose: () => void;
@@ -12,16 +14,37 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   const [mode, setMode] = useState<'none' | 'vehicle' | 'component'>('none');
   const [currentStep, setCurrentStep] = useState(1);
   const [isScanning, setIsScanning] = useState(false);
-  const [confidenceScore, setConfidenceScore] = useState(0.85); 
-  
+  const [isAiVetted, setIsAiVetted] = useState(false);
+  const [aiResult, setAiResult] = useState<AIAnalysisResult | null>(null);
+
   const [formData, setFormData] = useState<any>({
       system: '', category: '', title: '', brand: '', model: '',
       oem_part_number: '', weight: '', voltage: '', amperage: '',
       pulley_type: '', make: '', year: '', vin: '', condition: 'Used OEM',
       price_mxn: 0, stock_number: ''
   });
-  
+
   const [manifest, setManifest] = useState<Record<string, ManifestStatus>>({'Alternator': 'active', 'Starter': 'active'});
+
+  const handleOcrAnalysis = async () => {
+    setIsScanning(true);
+    try {
+        const mockFile = new File([""], "image.png");
+        const result = await analyzeListingImage(mockFile, mode);
+        setAiResult(result);
+        setIsAiVetted(true);
+        // Map common fields automatically
+        setFormData(prev => ({ ...prev, 
+            system: result.system || prev.system,
+            title: result.part_type || prev.title 
+        }));
+    } catch (err) {
+        console.error("AI Analysis failed:", err);
+    } finally {
+        setIsScanning(false);
+    }
+  };
+
 
   const toggleManifestStatus = (part: string) => {
       setManifest(prev => {
