@@ -43,6 +43,7 @@ function ProductDetailWrapper() {
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isInitializing, setIsInitializing] = useState(true); // Add loading state
   const {
     user,
     userRole,
@@ -81,7 +82,8 @@ function AppContent() {
   const isDashboard = location.pathname === '/dashboard';
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // 1. Initial Session Check
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setUser({
           email: session.user.email || null,
@@ -89,13 +91,34 @@ function AppContent() {
           aud: session.user.aud,
           role: session.user.user_metadata.role || 'buyer'
         });
-      } else {
-        setUser(null);
       }
+      setIsInitializing(false); // Auth resolved
+    });
+
+    // 2. Auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ? {
+        email: session.user.email || null,
+        jwt: session.access_token,
+        aud: session.user.aud,
+        role: session.user.user_metadata.role || 'buyer'
+      } : null);
+      setIsInitializing(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  if (isInitializing) {
+    return (
+      <div className="fixed inset-0 bg-steel-black flex flex-col items-center justify-center gap-3">
+        <div className="w-8 h-8 border-4 border-rust-copper border-t-transparent rounded-full animate-spin" />
+        <span className="font-mono text-[10px] text-warm-gray uppercase tracking-widest">
+          Synchronizing Core Session Terminal...
+        </span>
+      </div>
+    );
+  }
 
   const handleCheckout = () => {
     setCheckoutSuccess(true);
