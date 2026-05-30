@@ -99,14 +99,15 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         if (data.session) {
+          const userRole = data.session.user.user_metadata.role || 'buyer';
           onSuccess({
             email: data.session.user.email || null,
             jwt: data.session.access_token,
             aud: data.session.user.aud,
-            role: data.session.user.user_metadata.role || 'buyer'
+            role: userRole
           });
-          // Redirect to home page
-          window.location.href = '/';
+          // Redirect based on role
+          window.location.href = userRole === 'seller' ? '/dashboard' : '/listing';
         }
       }
     } catch (err: any) {
