@@ -11,24 +11,7 @@ interface LiveSearchDropdownProps {
   className?: string;
 }
 
-const getSystemIcon = (sysId: string) => {
-  switch (sysId) {
-    case 'Powertrain':
-      return Cog;
-    case 'Suspension & Steering':
-      return Compass;
-    case 'Brake System':
-      return Disc;
-    case 'Electrical System':
-      return Zap;
-    case 'Body & Exterior':
-      return Car;
-    case 'Interior':
-      return Armchair;
-    default:
-      return FolderOpen;
-  }
-};
+import { getSystemIcon } from '../../lib/utils/taxonomy';
 
 const PART_THUMBNAILS: Record<string, string> = {
   '1100428': 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=300',
