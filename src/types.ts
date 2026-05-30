@@ -112,4 +112,30 @@ export interface UserSession {
   role: string;
 }
 
-export const PARTS_FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' fill='%231a1a1a'%3E%3Crect width='100%25' height='100%25' fill='%23222222'/%3E%3Cg fill='%23444444' transform='translate(150, 45)'%3E%3Cpath d='M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0zm0 15c19.3 0 35 15.7 35 35S69.3 85 50 85 15 69.3 15 50s15.7-35 35-35z'/%3E%3Cpath d='M35 45h30v10H35z'/%3E%3C/g%3E%3Ctext x='50%25' y='170' text-anchor='middle' fill='%23888888' font-family='sans-serif' font-size='12' font-weight='bold' letter-spacing='2'%3EPHOTO COMING SOON%3C/text%3E%3Ctext x='50%25' y='195' text-anchor='middle' fill='%23b87333' font-family='sans-serif' font-size='10' font-weight='600' letter-spacing='1' opacity='0.8'%3EPARTSPEDDLE%3C/text%3E%3C/svg%3E";
+export interface AIAnalysisResult {
+  is_valid_vehicle?: boolean;
+  completeness_grade?: 'A' | 'B' | 'C' | 'D' | 'F';
+  vehicle_metrics?: {
+    year: number;
+    make: string;
+    model: string;
+    vin?: string | null;
+  };
+  inferred_manifest?: Array<{
+    system: string;
+    part_type: string;
+    estimated_integrity: 'Excellent' | 'Used OEM' | 'Damaged';
+  }>;
+  part_type?: string;
+  system?: string;
+  category?: string;
+  oem_part_number?: string | null;
+  cross_reference_numbers?: string[];
+  machinery_compatibility?: string[];
+  confidence_scores?: {
+    part_type_accuracy: number;
+    fitment_accuracy: number;
+    number_extraction_accuracy: number;
+  };
+}
+
