@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Camera, X, Sparkles, Upload, Package, Truck, Zap, Pencil, ShieldCheck } from 'lucide-react';
-import { SYSTEM_CATEGORIES } from '../../services/db';
+import { SYSTEM_CATEGORIES } from '../../services/taxonomy';
 import { analyzeListingImage } from '../../services/ai-vision';
 import { AIAnalysisResult } from '../../types';
 import { supabase } from '../../lib/supabase';
