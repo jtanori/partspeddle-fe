@@ -128,7 +128,12 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
 
         <div className="flex-grow w-full flex flex-col justify-center items-center py-10 px-4">
           <div className={`w-full max-w-[485px] bg-white border border-zinc-200 shadow-xl px-6 py-8 md:p-10 rounded-xl relative ${isShaking ? 'animate-auth-shake' : ''}`}>
-            <div className="absolute top-2.5 right-4 font-mono text-[9px] text-[#8A8A8A]">PP // AUTH.SECURE</div>
+            <button 
+              onClick={() => window.location.href = '/'}
+              className="absolute top-2.5 right-4 font-mono text-[9px] text-[#B87333] hover:text-[#8B6239] transition-colors underline"
+            >
+              RETURN TO HOME
+            </button>
 
             <div className="text-center md:text-left mb-8">
               <h2 className="font-display text-3xl font-black uppercase text-[#1E1E1E] tracking-tight leading-none">
@@ -171,8 +176,8 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
 
               {isSignUp && role === 'seller' && (
                 <div className="relative">
-                  <label className="text-[10px] tracking-widest uppercase font-display font-bold text-zinc-500 block mb-1.5 ml-1">Business Name</label>
-                  <input type="text" required value={businessName} onChange={e => setBusinessName(e.target.value)} className="w-full h-12 bg-zinc-50 border border-zinc-200 rounded-lg px-4 text-base focus:ring-2 focus:ring-[#B87333] outline-none transition-all" />
+                  <label className="text-[10px] tracking-widest uppercase font-display font-bold text-zinc-500 block mb-1.5 ml-1">Business Name (Optional)</label>
+                  <input type="text" value={businessName} onChange={e => setBusinessName(e.target.value)} className="w-full h-12 bg-zinc-50 border border-zinc-200 rounded-lg px-4 text-base focus:ring-2 focus:ring-[#B87333] outline-none transition-all" />
                   <Briefcase className="absolute right-4 top-9 w-4 h-4 text-zinc-400" />
                 </div>
               )}
