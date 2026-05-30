@@ -165,9 +165,6 @@ function AppContent() {
       <main className="flex-grow transition-opacity duration-300">
         <Routes>
           <Route path="/" element={<Homepage />} />
-import { ErrorBoundary } from './components/common/ErrorBoundary';
-
-// ... (inside AppContent component)
           <Route path="/listing" element={
             <ErrorBoundary>
               <ProductListing initialSearchText={searchQueryText} initialCategory={searchCategory} onSelectPart={(id) => navigate(`/detail/${id}`)} />
