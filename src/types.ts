@@ -17,6 +17,13 @@ export interface Seller {
   returnPolicy: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+}
+
 export interface Part {
   id: string; // e.g. "1100428"
   trackingNumber: string; // PP-08311972
