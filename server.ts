@@ -10,13 +10,29 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Set maximum body limit to 15mb for base64 images upload
-  app.use(express.json({ limit: "15mb" }));
+import express from "express";
+import path from "path";
+import { createServer as createViteServer } from "vite";
+import { GoogleGenAI, Type } from "@google/genai";
+import dotenv from "dotenv";
 
-  // Core API: Photo Identification endpoint
+dotenv.config();
+
+async function startServer() {
+  const app = express();
+  const PORT = parseInt(process.env.PORT || '3000');
+
+  // Removed global JSON limit to allow multipart forms
+  app.use(express.json());
+
+  // API handler configuration
+  // Note: For multipart forms, use busboy or formidable in the specific route handler
+  
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", message: "PartsPeddle Core API online" });
   });
+
+  // ... (rest of Gemini logic and server setup)
 
   // Lazy Gemini initialization to prevent startup crashes if key is missing
   let ai: GoogleGenAI | null = null;
