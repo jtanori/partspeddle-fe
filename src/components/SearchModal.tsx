@@ -396,10 +396,10 @@ export default function SearchModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" id="search-modal-results-list">
                 {matchingParts.map((part) => {
                   const thumb = PART_THUMBNAILS[part.id] || PARTS_FALLBACK_IMAGE;
-                  const cleanedTitle = part.title.replace(/^\d{4}\s+/, '');
+                  const cleanedTitle = (part.title || '').replace(/^\d{4}\s+/, '');
                   const yearMatch = part.subtitle.match(/\d{4}-\d{4}/) || part.subtitle.match(/\d{4}/);
                   const years = yearMatch ? yearMatch[0] : '1981–1987';
-                  const engines = part.fits.replace(/\s+Engines?/gi, '').trim();
+                  const engines = (part.fits || '').replace(/\s+Engines?/gi, '').trim();
                   const consolidatedSubtitle = `${years} • ${engines}`;
                   return (
                     <div
