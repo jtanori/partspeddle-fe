@@ -4,6 +4,7 @@ import { SYSTEM_CATEGORIES } from '../../services/db';
 import { analyzeListingImage } from '../../services/ai-vision';
 import { AIAnalysisResult } from '../../types';
 import { supabase } from '../../lib/supabase';
+import { useAppStore } from '../../store/useAppStore';
 
 interface ListingWizardProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ interface ListingWizardProps {
 type ManifestStatus = 'active' | 'sold' | 'damaged';
 
 export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
+  const { user } = useAppStore();
   const [mode, setMode] = useState<'none' | 'vehicle' | 'component'>('none');
   const [currentStep, setCurrentStep] = useState(1);
   const [isScanning, setIsScanning] = useState(false);
@@ -66,6 +68,28 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
     }
   };
 
+  const commitListing = async () => {
+      if (!user) return;
+      
+      const payload = {
+          ...formData,
+          seller_id: user.id,
+          images: images,
+          is_ai_vetted: isAiVetted,
+          is_search_penalized: !isAiVetted,
+          created_at: new Date().toISOString()
+      };
+
+      const { error } = await supabase.from('parts').insert(payload);
+      
+      if (error) {
+          console.error("Commit failed:", error);
+          return;
+      }
+      
+      onClose();
+  };
+
   const ConfidenceBadge = ({ score }: { score?: number }) => {
     if (score === undefined) return null;
     const isHigh = score >= 0.7;
@@ -74,23 +98,6 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
         {Math.round(score * 100)}% Accuracy
       </span>
     );
-  };
-
-  const toggleManifestStatus = (part: string) => {
-      setManifest(prev => {
-          const states: ManifestStatus[] = ['active', 'sold', 'damaged'];
-          const current = prev[part] || 'active';
-          const next = states[(states.indexOf(current) + 1) % states.length];
-          return { ...prev, [part]: next };
-      });
-  };
-
-  const getStatusStyle = (status: ManifestStatus) => {
-      switch(status) {
-          case 'sold': return 'text-warm-gray line-through';
-          case 'damaged': return 'bg-rust-copper/10 text-rust-copper border border-rust-copper/30';
-          default: return 'text-base-cream border-oil-dark';
-      }
   };
 
   if (mode === 'none') {
@@ -170,7 +177,7 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
       {/* Navigation Footer */}
       <div className="flex justify-between mt-8 pt-6 border-t border-oil-dark">
         <button onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))} disabled={currentStep === 1} className="px-6 py-2 bg-charcoal border border-oil-dark rounded-lg text-xs font-bold uppercase tracking-wider text-warm-gray hover:text-base-cream disabled:opacity-50">Back</button>
-        <button onClick={() => setCurrentStep(prev => Math.min(5, prev + 1))} className="px-6 py-2 bg-rust-copper hover:bg-bronze text-steel-black rounded-lg text-xs font-bold uppercase tracking-wider">
+        <button onClick={() => currentStep === 5 ? commitListing() : setCurrentStep(prev => Math.min(5, prev + 1))} className="px-6 py-2 bg-rust-copper hover:bg-bronze text-steel-black rounded-lg text-xs font-bold uppercase tracking-wider">
             {currentStep === 5 ? 'Commit to Active Registry Node' : 'Advance Step'}
         </button>
       </div>
