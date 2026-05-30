@@ -84,7 +84,9 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
           }
         });
         if (error) throw error;
-        setSuccessMsg('Account created! Please check your email for verification.');
+        
+        // Show closable toast
+        setBottomNotice('Account created! Please check your email for verification.');
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -95,6 +97,8 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
             aud: data.session.user.aud,
             role: data.session.user.user_metadata.role || 'buyer'
           });
+          // Redirect to home page
+          window.location.href = '/';
         }
       }
     } catch (err: any) {
@@ -245,7 +249,10 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
         {bottomNotice && (
           <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-amber-50 px-4 py-3 rounded-lg border border-[#B87333]/20 shadow-xl flex items-center gap-3 animate-fade-in z-50 max-w-sm">
             <span className="text-[10px] text-zinc-600 font-medium leading-relaxed">{bottomNotice}</span>
-            <button onClick={() => setBottomNotice(null)} className="p-1 hover:bg-amber-100 rounded"><X className="w-4 h-4 text-zinc-400" /></button>
+            <button onClick={() => {
+              setBottomNotice(null);
+              setIsSignUp(false); // Switch to login mode
+            }} className="p-1 hover:bg-amber-100 rounded"><X className="w-4 h-4 text-zinc-400" /></button>
           </div>
         )}
       </div>
