@@ -228,7 +228,8 @@ export default function ProductListing({
       }
     };
 
-    fetchParts();
+    const debounceTimer = setTimeout(fetchParts, 300);
+    return () => clearTimeout(debounceTimer);
   }, [filters, sortBy]);
 
   // Dynamic document tab title syncing with duplicate word safety filter
