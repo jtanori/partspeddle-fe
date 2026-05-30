@@ -507,7 +507,7 @@ export default function Navbar({
           {/* Authenticated user Avatar triggers bottom sheet */}
           {user && (
             <button 
-              onClick={() => setIsBottomSheetOpen(true)}
+              onClick={() => setIsUserMenuDrawerOpen(true)}
               className="relative cursor-pointer"
               title="Account Menu"
             >
@@ -937,7 +937,7 @@ export default function Navbar({
       onSetSellerTab={onSetSellerTab}
       onOpenCart={onOpenCart}
       onOpenDrawer={() => setIsMobileDrawerOpen(true)}
-      onOpenBottomSheet={() => setIsBottomSheetOpen(true)}
+      onOpenBottomSheet={() => setIsUserMenuDrawerOpen(true)}
       ctaAction={cta.onClick}
       profile={profile}
       showToast={showToast}
