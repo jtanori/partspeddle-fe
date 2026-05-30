@@ -105,15 +105,16 @@ export default function ProductListing({
   const [expandedSubsystems, setExpandedSubsystems] = useState<string[]>([]);
 
   // Accordion toggle states for filter sections (matches screenshot layout)
+  // Default to true (collapsed)
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
-    search: false,
-    category: false,
-    partType: false,
-    fitment: false,
-    price: false,
-    condition: false,
-    seller: false,
-    sort: false,
+    search: true,
+    category: true,
+    partType: true,
+    fitment: true,
+    price: true,
+    condition: true,
+    seller: true,
+    sort: true,
   });
 
   const toggleSection = (sec: string) => {
@@ -202,7 +203,7 @@ export default function ProductListing({
       setLoading(true);
       setError(null);
       try {
-        const results = await supabaseDb.searchListings(filters);
+        const results = await supabaseDb.searchParts(filters);
         
         // Sort logic
         let sorted = [...results];
@@ -554,7 +555,7 @@ export default function ProductListing({
             onClick={() => toggleSection('sort')} 
             className="flex items-center justify-between cursor-pointer pb-1.5 select-none group border-b border-oil-dark"
           >
-            <span className="font-display text-sm uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
+            <span className="font-display text-base uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
               Sort Order
             </span>
 
@@ -588,7 +589,7 @@ export default function ProductListing({
             onClick={() => toggleSection('category')} 
             className="flex items-center justify-between cursor-pointer pb-1.5 select-none group border-b border-oil-dark"
           >
-            <span className="font-display text-sm uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
+            <span className="font-display text-base uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
               Part Category
             </span>
             {collapsedSections.category ? (
@@ -704,7 +705,7 @@ export default function ProductListing({
             onClick={() => toggleSection('partType')} 
             className="flex items-center justify-between cursor-pointer pb-1.5 select-none group border-b border-oil-dark"
           >
-            <span className="font-display text-sm uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
+            <span className="font-display text-base uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
               Part Type
             </span>
             {collapsedSections.partType ? (
@@ -764,7 +765,7 @@ export default function ProductListing({
             onClick={() => toggleSection('price')} 
             className="flex items-center justify-between cursor-pointer pb-1.5 select-none group border-b border-oil-dark"
           >
-            <span className="font-display text-sm uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
+            <span className="font-display text-base uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
               Price Range
             </span>
             {collapsedSections.price ? (
@@ -869,7 +870,7 @@ export default function ProductListing({
             onClick={() => toggleSection('condition')} 
             className="flex items-center justify-between cursor-pointer pb-1.5 select-none group border-b border-oil-dark"
           >
-            <span className="font-display text-sm uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
+            <span className="font-display text-base uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
               Condition
             </span>
             {collapsedSections.condition ? (
@@ -925,7 +926,7 @@ export default function ProductListing({
             onClick={() => toggleSection('seller')} 
             className="flex items-center justify-between cursor-pointer pb-1.5 select-none group border-b border-oil-dark"
           >
-            <span className="font-display text-sm uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
+            <span className="font-display text-base uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
               Seller Type
             </span>
             {collapsedSections.seller ? (
@@ -978,7 +979,7 @@ export default function ProductListing({
             onClick={() => toggleSection('fitment')} 
             className="flex items-center justify-between cursor-pointer pb-1.5 select-none group border-b border-oil-dark"
           >
-            <span className="font-display text-sm uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
+            <span className="font-display text-base uppercase tracking-wider text-warm-gray group-hover:text-rust-copper transition-colors">
               Vehicle Fitment
             </span>
             <button className="text-[9px] text-warm-gray hover:text-rust-copper underline" onClick={(e) => { e.stopPropagation(); /* Clear fitment logic */ }}>Clear</button>
