@@ -71,7 +71,6 @@ export default function Navbar({
 }: NavbarProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [isUserMenuDrawerOpen, setIsUserMenuDrawerOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState(searchTextValue);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
