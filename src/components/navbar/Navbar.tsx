@@ -655,12 +655,12 @@ export default function Navbar({
     </header>
 
     {/* Interactive Responsive Bottom Sheet fly-out - Tablet & Mobile Specifics for logged-in Users */}
-    {isBottomSheetOpen && (
+    {isUserMenuDrawerOpen && (
       <div className="fixed inset-0 z-[100000] flex items-end justify-center animate-fade-in font-sans" id="mobile-bottom-sheet-overlay">
         {/* Backdrop screen mask */}
         <div 
           className="absolute inset-0 bg-black/70 backdrop-blur-xs cursor-pointer" 
-          onClick={() => setIsBottomSheetOpen(false)} 
+          onClick={() => setIsUserMenuDrawerOpen(false)} 
         />
         
         {/* Bottom sheet content area - maxWidth: 640px, rounded corners */}
@@ -669,7 +669,7 @@ export default function Navbar({
           {/* 36px wide Drag Handle Bar */}
           <div 
             className="w-12 h-1 bg-oil-dark hover:bg-charcoal rounded-full mx-auto mb-4 cursor-pointer flex-shrink-0" 
-            onClick={() => setIsBottomSheetOpen(false)}
+            onClick={() => setIsUserMenuDrawerOpen(false)}
           />
           
           {/* Profile Row */}
@@ -702,7 +702,7 @@ export default function Navbar({
             )}
             
             <button 
-              onClick={() => setIsBottomSheetOpen(false)}
+              onClick={() => setIsUserMenuDrawerOpen(false)}
               className="bg-oil-dark hover:bg-charcoal p-2 rounded-full text-warm-gray hover:text-base-cream transition-colors cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center"
             >
               ✕
@@ -717,7 +717,7 @@ export default function Navbar({
                 <p className="text-xs text-warm-gray">Access specialized supplier operations, escrow protections, and real-time teardowns.</p>
                 <button 
                   onClick={() => {
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     onChangeView('auth');
                   }}
                   className="w-full bg-rust-copper hover:bg-bronze text-steel-black font-display font-bold text-xs uppercase py-2.5 rounded-lg transition-colors cursor-pointer"
@@ -731,7 +731,7 @@ export default function Navbar({
                 <button
                   onClick={() => {
                     onChangeView('settings');
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
                 >
@@ -741,7 +741,7 @@ export default function Navbar({
 
                 <button
                   onClick={() => {
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     showToast('Watchlist functionality.');
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
@@ -752,7 +752,7 @@ export default function Navbar({
 
                 <button
                   onClick={() => {
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     onChangeView('orders');
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
@@ -765,7 +765,7 @@ export default function Navbar({
 
                 <button
                   onClick={() => {
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     onOpenSupport();
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
@@ -782,7 +782,7 @@ export default function Navbar({
                     onClick={() => {
                       onChangeUserRole('seller');
                       onChangeView('listings');
-                      setIsBottomSheetOpen(false);
+                      setIsUserMenuDrawerOpen(false);
                       showToast('Switched account profile context to Salvage Operator.');
                     }}
                     className="w-full text-left px-4 py-3 bg-gradient-to-r from-rust-copper/25 to-bronze/5 border-2 border-rust-copper rounded-xl transition-all hover:bg-rust-copper/35 flex items-center justify-between min-h-[48px] cursor-pointer group"
@@ -799,7 +799,7 @@ export default function Navbar({
 
                 <button
                   onClick={() => {
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     onLogout();
                     showToast('Log out successful.');
                   }}
@@ -815,7 +815,7 @@ export default function Navbar({
                 <button
                   onClick={() => {
                     onChangeView('settings');
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
                 >
@@ -827,7 +827,7 @@ export default function Navbar({
                   onClick={() => {
                     if (onSetSellerTab) onSetSellerTab('listings');
                     onChangeView('listings');
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     showToast('Seller Dashboard accessed.');
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
@@ -840,7 +840,7 @@ export default function Navbar({
                   onClick={() => {
                     if (onSetSellerTab) onSetSellerTab('listings');
                     onChangeView('listings');
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     showToast('Active dismantling inventory loaded.');
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
@@ -853,7 +853,7 @@ export default function Navbar({
                   onClick={() => {
                     if (onSetSellerTab) onSetSellerTab('listings');
                     onChangeView('listings');
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
                 >
@@ -865,7 +865,7 @@ export default function Navbar({
                   onClick={() => {
                     if (onSetSellerTab) onSetSellerTab('listings');
                     onChangeView('listings');
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
                 >
@@ -877,7 +877,7 @@ export default function Navbar({
 
                 <button
                   onClick={() => {
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     onOpenSupport();
                   }}
                   className="w-full text-left px-4 hover:bg-oil-dark active:bg-oil-dark rounded-lg transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-3 min-h-[44px] text-warm-gray hover:text-base-cream font-display"
@@ -894,7 +894,7 @@ export default function Navbar({
                     onClick={() => {
                       onChangeUserRole('buyer');
                       onChangeView('home');
-                      setIsBottomSheetOpen(false);
+                      setIsUserMenuDrawerOpen(false);
                       showToast('Switched account profile context to Buyer.');
                     }}
                     className="w-full text-left px-4 py-3 bg-gradient-to-r from-rust-copper/25 to-bronze/5 border-2 border-rust-copper rounded-xl transition-all hover:bg-rust-copper/35 flex items-center justify-between min-h-[48px] cursor-pointer group"
@@ -911,7 +911,7 @@ export default function Navbar({
 
                 <button
                   onClick={() => {
-                    setIsBottomSheetOpen(false);
+                    setIsUserMenuDrawerOpen(false);
                     onLogout();
                     showToast('Log out successful.');
                   }}
