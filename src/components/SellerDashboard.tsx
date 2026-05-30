@@ -1,29 +1,3 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Plus, 
-  ArrowLeft, 
-  LayoutDashboard,
-  ShoppingBag,
-  LogOut,
-  Settings,
-  Sparkles,
-  Package
-} from 'lucide-react';
-import { useAppStore } from '../store/useAppStore';
-import { InventoryTable } from './seller-dashboard/InventoryTable';
-import { ListingWizard } from './seller-dashboard/ListingWizard';
-import { SettingsForm } from './seller-dashboard/SettingsForm';
-
-export default function SellerDashboard() {
-  const navigate = useNavigate();
-  const { 
-    activeSellerTab, 
-    setActiveSellerTab, 
-    logout, 
-    profile 
-  } = useAppStore();
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
