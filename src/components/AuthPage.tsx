@@ -13,6 +13,7 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useSearchParams } from 'react-router-dom';
 import { UserSession } from '../types';
 import { BrandStoryColumn } from './auth/BrandStoryColumn';
 import { SocialButtons } from './auth/SocialButtons';
