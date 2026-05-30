@@ -32,17 +32,17 @@ export default function SellerDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F0EB] flex">
+    <div className="min-h-screen bg-steel-black flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-zinc-900 text-white flex flex-col fixed inset-y-0">
-        <div className="p-8 border-b border-white/5">
+      <aside className="w-64 bg-charcoal text-base-cream flex flex-col fixed inset-y-0 border-r border-oil-dark">
+        <div className="p-8 border-b border-oil-dark">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#B87333] rounded-xl flex items-center justify-center font-display font-black text-white text-xl shadow-lg shadow-[#B87333]/20">
+            <div className="w-10 h-10 bg-rust-copper rounded-xl flex items-center justify-center font-display font-black text-steel-black text-xl shadow-lg shadow-rust-copper/20">
               P
             </div>
             <div className="space-y-0.5">
               <span className="block font-display font-bold uppercase tracking-widest text-sm">PartsPeddle</span>
-              <span className="block text-zinc-500 text-[10px] uppercase font-bold tracking-[0.2em]">Seller Console</span>
+              <span className="block text-warm-gray text-[10px] uppercase font-bold tracking-[0.2em]">Seller Console</span>
             </div>
           </div>
         </div>
@@ -56,8 +56,8 @@ export default function SellerDashboard() {
                 onClick={() => setActiveSellerTab(item.id as any)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-display font-bold uppercase text-xs tracking-wider ${
                   activeSellerTab === item.id 
-                    ? 'bg-[#B87333] text-white shadow-lg shadow-[#B87333]/20' 
-                    : 'text-zinc-500 hover:bg-white/5 hover:text-white'
+                    ? 'bg-rust-copper text-steel-black shadow-lg shadow-rust-copper/20' 
+                    : 'text-warm-gray hover:bg-oil-dark hover:text-base-cream'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -67,17 +67,17 @@ export default function SellerDashboard() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-white/5 space-y-2">
+        <div className="p-4 border-t border-oil-dark space-y-2">
           <button 
             onClick={() => navigate('/')}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-500 hover:bg-white/5 hover:text-white transition-all font-display font-bold uppercase text-xs tracking-wider"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-warm-gray hover:bg-oil-dark hover:text-base-cream transition-all font-display font-bold uppercase text-xs tracking-wider"
           >
             <ArrowLeft className="w-5 h-5" />
             Marketplace
           </button>
           <button 
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500/70 hover:bg-red-500/5 hover:text-red-500 transition-all font-display font-bold uppercase text-xs tracking-wider"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/10 hover:text-rose-500 transition-all font-display font-bold uppercase text-xs tracking-wider"
           >
             <LogOut className="w-5 h-5" />
             Sign Out
@@ -86,15 +86,15 @@ export default function SellerDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow ml-64 p-12">
+      <main className="flex-grow ml-64 p-12 bg-base-cream">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Header */}
-          <div className="flex items-end justify-between border-b-2 border-zinc-200 pb-8">
+          <div className="flex items-end justify-between border-b-2 border-oil-dark pb-8">
             <div className="space-y-2">
-              <span className="text-[#B87333] font-display font-bold uppercase tracking-widest text-sm">
+              <span className="text-rust-copper font-display font-bold uppercase tracking-widest text-sm">
                 {sidebarItems.find(i => i.id === activeSellerTab)?.label || 'Dashboard'}
               </span>
-              <h1 className="text-4xl font-display font-black uppercase text-zinc-900 tracking-tight">
+              <h1 className="text-4xl font-display font-black uppercase text-steel-black tracking-tight">
                 {activeSellerTab === 'listings' && "Yard Inventory"}
                 {activeSellerTab === 'create' && "Manual Listing Entry"}
                 {activeSellerTab === 'snap' && "Gemini AI Snap"}
@@ -104,11 +104,11 @@ export default function SellerDashboard() {
             
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <span className="block font-display font-bold uppercase text-zinc-900">{profile.name}</span>
-                <span className="block text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{profile.location}</span>
+                <span className="block font-display font-bold uppercase text-steel-black">{profile.name}</span>
+                <span className="block text-[10px] text-warm-gray font-bold uppercase tracking-widest">{profile.location}</span>
               </div>
-              <div className="w-12 h-12 bg-zinc-200 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                {profile.logoUrl ? <img src={profile.logoUrl} className="w-full h-full object-cover" /> : <LayoutDashboard className="w-full h-full p-3 text-zinc-400" />}
+              <div className="w-12 h-12 bg-oil-dark rounded-full overflow-hidden border-2 border-rust-copper shadow-sm">
+                {profile.logoUrl ? <img src={profile.logoUrl} className="w-full h-full object-cover" /> : <LayoutDashboard className="w-full h-full p-3 text-warm-gray" />}
               </div>
             </div>
           </div>
