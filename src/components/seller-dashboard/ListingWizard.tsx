@@ -135,8 +135,57 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
           </div>
       )}
 
-      {/* Step 4 & 5 placeholders */}
-      {(currentStep === 4 || currentStep === 5) && <div className="text-warm-gray text-center py-10">Step {currentStep} placeholder</div>}
+      {/* Step 4: Vehicle Fitment */}
+      {currentStep === 4 && (
+        <div className="space-y-6">
+          <h4 className="text-sm font-display font-bold uppercase text-base-cream border-b border-oil-dark pb-2">Vehicle Fitment</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <select value={formData.make} onChange={(e) => setFormData({...formData, make: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
+              <option value="">Make</option>
+              {/* Populate with actual makes */}
+            </select>
+            <select value={formData.model} onChange={(e) => setFormData({...formData, model: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
+              <option value="">Model</option>
+            </select>
+            <select value={formData.year} onChange={(e) => setFormData({...formData, year: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
+              <option value="">Year</option>
+            </select>
+            <input type="text" placeholder="VIN (Optional)" value={formData.vin} onChange={(e) => setFormData({...formData, vin: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+          </div>
+        </div>
+      )}
+
+      {/* Step 5: Pricing & Logistics */}
+      {currentStep === 5 && (
+        <div className="space-y-6">
+          <h4 className="text-sm font-display font-bold uppercase text-base-cream border-b border-oil-dark pb-2">Pricing & Logistics</h4>
+          
+          <div>
+            <label className="block text-xs uppercase font-display font-bold text-warm-gray mb-2">Condition</label>
+            <div className="flex flex-wrap gap-2">
+              {['New Old Stock', 'Excellent', 'Used OEM', 'For Parts'].map(cond => (
+                <button
+                  key={cond}
+                  onClick={() => setFormData({...formData, condition: cond})}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold uppercase ${formData.condition === cond ? 'bg-rust-copper text-steel-black' : 'bg-charcoal text-warm-gray border border-oil-dark'}`}
+                >
+                  {cond}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+             <input type="number" placeholder="Price (MXN)" value={formData.price_mxn} onChange={(e) => setFormData({...formData, price_mxn: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+             <input type="text" placeholder="Stock Number" value={formData.stock_number} onChange={(e) => setFormData({...formData, stock_number: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+          </div>
+          
+          <div className="p-4 bg-steel-black border border-rust-copper/20 rounded-lg">
+            <p className="text-[10px] text-warm-gray uppercase tracking-widest font-bold">Estimated USD Equivalent</p>
+            <span className="text-lg font-black text-rust-copper">${(Number(formData.price_mxn) / 20).toFixed(2)} USD</span>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Footer */}
       <div className="flex justify-between mt-8 pt-6 border-t border-oil-dark">
