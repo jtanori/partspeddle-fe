@@ -14,7 +14,7 @@ export const HighFidelityHero: React.FC = () => {
       {/* Static Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: `url("${hero1}")`, opacity: 0.4 }}
+        style={{ backgroundImage: `url("${hero1}")`, opacity: 0.7 }}
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/40 to-transparent pointer-events-none"></div>
 
