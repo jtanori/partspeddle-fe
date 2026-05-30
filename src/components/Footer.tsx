@@ -15,7 +15,7 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
   };
 
   return (
-    <footer className="bg-[#1E1E1E] text-zinc-400 font-sans border-t border-[#3D3632]">
+    <footer className="bg-steel-black text-warm-gray font-sans border-t border-oil-dark">
       {/* Upper Footer section */}
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-12 gap-8">
         
@@ -33,17 +33,17 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
               referrerPolicy="no-referrer"
             />
           </div>
-          <p className="text-sm text-zinc-400 max-w-sm leading-relaxed">
+          <p className="text-sm text-warm-gray max-w-sm leading-relaxed">
             The professional marketplace for quality used OEM auto parts. Sourced directly from trusted salvage yards. Real parts, real people, real savings.
           </p>
           <div className="flex items-center gap-4 pt-2">
-            <a href="#facebook" className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-[#B87333] transition-colors">
+            <a href="#facebook" className="p-2 bg-charcoal hover:bg-oil-dark rounded-md text-warm-gray hover:text-rust-copper transition-colors">
               <Facebook className="w-4 h-4" />
             </a>
-            <a href="#instagram" className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-[#B87333] transition-colors">
+            <a href="#instagram" className="p-2 bg-charcoal hover:bg-oil-dark rounded-md text-warm-gray hover:text-rust-copper transition-colors">
               <Instagram className="w-4 h-4" />
             </a>
-            <a href="#youtube" className="p-2 bg-zinc-900 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-[#B87333] transition-colors">
+            <a href="#youtube" className="p-2 bg-charcoal hover:bg-oil-dark rounded-md text-warm-gray hover:text-rust-copper transition-colors">
               <Youtube className="w-4 h-4" />
             </a>
           </div>
@@ -54,7 +54,7 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
           <h4 className="font-display text-sm font-semibold text-white tracking-widest uppercase mb-4">
             Shop Parts
           </h4>
-          <ul className="space-y-2 text-sm text-zinc-400">
+          <ul className="space-y-2 text-sm text-warm-gray">
             <li>
               <button onClick={() => onChangeView('listing')} className="hover:text-white transition-colors text-left cursor-pointer">
                 Browse Parts
@@ -83,10 +83,10 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
           <h4 className="font-display text-sm font-semibold text-white tracking-widest uppercase mb-4">
             About Company
           </h4>
-          <ul className="space-y-2 text-sm text-zinc-400">
+          <ul className="space-y-2 text-sm text-warm-gray">
             <li>
               <button onClick={() => handleModalClick('about')} className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer">
-                <Info className="w-3.5 h-3.5 text-[#B87333]" />
+                <Info className="w-3.5 h-3.5 text-rust-copper" />
                 <span>About PartsPeddle</span>
               </button>
             </li>
@@ -113,12 +113,12 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
           <h4 className="font-display text-sm font-semibold text-white tracking-widest uppercase">
             Support Desk
           </h4>
-          <p className="text-xs text-zinc-400 leading-relaxed max-w-[240px]">
+          <p className="text-xs text-warm-gray leading-relaxed max-w-[240px]">
             Have bulk questions, custom order requests, or shipping inquiries? Speak directly with yard managers.
           </p>
           <button 
             onClick={() => handleModalClick('contact')} 
-            className="w-full bg-[#B87333] hover:bg-[#9E5E24] active:scale-[0.98] text-white font-sans font-bold py-3 px-5 rounded-xs shadow-md transition-all flex items-center justify-center gap-2.5 cursor-pointer max-w-[240px] text-sm group"
+            className="w-full bg-rust-copper hover:bg-rust-copper/90 active:scale-[0.98] text-white font-sans font-bold py-3 px-5 rounded-xs shadow-md transition-all flex items-center justify-center gap-2.5 cursor-pointer max-w-[240px] text-sm group"
           >
             <Mail className="w-4.5 h-4.5 text-white group-hover:translate-x-0.5 transition-transform" />
             <span>Contact Support</span>
@@ -128,17 +128,17 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
       </div>
 
       {/* Dynamic Trust bar */}
-      <div className="zinc-800 border-t border-zinc-800 bg-zinc-950/40">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-sans text-zinc-500">
+      <div className="border-t border-oil-dark bg-steel-black">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-sans text-warm-gray">
           <div className="flex items-center gap-1">
-            <Lock className="w-3 h-3 text-[#B87333]" />
+            <Lock className="w-3 h-3 text-rust-copper" />
             <span>Secured with Supabase Identity Management</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
             <span>© 2026 PartsPeddle. All rights reserved.</span>
-            <button onClick={() => handleModalClick('terms')} className="hover:text-zinc-400 cursor-pointer">Terms of Service</button>
-            <button onClick={() => handleModalClick('privacy')} className="hover:text-zinc-400 cursor-pointer">Privacy Policy</button>
-            <button onClick={() => handleModalClick('contact')} className="hover:text-zinc-400 font-semibold text-zinc-400 hover:text-white transition-colors cursor-pointer">Contact Us</button>
+            <button onClick={() => handleModalClick('terms')} className="hover:text-white cursor-pointer">Terms of Service</button>
+            <button onClick={() => handleModalClick('privacy')} className="hover:text-white cursor-pointer">Privacy Policy</button>
+            <button onClick={() => handleModalClick('contact')} className="hover:text-white font-semibold text-warm-gray hover:text-white transition-colors cursor-pointer">Contact Us</button>
           </div>
         </div>
       </div>
