@@ -9,7 +9,8 @@ import {
   EyeOff, 
   Lock, 
   XCircle,
-  X
+  X,
+  ChevronLeft
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { UserSession } from '../types';
@@ -130,8 +131,9 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
           <div className={`w-full max-w-[485px] bg-white border border-zinc-200 shadow-xl px-6 py-8 md:p-10 rounded-xl relative ${isShaking ? 'animate-auth-shake' : ''}`}>
             <button 
               onClick={() => window.location.href = '/'}
-              className="absolute top-2.5 right-4 font-mono text-[9px] text-[#B87333] hover:text-[#8B6239] transition-colors underline"
+              className="absolute top-4 left-4 flex items-center gap-1 font-display text-xs font-black text-rust-copper hover:text-bronze transition-colors uppercase tracking-wider"
             >
+              <ChevronLeft className="w-4 h-4" />
               RETURN TO HOME
             </button>
 
