@@ -542,15 +542,20 @@ export default function ProductListing({
         className="bg-charcoal border border-oil-dark border-r-4 border-r-oil-dark rounded-md p-5 pb-6 space-y-6 shadow-xs font-sans text-left" 
         id="unified-filters-card"
       >
-        {/* 1. Header with exact "FILTER BY" label and subtle line */}
-        <div className="flex items-center gap-3 pb-1" id="filter-header-row">
-          <span className="font-display font-black text-[11px] uppercase tracking-widest text-rust-copper select-none">
-            FILTER BY
-          </span>
-          <div className="flex-grow h-px bg-oil-dark/60" />
+        {/* Sidebar Header with Clear All */}
+        <div className="flex items-center justify-between w-full pb-4 border-b border-oil-dark">
+          <h2 className="font-display text-xl font-black uppercase tracking-wider text-base-cream">
+            Filters
+          </h2>
+          <button 
+            onClick={clearAllFilters}
+            className="text-[10px] font-display font-bold uppercase tracking-widest text-rust-copper hover:text-warm-sand transition-colors cursor-pointer bg-transparent border-none"
+          >
+            Clear All
+          </button>
         </div>
 
-        {/* 2. Sort Order Priority (New #1) */}
+        {/* 2. Vehicle Fitment (New #2) */}
         <div className="space-y-2.5 pt-0.5">
           <div 
             onClick={() => toggleSection('sort')} 
@@ -1239,10 +1244,10 @@ export default function ProductListing({
             <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] md:gap-[20px] lg:gap-[24px] animate-fade-in" : "space-y-4 animate-fade-in"}>
               {matchingParts.map((part) => {
                 const partSeller = MOCK_SELLERS.find((s) => s.id === part.sellerId);
-                const cleanedTitle = part.title.replace(/^\d{4}\s+/, '');
-                const yearMatch = part.subtitle.match(/\d{4}-\d_4}/) || part.subtitle.match(/\d{4}/);
+                const cleanedTitle = (part.title || '').replace(/^\d{4}\s+/, '');
+                const yearMatch = part.subtitle?.match(/\d{4}-\d_4}/) || part.subtitle?.match(/\d{4}/);
                 const years = yearMatch ? yearMatch[0] : '1981–1987';
-                const engines = part.fits.replace(/\s+Engines?/gi, '').trim();
+                const engines = (part.fits || '').replace(/\s+Engines?/gi, '').trim();
                 const consolidatedSubtitle = `${years} • ${engines}`;
                 const isFavorite = favorites.includes(part.id);
 
