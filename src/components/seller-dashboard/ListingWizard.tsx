@@ -1,41 +1,49 @@
 import React, { useState } from 'react';
-import { Camera, X, Sparkles, Upload, Package, Truck, Zap, Pencil } from 'lucide-react';
+import { Camera, X, Sparkles, Upload, Package, Truck, Zap, Pencil, ShieldCheck } from 'lucide-react';
 import { SYSTEM_CATEGORIES } from '../../services/db';
 
 interface ListingWizardProps {
   onClose: () => void;
 }
 
+// Tri-state toggle type
+type ManifestStatus = 'active' | 'sold' | 'damaged';
+
 export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   const [mode, setMode] = useState<'none' | 'vehicle' | 'component'>('none');
   const [currentStep, setCurrentStep] = useState(1);
   const [isScanning, setIsScanning] = useState(false);
-  const [formData, setFormData] = useState<any>({
-      system: '',
-      category: '',
-      part_type: '',
-      title: '',
-      subtitle: '',
-      brand: '',
-      model: '',
-      oem_part_number: '',
-      interchange_part_numbers: [],
-      weight: '',
-      voltage: '',
-      amperage: '',
-      pulley_type: ''
+  const [isAiVetted, setIsAiVetted] = useState(false);
+  const [confidenceScore, setConfidenceScore] = useState(0.85); // Mode B demo value
+  
+  const [manifest, setManifest] = useState<Record<string, ManifestStatus>>({
+      'Alternator': 'active',
+      'Starter': 'active'
   });
+
+  const toggleManifestStatus = (part: string) => {
+      setManifest(prev => {
+          const states: ManifestStatus[] = ['active', 'sold', 'damaged'];
+          const current = prev[part] || 'active';
+          const next = states[(states.indexOf(current) + 1) % states.length];
+          return { ...prev, [part]: next };
+      });
+  };
+
+  const getStatusStyle = (status: ManifestStatus) => {
+      switch(status) {
+          case 'sold': return 'text-warm-gray line-through';
+          case 'damaged': return 'bg-rust-copper/10 text-rust-copper border border-rust-copper/30';
+          default: return 'text-base-cream border-oil-dark';
+      }
+  };
 
   if (mode === 'none') {
     return (
       <div className="bg-charcoal border border-oil-dark rounded-2xl p-8 shadow-2xl text-base-cream font-sans max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-            <h2 className="font-display text-xl font-black uppercase tracking-wider text-rust-copper">
-                Select Ingestion Pathway
-            </h2>
-            <button onClick={onClose} className="text-warm-gray hover:text-base-cream">
-                <X className="w-5 h-5" />
-            </button>
+            <h2 className="font-display text-xl font-black uppercase tracking-wider text-rust-copper">Select Ingestion Pathway</h2>
+            <button onClick={onClose} className="text-warm-gray hover:text-base-cream"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -64,9 +72,7 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
         <h2 className="font-display text-lg font-black uppercase tracking-wider text-rust-copper">
           {mode === 'vehicle' ? 'Vehicle Listing' : 'Component Listing'} — Step {currentStep} of 5
         </h2>
-        <button onClick={() => setMode('none')} className="text-warm-gray hover:text-base-cream">
-          <X className="w-5 h-5" />
-        </button>
+        <button onClick={() => setMode('none')} className="text-warm-gray hover:text-base-cream"><X className="w-5 h-5" /></button>
       </div>
 
       {/* Step 1: Ingestion */}
@@ -78,6 +84,7 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
                     <span className='text-xs font-bold uppercase tracking-widest text-warm-gray'>Upload Image</span>
                 </div>
             </div>
+          
           <button onClick={() => setIsScanning(true)} className="w-full bg-charcoal border border-rust-copper text-rust-copper hover:bg-rust-copper hover:text-steel-black font-display font-bold uppercase py-3 rounded-xl transition-all flex items-center justify-center gap-2">
             <Sparkles className={isScanning ? "animate-spin" : ""} />
             {isScanning ? 'Analyzing...' : 'Execute Optical OCR Analysis Layer'}
@@ -85,106 +92,30 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
         </div>
       )}
 
-      {/* Step 2: Taxonomy & Metrics */}
-      {currentStep === 2 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                  <h4 className="text-sm font-display font-bold uppercase text-base-cream">Taxonomy Selection</h4>
-                  <select value={formData.system} onChange={(e) => setFormData({...formData, system: e.target.value, category: ''})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
-                      <option value="">Select System</option>
-                      {Object.keys(SYSTEM_CATEGORIES).map(sys => <option key={sys} value={sys}>{sys}</option>)}
-                  </select>
-                  <select value={formData.category} disabled={!formData.system} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream disabled:opacity-50">
-                      <option value="">Select Category</option>
-                      {formData.system && SYSTEM_CATEGORIES[formData.system]?.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                  </select>
-              </div>
-              <div className="space-y-4">
-                  <h4 className="text-sm font-display font-bold uppercase text-base-cream">Identification</h4>
-                  <input type="text" placeholder="Title (e.g. 1987 Alternator)" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-                  <div className="flex gap-2">
-                      <input type="text" placeholder="Brand" value={formData.brand} onChange={(e) => setFormData({...formData, brand: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-                      <input type="text" placeholder="Model" value={formData.model} onChange={(e) => setFormData({...formData, model: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-                  </div>
+      {/* Mode A: Manifest Grid (Vehicle) */}
+      {mode === 'vehicle' && currentStep === 2 && (
+          <div className="space-y-4">
+              <h4 className="text-sm font-display font-bold uppercase text-base-cream">Vehicle Manifest Projection</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {Object.keys(manifest).map(part => (
+                      <button key={part} onClick={() => toggleManifestStatus(part)} className={`p-3 rounded border text-xs font-bold uppercase tracking-wider ${getStatusStyle(manifest[part])}`}>
+                          {part} - {manifest[part]}
+                      </button>
+                  ))}
               </div>
           </div>
       )}
 
-      {/* Step 3: Engineering Schemas & Part Reference */}
-      {currentStep === 3 && (
-          <div className="space-y-6 border border-oil-dark p-6 rounded-lg bg-steel-black">
-              <h4 className="text-sm font-display font-bold uppercase text-base-cream border-b border-oil-dark pb-2">Technical Specifications</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="OEM Part Number" value={formData.oem_part_number} onChange={(e) => setFormData({...formData, oem_part_number: e.target.value})} className="w-full bg-charcoal border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-                <input type="text" placeholder="Weight" value={formData.weight} onChange={(e) => setFormData({...formData, weight: e.target.value})} className="w-full bg-charcoal border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+      {/* Mode B: Confidence Gauge (Component) */}
+      {mode === 'component' && currentStep === 2 && (
+          <div className="space-y-4">
+              <h4 className="text-sm font-display font-bold uppercase text-base-cream">AI Verification Layer</h4>
+              <div className={`p-4 rounded-lg border ${confidenceScore >= 0.7 ? 'bg-sage-green/10 border-sage-green/30' : 'bg-rust-copper/10 border-rust-copper/30'}`}>
+                  <span className={`text-xs font-mono font-bold ${confidenceScore >= 0.7 ? 'text-sage-green' : 'text-rust-copper'}`}>
+                      [{Math.round(confidenceScore * 100)}% Accuracy Match]
+                  </span>
               </div>
-              {(formData.system === 'Electrical System' || ['Alternator', 'Starter', 'Battery'].some(t => formData.title.includes(t))) && (
-                <div className="grid grid-cols-2 gap-4 animate-fade-in">
-                    <input type="text" placeholder="Voltage" value={formData.voltage} onChange={(e) => setFormData({...formData, voltage: e.target.value})} className="w-full bg-charcoal border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-                    <input type="text" placeholder="Amperage" value={formData.amperage} onChange={(e) => setFormData({...formData, amperage: e.target.value})} className="w-full bg-charcoal border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-                </div>
-              )}
-              {(['Pump', 'Alternator', 'Compressor'].some(t => formData.title.includes(t))) && (
-                <select value={formData.pulley_type} onChange={(e) => setFormData({...formData, pulley_type: e.target.value})} className="w-full bg-charcoal border border-oil-dark rounded-lg p-3 text-sm text-base-cream animate-fade-in">
-                    <option value="">Select Pulley Type</option>
-                    <option value="serpentine">Serpentine</option>
-                    <option value="v-belt">V-Belt</option>
-                    <option value="cogged">Cogged</option>
-                </select>
-              )}
           </div>
-      )}
-
-      {/* Step 4: Vehicle Fitment */}
-      {currentStep === 4 && (
-        <div className="space-y-6">
-          <h4 className="text-sm font-display font-bold uppercase text-base-cream border-b border-oil-dark pb-2">Vehicle Fitment</h4>
-          <div className="grid grid-cols-2 gap-4">
-            <select value={formData.make} onChange={(e) => setFormData({...formData, make: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
-              <option value="">Make</option>
-              {/* Populate with actual makes */}
-            </select>
-            <select value={formData.model} onChange={(e) => setFormData({...formData, model: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
-              <option value="">Model</option>
-            </select>
-            <select value={formData.year} onChange={(e) => setFormData({...formData, year: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
-              <option value="">Year</option>
-            </select>
-            <input type="text" placeholder="VIN (Optional)" value={formData.vin} onChange={(e) => setFormData({...formData, vin: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-          </div>
-        </div>
-      )}
-
-      {/* Step 5: Pricing & Logistics */}
-      {currentStep === 5 && (
-        <div className="space-y-6">
-          <h4 className="text-sm font-display font-bold uppercase text-base-cream border-b border-oil-dark pb-2">Pricing & Logistics</h4>
-          
-          <div>
-            <label className="block text-xs uppercase font-display font-bold text-warm-gray mb-2">Condition</label>
-            <div className="flex flex-wrap gap-2">
-              {['New Old Stock', 'Excellent', 'Used OEM', 'For Parts'].map(cond => (
-                <button
-                  key={cond}
-                  onClick={() => setFormData({...formData, condition: cond})}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold uppercase ${formData.condition === cond ? 'bg-rust-copper text-steel-black' : 'bg-charcoal text-warm-gray border border-oil-dark'}`}
-                >
-                  {cond}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-             <input type="number" placeholder="Price (MXN)" value={formData.price_mxn} onChange={(e) => setFormData({...formData, price_mxn: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-             <input type="text" placeholder="Stock Number" value={formData.stock_number} onChange={(e) => setFormData({...formData, stock_number: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-          </div>
-          
-          <div className="p-4 bg-steel-black border border-rust-copper/20 rounded-lg">
-            <p className="text-[10px] text-warm-gray uppercase tracking-widest font-bold">Estimated USD Equivalent</p>
-            <span className="text-lg font-black text-rust-copper">${(Number(formData.price_mxn) / 20).toFixed(2)} USD</span>
-          </div>
-        </div>
       )}
 
       {/* Navigation Footer */}
