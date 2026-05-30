@@ -36,15 +36,10 @@ export default function AuthPage({ onSuccess, onCancel = () => {} }: AuthPagePro
     });
   }, []);
 
-  const [isSignUp, setIsSignUp] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('signup') === 'true' || params.get('mode') === 'signup';
-  });
+  const [searchParams] = useSearchParams();
+  const [isSignUp, setIsSignUp] = useState(searchParams.get('signup') === 'true' || searchParams.get('mode') === 'signup');
+  const [role, setRole] = useState<'buyer' | 'seller'>((searchParams.get('role') as 'buyer' | 'seller') || 'buyer');
 
-  const [role, setRole] = useState<'buyer' | 'seller'>(() => {
-    const params = new URLSearchParams(window.location.search);
-    return (params.get('role') as 'buyer' | 'seller') || 'buyer';
-  });
 
   // Fields state
   const [fullName, setFullName] = useState('');
