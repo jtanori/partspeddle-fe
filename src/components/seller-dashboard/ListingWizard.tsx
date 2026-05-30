@@ -122,16 +122,33 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
         </div>
       )}
 
-      {/* Step 2: Taxonomy */}
-      {currentStep === 2 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <select value={formData.system} onChange={(e) => setFormData({...formData, system: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
-                  <option value="">Select System</option>
-                  {Object.keys(SYSTEM_CATEGORIES).map(sys => <option key={sys} value={sys}>{sys}</option>)}
-              </select>
-              <input type="text" placeholder="Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
-          </div>
-      )}
+      const ConfidenceBadge = ({ score }: { score?: number }) => {
+        if (score === undefined) return null;
+        const isHigh = score >= 0.7;
+        return (
+          <span className={`ml-2 text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border ${isHigh ? 'text-sage-green bg-sage-green/10 border-sage-green/30' : 'text-rust-copper bg-rust-copper/10 border-rust-copper/30'}`}>
+            {Math.round(score * 100)}% Accuracy
+          </span>
+        );
+      };
+
+          {/* Step 2: Taxonomy */}
+          {currentStep === 2 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                      <h4 className="text-sm font-display font-bold uppercase text-base-cream">Taxonomy Selection</h4>
+                      <div className="relative">
+                        <select value={formData.system} onChange={(e) => setFormData({...formData, system: e.target.value, category: ''})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream">
+                            <option value="">Select System</option>
+                            {Object.keys(SYSTEM_CATEGORIES).map(sys => <option key={sys} value={sys}>{sys}</option>)}
+                        </select>
+                        {isAiVetted && aiResult?.confidence_scores && <ConfidenceBadge score={aiResult.confidence_scores.part_type_accuracy} />}
+                      </div>
+                      <input type="text" placeholder="Title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream" />
+                  </div>
+              </div>
+          )}
+
 
       {/* Step 3: Tech Specs */}
       {currentStep === 3 && (
