@@ -4,7 +4,7 @@ import { TrustBar } from './homepage/TrustBar';
 import { ListingsGrid } from './homepage/ListingsGrid';
 import { FeaturedSellers } from './homepage/FeaturedSellers';
 import { FinalCTA } from './homepage/FinalCTA';
-import { MOCK_PARTS } from '../services/db';
+import { supabase } from '../lib/supabase';
 import { Part } from '../types';
 
 export default function Homepage() {
@@ -12,9 +12,25 @@ export default function Homepage() {
   const [recentParts, setRecentParts] = useState<Part[]>([]);
 
   useEffect(() => {
-    // In a real app, these would be fetched from Supabase
-    setFeaturedParts(MOCK_PARTS.slice(0, 4));
-    setRecentParts(MOCK_PARTS.slice(4, 8));
+    const fetchParts = async () => {
+      // Fetch featured
+      const { data: featured } = await supabase
+        .from('parts')
+        .select('*')
+        .eq('featured', true)
+        .limit(4);
+      
+      // Fetch recent
+      const { data: recent } = await supabase
+        .from('parts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      setFeaturedParts(featured || []);
+      setRecentParts(recent || []);
+    };
+    fetchParts();
   }, []);
 
   return (
