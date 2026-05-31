@@ -23,9 +23,9 @@ interface AppState {
   logout: () => Promise<void>;
 
   // Consolidated Navigation Structure
-  activeSellerTab: 'listings' | 'settings' | 'snap'; // 'create' removed completely
+  activeSellerTab: 'listings' | 'inventory' | 'orders' | 'settings' | 'snap'; 
   pendingSnapImages: string[] | undefined;
-  setActiveSellerTab: (tab: 'listings' | 'settings' | 'snap') => void;
+  setActiveSellerTab: (tab: 'listings' | 'inventory' | 'orders' | 'settings' | 'snap') => void;
   setPendingSnapImages: (images: string[] | undefined) => void;
 
   // Search Framework
