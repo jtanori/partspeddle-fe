@@ -133,11 +133,11 @@ export default function SellerDashboard() {
             
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <span className="block font-display font-bold uppercase text-steel-black">{profile.name}</span>
-                <span className="block text-[10px] text-warm-gray font-bold uppercase tracking-widest">{profile.location}</span>
+                <span className="block font-display font-bold uppercase text-steel-black">{profile?.name || 'Loading...'}</span>
+                <span className="block text-[10px] text-warm-gray font-bold uppercase tracking-widest">{profile?.location || '...'}</span>
               </div>
               <div className="w-12 h-12 bg-oil-dark rounded-full overflow-hidden border-2 border-rust-copper shadow-sm">
-                {profile.logoUrl ? <img src={profile.logoUrl} className="w-full h-full object-cover" /> : <LayoutDashboard className="w-full h-full p-3 text-warm-gray" />}
+                {profile?.logoUrl ? <img src={profile.logoUrl} className="w-full h-full object-cover" /> : <LayoutDashboard className="w-full h-full p-3 text-warm-gray" />}
               </div>
             </div>
           </div>
