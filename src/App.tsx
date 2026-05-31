@@ -217,7 +217,7 @@ function AppContent() {
           } />
           <Route path="/detail/:id" element={<ProductDetailWrapper />} />
           <Route path="/auth" element={!user ? <AuthPage onSuccess={() => navigate('/dashboard', { replace: true })} onCancel={() => navigate('/', { replace: true })} /> : <Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={user ? <SellerDashboard /> : <Navigate to="/auth" replace />} />
+          <Route path="/dashboard/*" element={user ? <SellerDashboard /> : <Navigate to="/auth" replace />} />
           <Route path="/library" element={<ComponentLibrary />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
