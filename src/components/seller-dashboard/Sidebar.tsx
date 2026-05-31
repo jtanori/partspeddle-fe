@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
-import { LayoutDashboard, Package, PlusSquare, ShoppingBag, Settings, LogOut, ArrowLeftRight } from 'lucide-react';
+import { LayoutDashboard, Package, PlusSquare, ShoppingBag, Settings, LogOut, ArrowLeftRight, ChevronDown, ChevronRight } from 'lucide-react';
 
 export const SellerSidebar: React.FC = () => {
   const { logout } = useAppStore();
   const location = useLocation();
+  const [expandedItems, setExpandedItems] = useState<string[]>(['/dashboard/inventory']);
+
+  const toggleExpand = (href: string) => {
+    setExpandedItems(prev => prev.includes(href) ? prev.filter(h => h !== href) : [...prev, href]);
+  };
 
   const navItems = [
     { href: '/dashboard', label: 'OVERVIEW', icon: LayoutDashboard, exact: true },
-    { href: '/dashboard/inventory', label: 'INVENTORY', icon: Package },
+    { 
+      href: '/dashboard/inventory', 
+      label: 'INVENTORY', 
+      icon: Package,
+      children: [
+        { href: '/dashboard/inventory/active', label: 'ACTIVE LISTINGS' },
+        { href: '/dashboard/inventory/sold', label: 'SOLD' },
+        { href: '/dashboard/inventory/archived', label: 'ARCHIVED' }
+      ]
+    },
     { href: '/dashboard/create', label: 'CREATE LISTING', icon: PlusSquare },
     { href: '/dashboard/orders', label: 'ORDERS', icon: ShoppingBag },
     { href: '/dashboard/settings', label: 'YARD SETTINGS', icon: Settings },
@@ -48,23 +62,57 @@ export const SellerSidebar: React.FC = () => {
         <nav className="space-y-1">
           {navItems.map((tab) => {
             const Icon = tab.icon;
+            const isExpanded = expandedItems.includes(tab.href);
+            const hasChildren = !!tab.children;
             const isActive = tab.exact 
               ? location.pathname === tab.href 
               : location.pathname.startsWith(tab.href);
 
             return (
-              <Link
-                key={tab.id || tab.href}
-                to={tab.href}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 transition-all duration-150 border-l-2 ${
-                  isActive
-                    ? 'border-amber-500 text-amber-400 bg-amber-500/5 font-bold'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-zinc-500'}`} />
-                <span>{tab.label}</span>
-              </Link>
+              <div key={tab.href}>
+                <div className="flex items-center">
+                  <Link
+                    to={tab.href}
+                    className={`flex-1 flex items-center gap-3 px-3 py-2.5 transition-all duration-150 border-l-2 ${
+                      isActive
+                        ? 'border-amber-500 text-amber-400 bg-amber-500/5 font-bold'
+                        : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-zinc-500'}`} />
+                    <span>{tab.label}</span>
+                  </Link>
+                  {hasChildren && (
+                    <button 
+                      onClick={(e) => { e.preventDefault(); toggleExpand(tab.href); }}
+                      className="p-2 text-zinc-600 hover:text-amber-500 transition-colors"
+                    >
+                      {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                    </button>
+                  )}
+                </div>
+                
+                {hasChildren && isExpanded && (
+                  <div className="pl-10 pr-2 space-y-1 mt-1 border-l border-zinc-800 ml-5">
+                    {tab.children.map(child => {
+                      const isChildActive = location.pathname === child.href;
+                      return (
+                        <Link
+                          key={child.href}
+                          to={child.href}
+                          className={`block py-1.5 px-2 text-[10px] transition-colors ${
+                            isChildActive 
+                              ? 'text-amber-500 font-bold' 
+                              : 'text-zinc-500 hover:text-zinc-300'
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>

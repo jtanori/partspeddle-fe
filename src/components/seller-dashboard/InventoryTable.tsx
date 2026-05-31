@@ -4,7 +4,11 @@ import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import { Eye, Package } from 'lucide-react';
 
-export const InventoryTable: React.FC = () => {
+interface InventoryTableProps {
+  filter?: 'active' | 'sold' | 'archived';
+}
+
+export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
   const navigate = useNavigate();
   const { user } = useAppStore();
   const [parts, setParts] = useState<any[]>([]);
@@ -15,11 +19,16 @@ export const InventoryTable: React.FC = () => {
       if (!user || !user.id) return;
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from('parts')
           .select('*, offers(count)')
           .eq('seller_id', user.id);
         
+        if (filter) {
+            query = query.eq('status', filter);
+        }
+        
+        const { data, error } = await query;
         if (error) throw error;
         setParts(data || []);
       } catch (err: any) {
@@ -29,7 +38,7 @@ export const InventoryTable: React.FC = () => {
       }
     };
     loadInventory();
-  }, [user]);
+  }, [user, filter]);
 
   if (loading) {
     return (
@@ -45,10 +54,10 @@ export const InventoryTable: React.FC = () => {
       <div className="p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/30">
         <h3 className="font-sans font-black uppercase text-base-cream flex items-center gap-2 text-sm tracking-wider">
           <Package className="w-4 h-4 text-amber-500" />
-          Active Inventory Registry
+          {filter ? `${filter.toUpperCase()} INVENTORY` : 'Active Inventory Registry'}
         </h3>
         <span className="bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 rounded-sm text-[9px] font-bold uppercase tracking-widest font-mono">
-          {parts.length} Active Units
+          {parts.length} Units
         </span>
       </div>
 

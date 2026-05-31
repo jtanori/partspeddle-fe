@@ -41,6 +41,9 @@ export default function SellerDashboard() {
               <Routes>
                 <Route index element={<div className="p-12 text-center text-zinc-500 font-mono text-[10px] uppercase tracking-widest bg-zinc-900/30 border border-dashed border-zinc-800 rounded-sm shadow-inner">Yard Analytics Terminal Under Construction</div>} />
                 <Route path="inventory" element={<InventoryTable />} />
+                <Route path="inventory/active" element={<InventoryTable filter="active" />} />
+                <Route path="inventory/sold" element={<InventoryTable filter="sold" />} />
+                <Route path="inventory/archived" element={<InventoryTable filter="archived" />} />
                 <Route path="create" element={<ListingWizard onClose={() => setActiveSellerTab('listings')} />} />
                 <Route path="snap" element={<ListingWizard onClose={() => setActiveSellerTab('listings')} />} />
                 <Route path="settings" element={<SettingsForm />} />
