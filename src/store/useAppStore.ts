@@ -1,7 +1,16 @@
 import { create } from 'zustand';
 import { Part, Seller, CartItem, UserSession, SearchFilters } from '../types';
-import { cartMock } from '../services/db';
 import { supabase } from '../lib/supabase';
+
+// Helper for local cart persistence
+const getStoredCart = (): CartItem[] => {
+  try {
+    const saved = localStorage.getItem('parts_peddle_cart');
+    return saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    return [];
+  }
+};
 
 interface AppState {
   // Auth & User
@@ -92,18 +101,27 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCart: (cart) => set({ cart }),
   setIsCartOpen: (isCartOpen) => set({ isCartOpen }),
   setCheckoutSuccess: (checkoutSuccess) => set({ checkoutSuccess }),
-  addToCart: (part) => {
-    const updated = cartMock.addToCart(part);
-    set({ cart: [...updated], isCartOpen: true });
+  addToCart: (part: Part) => {
+    const cart = getStoredCart();
+    const existingIndex = cart.findIndex((item) => item.part.id === part.id);
+    if (existingIndex > -1) {
+      cart[existingIndex].quantity += 1;
+    } else {
+      cart.push({ part, quantity: 1 });
+    }
+    localStorage.setItem('parts_peddle_cart', JSON.stringify(cart));
+    set({ cart: [...cart], isCartOpen: true });
   },
-  removeFromCart: (partId) => {
-    const updated = cartMock.removeFromCart(partId);
-    set({ cart: [...updated] });
+  removeFromCart: (partId: string) => {
+    const cart = getStoredCart().filter((item) => item.part.id !== partId);
+    localStorage.setItem('parts_peddle_cart', JSON.stringify(cart));
+    set({ cart: [...cart] });
   },
   clearCart: () => {
-    cartMock.clearCart();
+    localStorage.removeItem('parts_peddle_cart');
     set({ cart: [] });
   },
+
 
   // UI Overlays
   isTourActive: !localStorage.getItem('parts_peddle_tour_done'),
