@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
-import { MOCK_SELLERS, MOCK_PARTS } from './db';
+import { MOCK_SELLERS } from './data/sellers';
+import { MOCK_PARTS } from './data/parts';
 
 // NOTE: For administrative seeding, ideally use the service_role key.
 // To avoid Multiple GoTrueClient instances, we leverage the singleton.
