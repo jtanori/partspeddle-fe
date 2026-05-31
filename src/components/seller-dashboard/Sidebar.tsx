@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { LayoutDashboard, Package, PlusSquare, ShoppingBag, Settings, LogOut, ArrowLeftRight, ChevronDown, ChevronRight } from 'lucide-react';
 // @ts-ignore
-import logoRustyImg from '../../assets/images/logo_rusty.png';
+import iconRustyImg from '../../assets/images/icon_rusty.png';
 
 export const SellerSidebar: React.FC = () => {
   const { logout } = useAppStore();
@@ -37,7 +37,7 @@ export const SellerSidebar: React.FC = () => {
         {/* Brand Anchor: Official Logo */}
         <Link to="/" className="flex items-center gap-3 px-2 py-1 group border-b border-dashed border-zinc-800 pb-6">
           <div className="w-10 h-10 shrink-0 flex items-center justify-center">
-            <img src={logoRustyImg} alt="PartsPeddle" className="w-full h-full object-contain" />
+            <img src={iconRustyImg} alt="PartsPeddle" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="font-sans font-black tracking-tighter text-sm text-neutral-100 leading-none group-hover:text-amber-400 transition-colors">
