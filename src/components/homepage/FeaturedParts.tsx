@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Heart, Cog, Compass, Disc, Zap, Car, Armchair } from 'lucide-react';
-import { MOCK_PARTS, MOCK_SELLERS } from '../../services/db';
 import { PARTS_FALLBACK_IMAGE } from '../../types';
-import { supabaseDb } from '../../services/supabase-db';
+import { supabase } from '../../lib/supabase';
 import { Part } from '../../types';
 
 const getSystemIcon = (sysName: string) => {
@@ -18,14 +17,6 @@ const getSystemIcon = (sysName: string) => {
   }
 };
 
-const partThumbnails: Record<string, string> = {
-  '1100428': 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=300',
-  '1100429': 'https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?auto=format&fit=crop&q=80&w=300',
-  '1100430': 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=300',
-  '1100431': 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&q=80&w=300',
-  '1100432': 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300'
-};
-
 export const FeaturedParts: React.FC = () => {
   const navigate = useNavigate();
   const [parts, setParts] = useState<Part[]>([]);
@@ -35,18 +26,16 @@ export const FeaturedParts: React.FC = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       setLoading(true);
-      try {
-        const results = await supabaseDb.searchListings({
-          query: '', system: '', category: '', partTypes: [], priceRange: [0, 10000],
-          conditions: [], sellerType: 'all', fitmentMake: 'All Makes', fitmentModel: 'All Models',
-          fitmentYear: 'All Years', fitmentEngine: 'All Engines', featured: true
-        });
-        setParts(results.length > 0 ? results : MOCK_PARTS.slice(0, 4));
-      } catch (e) {
-        setParts(MOCK_PARTS.slice(0, 4));
-      } finally {
-        setLoading(false);
+      const { data, error } = await supabase
+        .from('parts')
+        .select('*')
+        .eq('featured', true)
+        .limit(4);
+        
+      if (data) {
+        setParts(data as unknown as Part[]);
       }
+      setLoading(false);
     };
     fetchFeatured();
   }, []);
