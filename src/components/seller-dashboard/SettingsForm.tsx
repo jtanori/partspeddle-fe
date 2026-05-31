@@ -1,7 +1,97 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { User, MapPin, Mail, Phone, Camera, ShieldCheck, Check } from 'lucide-react';
+import { User, MapPin, Mail, Phone, Camera, ShieldCheck, Check, Upload, ImageIcon, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+
+export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialLogoUrl }) => {
+  const [logoUrl, setLogoUrl] = useState(initialLogoUrl || '');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active authentication window context detected.');
+
+      const uploadPayload = new FormData();
+      uploadPayload.append('logo', file);
+
+      const response = await fetch('/api/seller/upload-logo', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: uploadPayload,
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Upload error');
+
+      setLogoUrl(result.logoUrl);
+    } catch (err: any) {
+      setUploadError(err.message || 'Asset syncing pipeline broken.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return (
+    <div className="border border-zinc-800 bg-zinc-900/30 rounded-xl p-4 flex items-center gap-4 max-w-xl">
+      <div className="relative w-16 h-16 rounded-xl border border-zinc-800 bg-zinc-950 flex items-center justify-center overflow-hidden shrink-0 group">
+        {logoUrl ? (
+          <img src={logoUrl} alt="Yard Master Identity" className="w-full h-full object-cover" />
+        ) : (
+          <ImageIcon className="w-6 h-6 text-zinc-600" />
+        )}
+        
+        {isUploading && (
+          <div className="absolute inset-0 bg-zinc-950/80 flex items-center justify-center backdrop-blur-xs">
+            <Loader2 className="w-4 h-4 text-rust-copper animate-spin" />
+          </div>
+        )}
+      </div>
+
+      <div className="flex-1 space-y-1">
+        <label className="text-[11px] font-mono uppercase tracking-wider text-rust-copper font-bold block">
+          Corporate Identity Asset
+        </label>
+        <p className="text-xs text-zinc-400">
+          Upload your official commercial yard logo mark. JPG, PNG formats up to 5MB.
+        </p>
+        
+        {uploadError && (
+          <p className="text-[10px] text-red-400 font-mono mt-1">⚠️ {uploadError}</p>
+        )}
+
+        <div className="pt-1">
+          <input 
+            type="file" 
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/png, image/jpeg, image/webp" 
+            className="hidden" 
+          />
+          <button
+            type="button"
+            disabled={isUploading}
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-zinc-800 rounded bg-zinc-900 hover:bg-zinc-850 text-xs font-medium text-zinc-200 hover:text-white transition-all disabled:opacity-40"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            {logoUrl ? 'Replace Branding Logo' : 'Select Image File'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const SettingsForm: React.FC = () => {
   const { profile, setProfile } = useAppStore();
@@ -58,18 +148,7 @@ export const SettingsForm: React.FC = () => {
     <div className="bg-steel-black rounded-2xl shadow-sm border border-oil-dark overflow-hidden text-base-cream">
       <div className="bg-charcoal p-8 border-b border-oil-dark">
         <div className="flex items-center gap-6">
-          <div className="relative group">
-            <div className="w-24 h-24 bg-steel-black rounded-2xl flex items-center justify-center border-2 border-dashed border-oil-dark overflow-hidden transition-all group-hover:border-rust-copper">
-              {localProfile.logoUrl ? (
-                <img src={localProfile.logoUrl} className="w-full h-full object-cover" alt="Logo" />
-              ) : (
-                <Camera className="w-8 h-8 text-warm-gray group-hover:text-rust-copper" />
-              )}
-            </div>
-            <button className="absolute -bottom-2 -right-2 bg-rust-copper p-2 rounded-lg shadow-lg hover:scale-110 transition-transform">
-              <Camera className="w-4 h-4 text-steel-black" />
-            </button>
-          </div>
+          <LogoUploadZone initialLogoUrl={localProfile.logoUrl} />
           <div>
             <h2 className="text-2xl font-display font-black uppercase tracking-tight text-base-cream">{localProfile.name || 'Yard Profile'}</h2>
             <div className="flex items-center gap-2 mt-1">
