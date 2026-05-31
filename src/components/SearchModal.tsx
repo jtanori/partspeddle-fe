@@ -115,38 +115,28 @@ export default function SearchModal({
 
   // Compute live search results based on query and subsystem
   useEffect(() => {
-    const trimmed = query.toLowerCase().trim();
-    
-    if (trimmed.length > 0 && trimmed.length < 3) {
-      setMatchingParts([]);
-      return;
-    }
+    const fetchResults = async () => {
+      const trimmed = query.toLowerCase().trim();
+      
+      if (trimmed.length < 3 && !selectedSystem) {
+        setMatchingParts([]);
+        return;
+      }
 
-    if (trimmed.length >= 3 || selectedSystem) {
-      const results = MOCK_PARTS.filter((part) => {
-        const matchesSystem = selectedSystem 
-          ? part.system?.toLowerCase() === selectedSystem.toLowerCase()
-          : true;
+      let dbQuery = supabase.from('parts').select('*');
+      if (selectedSystem) dbQuery = dbQuery.eq('system', selectedSystem);
+      if (trimmed.length >= 3) dbQuery = dbQuery.textSearch('title', trimmed);
+      
+      const { data, error } = await dbQuery.limit(10);
+      if (data) {
+        setMatchingParts(data as unknown as Part[]);
+      } else {
+        setMatchingParts([]);
+      }
+    };
 
-        if (!matchesSystem) return false;
-
-        if (trimmed.length >= 3) {
-          const inTitle = part.title.toLowerCase().includes(trimmed);
-          const inSubtitle = part.subtitle.toLowerCase().includes(trimmed);
-          const inOem = part.oemPartNumber.toLowerCase().includes(trimmed);
-          const inPartType = part.partType.toLowerCase().includes(trimmed);
-          const inFits = part.fits.toLowerCase().includes(trimmed);
-          const inSystem = part.system.toLowerCase().includes(trimmed);
-          return inTitle || inSubtitle || inOem || inPartType || inFits || inSystem;
-        }
-
-        return true;
-      });
-
-      setMatchingParts(results);
-    } else {
-      setMatchingParts([]);
-    }
+    const debounceTimer = setTimeout(fetchResults, 300);
+    return () => clearTimeout(debounceTimer);
   }, [query, selectedSystem]);
 
   if (!isOpen) return null;
