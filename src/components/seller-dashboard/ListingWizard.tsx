@@ -142,7 +142,7 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   return (
     <div className="bg-charcoal border border-oil-dark rounded-2xl p-6 shadow-2xl text-base-cream font-sans max-h-[90vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-8 border-b border-oil-dark pb-4">
-        <h2 className="font-display text-lg font-black uppercase tracking-wider text-rust-copper">
+        <h2 className="font-display text-lg font-black uppercase tracking-wider text-rust-copper border-l-2 border-rust-copper pl-3">
           {mode === 'vehicle' ? 'Vehicle Listing' : 'Component Listing'} — Step {currentStep} of 5
         </h2>
         <button onClick={() => setMode('none')} className="text-warm-gray hover:text-base-cream"><X className="w-5 h-5" /></button>

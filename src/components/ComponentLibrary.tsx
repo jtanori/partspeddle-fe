@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Play, Volume2, Maximize, Star, Heart, CheckCircle2, ShieldCheck, Mail, SlidersHorizontal, ArrowRight, DollarSign, Lock, AlertTriangle, RefreshCw, Trash2, HelpCircle, Eye, FileText, Check, TrendingUp, Truck, Package, ShoppingCart, X, Database, Wrench, Hammer } from 'lucide-react';
-import { seedDatabase } from '../services/seed';
+// Removed deprecated import
+
 
 export default function ComponentLibrary() {
   const [toggleActive, setToggleActive] = useState(true);

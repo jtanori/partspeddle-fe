@@ -45,7 +45,7 @@ export default function SellerDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F0EB] flex">
+    <div className="min-h-screen bg-steel-black text-base-cream flex isolated-dashboard-context">
       {/* Sidebar - fixed top-16 to respect navbar */}
       <aside className="w-64 bg-charcoal text-base-cream flex flex-col fixed inset-y-0 top-16 border-r border-oil-dark">
         <nav className="flex-grow p-4 space-y-1 mt-6">
@@ -120,12 +120,8 @@ export default function SellerDashboard() {
           {/* Header */}
           <div className="flex items-end justify-between border-b-2 border-oil-dark pb-8">
             <div className="space-y-2">
-              <span className="text-rust-copper font-display font-bold uppercase tracking-widest text-sm">
-                {sidebarItems.find(i => i.id === activeSellerTab)?.label || 'Dashboard'}
-              </span>
-              <h1 className="text-4xl font-display font-black uppercase text-base-cream tracking-tight">
+              <h1 className="text-4xl font-display font-black uppercase text-base-cream tracking-tight border-l-4 border-rust-copper pl-4">
                 {activeSellerTab === 'listings' && "Yard Inventory"}
-                {activeSellerTab === 'create' && "Manual Listing Entry"}
                 {activeSellerTab === 'snap' && "Gemini AI Snap"}
                 {activeSellerTab === 'settings' && "Registry Settings"}
               </h1>

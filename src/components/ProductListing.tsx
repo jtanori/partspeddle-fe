@@ -28,8 +28,7 @@ import {
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MOCK_PARTS, MOCK_SELLERS, SYSTEMS_TAXONOMY } from '../services/db';
-import { supabaseDb } from '../services/supabase-db';
+import { SYSTEMS_TAXONOMY } from '../services/taxonomy';
 import { Part, SearchFilters, PartCondition, PARTS_FALLBACK_IMAGE } from '../types';
 
 const SYSTEMS_LIST = ['Powertrain', 'Suspension & Steering', 'Brake System', 'Electrical System', 'Body & Exterior', 'Interior'];

@@ -153,7 +153,7 @@ function AppContent() {
   const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className={`min-h-screen bg-base-cream text-steel-black flex flex-col justify-between font-sans relative antialiased leading-relaxed ${!isAuthPage ? 'pb-16 md:pb-0' : ''}`}>
+    <div className={`min-h-screen flex flex-col justify-between font-sans relative antialiased leading-relaxed ${isDashboard ? 'bg-steel-black text-base-cream' : 'bg-base-cream text-steel-black'} ${!isAuthPage ? 'pb-16 md:pb-0' : ''}`}>
       <ScrollToTop />
       
       {!isAuthPage && (

@@ -44,9 +44,9 @@ interface NavbarProps {
   profile: any;
   onOpenSupport: () => void;
   onOpenTour: () => void;
-  onSetSellerTab?: (tab: 'listings' | 'create' | 'settings' | 'snap') => void;
+  onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
   onSnapImagesUploaded?: (images: string[]) => void;
-  activeSellerTab?: 'listings' | 'create' | 'settings' | 'snap';
+  activeSellerTab?: 'listings' | 'settings' | 'snap';
 }
 
 export default function Navbar({
@@ -167,16 +167,16 @@ export default function Navbar({
       return {
         label: 'COMPLETE PROFILE',
         onClick: () => {
-          if (onSetSellerTab) onSetSellerTab('snap');
+          if (onSetSellerTab) onSetSellerTab('settings');
           onChangeView('listings');
-          showToast('Launching AI ID: Snap your parts to list instantly.');
+          showToast('Redirecting to registry settings terminal.');
         }
       };
     }
     return {
       label: 'ADD LISTING',
       onClick: () => {
-        if (onSetSellerTab) onSetSellerTab('create');
+        if (onSetSellerTab) onSetSellerTab('snap');
         onChangeView('listings');
         showToast('Specify core part details to post new salvage matching listing.');
       }
@@ -290,9 +290,12 @@ export default function Navbar({
           {/* Primary context-aware Amber CTA */}
           <button 
             onClick={cta.onClick}
-            className="h-[40px] flex items-center justify-center border border-[#4d3119] border-t-[#8e6e4f] border-b-[#24170d] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_-1px_3px_rgba(0,0,0,0.65),0_1px_2px_rgba(0,0,0,0.35)] text-base-cream/90 hover:text-base-cream rounded-md px-4 text-xs font-bold font-sans tracking-wide active:translate-y-[0.5px] cursor-pointer select-none whitespace-nowrap outline-none transition-all duration-150 relative overflow-hidden"
-            style={{
-              backgroundImage: `linear-gradient(to bottom, rgba(139, 98, 57, 0.95), rgba(92, 62, 33, 0.98)), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='brushed'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.12 0.03' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0 0 0 0'/%3E%3C/filter%3E%3Cfilter id='rust'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23brushed)' opacity='0.45'/%3E%3Crect width='100%25' height='100%25' filter='url(%23rust)' opacity='0.35' mix-blend-mode='color-burn'/%3E%3C/svg%3E")`,
+            className={cta.label === 'COMPLETE PROFILE' 
+              ? "h-[40px] flex items-center justify-center border border-rust-copper/40 text-rust-copper hover:bg-rust-copper/10 rounded-md px-4 text-xs font-bold font-sans tracking-wide active:translate-y-[0.5px] cursor-pointer transition-all duration-150 whitespace-nowrap"
+              : "h-[40px] flex items-center justify-center border border-[#4d3119] border-t-[#8e6e4f] border-b-[#24170d] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_-1px_3px_rgba(0,0,0,0.65),0_1px_2px_rgba(0,0,0,0.35)] text-base-cream/90 hover:text-base-cream rounded-md px-4 text-xs font-bold font-sans tracking-wide active:translate-y-[0.5px] cursor-pointer select-none whitespace-nowrap outline-none transition-all duration-150 relative overflow-hidden"
+            }
+            style={cta.label === 'COMPLETE PROFILE' ? {} : {
+              backgroundImage: `linear-gradient(to bottom, rgba(139, 98, 57, 0.95), rgba(92, 62, 33, 0.98)), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='brushed'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.12 0.03' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0 0 0 0'/%3E%3C/filter%3E%3Cfilter id='rust'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23brushed)' opacity='0.45'/%3E%3Crect width='100%25' height='100%25' filter='url(%23rust)' opacity='0.35' mix-blend-mode='color-burn'/%3E%3C/svg%3E")`,
               backgroundBlendMode: 'overlay',
             }}
           >
@@ -338,7 +341,7 @@ export default function Navbar({
             <div className="relative flex items-center" ref={userMenuRef}>
               <button 
                 onClick={handleAvatarClick}
-                className="flex items-center gap-1.5 p-1 transition-all focus:outline-none cursor-pointer font-sans"
+                className="flex items-center gap-2 p-1 transition-all focus:outline-none cursor-pointer font-sans"
                 id="btn-nav-user-menu"
                 title="Account menu"
               >
