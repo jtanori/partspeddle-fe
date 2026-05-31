@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Heart, Cog, Compass, Disc, Zap, Car, Armchair } from 'lucide-react';
-import { MOCK_PARTS } from '../../services/db';
-import { PARTS_FALLBACK_IMAGE } from '../../types';
-import { Part } from '../../types';
+import { PARTS_FALLBACK_IMAGE, Part } from '../../types';
+
 
 const getSystemIcon = (sysName: string) => {
   switch (sysName) {

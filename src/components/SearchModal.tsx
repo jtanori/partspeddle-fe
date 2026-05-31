@@ -15,7 +15,7 @@ import {
   Clock,
   Trash2
 } from 'lucide-react';
-import { MOCK_PARTS } from '../services/db';
+// ... imports
 import { Part, PARTS_FALLBACK_IMAGE } from '../types';
 
 interface SearchModalProps {
