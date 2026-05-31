@@ -12,6 +12,7 @@ const mapPartToPart = (row: any): Part => ({
   sellerId: row.seller_id,
   compatibility: row.compatibility || [],
   images: [], // Needs mapping from part_images table in a real query
+  fits: row.compatibility ? JSON.stringify(row.compatibility) : '', // Mapping compatibility to fits for UI compatibility
   description: row.description,
   brand: row.brand,
   model: row.model,

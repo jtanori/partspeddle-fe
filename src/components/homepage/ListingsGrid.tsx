@@ -49,7 +49,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({ title, subtitle, par
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 mb-16">
+    <section className="max-w-7xl mx-auto px-4 mb-16 pt-16">
       <div className="flex items-center justify-between mb-6">
         <div className="space-y-1">
           <h2 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#1E1E1E]">
@@ -68,14 +68,22 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({ title, subtitle, par
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {parts.map((part) => {
           const IconComp = getSystemIcon(part.system || 'Powertrain');
+          const hasImage = part.images && part.images.length > 0;
           return (
             <div
               key={part.id}
               onClick={() => navigate(`/detail/${part.id}`)}
               className="bg-white border border-stone-800/10 rounded shadow-sm hover:shadow-xl hover:border-[#B87333] transition-all flex flex-col justify-between cursor-pointer group"
             >
-              <div className="aspect-video relative overflow-hidden bg-zinc-900 rounded-t">
-                <img src={partThumbnails[part.id] || part.images[0] || PARTS_FALLBACK_IMAGE} alt={part.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 brightness-95" />
+              <div className="aspect-video relative overflow-hidden bg-zinc-900 rounded-t flex items-center justify-center">
+                {hasImage ? (
+                    <img src={partThumbnails[part.id] || part.images[0]} alt={part.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 brightness-95" />
+                ) : (
+                    <div className="flex flex-col items-center gap-2 opacity-50">
+                        <Cog className="w-12 h-12 text-white" />
+                        <span className="font-display text-white text-xs uppercase font-bold">PICTURES COMING SOON</span>
+                    </div>
+                )}
                 <button onClick={(e) => toggleFavorite(part.id, e)} className="absolute top-2 right-2 p-1.5 bg-[#FCFAF7]/85 backdrop-blur-xs rounded-full border border-stone-800/5 hover:text-red-500 transition-colors shadow">
                   <Heart className={`w-3.5 h-3.5 ${favorites.includes(part.id) ? 'fill-red-500 text-red-500' : 'text-zinc-500'}`} />
                 </button>
