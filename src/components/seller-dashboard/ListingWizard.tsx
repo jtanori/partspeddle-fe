@@ -32,17 +32,18 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   const [manifest, setManifest] = useState<Record<string, ManifestStatus>>({'Alternator': 'active', 'Starter': 'active'});
 
   const handleImageUpload = async (file: File) => {
+    if (!user) return;
     const compressedBlob = await compressImage(file);
     const compressedFile = new File([compressedBlob], file.name, { type: 'image/jpeg' });
     const fileExt = compressedFile.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${user.id}/${Math.random()}.${fileExt}`;
     
-    const { data, error } = await supabase.storage.from('listing-images').upload(fileName, compressedFile);
+    const { data, error } = await supabase.storage.from('yard-assets').upload(fileName, compressedFile);
     if (error) {
         console.error('Upload error:', error);
         return;
     }
-    const { data: publicUrlData } = supabase.storage.from('listing-images').getPublicUrl(fileName);
+    const { data: publicUrlData } = supabase.storage.from('yard-assets').getPublicUrl(fileName);
     setImages(prev => [...prev, publicUrlData.publicUrl]);
   };
 
