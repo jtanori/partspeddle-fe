@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { User, MapPin, Mail, Phone, Camera, ShieldCheck, Check } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -7,6 +7,19 @@ export const SettingsForm: React.FC = () => {
   const { profile, setProfile } = useAppStore();
   const [localProfile, setLocalProfile] = useState(profile);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  useEffect(() => {
+    if (profile) setLocalProfile(profile);
+  }, [profile]);
+
+  if (!localProfile) {
+    return (
+      <div className="bg-charcoal rounded-2xl shadow-sm border border-oil-dark p-20 flex flex-col items-center justify-center gap-4">
+        <div className="w-8 h-8 border-4 border-rust-copper border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-xs font-bold text-warm-gray uppercase tracking-widest">Hydrating Profile Terminal...</span>
+      </div>
+    );
+  }
 
   const handleSave = async () => {
     setSaveStatus('saving');
