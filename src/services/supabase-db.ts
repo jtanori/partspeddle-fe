@@ -4,19 +4,27 @@ import { Part, Seller, SearchFilters, Category } from '../types';
 // Helper to map snake_case DB rows to camelCase TS interfaces
 const mapPartToPart = (row: any): Part => ({
   id: row.id,
+  trackingNumber: row.tracking_number,
   title: row.title,
-  subtitle: `${row.brand || ''} ${row.model || ''} ${row.year || ''}`,
+  subtitle: row.subtitle,
   price: row.price_mxn / 20,
-  condition: row.status === 'draft' ? 'Used' : 'Excellent', // Placeholder
-  system: 'Powertrain', // Placeholder based on new schema
-  sellerId: row.seller_id,
-  compatibility: row.compatibility || [],
-  images: [], // Needs mapping from part_images table in a real query
-  fits: row.compatibility ? JSON.stringify(row.compatibility) : '', // Mapping compatibility to fits for UI compatibility
+  condition: row.condition as PartCondition,
+  system: row.system,
+  category: row.category,
+  partType: row.part_type,
+  oemPartNumber: row.oem_part_number,
+  interchangePartNumbers: row.interchange_part_numbers,
+  weight: row.weight,
+  images: row.images || [],
+  fits: row.fits,
   description: row.description,
   brand: row.brand,
   model: row.model,
   year: row.year,
+  sellerId: row.seller_id,
+  compatibility: row.compatibility || [],
+  mileage: row.mileage,
+  views: row.views,
 });
 
 const mapSellerToSeller = (row: any): Seller => ({
@@ -90,13 +98,13 @@ export const supabaseDb = {
   // Fetch single part by ID
   getPartById: async (id: string): Promise<Part | null> => {
     const { data, error } = await supabase
-      .from('listings')
+      .from('parts')
       .select('*')
       .eq('id', id)
       .single();
     
     if (error) return null;
-    return mapListingToPart(data);
+    return mapPartToPart(data);
   },
 
   // Fetch seller profile
