@@ -3,7 +3,7 @@ import {
   Play, Pause, Volume2, Maximize, X, ArrowRight, HelpCircle, 
   Search, Grid, Info, ShieldCheck, DollarSign
 } from 'lucide-react';
-import { TOUR_STEPS } from '../services/db';
+import { TOUR_STEPS } from '../services/data/tour';
 
 interface GuidedTourProps {
   onClose: () => void;
