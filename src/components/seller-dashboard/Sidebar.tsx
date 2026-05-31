@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { LayoutDashboard, Package, PlusSquare, ShoppingBag, Settings, LogOut, ArrowLeftRight, ChevronDown, ChevronRight } from 'lucide-react';
 // @ts-ignore
-import iconRustyImg from '../../assets/images/icon_rusty.png';
+import logoSolidImg from '../../assets/images/logo_solid.png';
 
 export const SellerSidebar: React.FC = () => {
   const { logout } = useAppStore();
@@ -34,19 +34,9 @@ export const SellerSidebar: React.FC = () => {
   return (
     <aside className="w-72 h-full flex flex-col justify-between border-r border-amber-500/10 p-4 shrink-0 bg-neutral-950 font-mono text-xs select-none shadow-panel relative z-20">
       <div className="space-y-8">
-        {/* Brand Anchor: Official Logo */}
-        <Link to="/" className="flex items-center gap-3 px-2 py-1 group border-b border-dashed border-zinc-800 pb-6">
-          <div className="w-10 h-10 shrink-0 flex items-center justify-center">
-            <img src={iconRustyImg} alt="PartsPeddle" className="w-full h-full object-contain" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-sans font-black tracking-tighter text-sm text-neutral-100 leading-none group-hover:text-amber-400 transition-colors">
-              PARTSPEDDLE
-            </span>
-            <span className="text-[9px] text-amber-500/60 uppercase tracking-widest mt-1 font-bold">
-              Terminal v1.4
-            </span>
-          </div>
+        {/* Brand Anchor: Official Solid Logo */}
+        <Link to="/" className="flex items-center px-2 py-4 group border-b border-dashed border-zinc-800 pb-6">
+          <img src={logoSolidImg} alt="PartsPeddle" className="w-full h-auto object-contain" />
         </Link>
 
         {/* Operational Context Tabs - Route Driven */}
