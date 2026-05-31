@@ -1,21 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '../../store/useAppStore';
-import { MOCK_SELLERS } from '../../services/db';
+import { supabase } from '../../lib/supabase';
 import { Star, MapPin, Award } from 'lucide-react';
-
-const SELLER_IMAGES = [
-  'https://images.unsplash.com/photo-1532585078488-03b0ff297fea?auto=format&fit=crop&q=80&w=300',
-  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=300',
-  'https://images.unsplash.com/photo-1517524006129-4a3a3eac48cd?auto=format&fit=crop&q=80&w=300',
-  'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=300',
-  'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=300',
-  'https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=300',
-  'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=300'
-];
+import { Seller } from '../../types';
 
 export const FeaturedSellers: React.FC = () => {
   const navigate = useNavigate();
+  const [sellers, setSellers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSellers = async () => {
+        const { data } = await supabase
+            .from('seller_profiles')
+            .select('*')
+            .order('rating', { ascending: false })
+            .limit(4);
+        
+        if (data) setSellers(data);
+    };
+    fetchSellers();
+  }, []);
 
   return (
     <section className="bg-zinc-100 py-20 px-4">
@@ -26,28 +30,28 @@ export const FeaturedSellers: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {MOCK_SELLERS.slice(0, 4).map((seller, idx) => (
+          {sellers.map((seller) => (
             <div key={seller.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-zinc-200 group">
               <div className="h-40 relative">
-                <img src={SELLER_IMAGES[idx]} alt={seller.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img src={seller.logo_url || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300'} alt={seller.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-duration-500" />
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg flex items-center gap-1">
                   <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span className="text-sm font-bold">{seller.rating}</span>
+                  <span className="text-sm font-bold">{seller.rating || '5.0'}</span>
                 </div>
               </div>
               <div className="p-6 space-y-4">
                 <div className="space-y-1">
-                  <h3 className="font-display font-bold text-lg uppercase text-zinc-900 line-clamp-1">{seller.name}</h3>
+                  <h3 className="font-display font-bold text-lg uppercase text-zinc-900 line-clamp-1">{seller.business_name}</h3>
                   <div className="flex items-center gap-1.5 text-zinc-500 text-sm">
                     <MapPin className="w-3.5 h-3.5" />
-                    <span>{seller.location}</span>
+                    <span>{seller.location || 'Local Yard'}</span>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
                   <div className="space-y-0.5">
                     <span className="block text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Specialty</span>
-                    <span className="text-xs font-semibold text-zinc-700">{seller.specialty}</span>
+                    <span className="text-xs font-semibold text-zinc-700">{seller.specialty || 'General Parts'}</span>
                   </div>
                   <Award className="w-6 h-6 text-[#B87333]/20" />
                 </div>
