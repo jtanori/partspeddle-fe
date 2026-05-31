@@ -156,7 +156,7 @@ function AppContent() {
     <div className={`min-h-screen flex flex-col justify-between font-sans relative antialiased leading-relaxed ${isDashboard ? 'bg-steel-black text-base-cream' : 'bg-base-cream text-steel-black'} ${!isAuthPage ? 'pb-16 md:pb-0' : ''}`}>
       <ScrollToTop />
       
-      {!isAuthPage && (
+      {!isAuthPage && !isDashboard && (
         <Navbar 
           currentView={location.pathname}
           onChangeView={(view) => {
