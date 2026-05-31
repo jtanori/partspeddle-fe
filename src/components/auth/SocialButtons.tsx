@@ -6,7 +6,7 @@ export const SocialButtons: React.FC<{ onSocialClick: (p: string) => void }> = (
       <button
         type="button"
         onClick={() => onSocialClick('Google')}
-        className="col-span-1 border border-zinc-250 bg-white rounded-lg flex justify-center items-center gap-2 px-3 text-xs font-display font-bold uppercase transition-all duration-300 hover:bg-zinc-50 cursor-pointer min-h-[44px] filter saturate-[0.75] contrast-[0.95] hover:saturate-[1.1] hover:contrast-100 text-zinc-600 hover:border-[#B87333]/40"
+        className="col-span-1 border border-zinc-250 bg-white rounded-sm flex justify-center items-center gap-2 px-3 text-xs font-display font-bold uppercase transition-all duration-300 hover:bg-zinc-50 cursor-pointer min-h-[44px] filter saturate-[0.75] contrast-[0.95] hover:saturate-[1.1] hover:contrast-100 text-zinc-600 hover:border-[#B87333]/40"
       >
         <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -20,7 +20,7 @@ export const SocialButtons: React.FC<{ onSocialClick: (p: string) => void }> = (
       <button
         type="button"
         onClick={() => onSocialClick('Facebook')}
-        className="col-span-1 border border-zinc-250 bg-white rounded-lg flex justify-center items-center gap-2 px-3 text-xs font-display font-bold uppercase transition-all duration-300 hover:bg-zinc-50 cursor-pointer min-h-[44px] filter saturate-[0.75] contrast-[0.95] hover:saturate-[1.1] hover:contrast-100 text-zinc-600 hover:border-[#B87333]/40"
+        className="col-span-1 border border-zinc-250 bg-white rounded-sm flex justify-center items-center gap-2 px-3 text-xs font-display font-bold uppercase transition-all duration-300 hover:bg-zinc-50 cursor-pointer min-h-[44px] filter saturate-[0.75] contrast-[0.95] hover:saturate-[1.1] hover:contrast-100 text-zinc-600 hover:border-[#B87333]/40"
       >
         <svg className="w-4 h-4 text-[#1877F2] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
           <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -31,7 +31,7 @@ export const SocialButtons: React.FC<{ onSocialClick: (p: string) => void }> = (
       <button
         type="button"
         onClick={() => onSocialClick('Apple')}
-        className="col-span-2 border border-zinc-250 bg-white rounded-lg flex justify-center items-center gap-2 px-3 text-xs font-display font-bold uppercase transition-all duration-300 hover:bg-zinc-50 cursor-pointer min-h-[44px] filter saturate-[0.75] contrast-[0.95] hover:saturate-[1.1] hover:contrast-100 text-zinc-650 hover:border-[#B87333]/40"
+        className="col-span-2 border border-zinc-250 bg-white rounded-sm flex justify-center items-center gap-2 px-3 text-xs font-display font-bold uppercase transition-all duration-300 hover:bg-zinc-50 cursor-pointer min-h-[44px] filter saturate-[0.75] contrast-[0.95] hover:saturate-[1.1] hover:contrast-100 text-zinc-650 hover:border-[#B87333]/40"
       >
         <svg className="w-4 h-4 text-black flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
           <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C4 16.5 3.5 10.5 6.1 7.37c1.32-1.34 2.83-1.4 3.65-.95 1.05.54 1.86.53 2.97 0 .82-.42 2.45-.63 3.68.64 1.25.96 1.9 2.22 1.55 3.97-.68 2.9-2.9 9.3-5.9 9.25zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.26 2.5-2.15 4.45-3.74 4.25z"/>

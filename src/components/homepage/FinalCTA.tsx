@@ -12,10 +12,10 @@ export const FinalCTA: React.FC = () => {
           Join thousands of mechanics and restorers sourcing authentic OEM parts directly from the source.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button className="w-full sm:w-auto bg-[#B87333] hover:bg-[#A35D1F] text-white px-10 py-4 rounded-xl font-display font-bold uppercase tracking-wide transition-all shadow-lg shadow-[#B87333]/20">
+          <button className="w-full sm:w-auto bg-[#B87333] hover:bg-[#A35D1F] text-white px-10 py-4 rounded-sm font-display font-bold uppercase tracking-wide transition-all shadow-lg shadow-[#B87333]/20">
             Start Searching
           </button>
-          <button className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-4 rounded-xl font-display font-bold uppercase tracking-wide transition-all">
+          <button className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-4 rounded-sm font-display font-bold uppercase tracking-wide transition-all">
             Yard Registry Signup
           </button>
         </div>

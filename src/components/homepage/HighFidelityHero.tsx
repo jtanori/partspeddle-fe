@@ -30,7 +30,7 @@ export const HighFidelityHero: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-zinc-950/75 backdrop-blur-md rounded-lg border border-zinc-900 p-5 shadow-2xl space-y-4 max-w-xl text-left">
+          <div className="bg-zinc-950/75 backdrop-blur-md rounded-sm border border-zinc-900 p-5 shadow-2xl space-y-4 max-w-xl text-left">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 divide-y sm:divide-y-0 sm:divide-x divide-zinc-800/80">
               {/* BUYERS */}
               <div className="space-y-2.5 pr-0 sm:pr-4">

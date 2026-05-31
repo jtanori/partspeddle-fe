@@ -62,11 +62,11 @@ export const supabaseDb = {
     return data;
   },
 
-  // Centralized Search & Filter Logic (Replacing algoliaMock)
+  // Centralized Search & Filter Logic
   searchParts: async (filters: SearchFilters): Promise<Part[]> => {
     let query = supabase
       .from('parts')
-      .select('*');
+      .select('id, title, subtitle, price_mxn, condition, system, category, part_type, oem_part_number, interchange_part_numbers, weight, images, fits, description, brand, model, year, seller_id, compatibility, mileage, views');
 
     // Text Search
     if (filters.query.trim()) {
@@ -75,19 +75,11 @@ export const supabaseDb = {
 
     // Part Types Filter
     if (filters.partTypes.length > 0) {
-      query = query.in('title', filters.partTypes); // Simplified mapping
+      query = query.in('title', filters.partTypes); 
     }
 
     // Price Range
     query = query.gte('price_mxn', filters.priceRange[0]).lte('price_mxn', filters.priceRange[1]);
-
-    // Fitment Filters
-    if (filters.fitmentMake && filters.fitmentMake !== 'All Makes') {
-      query = query.contains('compatibility', [{ make: filters.fitmentMake }]);
-    }
-    if (filters.fitmentModel && filters.fitmentModel !== 'All Models') {
-      query = query.contains('compatibility', [{ model: filters.fitmentModel }]);
-    }
 
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
@@ -99,7 +91,7 @@ export const supabaseDb = {
   getPartById: async (id: string): Promise<Part | null> => {
     const { data, error } = await supabase
       .from('parts')
-      .select('*')
+      .select('id, title, subtitle, price_mxn, condition, system, category, part_type, oem_part_number, interchange_part_numbers, weight, images, fits, description, brand, model, year, seller_id, compatibility, mileage, views')
       .eq('id', id)
       .single();
     
@@ -110,8 +102,8 @@ export const supabaseDb = {
   // Fetch seller profile
   getSellerById: async (id: string): Promise<Seller | null> => {
     const { data, error } = await supabase
-      .from('sellers')
-      .select('*')
+      .from('seller_profiles')
+      .select('id, business_name, location, specialty, logo_url, verification_status')
       .eq('id', id)
       .single();
     

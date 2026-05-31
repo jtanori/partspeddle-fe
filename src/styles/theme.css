@@ -1,0 +1,36 @@
+:root {
+  /* Core Shell */
+  --bg-sidebar: #111315;
+  --bg-canvas: #171a1e;
+  --bg-workspace: #1b2025;
+  --bg-surface: #1f252b;
+  --bg-elevated: #272d34;
+
+  /* Borders */
+  --border-subtle: #2a3037;
+  --border-default: #343a42;
+  --border-strong: #454d58;
+
+  /* Text */
+  --text-primary: #f3f4f6;
+  --text-secondary: #b7bec8;
+  --text-muted: #7b8592;
+
+  /* Brand */
+  --accent-amber: #f59e0b;
+  --accent-amber-hover: #fbbf24;
+  --accent-amber-soft: rgba(245, 158, 11, 0.12);
+
+  /* Status */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+
+  /* Elevation */
+  --shadow-panel: 0 8px 24px rgba(0,0,0,.35);
+  --shadow-elevated: 0 12px 32px rgba(0,0,0,.45);
+
+  /* Texture */
+  --grid-opacity: 0.02;
+}

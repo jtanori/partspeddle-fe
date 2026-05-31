@@ -102,7 +102,7 @@ export default function LiveSearchDropdown({
   return (
     <div 
       ref={containerRef}
-      className={`absolute left-0 right-0 top-full mt-1.5 bg-steel-black border border-oil-dark rounded-lg shadow-xl overflow-hidden z-[9900] flex flex-col text-base-cream ${className}`}
+      className={`absolute left-0 right-0 top-full mt-1.5 bg-steel-black border border-oil-dark rounded-sm shadow-xl overflow-hidden z-[9900] flex flex-col text-base-cream ${className}`}
     >
       {/* Header index info */}
       <div className="px-3.5 py-2 bg-charcoal border-b border-oil-dark flex items-center justify-between text-[10px] uppercase font-mono text-warm-gray select-none">

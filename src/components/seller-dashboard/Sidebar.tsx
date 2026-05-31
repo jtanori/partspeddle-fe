@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { LayoutDashboard, Package, PlusSquare, ShoppingBag, Settings, LogOut, ArrowLeftRight, ChevronDown, ChevronRight } from 'lucide-react';
+// @ts-ignore
+import logoRustyImg from '../../assets/images/logo_rusty.png';
 
 export const SellerSidebar: React.FC = () => {
   const { logout } = useAppStore();
@@ -30,36 +32,25 @@ export const SellerSidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 h-full flex flex-col justify-between border-r border-amber-500/10 p-4 shrink-0 bg-neutral-950 font-mono text-xs select-none">
-      <div className="space-y-6">
-        {/* Brand Anchor: Official Hexagonal 'P' Construction */}
-        <Link to="/" className="flex items-center gap-3 px-2 py-1 group border-b border-dashed border-zinc-800 pb-4">
-          <div className="w-9 h-9 shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 100 115" className="w-full h-full drop-shadow-[0_0_6px_rgba(245,158,11,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(245,158,11,0.6)] transition-all" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Perfect Hexagonal Boundary Shield */}
-              <polygon points="50,5 95,31.25 95,83.75 50,110 5,83.75 5,31.25" stroke="url(#amberGradient)" strokeWidth="8" strokeLinejoin="miter" />
-              {/* Sharp Technical Inner Custom "P" Character Grid */}
-              <path d="M35 30 H65 C75 30 75 48 65 48 H35 V85 M35 48 H60 C66 48 66 30 60 30" stroke="url(#amberGradient)" strokeWidth="8" strokeLinecap="square" strokeLinejoin="miter" />
-              <defs>
-                <linearGradient id="amberGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#fbbf24" />
-                  <stop offset="100%" stopColor="#f97316" />
-                </linearGradient>
-              </defs>
-            </svg>
+    <aside className="w-72 h-full flex flex-col justify-between border-r border-amber-500/10 p-4 shrink-0 bg-neutral-950 font-mono text-xs select-none shadow-panel relative z-20">
+      <div className="space-y-8">
+        {/* Brand Anchor: Official Logo */}
+        <Link to="/" className="flex items-center gap-3 px-2 py-1 group border-b border-dashed border-zinc-800 pb-6">
+          <div className="w-10 h-10 shrink-0 flex items-center justify-center">
+            <img src={logoRustyImg} alt="PartsPeddle" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="font-sans font-black tracking-tighter text-sm text-neutral-100 leading-none group-hover:text-amber-400 transition-colors">
               PARTSPEDDLE
             </span>
-            <span className="text-[9px] text-amber-500/60 uppercase tracking-widest mt-0.5 font-bold">
+            <span className="text-[9px] text-amber-500/60 uppercase tracking-widest mt-1 font-bold">
               Terminal v1.4
             </span>
           </div>
         </Link>
 
         {/* Operational Context Tabs - Route Driven */}
-        <nav className="space-y-1">
+        <nav className="space-y-1.5">
           {navItems.map((tab) => {
             const Icon = tab.icon;
             const isExpanded = expandedItems.includes(tab.href);
@@ -73,19 +64,19 @@ export const SellerSidebar: React.FC = () => {
                 <div className="flex items-center">
                   <Link
                     to={tab.href}
-                    className={`flex-1 flex items-center gap-3 px-3 py-2.5 transition-all duration-150 border-l-2 ${
+                    className={`flex-1 flex items-center gap-3 px-3 py-2.5 transition-all duration-150 border-l-2 rounded-sm ${
                       isActive
                         ? 'border-amber-500 text-amber-400 bg-amber-500/5 font-bold'
                         : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50'
                     }`}
                   >
                     <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-zinc-500'}`} />
-                    <span>{tab.label}</span>
+                    <span className="font-heading">{tab.label}</span>
                   </Link>
                   {hasChildren && (
                     <button 
                       onClick={(e) => { e.preventDefault(); toggleExpand(tab.href); }}
-                      className="p-2 text-zinc-600 hover:text-amber-500 transition-colors"
+                      className="p-2 text-text-muted hover:text-accent-amber transition-colors"
                     >
                       {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                     </button>
@@ -93,17 +84,17 @@ export const SellerSidebar: React.FC = () => {
                 </div>
                 
                 {hasChildren && isExpanded && (
-                  <div className="pl-10 pr-2 space-y-1 mt-1 border-l border-zinc-800 ml-5">
+                  <div className="pl-10 pr-2 space-y-1 mt-1 border-l border-border-subtle ml-5">
                     {tab.children.map(child => {
                       const isChildActive = location.pathname === child.href;
                       return (
                         <Link
                           key={child.href}
                           to={child.href}
-                          className={`block py-1.5 px-2 text-[10px] transition-colors ${
+                          className={`block py-1.5 px-2 text-[10px] transition-colors font-mono ${
                             isChildActive 
-                              ? 'text-amber-500 font-bold' 
-                              : 'text-zinc-500 hover:text-zinc-300'
+                              ? 'text-accent-amber font-bold' 
+                              : 'text-text-muted hover:text-text-secondary'
                           }`}
                         >
                           {child.label}
@@ -119,18 +110,18 @@ export const SellerSidebar: React.FC = () => {
       </div>
 
       {/* High-Visibility Exit / Portal Controls */}
-      <div className="border-t border-dashed border-zinc-800 pt-4 space-y-1">
+      <div className="border-t border-dashed border-zinc-800 pt-6 space-y-1">
         <Link
           to="/listing"
           className="flex items-center gap-3 px-3 py-2.5 rounded-sm border border-amber-500/20 bg-amber-500/5 text-amber-400 font-bold hover:bg-amber-500/10 transition-all shadow-[0_0_8px_rgba(245,158,11,0.05)]"
         >
           <ArrowLeftRight className="w-4 h-4 text-amber-400" />
-          <span className="tracking-wide uppercase">PUBLIC MARKETPLACE</span>
+          <span className="tracking-wide uppercase font-heading">PUBLIC MARKETPLACE</span>
         </Link>
         
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-red-400/80 hover:text-red-400 hover:bg-red-950/20 transition-all text-left"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-red-400/80 hover:text-red-400 hover:bg-red-950/20 transition-all text-left font-mono rounded-sm"
         >
           <LogOut className="w-4 h-4 text-red-500/60" />
           <span className="uppercase">SIGN OUT TERMINAL</span>

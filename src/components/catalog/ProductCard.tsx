@@ -49,7 +49,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ part, viewMode, onSele
       onClick={() => onSelect(part.id)}
       className="bg-white border border-rust-copper/15 rounded-[8px] p-4 flex flex-row gap-6 items-center cursor-pointer hover:border-rust-copper transition-all duration-200 animate-fade-in shadow-[0_2px_8px_rgba(0,0,0,0.08)] w-full group"
     >
-      <div className="w-48 aspect-video relative overflow-hidden bg-[#2D2D2D] rounded-lg shrink-0 flex items-center justify-center">
+      <div className="w-48 aspect-video relative overflow-hidden bg-[#2D2D2D] rounded-sm shrink-0 flex items-center justify-center">
         {part.images && part.images.length > 0 ? (
             <img src={part.images[0]} alt={part.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         ) : (

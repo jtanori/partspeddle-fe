@@ -32,7 +32,7 @@ export const AuthFooter: React.FC<AuthFooterProps> = ({ onCancel, onNotice }) =>
       </div>
 
       {/* Mobile Vertical stack */}
-      <div className="md:hidden w-full flex flex-col divide-y divide-zinc-200/40 border border-zinc-200/60 rounded-xl overflow-hidden bg-zinc-50/50 text-xs font-bold tracking-wide uppercase text-zinc-600 select-none">
+      <div className="md:hidden w-full flex flex-col divide-y divide-zinc-200/40 border border-zinc-200/60 rounded-sm overflow-hidden bg-zinc-50/50 text-xs font-bold tracking-wide uppercase text-zinc-600 select-none">
         {links.map((link) => (
           <button 
             key={link.label}

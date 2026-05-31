@@ -31,10 +31,10 @@ export const FeaturedSellers: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {sellers.map((seller) => (
-            <div key={seller.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-zinc-200 group">
+            <div key={seller.id} className="bg-white rounded-sm overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-zinc-200 group">
               <div className="h-40 relative">
                 <img src={seller.logo_url || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300'} alt={seller.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-duration-500" />
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg flex items-center gap-1">
+                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-sm flex items-center gap-1">
                   <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                   <span className="text-sm font-bold">{seller.rating || '5.0'}</span>
                 </div>
@@ -58,7 +58,7 @@ export const FeaturedSellers: React.FC = () => {
 
                 <button 
                   onClick={() => navigate('/listing')}
-                  className="w-full py-2.5 rounded-lg border-2 border-zinc-900 text-zinc-900 font-display font-bold uppercase text-xs hover:bg-zinc-900 hover:text-white transition-all"
+                  className="w-full py-2.5 rounded-sm border-2 border-zinc-900 text-zinc-900 font-display font-bold uppercase text-xs hover:bg-zinc-900 hover:text-white transition-all"
                 >
                   View Inventory
                 </button>

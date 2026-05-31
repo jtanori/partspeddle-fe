@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Initialize Admin Client (Bypass RLS safely on server)
 const supabaseAdmin = createClient(
   process.env.VITE_SUPABASE_URL || "",
   process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || ""
@@ -16,7 +17,7 @@ async function startServer() {
   const app = express();
   const PORT = parseInt(process.env.PORT || '3000');
 
-  // Middleware
+  // Middleware for large AI/Image payloads
   app.use(express.json({ limit: '10mb' }));
 
   app.get("/api/health", (req, res) => {
@@ -35,6 +36,9 @@ async function startServer() {
     return ai;
   };
 
+  /**
+   * AI Identification Pipeline (Gemini 2.0 Flash)
+   */
   app.post("/api/gemini/identify", async (req, res) => {
     try {
       const { images, image, mode } = req.body;
@@ -58,10 +62,7 @@ async function startServer() {
         }
 
         return {
-          inlineData: {
-            mimeType,
-            data: base64Data,
-          },
+          inlineData: { mimeType, data: base64Data },
         };
       });
 
@@ -121,7 +122,7 @@ async function startServer() {
       };
 
       const model = gemini.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.0-flash",
         generationConfig: {
           responseMimeType: "application/json",
           responseSchema: validationSchema,
@@ -138,31 +139,67 @@ async function startServer() {
     }
   });
 
-  // Express implementation of logo upload
-  app.post("/api/seller/upload-logo", async (req, res) => {
+  /**
+   * Secure Profile Update Pipeline
+   */
+  app.post("/api/seller/profile", async (req, res) => {
     try {
       const authHeader = req.headers.authorization;
-      if (!authHeader) return res.status(401).json({ error: 'Missing credentials.' });
+      if (!authHeader) return res.status(401).json({ error: 'Missing authorization context.' });
       
       const token = authHeader.replace('Bearer ', '');
       const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-      if (authError || !user) return res.status(401).json({ error: 'Unauthorized user context.' });
-
-      // Note: For simplicity in Express without multer, we expect base64 in body for now, 
-      // or we can use a raw parser. But to match the blueprint's fetch call, 
-      // we'd ideally use a multipart parser.
-      // For this demo, let's assume JSON with base64 'logo' field if not using a library.
-      // But the frontend uses FormData.
       
-      // I'll add a simple check. If we want true multipart, I'd need multer.
-      // Since I can't install new packages easily, I'll use a trick or ask for JSON.
-      // Actually, I can use a raw body parser for the stream.
-      
-      res.status(501).json({ error: "Multipart upload requires additional server configuration (e.g. multer)." });
+      if (authError || !user) return res.status(401).json({ error: 'Unauthorized session window.' });
 
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      const { yardName, whatsappNumber, location, email } = req.body;
+
+      // XSS & Markup Sanitization
+      const sanitizedName = yardName?.replace(/<\/?[^>]+(>|$)/g, "") || 'Unnamed Yard';
+
+      // Atomic update across users and seller_profiles
+      const { error: userError } = await supabaseAdmin
+        .from('users')
+        .update({ email, full_name: sanitizedName })
+        .eq('id', user.id);
+      
+      if (userError) throw userError;
+
+      const { data, error: sellerError } = await supabaseAdmin
+        .from('seller_profiles')
+        .update({ 
+          business_name: sanitizedName, 
+          location, 
+          whatsapp: whatsappNumber,
+          updated_at: new Date().toISOString() 
+        })
+        .eq('user_id', user.id)
+        .select('*')
+        .single();
+
+      if (sellerError) throw sellerError;
+
+      return res.json({
+        success: true,
+        profile: {
+          id: data.id,
+          name: data.business_name,
+          location: data.location,
+          whatsapp: data.whatsapp,
+          email: email,
+          status: data.verification_status
+        }
+      });
+
+    } catch (error: any) {
+      console.error('🚨 Core System Failure:', error.message);
+      return res.status(500).json({ error: 'Internal server synchronization error.' });
     }
+  });
+
+  // Placeholder for Logo Upload (Requires multipart middleware like multer)
+  app.post("/api/seller/upload-logo", async (req, res) => {
+    res.status(501).json({ error: "Multipart upload requires additional server configuration (e.g. multer)." });
   });
 
   if (process.env.NODE_ENV !== "production") {

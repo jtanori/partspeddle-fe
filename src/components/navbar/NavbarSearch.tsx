@@ -45,7 +45,7 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({
             setIsDropdownOpen(true);
           }}
           onFocus={() => setIsDropdownOpen(true)}
-          className="w-full bg-charcoal border border-oil-dark rounded-lg px-3 py-2 text-sm text-base-cream placeholder-warm-gray focus:outline-none focus:border-rust-copper focus:ring-1 focus:ring-rust-copper/50 transition-all font-sans font-medium h-[40px]"
+          className="w-full bg-charcoal border border-oil-dark rounded-sm px-3 py-2 text-sm text-base-cream placeholder-warm-gray focus:outline-none focus:border-rust-copper focus:ring-1 focus:ring-rust-copper/50 transition-all font-sans font-medium h-[40px]"
           id="input-nav-search"
         />
         <button 

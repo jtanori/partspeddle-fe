@@ -67,10 +67,10 @@ export const HeroSection: React.FC = () => {
             onChange={(e) => setSearchQueryText(e.target.value)}
             onFocus={() => setSearchModalOpen(true)}
             placeholder="Search by Part Name, OEM #, or Year/Make/Model..."
-            className="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white p-6 pl-14 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all text-lg"
+            className="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white p-6 pl-14 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all text-lg"
           />
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#B87333] w-6 h-6" />
-          <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#B87333] hover:bg-[#A35D1F] text-white px-8 py-3 rounded-lg font-display font-bold uppercase transition-colors">
+          <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#B87333] hover:bg-[#A35D1F] text-white px-8 py-3 rounded-sm font-display font-bold uppercase transition-colors">
             Find Part
           </button>
         </form>
