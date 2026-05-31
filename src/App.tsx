@@ -91,6 +91,7 @@ function AppContent() {
 
         if (session) {
           setUser({
+            id: session.user.id,
             email: session.user.email || null,
             jwt: session.access_token,
             aud: session.user.aud,
@@ -115,6 +116,7 @@ function AppContent() {
       if (!isMounted) return;
       
       setUser(session?.user ? {
+        id: session.user.id,
         email: session.user.email || null,
         jwt: session.access_token,
         aud: session.user.aud,

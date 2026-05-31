@@ -106,6 +106,7 @@ export interface TourStep {
 }
 
 export interface UserSession {
+  id: string;
   email: string | null;
   jwt: string | null;
   aud: string;
