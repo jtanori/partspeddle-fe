@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { Part, Seller, CartItem, UserSession, SearchFilters } from '../types';
 import { supabase } from '../lib/supabase';
 
-// Helper for local cart persistence
+// Helper for live local cart persistence
 const getStoredCart = (): CartItem[] => {
   try {
     const saved = localStorage.getItem('parts_peddle_cart');
@@ -13,28 +13,28 @@ const getStoredCart = (): CartItem[] => {
 };
 
 interface AppState {
-  // Auth & User
+  // Auth & User System
   user: UserSession | null;
   userRole: 'buyer' | 'seller';
-  profile: any;
+  profile: any | null; // Starts clean, hydrated securely from database
   setUser: (user: UserSession | null) => void;
   setUserRole: (role: 'buyer' | 'seller') => void;
   setProfile: (profile: any) => void;
   logout: () => Promise<void>;
 
-  // Navigation
-  activeSellerTab: 'listings' | 'create' | 'settings' | 'snap';
+  // Consolidated Navigation Structure
+  activeSellerTab: 'listings' | 'settings' | 'snap'; // 'create' removed completely
   pendingSnapImages: string[] | undefined;
-  setActiveSellerTab: (tab: 'listings' | 'create' | 'settings' | 'snap') => void;
+  setActiveSellerTab: (tab: 'listings' | 'settings' | 'snap') => void;
   setPendingSnapImages: (images: string[] | undefined) => void;
 
-  // Search & Catalog
+  // Search Framework
   searchQueryText: string;
   searchCategory: string;
   setSearchQueryText: (text: string) => void;
   setSearchCategory: (category: string) => void;
 
-  // Cart
+  // Shopping Cart Engine
   cart: CartItem[];
   isCartOpen: boolean;
   checkoutSuccess: boolean;
@@ -45,7 +45,7 @@ interface AppState {
   removeFromCart: (partId: string) => void;
   clearCart: () => void;
 
-  // UI Overlays
+  // Global UX Context Overlays
   isTourActive: boolean;
   highlightedElement: string | undefined;
   infoModalType: 'about' | 'privacy' | 'terms' | 'contact' | null;
@@ -57,45 +57,37 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  // Auth & User
+  // Auth & User Lifecycle Initializers
   user: null,
   userRole: (localStorage.getItem('parts_peddle_user_role') as 'buyer' | 'seller') || 'buyer',
-  profile: (() => {
-    const saved = localStorage.getItem('parts_peddle_seller_profile');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { }
-    }
-    return { name: 'Unnamed Yard', email: '', location: '', whatsapp: '', logoUrl: '', verificationStatus: 'unverified' };
-  })(),
+  profile: null, // Zero client-side placeholders. Await Supabase hook hydration.
+  
   setUser: (user) => set({ user }),
   setUserRole: (role) => {
     localStorage.setItem('parts_peddle_user_role', role);
     set({ userRole: role });
   },
-  setProfile: (profile) => {
-    localStorage.setItem('parts_peddle_seller_profile', JSON.stringify(profile));
-    set({ profile });
-  },
+  setProfile: (profile) => set({ profile }),
   logout: async () => {
     await supabase.auth.signOut();
-    set({ user: null, userRole: 'buyer' });
+    set({ user: null, userRole: 'buyer', profile: null });
     localStorage.setItem('parts_peddle_user_role', 'buyer');
   },
 
-  // Navigation
+  // Navigation Initialization
   activeSellerTab: 'listings',
   pendingSnapImages: undefined,
   setActiveSellerTab: (tab) => set({ activeSellerTab: tab }),
   setPendingSnapImages: (images) => set({ pendingSnapImages: images }),
 
-  // Search
+  // Catalog Discovery Sync
   searchQueryText: '',
   searchCategory: 'All Parts',
   setSearchQueryText: (searchQueryText) => set({ searchQueryText }),
   setSearchCategory: (searchCategory) => set({ searchCategory }),
 
-  // Cart
-  cart: cartMock.getCart(),
+  // Cart Management - Evicted cartMock dependency completely
+  cart: getStoredCart(), // Direct local state hydration fix
   isCartOpen: false,
   checkoutSuccess: false,
   setCart: (cart) => set({ cart }),
@@ -122,8 +114,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ cart: [] });
   },
 
-
-  // UI Overlays
+  // UI Flow Control Tokens
   isTourActive: !localStorage.getItem('parts_peddle_tour_done'),
   highlightedElement: undefined,
   infoModalType: null,
