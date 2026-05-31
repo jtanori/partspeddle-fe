@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Heart, CheckCircle2, ShieldCheck, Mail, SlidersHorizontal, ArrowRight, DollarSign, Lock, AlertTriangle, RefreshCw, Send, X } from 'lucide-react';
-import { MOCK_SELLERS, MOCK_PARTS, offersMock } from '../services/db';
-import { supabaseDb } from '../services/supabase-db';
+import { supabase } from '../lib/supabase';
 import { Part, Seller, Offer, PARTS_FALLBACK_IMAGE } from '../types';
 import { NegotiationModal } from './catalog/detail/NegotiationModal';
 
@@ -31,12 +30,40 @@ export default function ProductDetail({ partId, onBack, onAddToCart, onSelectPar
     const loadData = async () => {
       setLoading(true);
       try {
-        const partData = await supabaseDb.getPartById(partId);
+        // Fetch part
+        const { data: partData, error: partError } = await supabase
+          .from('parts')
+          .select('*')
+          .eq('id', partId)
+          .single();
+        
+        if (partError) throw partError;
+
         if (isCurrentFetch && partData) {
-          setPart(partData);
-          setOfferPrice(Math.round(partData.price * 0.85));
-          const sellerData = await supabaseDb.getSellerById(partData.sellerId);
-          if (isCurrentFetch) setSeller(sellerData);
+          const partAsPart = partData as unknown as Part;
+          setPart(partAsPart);
+          setOfferPrice(Math.round(partAsPart.price * 0.85));
+          
+          // Fetch seller
+          const { data: sellerData, error: sellerError } = await supabase
+            .from('seller_profiles')
+            .select('*')
+            .eq('id', partAsPart.sellerId)
+            .single();
+            
+          if (isCurrentFetch && sellerData) {
+             setSeller({
+                id: sellerData.id,
+                name: sellerData.business_name,
+                rating: 4.8, // Mocked rating until schema added
+                reviewCount: 0,
+                location: sellerData.location || 'Unknown',
+                partCount: 0,
+                feedbackPercentage: 100,
+                shipsWithin: '1 business day',
+                returnPolicy: '30 Day Returns'
+             });
+          }
         }
       } catch (err) {
         console.error('Failed to load part detail:', err);
