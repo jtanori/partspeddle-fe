@@ -12,7 +12,7 @@ export const DashboardHeader: React.FC = () => {
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
         <input
           type="text"
-          placeholder="Search yard resources, inventory database or VIN indexes..."
+          placeholder="Search parts, donor vehicles, or VIN..."
           className="w-full h-10 bg-shell-surface border border-border-default rounded-sm pl-9 pr-4 text-text-secondary placeholder-text-muted focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 text-xs font-mono transition-all"
         />
       </div>
@@ -28,7 +28,7 @@ export const DashboardHeader: React.FC = () => {
           </div>
           <div className="flex items-center gap-1.5 justify-end text-[10px] text-text-muted mt-1 font-mono">
             <MapPin className="w-3 h-3 text-text-muted/60" />
-            <span>{profile?.location || 'Operational Base Unset'}</span>
+            <span>{profile?.location || 'No Yard Selected'}</span>
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-success ml-1 animate-pulse shadow-[0_0_8px_var(--color-success)]" />
           </div>
         </div>

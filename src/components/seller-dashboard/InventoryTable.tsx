@@ -82,11 +82,12 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
         <table className="w-full text-left border-collapse font-mono text-[11px]">
           <thead>
             <tr className="bg-shell-canvas/30 border-b border-border-subtle">
-              <th className="px-8 py-5 uppercase font-bold text-text-muted tracking-widest">Part Identity</th>
-              <th className="px-8 py-5 uppercase font-bold text-text-muted tracking-widest">Market Value</th>
-              <th className="px-8 py-5 uppercase font-bold text-text-muted tracking-widest">Performance Telemetry</th>
-              <th className="px-8 py-5 uppercase font-bold text-text-muted tracking-widest text-right">Operational Access</th>
+              <th className="px-6 py-4 uppercase font-bold text-text-muted tracking-widest">PART DETAILS</th>
+              <th className="px-6 py-4 uppercase font-bold text-text-muted tracking-widest">LISTING PRICE</th>
+              <th className="px-6 py-4 uppercase font-bold text-text-muted tracking-widest">LISTING PERFORMANCE</th>
+              <th className="px-6 py-4 uppercase font-bold text-text-muted tracking-widest text-right">ACTIONS</th>
             </tr>
+
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {parts.map((part) => (

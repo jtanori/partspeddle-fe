@@ -114,7 +114,7 @@ export const SellerSidebar: React.FC = () => {
           className="w-full flex items-center gap-3 px-3 py-2.5 text-red-400/80 hover:text-red-400 hover:bg-red-950/20 transition-all text-left font-mono rounded-sm"
         >
           <LogOut className="w-4 h-4 text-red-500/60" />
-          <span className="uppercase">SIGN OUT TERMINAL</span>
+          <span className="uppercase">SIGN OUT</span>
         </button>
       </div>
     </aside>
