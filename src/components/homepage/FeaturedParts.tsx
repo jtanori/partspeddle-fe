@@ -80,7 +80,7 @@ export const FeaturedParts: React.FC = () => {
               className="w-[82%] sm:w-full flex-shrink-0 sm:flex-shrink snap-start bg-white border border-stone-800/10 rounded shadow-sm hover:shadow-xl hover:border-[#B87333] transition-all flex flex-col justify-between cursor-pointer group"
             >
               <div className="aspect-video relative overflow-hidden bg-zinc-900 rounded-t">
-                <img src={partThumbnails[part.id] || part.images[0] || PARTS_FALLBACK_IMAGE} alt={part.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 brightness-95" />
+                <img src={part.images?.[0] || PARTS_FALLBACK_IMAGE} alt={part.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 brightness-95" />
                 <button onClick={(e) => toggleFavorite(part.id, e)} className="absolute top-2 right-2 p-1.5 bg-[#FCFAF7]/85 backdrop-blur-xs rounded-full border border-stone-800/5 hover:text-red-500 transition-colors shadow">
                   <Heart className={`w-3.5 h-3.5 ${favorites.includes(part.id) ? 'fill-red-500 text-red-500' : 'text-zinc-500'}`} />
                 </button>
