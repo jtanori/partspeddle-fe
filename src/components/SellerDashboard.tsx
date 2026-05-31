@@ -13,7 +13,7 @@ export default function SellerDashboard() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-shell-canvas text-text-primary dashboard-shell font-sans">
-      {/* Sidebar - Persistent technical panel */}
+      {/* Sidebar - Viewport Locked */}
       <SellerSidebar />
 
       {/* Main Viewport Container */}
@@ -22,22 +22,23 @@ export default function SellerDashboard() {
         <DashboardHeader />
 
         {/* Dynamic Context Workspace Panel - Route Driven */}
-        <main className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-shell-workspace scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-6 bg-shell-workspace custom-scrollbar scroll-smooth">
           <div className="max-w-7xl mx-auto">
             {/* Header Area - Compressed & Route Aware */}
-            <div className="mb-10">
+            <div className="mb-6">
               <h1 className="text-3xl font-heading font-black uppercase text-text-primary tracking-tight border-l-4 border-accent-amber pl-6">
-                {location.pathname === '/dashboard' && "Operational Overview"}
-                {location.pathname === '/dashboard/inventory' && "Active Yard Inventory"}
-                {location.pathname === '/dashboard/inventory/active' && "Active Listings Registry"}
-                {location.pathname === '/dashboard/inventory/sold' && "Sold Parts Archive"}
-                {location.pathname === '/dashboard/inventory/archived' && "Archived Parts Bin"}
-                {location.pathname === '/dashboard/create' && "Manual Intake Terminal"}
-                {location.pathname === '/dashboard/snap' && "AI Vision Intake"}
-                {location.pathname === '/dashboard/settings' && "Registry Parameters"}
-                {location.pathname === '/dashboard/orders' && "Active Bids & Orders"}
+                {location.pathname === '/dashboard' && "OPERATIONAL OVERVIEW"}
+                {location.pathname === '/dashboard/inventory' && "ACTIVE YARD INVENTORY"}
+                {location.pathname === '/dashboard/inventory/active' && "ACTIVE LISTINGS REGISTRY"}
+                {location.pathname === '/dashboard/inventory/sold' && "SOLD PARTS ARCHIVE"}
+                {location.pathname === '/dashboard/inventory/archived' && "ARCHIVED PARTS BIN"}
+                {location.pathname === '/dashboard/create' && "MANUAL INTAKE TERMINAL"}
+                {location.pathname === '/dashboard/snap' && "AI VISION INTAKE"}
+                {location.pathname === '/dashboard/settings' && "REGISTRY PARAMETERS"}
+                {location.pathname === '/dashboard/orders' && "ACTIVE BIDS & ORDERS"}
               </h1>
             </div>
+
 
             {/* Sub-Route Rendering */}
             <div className="animate-fade-in">

@@ -32,7 +32,7 @@ export const SellerSidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-72 h-full flex flex-col justify-between border-r border-amber-500/10 p-4 shrink-0 bg-neutral-950 font-mono text-xs select-none shadow-panel relative z-20">
+    <aside className="w-72 h-full flex flex-col justify-between border-r border-border-default p-4 shrink-0 bg-shell-sidebar font-mono text-xs select-none shadow-panel relative z-20">
       <div className="space-y-8">
         {/* Brand Anchor: Official Solid Logo */}
         <Link to="/" className="flex items-center px-2 py-4 group border-b border-dashed border-zinc-800 pb-6">

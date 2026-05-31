@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Inter", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
   --font-heading: "Inter Tight", "Rajdhani", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-display: "Oswald", sans-serif;
@@ -30,13 +30,13 @@
   --color-accent-amber-hover: #fbbf24;
   --color-accent-amber-soft: rgba(245, 158, 11, 0.12);
 
-  --shadow-panel: 0 8px 24px rgba(0,0,0,.35);
-  --shadow-elevated: 0 12px 32px rgba(0,0,0,.45);
-
-  --color-rust-copper: #B87333;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  --shadow-panel: 0 8px 24px rgba(0,0,0,.35);
+  --shadow-elevated: 0 12px 32px rgba(0,0,0,.45);
 
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -80,24 +80,11 @@
   }
 }
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --border: oklch(0.922 0 0);
-  --radius: 0.625rem;
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-}
-
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border-default outline-accent-amber/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-shell-canvas text-text-primary;
   }
 }
