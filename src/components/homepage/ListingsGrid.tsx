@@ -103,7 +103,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({ title, subtitle, par
 
                 <div className="border-t border-[#1A1A1A]/10 pt-3 flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-display font-black text-xl text-[#1E1E1E] leading-none">${part.price.toFixed(2)}</span>
+                    <span className="font-display font-black text-xl text-[#1E1E1E] leading-none">${(part.price || 0).toFixed(2)}</span>
                     <span className="font-sans text-[11px] text-zinc-700 font-bold tracking-tight">Verified Yard ★ 4.8</span>
                   </div>
                 </div>

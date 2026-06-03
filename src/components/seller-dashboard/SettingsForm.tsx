@@ -106,7 +106,7 @@ export const SettingsForm: React.FC = () => {
     return (
       <div className="terminal-panel p-24 flex flex-col items-center justify-center gap-6">
         <div className="w-10 h-10 border-4 border-accent-amber/20 border-t-accent-amber rounded-full animate-spin"></div>
-        <span className="text-xs font-heading font-black text-text-muted uppercase tracking-[0.25em]">Hydrating Profile Terminal...</span>
+        <span className="text-xs font-heading font-black text-text-muted uppercase tracking-[0.25em]">Loading profile settings...</span>
       </div>
     );
   }

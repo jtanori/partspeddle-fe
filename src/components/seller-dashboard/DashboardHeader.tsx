@@ -1,49 +1,41 @@
 import React from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { Search, Building2, MapPin } from 'lucide-react';
+import { Search, Building2 } from 'lucide-react';
 
-export const DashboardHeader: React.FC = () => {
+interface DashboardHeaderProps {
+  onToggleYardControl: () => void;
+}
+
+export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleYardControl }) => {
   const { profile } = useAppStore();
 
   return (
-    <header className="h-[72px] border-b border-border-default bg-shell-canvas px-8 flex items-center justify-between shrink-0 font-mono text-xs shadow-panel relative z-10">
-      {/* Central Input Search Context */}
-      <div className="relative w-[420px]">
+    <header className="h-16 w-full bg-shell-elevated border-b border-border-default px-6 flex justify-between items-center z-40">
+      {/* Global Search */}
+      <div className="relative w-full max-w-[420px]">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
         <input
           type="text"
-          placeholder="Search parts, donor vehicles, or VIN..."
-          className="w-full h-10 bg-shell-surface border border-border-default rounded-sm pl-9 pr-4 text-text-secondary placeholder-text-muted focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/20 text-xs font-mono transition-all"
+          placeholder="Search parts, vehicles, or VIN..."
+          className="w-full h-10 bg-shell-surface border border-border-default rounded-sm pl-9 pr-4 text-text-secondary placeholder-text-muted focus:outline-none focus:border-accent-amber/50 text-xs font-mono transition-all"
         />
       </div>
 
-      {/* Business Identity Node Workspace */}
-      <div className="flex items-center gap-6 h-full">
-        <div className="text-right flex flex-col justify-center border-r border-border-subtle pr-6 py-2">
-          <div className="flex items-center gap-1.5 justify-end">
-            <Building2 className="w-3.5 h-3.5 text-accent-amber/70" />
-            <span className="text-text-primary font-heading font-black tracking-tight text-xs uppercase">
-              {profile?.name || 'Unnamed Recovery Yard'}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 justify-end text-[10px] text-text-muted mt-1 font-mono">
-            <MapPin className="w-3 h-3 text-text-muted/60" />
-            <span>{profile?.location || 'No Yard Selected'}</span>
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-success ml-1 animate-pulse shadow-[0_0_8px_var(--color-success)]" />
-          </div>
+      {/* Operator Command Gate Trigger */}
+      <button 
+        onClick={onToggleYardControl}
+        className="flex items-center gap-3 pl-4 pr-2 py-1.5 border border-border-muted bg-shell-hex/50 hover:border-accent-amber/40 transition-all text-left focus:outline-none group"
+      >
+        <div className="flex flex-col">
+          <span className="text-[10px] text-text-muted uppercase tracking-wider font-mono">Active Registry</span>
+          <span className="text-xs font-bold text-text-primary group-hover:text-accent-amber transition-colors">
+            {profile?.name || "UNASSIGNED RECOVERY DISPATCH"}
+          </span>
         </div>
-
-        {/* Dynamic Corporate Logo Profile Node */}
-        <div className="w-9 h-9 rounded-sm border border-border-strong bg-shell-surface flex items-center justify-center overflow-hidden shrink-0 shadow-panel group cursor-pointer hover:border-accent-amber/40 transition-colors">
-          {profile?.logoUrl ? (
-            <img src={profile.logoUrl} alt="Active Corporate Anchor" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
-          ) : (
-            <span className="text-[10px] font-black text-accent-amber bg-accent-amber/10 w-full h-full flex items-center justify-center">
-              {profile?.name ? profile.name.substring(0, 2).toUpperCase() : 'OP'}
-            </span>
-          )}
+        <div className="h-8 w-8 rounded-sm bg-accent-amber/10 border border-accent-amber/30 flex items-center justify-center text-accent-amber text-xs font-bold font-mono">
+          {profile?.name ? profile.name.substring(0, 2).toUpperCase() : 'OP'}
         </div>
-      </div>
+      </button>
     </header>
   );
 };

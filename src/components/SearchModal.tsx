@@ -128,7 +128,11 @@ export default function SearchModal({
       if (trimmed.length >= 3) dbQuery = dbQuery.textSearch('title', trimmed);
       
       const { data, error } = await dbQuery.limit(10);
-      if (data) {
+
+      if (error) {
+        console.error('Search query error:', error);
+        setMatchingParts([]);
+      } else if (data) {
         setMatchingParts(data as unknown as Part[]);
       } else {
         setMatchingParts([]);
