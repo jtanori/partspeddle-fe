@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
 import { Star, MapPin, Award } from 'lucide-react';
+import { supabaseDb } from '../../services/supabase-db';
 import { Seller } from '../../types';
 
 export const FeaturedSellers: React.FC = () => {
   const navigate = useNavigate();
-  const [sellers, setSellers] = useState<any[]>([]);
+  const [sellers, setSellers] = useState<Seller[]>([]);
 
   useEffect(() => {
     const fetchSellers = async () => {
-        const { data } = await supabase
-            .from('seller_profiles')
-            .select('*')
-            .order('rating', { ascending: false })
-            .limit(4);
-        
-        if (data) setSellers(data);
+        try {
+            const data = await supabaseDb.getTopSellers();
+            setSellers(data || []);
+        } catch (err) {
+            console.error('Error fetching featured sellers:', err);
+        }
     };
     fetchSellers();
   }, []);
+
 
   return (
     <section className="bg-zinc-100 py-20 px-4">
@@ -34,20 +34,20 @@ export const FeaturedSellers: React.FC = () => {
             {sellers.map((seller) => (
               <div key={seller.id} className="bg-white rounded-sm overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-zinc-200 group">
                 <div className="h-40 relative">
-                  <img src={seller.logo_url || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300'} alt={seller.business_name} className="w-full h-full object-cover group-hover:scale-105 transition-duration-500" />
+                  <img src={seller.logoUrl || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300'} alt={seller.businessName} className="w-full h-full object-cover group-hover:scale-105 transition-duration-500" />
                   <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-sm flex items-center gap-1">
                     <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                     <span className="text-sm font-bold">{seller.rating || '5.0'}</span>
                   </div>
                 </div>
                 <div className="p-6 space-y-4">
-                  <div className="space-y-1">
-                    <h3 className="font-display font-bold text-lg uppercase text-zinc-900 line-clamp-1">{seller.business_name}</h3>
-                    <div className="flex items-center gap-1.5 text-zinc-500 text-sm">
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>{seller.location || 'Local Yard'}</span>
-                    </div>
+                <div className="space-y-1">
+                  <h3 className="font-display font-bold text-lg uppercase text-zinc-900 line-clamp-1">{seller.businessName || seller.name}</h3>
+                  <div className="flex items-center gap-1.5 text-zinc-500 text-sm">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>{seller.location || 'Local Yard'}</span>
                   </div>
+                </div>
 
                   <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
                     <div className="space-y-0.5">

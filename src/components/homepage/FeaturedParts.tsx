@@ -2,20 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Heart, Cog, Compass, Disc, Zap, Car, Armchair } from 'lucide-react';
 import { PARTS_FALLBACK_IMAGE } from '../../types';
-import { supabase } from '../../lib/supabase';
+import { supabaseDb } from '../../services/supabase-db';
 import { Part } from '../../types';
 
-const getSystemIcon = (sysName: string) => {
-  switch (sysName) {
-    case 'Powertrain': return Cog;
-    case 'Suspension & Steering': return Compass;
-    case 'Brake System': return Disc;
-    case 'Electrical System': return Zap;
-    case 'Body & Exterior': return Car;
-    case 'Interior': return Armchair;
-    default: return Cog;
-  }
-};
+// ... (getSystemIcon stays)
 
 export const FeaturedParts: React.FC = () => {
   const navigate = useNavigate();
@@ -26,16 +16,14 @@ export const FeaturedParts: React.FC = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('parts')
-        .select('*')
-        .eq('featured', true)
-        .limit(4);
-        
-      if (data) {
-        setParts(data as unknown as Part[]);
+      try {
+      const data = await supabaseDb.getFeaturedParts(8);
+      setParts(data || []);
+      } catch (err) {
+        console.error('Error fetching featured parts:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchFeatured();
   }, []);

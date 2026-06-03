@@ -7,6 +7,8 @@ export type PartCondition = 'Excellent' | 'OEM Original' | 'Good' | 'Used OEM' |
 export interface Seller {
   id: string;
   name: string;
+  businessName?: string;
+  logoUrl?: string;
   rating: number;
   reviewCount: number;
   location: string;

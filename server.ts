@@ -24,6 +24,40 @@ async function startServer() {
     res.json({ status: "ok", message: "PartsPeddle Core API online" });
   });
 
+  // Featured Parts
+  app.get("/api/parts/featured", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string || '4', 10);
+      const { data, error } = await supabaseAdmin
+        .from('parts')
+        .select('id, title, description, price_mxn, status, created_at, part_images(url)')
+        .eq('status', 'available')
+        .limit(limit);
+      
+      if (error) throw error;
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Top Sellers
+  app.get("/api/sellers/top", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string || '4', 10);
+      const { data, error } = await supabaseAdmin
+        .from('seller_profiles')
+        .select('id, business_name, location, whatsapp, verification_status, created_at, users(avatar_url)')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      
+      if (error) throw error;
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // Lazy Gemini initialization
   let ai: GoogleGenAI | null = null;
   const getGemini = () => {
@@ -210,7 +244,14 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: "spa",
     });
-    app.use(vite.middlewares);
+    // Skip Vite middleware for API routes to prevent hijacking
+    app.use((req, res, next) => {
+      if (req.path.startsWith('/api/')) {
+        next();
+      } else {
+        vite.middlewares(req, res, next);
+      }
+    });
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));

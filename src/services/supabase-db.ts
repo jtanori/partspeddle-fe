@@ -15,7 +15,7 @@ const mapPartToPart = (row: any): Part => ({
   oemPartNumber: row.oem_part_number,
   interchangePartNumbers: row.interchange_part_numbers,
   weight: row.weight,
-  images: row.images || [],
+  images: row.part_images?.map((img: any) => img.url) || [],
   fits: row.fits,
   description: row.description,
   brand: row.brand,
@@ -29,15 +29,17 @@ const mapPartToPart = (row: any): Part => ({
 
 const mapSellerToSeller = (row: any): Seller => ({
   id: row.id,
-  name: row.name,
-  rating: parseFloat(row.rating),
-  reviewCount: row.review_count,
+  name: row.business_name,
+  businessName: row.business_name,
+  logoUrl: row.users?.avatar_url,
+  rating: row.rating ? parseFloat(row.rating) : 5.0,
+  reviewCount: row.review_count || 0,
   location: row.location,
   specialty: row.specialty,
-  partCount: row.part_count,
-  feedbackPercentage: row.feedback_percentage,
-  shipsWithin: row.ships_within,
-  returnPolicy: row.return_policy,
+  partCount: row.part_count || 0,
+  feedbackPercentage: row.feedback_percentage || 100,
+  shipsWithin: row.ships_within || '24h',
+  returnPolicy: row.return_policy || 'Standard',
 });
 
 export const supabaseDb = {
@@ -66,7 +68,8 @@ export const supabaseDb = {
   searchParts: async (filters: SearchFilters): Promise<Part[]> => {
     let query = supabase
       .from('parts')
-      .select('id, title, subtitle, price_mxn, condition, system, category, part_type, oem_part_number, interchange_part_numbers, weight, images, fits, description, brand, model, year, seller_id, compatibility, mileage, views');
+      .select('id, title, subtitle, price_mxn, condition, system, category, part_type, oem_part_number, interchange_part_numbers, weight, images, fits, description, brand, model, year, seller_id, compatibility, mileage, views')
+      .eq('status', 'available'); // Only available parts
 
     // Text Search
     if (filters.query.trim()) {
@@ -85,6 +88,20 @@ export const supabaseDb = {
     if (error) throw error;
 
     return (data || []).map(mapPartToPart);
+  },
+
+  getFeaturedParts: async (limit: number = 4): Promise<Part[]> => {
+    const response = await fetch(`/api/parts/featured?limit=${limit}`);
+    if (!response.ok) throw new Error('Failed to fetch featured parts');
+    const data = await response.json();
+    return (data || []).map(mapPartToPart);
+  },
+
+  getTopSellers: async (limit: number = 4) => {
+    const response = await fetch(`/api/sellers/top?limit=${limit}`);
+    if (!response.ok) throw new Error('Failed to fetch top sellers');
+    const data = await response.json();
+    return (data || []).map(mapSellerToSeller);
   },
 
   // Fetch single part by ID

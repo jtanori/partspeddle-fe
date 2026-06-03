@@ -39,13 +39,15 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({ title, subtitle, par
     setFavorites(prev => prev.includes(partId) ? prev.filter(id => id !== partId) : [...prev, partId]);
   };
 
-  const getConditionColor = (cond: string) => {
-    const c = cond.toLowerCase();
+  const getConditionColor = (cond?: string) => {
+    const c = (cond || 'unknown').toLowerCase();
     if (c.includes('new') || c.includes('original')) return 'bg-[#B87333] text-white font-bold';
     if (c.includes('excellent')) return 'bg-[#7A8B6F] text-white font-bold';
     if (c.includes('good')) return 'bg-[#C4A882] text-zinc-900 font-bold';
     return 'bg-[#8B6239] text-white font-semibold';
   };
+
+  if (!parts || parts.length === 0) return null;
 
   return (
     <section className="max-w-7xl mx-auto px-4 mb-16 pt-16">
@@ -76,7 +78,14 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({ title, subtitle, par
             >
               <div className="aspect-video relative overflow-hidden bg-zinc-900 rounded-t flex items-center justify-center">
                 {hasImage ? (
-                    <img src={partThumbnails[part.id] || part.images[0]} alt={part.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 brightness-95" />
+                    <img 
+                      src={partThumbnails[part.id] || part.images[0]} 
+                      alt={part.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 brightness-95" 
+                      onError={(e) => {
+                        e.currentTarget.src = PARTS_FALLBACK_IMAGE;
+                      }}
+                    />
                 ) : (
                     <div className="flex flex-col items-center gap-2 opacity-50">
                         <Cog className="w-12 h-12 text-white" />
