@@ -66,27 +66,16 @@ export const supabaseDb = {
 
   // Centralized Search & Filter Logic
   searchParts: async (filters: SearchFilters): Promise<Part[]> => {
-    let query = supabase
-      .from('parts')
-      .select('id, title, subtitle, price_mxn, condition, system, category, part_type, oem_part_number, interchange_part_numbers, weight, images, fits, description, brand, model, year, seller_id, compatibility, mileage, views')
-      .eq('status', 'available'); // Only available parts
-
-    // Text Search
-    if (filters.query.trim()) {
-      query = query.or(`title.ilike.%${filters.query}%,description.ilike.%${filters.query}%`);
+    const response = await fetch(`/api/parts/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(filters)
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to search parts');
     }
-
-    // Part Types Filter
-    if (filters.partTypes.length > 0) {
-      query = query.in('title', filters.partTypes); 
-    }
-
-    // Price Range
-    query = query.gte('price_mxn', filters.priceRange[0]).lte('price_mxn', filters.priceRange[1]);
-
-    const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) throw error;
-
+    const data = await response.json();
     return (data || []).map(mapPartToPart);
   },
 
@@ -108,7 +97,7 @@ export const supabaseDb = {
   getPartById: async (id: string): Promise<Part | null> => {
     const { data, error } = await supabase
       .from('parts')
-      .select('id, title, subtitle, price_mxn, condition, system, category, part_type, oem_part_number, interchange_part_numbers, weight, images, fits, description, brand, model, year, seller_id, compatibility, mileage, views')
+      .select('id, title, price_mxn, part_images(url), description, created_at, status')
       .eq('id', id)
       .single();
     

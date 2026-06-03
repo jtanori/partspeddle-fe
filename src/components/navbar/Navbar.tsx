@@ -20,7 +20,6 @@ import {
 import { UserSession } from '../../types';
 import { NavbarSearch } from './NavbarSearch';
 import { UserRolePanel } from './shared/UserRolePanel';
-import { UserMenuDrawer } from './shared/UserMenuDrawer';
 import LiveSearchDropdown from './LiveSearchDropdown';
 import BottomTabBar from './BottomTabBar';
 // @ts-ignore
@@ -512,16 +511,6 @@ export default function Navbar({
           )}
 
           {/* User Menu Drawer for Mobile/Tablet */}
-          <UserMenuDrawer 
-            isOpen={isUserMenuDrawerOpen}
-            onClose={() => setIsUserMenuDrawerOpen(false)}
-            user={{ email: user?.email || '', name: profile?.name }}
-            profile={profile}
-            onChangeView={onChangeView}
-            onSetSellerTab={onSetSellerTab}
-            onLogout={onLogout}
-          />
-
         </div>
       </div>      {/* Slide-In Mobile Navigation Drawer (Right Side Drawer) - For Non-Auth Users */}
       {isMobileDrawerOpen && !user && (

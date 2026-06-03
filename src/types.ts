@@ -115,6 +115,27 @@ export interface UserSession {
   role: string;
 }
 
+export interface NavbarProps {
+  currentView: string;
+  onChangeView: (view: string) => void;
+  onSearchSubmit: (text: string) => void;
+  cartCount: number;
+  user: UserSession | null;
+  onLogout: () => void;
+  onOpenCart: () => void;
+  onOpenSearchModal?: (initialQuery?: string) => void;
+  searchTextValue?: string;
+  onSelectPart?: (partId: string) => void;
+  userRole: 'buyer' | 'seller';
+  onChangeUserRole: (role: 'buyer' | 'seller') => void;
+  profile: any;
+  onOpenSupport: () => void;
+  onOpenTour: () => void;
+  onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
+  onSnapImagesUploaded?: (images: string[]) => void;
+  activeSellerTab?: 'listings' | 'settings' | 'snap';
+}
+
 export interface AIAnalysisResult {
   is_valid_vehicle?: boolean;
   completeness_grade?: 'A' | 'B' | 'C' | 'D' | 'F';

@@ -30,6 +30,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/s
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SYSTEMS_TAXONOMY } from '../services/taxonomy';
 import { Part, SearchFilters, PartCondition, PARTS_FALLBACK_IMAGE } from '../types';
+import { supabaseDb } from '../services/supabase-db';
+import { ProductSidebar } from './ProductSidebar';
 
 const SYSTEMS_LIST = ['Powertrain', 'Suspension & Steering', 'Brake System', 'Electrical System', 'Body & Exterior', 'Interior'];
 
@@ -252,16 +254,22 @@ export default function ProductListing({
   }, [filters.system, filters.category]);
 
   // Compute live parts counts for drill-down tree
-  const getSystemPartCount = (sysName: string) => {
-    return '-';
+  const getSystemPartCount = (sysName: string) => matchingParts.filter(p => p.system === sysName).length.toString();
+  const getConditionCount = (cond: PartCondition) => matchingParts.filter(p => p.condition === cond).length;
+  const getSellerTypeCount = (type: 'all' | 'trusted') => {
+      if (type === 'trusted') return matchingParts.filter(p => {
+          // This would require seller data in part, assuming we can get it from MOCK_SELLERS or part data
+          return true; // Simplified placeholder
+      }).length;
+      return matchingParts.length;
   };
 
   const getSubsystemPartCount = (sysName: string, subName: string) => {
-    return '-';
+    return matchingParts.filter(p => p.system === sysName && p.category === subName).length.toString();
   };
 
   const getPartTypePartCount = (sysName: string, subName: string, typeName: string) => {
-    return '-';
+    return matchingParts.filter(p => p.system === sysName && p.category === subName && p.partType === typeName).length.toString();
   };
 
   // Fitment unique vectors extraction
@@ -1172,7 +1180,21 @@ export default function ProductListing({
             <SheetContent side="left" className="bg-[#1A1A1A] border-r border-[#8B6239]/30 p-0">
               <SheetTitle className="sr-only">Filters</SheetTitle>
               <ScrollArea className="h-[calc(100vh-20px)] p-6">
-                {renderMainFilterContent(true)}
+                <ProductSidebar 
+                   filters={filters}
+                   clearAllFilters={clearAllFilters}
+                   toggleSection={toggleSection}
+                   collapsedSections={collapsedSections}
+                   sortBy={sortBy}
+                   setSortBy={setSortBy}
+                   getSystemPartCount={getSystemPartCount}
+                   getConditionCount={getConditionCount}
+                   getSellerTypeCount={getSellerTypeCount}
+                   togglePartType={togglePartType}
+                   toggleCondition={toggleCondition}
+                   handlePriceChange={handlePriceChange}
+                   setAndSyncFilters={setAndSyncFilters}
+                />
               </ScrollArea>
             </SheetContent>
           </Sheet>
@@ -1230,7 +1252,21 @@ export default function ProductListing({
         
         {/* Left Persistent Sidebar (Fixed narrow width on large screens) */}
         <aside className="hidden lg:block lg:col-span-3 space-y-6" id="catalog-desktop-sidebar">
-          {renderMainFilterContent(false)}
+          <ProductSidebar 
+             filters={filters}
+             clearAllFilters={clearAllFilters}
+             toggleSection={toggleSection}
+             collapsedSections={collapsedSections}
+             sortBy={sortBy}
+             setSortBy={setSortBy}
+             getSystemPartCount={getSystemPartCount}
+             getConditionCount={getConditionCount}
+             getSellerTypeCount={getSellerTypeCount}
+             togglePartType={togglePartType}
+             toggleCondition={toggleCondition}
+             handlePriceChange={handlePriceChange}
+             setAndSyncFilters={setAndSyncFilters}
+          />
         </aside>
 
         {/* Right Catalog Feed List/Grid section - Constrained width */}
