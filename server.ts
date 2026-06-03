@@ -31,7 +31,7 @@ async function startServer() {
       if (!process.env.GEMINI_API_KEY) {
         throw new Error("GEMINI_API_KEY environment variable is not defined");
       }
-      ai = new GoogleGenAI(process.env.GEMINI_API_KEY);
+      ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     }
     return ai;
   };
@@ -49,6 +49,9 @@ async function startServer() {
       }
 
       const gemini = getGemini();
+      console.log('DEBUG: Gemini instance structure:', Object.keys(gemini));
+      console.log('DEBUG: Gemini models:', gemini.models);
+      
       const imageParts = imagesArray.map((img: string) => {
         let mimeType = "image/jpeg";
         let base64Data = img;
@@ -121,17 +124,17 @@ async function startServer() {
         required: ["part_type", "system", "category", "cross_reference_numbers", "machinery_compatibility", "confidence_scores"]
       };
 
-      const model = gemini.getGenerativeModel({
+      const result = await gemini.models.generateContent({
         model: "gemini-2.0-flash",
-        generationConfig: {
+        contents: [prompt, ...imageParts],
+        config: {
           responseMimeType: "application/json",
           responseSchema: validationSchema,
         }
       });
+      
+      return res.json(JSON.parse(result.text()));
 
-      const result = await model.generateContent([prompt, ...imageParts]);
-      const extractedText = result.response.text();
-      return res.json(JSON.parse(extractedText));
 
     } catch (error: any) {
       console.error("Gemini Scan Error:", error);

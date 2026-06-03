@@ -14,13 +14,13 @@ export async function POST(request: Request) {
     // 1. Authorize session context via active Bearer token
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
-      return NextResponse.json({ error: 'Missing credentials.' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication token required.' }, { status: 401 });
     }
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized user context.' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid or expired session token.' }, { status: 401 });
     }
 
     // 2. Parse Multipart form data arrays
@@ -28,16 +28,16 @@ export async function POST(request: Request) {
     const file = formData.get('logo') as File;
 
     if (!file) {
-      return NextResponse.json({ error: 'No media asset payload provided.' }, { status: 400 });
+      return NextResponse.json({ error: 'No logo file provided.' }, { status: 400 });
     }
 
     // 3. Structural Payload Validation
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: 'Invalid file format. Only JPEG, PNG, and WEBP allowed.' }, { status: 400 });
+      return NextResponse.json({ error: 'Unsupported file format. Please upload a JPEG, PNG, or WEBP image.' }, { status: 400 });
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'Payload exceeds 5MB size limit.' }, { status: 400 });
+      return NextResponse.json({ error: 'File size exceeds the 5MB limit.' }, { status: 400 });
     }
 
     // 4. Transform file to an ArrayBuffer for transmission
@@ -62,7 +62,6 @@ export async function POST(request: Request) {
     const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/yard-assets/${filePath}`;
 
     // 7. Atomic transaction: update profile metadata tracking field
-    // Note: 'profiles' table name might need to be 'seller_profiles' to match schema
     const { error: dbError } = await supabaseAdmin
       .from('seller_profiles')
       .update({ logo_url: publicUrl, updated_at: new Date().toISOString() })
@@ -73,7 +72,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, logoUrl: publicUrl });
 
   } catch (error: any) {
-    console.error('🚨 Asset Pipeline Fault:', error.message);
-    return NextResponse.json({ error: 'Asset synchronization failed.' }, { status: 500 });
+    console.error('Database/Storage Logo Upload Error:', error.message);
+    return NextResponse.json({ error: 'Failed to upload logo and update profile.' }, { status: 500 });
   }
 }

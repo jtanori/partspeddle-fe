@@ -10,16 +10,20 @@ export const analyzeListingImage = async (imageFile: File, mode: 'vehicle' | 'co
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error('No active session for AI analysis.');
 
-    const formData = new FormData();
-    formData.append('image', imageFile);
-    formData.append('mode', mode);
+    const base64Image = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(imageFile);
+    });
 
     const response = await fetch('/api/gemini/identify', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
         },
-        body: formData,
+        body: JSON.stringify({ image: base64Image, mode }),
     });
 
     if (!response.ok) {

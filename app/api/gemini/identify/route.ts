@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize a secure, server-only Supabase client using the privileged service role key
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || '',
@@ -15,56 +14,64 @@ const supabaseAdmin = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Authorize session context via active Bearer token
+    // 1. Autorización estricta del contexto del usuario de Supabase
     const authHeader = request.headers.get('Authorization');
     if (!authHeader) {
-      return NextResponse.json({ error: 'Missing credentials.' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication token required.' }, { status: 401 });
     }
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized user context.' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid or expired session token.' }, { status: 401 });
     }
 
-    // 2. Extract the multi-part form data from the incoming frontend request
+    // 2. Extraer el lote FormData utilizando agregación múltiple (.getAll)
     const formData = await request.formData();
-    const imageFile = formData.get('image') as File | null;
-    const mode = formData.get('mode') as string | null;
+    const imageFiles = formData.getAll('image') as File[];
+    const rawMode = formData.get('mode') as string | null;
 
-    if (!imageFile) {
-      return NextResponse.json(
-        { error: 'Missing image asset payload.' },
-        { status: 400 }
-      );
+    // Normalización forzada a minúsculas para coincidir con la lógica del backend
+    const mode = rawMode?.toLowerCase() || null;
+
+    if (!imageFiles || imageFiles.length === 0) {
+      return NextResponse.json({ error: 'Image file is required.' }, { status: 400 });
     }
 
     if (!mode || (mode !== 'vehicle' && mode !== 'component')) {
+      return NextResponse.json({ error: 'Invalid mode specified. Must be "vehicle" or "component".' }, { status: 400 });
+    }
+
+    // 3. CORTAFUEGOS DE CUOTAS SERVER-SIDE (Protección contra desborde de 500 RPD)
+    const MAX_ALLOWED_IMAGES = mode === 'vehicle' ? 2 : 4;
+    if (imageFiles.length > MAX_ALLOWED_IMAGES) {
       return NextResponse.json(
-        { error: 'Invalid listing scope mode provided.' },
+        { error: `SYS_QUOTA_BREACH: El lote en modo [${mode.toUpperCase()}] excede el límite de ${MAX_ALLOWED_IMAGES} imágenes.` },
         { status: 400 }
       );
     }
 
-    // 3. Reconstruct the payload to safely forward to the isolated Supabase Edge Function
+    // 4. Compilar el FormData de salida hacia la Edge Function
     const backendFormData = new FormData();
-    backendFormData.append('image', imageFile);
+    imageFiles.forEach((file) => {
+      backendFormData.append('image', file);
+    });
     backendFormData.append('mode', mode);
 
-    // 4. Call the Supabase edge function securely from the backend environment
+    // 5. Invocación segura RPC interna
     const { data, error } = await supabaseAdmin.functions.invoke('analyze-part-image', {
       body: backendFormData,
     });
 
     if (error) {
-      console.error('Supabase edge service invocation error:', error);
+      console.error('Edge Function invocation error:', error);
       return NextResponse.json(
-        { error: 'Failed to extract part data from image via database bridge.' },
+        { error: 'Failed to process image through auto-parts identification service.' },
         { status: 502 }
       );
     }
 
-    // 5. Return the clean, structured metadata back to the client wizard application
+    // 6. Retornar el esquema unificado e hidratado al cliente del asistente
     return NextResponse.json({
       system: data?.system || '',
       category: data?.category || '',
@@ -78,9 +85,9 @@ export async function POST(request: NextRequest) {
     }, { status: 200 });
 
   } catch (error: any) {
-    console.error('Critical failure in Next.js analyze API route:', error);
+    console.error('API Route /api/gemini/identify crash:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error encountered during secure cataloging.' },
+      { error: 'Internal server error during image analysis.' },
       { status: 500 }
     );
   }
