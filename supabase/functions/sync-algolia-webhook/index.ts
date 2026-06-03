@@ -1,16 +1,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7"
-import { algoliasearch } from "https://esm.sh/algoliasearch@5.0.0"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import algoliasearch from "https://esm.sh/algoliasearch@4";
 
-const ALGOLIA_APP_ID = Deno.env.get('VITE_ALGOLIA_APP_ID') || '';
-const ALGOLIA_ADMIN_API_KEY = Deno.env.get('VITE_ALGOLIA_ADMIN_API_KEY') || '';
+const ALGOLIA_APP_ID = Deno.env.get('ALGOLIA_APP_ID') || '';
+const ALGOLIA_ADMIN_KEY = Deno.env.get('ALGOLIA_ADMIN_KEY') || '';
 const ALGOLIA_INDEX_NAME = 'parts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const algoliaClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_API_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  global: { fetch: fetch.bind(globalThis) },
+  auth: { persistSession: false }
+});
+
+// Algolia v4 client initialization
+const client = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY);
+const index = client.initIndex(ALGOLIA_INDEX_NAME);
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -23,63 +29,63 @@ serve(async (req) => {
   }
 
   try {
-    const payload = await req.json();
+    const bodyText = await req.text();
+    console.log("Raw payload:", bodyText);
+    const payload = JSON.parse(bodyText);
     const { type, table, record, old_record } = payload;
+    console.log("Parsed payload:", { type, table });
 
     if (table !== 'parts') {
       return new Response(JSON.stringify({ message: "Table not supported" }), { status: 400 });
     }
 
     if (type === 'DELETE') {
-      await algoliaClient.deleteObject({
-        indexName: ALGOLIA_INDEX_NAME,
-        objectID: old_record.id,
-      });
+      await index.deleteObject(old_record.id);
       return new Response(JSON.stringify({ message: "Deleted from Algolia" }), { status: 200 });
     }
 
-    // For INSERT or UPDATE, we fetch the complete record with relations
     const { data: part, error } = await supabase
       .from('parts')
       .select(`
-        *,
-        part_types (
+        id,
+        title,
+        description,
+        price_mxn,
+        status,
+        created_at,
+        part_types!parts_part_type_id_fkey (
           id,
           name_es,
           name_en,
-          slug_es,
-          slug_en,
           categories (
             id,
             name_es,
-            name_en,
-            slug_es,
-            slug_en
+            name_en
           )
         ),
-        vehicle_variants (
+        vehicle_variants!parts_donor_vehicle_variant_id_fkey (
           id,
-          name,
-          year_start,
-          year_end,
-          vehicle_models (
+          year,
+          models (
             id,
             name,
-            vehicle_brands (
+            makes (
               id,
               name
             )
           )
         ),
-        seller_profiles (
+        users!parts_seller_id_fkey (
           id,
-          business_name,
-          city,
-          state
+          seller_profiles (
+            business_name,
+            location,
+            whatsapp
+          )
         ),
         part_images (
           id,
-          image_url,
+          url,
           is_primary
         )
       `)
@@ -90,57 +96,50 @@ serve(async (req) => {
       throw new Error(`Error fetching part data: ${error?.message}`);
     }
 
-    // Map to Algolia record
+    const partType = part.part_types;
+    const category = partType?.categories;
+    const vehicleVariant = part.vehicle_variants;
+    const vehicleModel = vehicleVariant?.models;
+    const vehicleMake = vehicleModel?.makes;
+    const sellerProfile = part.users?.seller_profiles;
+
     const algoliaRecord = {
       objectID: part.id,
       title: part.title,
       description: part.description,
-      price: part.price,
-      condition: part.condition,
+      price: part.price_mxn,
       status: part.status,
-      oem_part_number: part.oem_part_number,
-      sku: part.sku,
       category: {
-        id: part.part_types?.categories?.id,
-        name: part.part_types?.categories?.name_es, // Defaulting to Spanish as per context
-        name_en: part.part_types?.categories?.name_en,
+        id: category?.id,
+        name: category?.name_es || 'Otros',
+        name_en: category?.name_en || 'Others',
       },
       part_type: {
-        id: part.part_types?.id,
-        name: part.part_types?.name_es,
-        name_en: part.part_types?.name_en,
+        id: partType?.id,
+        name: partType?.name_es,
+        name_en: partType?.name_en,
       },
       vehicle: {
-        variant_id: part.vehicle_variants?.id,
-        variant_name: part.vehicle_variants?.name,
-        model_name: part.vehicle_variants?.vehicle_models?.name,
-        brand_name: part.vehicle_variants?.vehicle_models?.vehicle_brands?.name,
-        years: {
-          start: part.vehicle_variants?.year_start,
-          end: part.vehicle_variants?.year_end
-        }
+        variant_id: vehicleVariant?.id,
+        year: vehicleVariant?.year,
+        model_name: vehicleModel?.name,
+        brand_name: vehicleMake?.name,
       },
       seller: {
-        id: part.seller_profiles?.id,
-        name: part.seller_profiles?.business_name,
-        location: `${part.seller_profiles?.city}, ${part.seller_profiles?.state}`
+        id: part.users?.id,
+        business_name: sellerProfile?.business_name || 'Particular',
+        location: sellerProfile?.location || 'N/A',
+        whatsapp: sellerProfile?.whatsapp || null
       },
       images: part.part_images?.map((img: any) => ({
-        url: img.image_url,
+        url: img.url,
         is_primary: img.is_primary
       })) || [],
-      primary_image: part.part_images?.find((img: any) => img.is_primary)?.image_url || part.part_images?.[0]?.image_url,
-      created_at: part.created_at,
-      _geoloc: part.seller_profiles?.latitude ? {
-        lat: part.seller_profiles.latitude,
-        lng: part.seller_profiles.longitude
-      } : null
+      primary_image: part.part_images?.find((img: any) => img.is_primary)?.url || part.part_images?.[0]?.url || null,
+      created_at: part.created_at
     };
 
-    await algoliaClient.saveObject({
-      indexName: ALGOLIA_INDEX_NAME,
-      body: algoliaRecord,
-    });
+    await index.saveObject(algoliaRecord);
 
     return new Response(JSON.stringify({ message: "Synced to Algolia", objectID: part.id }), {
       status: 200,
