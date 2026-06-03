@@ -10,7 +10,9 @@
       "DOM.Iterable"
     ],
     "types": [
-      "vite/client"
+      "vite/client",
+      "node",
+      "deno"
     ],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -20,10 +22,11 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": ["src", "app", "supabase", "scripts", "server.ts"]
 }

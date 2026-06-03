@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Validando integridad de tipos en archivos modificados antes del push..."
+
+# Get list of changed files compared to main branch
+CHANGED_FILES=$(git diff --name-only main...HEAD | grep '\.tsx\?$' | xargs)
+
+if [ -n "$CHANGED_FILES" ]; then
+  npx tsc --noEmit $CHANGED_FILES
+else
+  echo "No TypeScript files changed, skipping type check."
+fi
