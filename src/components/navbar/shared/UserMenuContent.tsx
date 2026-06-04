@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Heart, History, HelpCircle, LayoutDashboard, Package, Tag, Settings, LogOut } from 'lucide-react';
+import { User, Heart, History, HelpCircle, LayoutDashboard, Package, Tag, Settings, LogOut, BookOpen } from 'lucide-react';
 import { UserSession } from '../../../types';
 
 interface UserMenuContentProps {
@@ -9,13 +9,14 @@ interface UserMenuContentProps {
   onChangeView: (view: string) => void;
   onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
   onOpenSupport: () => void;
+  onOpenTour: () => void;
   onLogout: () => void;
   showToast: (msg: string) => void;
   onClose: () => void;
 }
 
 export const UserMenuContent: React.FC<UserMenuContentProps> = ({
-  user, userRole, profile, onChangeView, onSetSellerTab, onOpenSupport,
+  user, userRole, profile, onChangeView, onSetSellerTab, onOpenSupport, onOpenTour,
   onLogout, showToast, onClose
 }) => {
   if (!user) {
@@ -42,7 +43,7 @@ export const UserMenuContent: React.FC<UserMenuContentProps> = ({
           <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=120" alt={user.email || 'avatar'} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
         </div>
         <div className="min-w-0">
-          <p className="font-display text-[10px] text-zinc-500 uppercase tracking-wider font-bold">LOGGED IN ACCOUNT</p>
+          <p className="font-display text-[10px] text-warm-gray uppercase tracking-wider font-bold">LOGGED IN ACCOUNT</p>
           <p className="text-sm text-white font-medium truncate mt-1">{user.email}</p>
           <p className="inline-block mt-1 text-[10px] text-rust-copper font-bold uppercase tracking-wider font-display bg-rust-copper/10 px-1.5 py-0.5 rounded border border-rust-copper/20">
              Context: {userRole === 'seller' ? 'Seller View' : 'Buyer View'}
@@ -50,7 +51,7 @@ export const UserMenuContent: React.FC<UserMenuContentProps> = ({
         </div>
       </div>
 
-      <p className="px-5 font-display text-[10px] text-zinc-500 uppercase tracking-wider font-bold mb-1 mt-3">USER</p>
+      <p className="px-5 font-display text-[10px] text-warm-gray uppercase tracking-wider font-bold mb-1 mt-3">USER</p>
       <button 
         onClick={() => { onChangeView('settings'); onClose(); }} 
         className="w-full text-left px-5 py-2.5 hover:bg-stone-800/50 transition-colors flex items-center gap-3"
@@ -80,14 +81,22 @@ export const UserMenuContent: React.FC<UserMenuContentProps> = ({
         onClick={() => { onOpenSupport(); onClose(); }} 
         className="w-full text-left px-5 py-2.5 hover:bg-stone-800/50 transition-colors flex items-center gap-3"
       >
-        <HelpCircle className="w-4 h-4 text-zinc-400" />
+        <HelpCircle className="w-4 h-4 text-warm-gray" />
         <span className="text-sm">Support Center</span>
+      </button>
+
+      <button 
+        onClick={() => { onOpenTour(); onClose(); }} 
+        className="w-full text-left px-5 py-2.5 hover:bg-stone-800/50 transition-colors flex items-center gap-3"
+      >
+        <BookOpen className="w-4 h-4 text-rust-copper" />
+        <span className="text-sm">How It Works / Tour</span>
       </button>
       
       {userRole === 'seller' && (
         <>
           <div className="border-t border-stone-800 my-2"></div>
-          <p className="px-5 font-display text-[10px] text-zinc-500 uppercase tracking-wider font-bold mb-1">SELLER TOOLS</p>
+          <p className="px-5 font-display text-[10px] text-warm-gray uppercase tracking-wider font-bold mb-1">SELLER TOOLS</p>
           <button 
             onClick={() => { if (onSetSellerTab) onSetSellerTab('listings'); onChangeView('listings'); onClose(); }} 
             className="w-full text-left px-5 py-2.5 hover:bg-stone-800/50 transition-colors flex items-center gap-3"

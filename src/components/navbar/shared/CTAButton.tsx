@@ -61,9 +61,9 @@ export const CTAButton: React.FC<CTAButtonProps> = ({
   return (
     <button 
       onClick={cta.onClick}
-      className="bg-[#B87333] hover:bg-[#9c5f2b] text-white rounded-lg px-5 py-2 text-sm font-bold uppercase tracking-wide transition-all"
+      className="h-[40px] flex items-center justify-center bg-rust-copper text-white rounded-sm px-5 text-[11px] font-black font-heading tracking-[0.15em] active:translate-y-[0.5px] cursor-pointer select-none whitespace-nowrap shadow-sm transition-all duration-150 relative overflow-hidden hover:bg-rust-copper/90"
     >
-      {cta.label}
+      <span className="relative z-10">{cta.label}</span>
     </button>
   );
 };

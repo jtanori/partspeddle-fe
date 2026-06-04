@@ -46,10 +46,10 @@ export const AuthActions: React.FC<AuthActionsProps> = ({
 
   return (
     <button 
-      onClick={() => onChangeView('auth')}
-      className="bg-[#B87333] hover:bg-[#9c5f2b] text-white rounded-lg px-5 py-2 text-sm font-bold uppercase tracking-wide transition-all"
+      onClick={() => handleAuth('login')}
+      className="bg-charcoal border border-oil-dark text-base-cream rounded-sm px-5 h-[40px] text-[11px] font-black font-heading tracking-[0.15em] transition-all flex items-center justify-center whitespace-nowrap uppercase hover:bg-oil-dark hover:text-rust-copper"
     >
-      SELL PARTS
+      LOG IN
     </button>
   );
 };

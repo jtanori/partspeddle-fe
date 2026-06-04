@@ -13,6 +13,7 @@ interface UserAvatarMenuProps {
   onChangeView: (view: string) => void;
   onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
   onOpenSupport: () => void;
+  onOpenTour: () => void;
   onLogout: () => void;
   showToast: (msg: string) => void;
   userMenuRef: React.RefObject<HTMLDivElement>;
@@ -21,7 +22,7 @@ interface UserAvatarMenuProps {
 export const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
   user, userRole, profile, isUserMenuOpen, setIsUserMenuOpen,
   handleAvatarClick, onChangeView, onSetSellerTab, onOpenSupport,
-  onLogout, showToast, userMenuRef
+  onOpenTour, onLogout, showToast, userMenuRef
 }) => {
   return (
     <div className="relative" ref={userMenuRef}>
@@ -32,7 +33,7 @@ export const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
           id="btn-nav-user-menu"
           title="Account menu"
         >
-          <div className="relative w-10 h-10 rounded-lg border border-stone-800/10 overflow-hidden bg-[#262626]">
+          <div className="relative w-10 h-10 rounded-lg border border-oil-dark overflow-hidden bg-charcoal">
             <img 
               src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=120"
               alt={user.email || 'User avatar'}
@@ -54,6 +55,7 @@ export const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
         onChangeView={onChangeView}
         onSetSellerTab={onSetSellerTab}
         onOpenSupport={onOpenSupport}
+        onOpenTour={onOpenTour}
         onLogout={onLogout}
         showToast={showToast}
       />

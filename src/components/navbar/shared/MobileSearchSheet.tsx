@@ -1,6 +1,5 @@
 import React from 'react';
-import { Search } from 'lucide-react';
-import { BottomSheet } from '../../common/BottomSheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { NavbarSearch } from '../NavbarSearch';
 
 interface MobileSearchSheetProps {
@@ -20,20 +19,24 @@ export const MobileSearchSheet: React.FC<MobileSearchSheetProps> = ({
   onSearchSubmit, onChangeView, onSelectPart
 }) => {
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <div className="p-4">
-        <h2 className="font-display font-black text-xs uppercase tracking-wider text-warm-gray mb-4">Search Inventory</h2>
-        <NavbarSearch
-          navSearchText={searchText}
-          setNavSearchText={setSearchText}
-          isDropdownOpen={isDropdownOpen}
-          setIsDropdownOpen={setIsDropdownOpen}
-          placeholderText="Search parts, make, model or VIN..."
-          onSearchSubmit={onSearchSubmit}
-          onChangeView={onChangeView}
-          onSelectPart={onSelectPart}
-        />
-      </div>
-    </BottomSheet>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="bottom" className="bg-steel-black border-oil-dark p-0 h-[85vh] flex flex-col">
+        <SheetHeader className="p-4 border-b border-oil-dark">
+          <SheetTitle className="text-base-cream uppercase font-black tracking-widest text-xs">Search Inventory</SheetTitle>
+        </SheetHeader>
+        <div className="p-4 flex-1">
+          <NavbarSearch
+            navSearchText={searchText}
+            setNavSearchText={setSearchText}
+            isDropdownOpen={isDropdownOpen}
+            setIsDropdownOpen={setIsDropdownOpen}
+            placeholderText="Search parts, make, model or VIN..."
+            onSearchSubmit={onSearchSubmit}
+            onChangeView={onChangeView}
+            onSelectPart={onSelectPart}
+          />
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
