@@ -1,34 +1,35 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 import { useAppStore } from '../../store/useAppStore';
 import { LayoutDashboard, Package, ShoppingBag, LogOut, ArrowLeftRight, ChevronDown, ChevronRight, Plus, GitBranch } from 'lucide-react';
 import { SidebarLink } from '../layout/SidebarLink';
+import Link from 'next/link';
 // @ts-ignore
 import logoSolidImg from '../../assets/images/logo_solid.png';
 
 export const SellerSidebar: React.FC = () => {
   const { logout, setActiveSellerTab } = useAppStore();
-  const location = useLocation();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['/dashboard/inventory']);
+  const pathname = usePathname();
+  const [expandedItems, setExpandedItems] = useState<string[]>(['/seller/inventory']);
 
   const toggleExpand = (href: string) => {
     setExpandedItems(prev => prev.includes(href) ? prev.filter(h => h !== href) : [...prev, href]);
   };
 
   const navItems = [
-    { href: '/dashboard', label: 'OVERVIEW', icon: LayoutDashboard },
-    { href: '/dashboard/snap', label: 'Parts Intake', icon: Plus },
+    { href: '/seller', label: 'OVERVIEW', icon: LayoutDashboard },
+    { href: '/seller/create', label: 'Parts Intake', icon: Plus },
     { 
-      href: '/dashboard/inventory', 
+      href: '/seller/inventory', 
       label: 'Inventory', 
       icon: Package,
       children: [
-        { href: '/dashboard/inventory/active', label: 'ACTIVE LISTINGS' },
-        { href: '/dashboard/inventory/sold', label: 'SOLD' },
-        { href: '/dashboard/inventory/archived', label: 'ARCHIVED' }
+        { href: '/seller/inventory/active', label: 'ACTIVE LISTINGS' },
+        { href: '/seller/inventory/sold', label: 'SOLD' },
+        { href: '/seller/inventory/archived', label: 'ARCHIVED' }
       ]
     },
-    { href: '/dashboard/orders', label: 'ORDERS DESK', icon: ShoppingBag },
+    { href: '/seller/orders', label: 'ORDERS DESK', icon: ShoppingBag },
   ];
 
   return (
@@ -80,13 +81,13 @@ export const SellerSidebar: React.FC = () => {
 
       {/* Footer Utility Links */}
       <div className="border-t border-dashed border-zinc-800 pt-6 space-y-2">
-        <a
-          href="/listing"
+        <Link
+          href="/search"
           className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-text-muted hover:text-accent-amber transition-all"
         >
           <ArrowLeftRight className="w-4 h-4" />
           <span className="tracking-wide uppercase font-heading">Public Marketplace</span>
-        </a>
+        </Link>
         
         <button
           onClick={logout}

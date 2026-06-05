@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Youtube, Lock, Mail, ShieldAlert, FileText, Info } from 'lucide-react';
+import { Share2, Lock, Mail, ShieldAlert, FileText, Info } from 'lucide-react';
 // @ts-ignore
 import logoImg from '../assets/images/logo_rusty.png';
 
@@ -38,13 +38,13 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
           </p>
           <div className="flex items-center gap-4 pt-2">
             <a href="#facebook" className="p-2 bg-charcoal hover:bg-oil-dark rounded-md text-warm-gray hover:text-rust-copper transition-colors">
-              <Facebook className="w-4 h-4" />
+              <Share2 className="w-4 h-4" />
             </a>
             <a href="#instagram" className="p-2 bg-charcoal hover:bg-oil-dark rounded-md text-warm-gray hover:text-rust-copper transition-colors">
-              <Instagram className="w-4 h-4" />
+              <Share2 className="w-4 h-4" />
             </a>
             <a href="#youtube" className="p-2 bg-charcoal hover:bg-oil-dark rounded-md text-warm-gray hover:text-rust-copper transition-colors">
-              <Youtube className="w-4 h-4" />
+              <Share2 className="w-4 h-4" />
             </a>
           </div>
         </div>

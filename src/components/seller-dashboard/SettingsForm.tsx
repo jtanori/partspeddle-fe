@@ -31,6 +31,7 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
         body: uploadPayload,
       });
 
+
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Upload error');
 
@@ -130,6 +131,7 @@ export const SettingsForm: React.FC = () => {
           email: localProfile.email
         }),
       });
+
 
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Update failed');

@@ -1,50 +1,44 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { UserSession } from '../../types';
 import { NavbarSearch } from './NavbarSearch';
 import { NavLeft, UserActions, MobileNavbar } from './shared';
 import BottomTabBar from './BottomTabBar';
 
 interface NavbarProps {
-  currentView: string;
-  onChangeView: (view: string) => void;
-  onSearchSubmit: (text: string) => void;
   cartCount: number;
   user: UserSession | null;
   onLogout: () => void;
   onOpenCart: () => void;
-  onOpenSearchModal?: (initialQuery?: string) => void;
   searchTextValue?: string;
-  onSelectPart?: (partId: string) => void;
   userRole: 'buyer' | 'seller';
   onChangeUserRole: (role: 'buyer' | 'seller') => void;
   profile: any;
   onOpenSupport: () => void;
   onOpenTour: () => void;
   onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
-  onSnapImagesUploaded?: (images: string[]) => void;
   activeSellerTab?: 'listings' | 'settings' | 'snap';
 }
 
 export default function Navbar({
-  currentView,
-  onChangeView,
-  onSearchSubmit,
   cartCount,
   user,
   onLogout,
   onOpenCart,
-  onOpenSearchModal,
   searchTextValue = '',
-  onSelectPart,
   userRole,
   onChangeUserRole,
   profile,
   onOpenSupport,
   onOpenTour,
   onSetSellerTab,
-  onSnapImagesUploaded,
   activeSellerTab = 'listings'
 }: NavbarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isUserMenuDrawerOpen, setIsUserMenuDrawerOpen] = useState(false);
@@ -54,6 +48,19 @@ export default function Navbar({
   const [placeholderText, setPlaceholderText] = useState("Search parts, VIN...");
 
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  const onChangeView = (view: string) => {
+    const path = view === 'home' ? '/' : `/${view}`;
+    router.push(path);
+  };
+
+  const onSearchSubmit = (text: string) => {
+    router.push(`/search?q=${encodeURIComponent(text)}`);
+  };
+
+  const onSelectPart = (partId: string) => {
+    router.push(`/listing/${partId}`);
+  };
 
   // Ephemeral toast notification system
   const showToast = (msg: string) => {
@@ -101,7 +108,7 @@ export default function Navbar({
       >
         {/* Desktop & Tablet Navigation (>= 768px) */}
         <div className="hidden md:flex max-w-7xl mx-auto px-4 h-full items-center justify-between gap-5">
-          <NavLeft onChangeView={onChangeView} currentView={currentView} />
+          <NavLeft onChangeView={onChangeView} currentView={pathname} />
 
           <div className="flex items-center gap-5 flex-1 justify-end">
             <NavbarSearch
@@ -137,7 +144,7 @@ export default function Navbar({
 
         {/* Mobile Navigation (< 768px) */}
         <MobileNavbar 
-          currentView={currentView}
+          currentView={pathname}
           onChangeView={onChangeView}
           onSearchSubmit={onSearchSubmit}
           onSelectPart={onSelectPart}
@@ -160,7 +167,7 @@ export default function Navbar({
       </header>
 
       <BottomTabBar 
-        currentView={currentView}
+        currentView={pathname}
         onChangeView={onChangeView}
         user={user}
         showToast={showToast}
@@ -183,3 +190,4 @@ export default function Navbar({
     </>
   );
 }
+

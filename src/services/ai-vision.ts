@@ -26,6 +26,7 @@ export const analyzeListingImage = async (imageFile: File, mode: 'vehicle' | 'co
         body: JSON.stringify({ image: base64Image, mode }),
     });
 
+
     if (!response.ok) {
         throw new Error('AI analysis pipeline failed.');
     }
