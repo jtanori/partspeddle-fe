@@ -48,6 +48,13 @@ export interface BadgeViewModel {
   isGoodFit: boolean;
 }
 
+export interface PartSummaryViewModel {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+}
+
 export interface PartViewModel {
   id: string;
   header: HeaderViewModel;
@@ -59,4 +66,5 @@ export interface PartViewModel {
   badges: BadgeViewModel;
   shipping: ShippingViewModel;
   description: string;
+  crossSell: PartSummaryViewModel[];
 }
