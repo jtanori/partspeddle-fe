@@ -12,8 +12,9 @@ describe('DescriptionFitmentPanel', () => {
 
   it('renders description and fitment', () => {
     render(<DescriptionFitmentPanel description={mockPart.description} fitment={mockPart.fitment} />);
-    expect(screen.getByText(/Description/i)).toBeDefined();
-    expect(screen.getByText(/Vehicle Fitment/i)).toBeDefined();
+    // Select the heading specifically
+    expect(screen.getByRole('heading', { name: /Description/i })).toBeDefined();
+    expect(screen.getByRole('heading', { name: /Vehicle Fitment/i })).toBeDefined();
     expect(screen.getByText(/2015 Honda Civic/i)).toBeDefined();
   });
 });
