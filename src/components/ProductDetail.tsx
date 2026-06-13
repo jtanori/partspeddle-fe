@@ -17,6 +17,7 @@ import { NegotiationModal } from "./catalog/detail/NegotiationModal";
 
 interface ProductDetailProps {
   partId: string;
+  initialPart?: Part;
   onBack: () => void;
   onAddToCart: (part: Part) => void;
   onSelectPart: (partId: string) => void;
@@ -24,13 +25,14 @@ interface ProductDetailProps {
 
 export default function ProductDetail({
   partId,
+  initialPart,
   onBack,
   onAddToCart,
   onSelectPart,
 }: ProductDetailProps) {
-  const [part, setPart] = useState<Part | null>(null);
+  const [part, setPart] = useState<Part | null>(initialPart || null);
   const [seller, setSeller] = useState<Seller | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialPart);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
@@ -45,17 +47,37 @@ export default function ProductDetail({
   >("idle");
 
   useEffect(() => {
-    let isCurrentFetch = true;
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const { data: partData, error: partError } = await supabase
-          .from("parts")
-          .select("*")
-          .eq("id", partId)
+    if (initialPart) {
+      setLoading(false);
+      // Still fetch seller profile if needed
+      const fetchSeller = async () => {
+        const { data: sellerData } = await supabase
+          .from('seller_profiles')
+          .select('*')
+          .eq('user_id', initialPart.sellerId)
           .maybeSingle();
 
-        if (partError) throw partError;
+        if (sellerData) {
+          setSeller({
+            id: sellerData.id,
+            name: sellerData.business_name,
+            rating: 4.8,
+            reviewCount: 0,
+            location: sellerData.location || 'Unknown',
+            partCount: 0,
+            feedbackPercentage: 100,
+            shipsWithin: '1 business day',
+            returnPolicy: '30 Day Returns'
+          });
+        }
+      };
+      fetchSeller();
+      return;
+    }
+
+    let isCurrentFetch = true;
+    const loadData = async () => {
+
 
         if (isCurrentFetch && partData) {
           const partAsPart = partData as unknown as Part;
