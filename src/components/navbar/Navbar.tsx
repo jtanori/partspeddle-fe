@@ -1,41 +1,61 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { UserSession } from '../../types';
-import { NavbarSearch } from './NavbarSearch';
-import { NavLeft, UserActions, MobileNavbar } from './shared';
-import BottomTabBar from './BottomTabBar';
+import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { UserSession } from "../../types";
+import { NavbarSearch } from "./NavbarSearch";
+import { NavLeft, UserActions, MobileNavbar } from "./shared";
+import BottomTabBar from "./BottomTabBar";
 
 interface NavbarProps {
+  currentView: string;
   cartCount: number;
   user: UserSession | null;
   onLogout: () => void;
   onOpenCart: () => void;
+  onChangeView: (view: string) => void;
+  onSearchSubmit: (text: string) => void;
+  onOpenSearchModal?: (initialQuery?: string) => void;
   searchTextValue?: string;
-  userRole: 'buyer' | 'seller';
-  onChangeUserRole: (role: 'buyer' | 'seller') => void;
+  onSelectPart?: (partId: string) => void;
+  onSnapImagesUploaded?: (images: string[]) => void;
+  userRole: "buyer" | "seller";
+  onChangeUserRole: (role: "buyer" | "seller") => void;
   profile: any;
   onOpenSupport: () => void;
   onOpenTour: () => void;
-  onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
-  activeSellerTab?: 'listings' | 'settings' | 'snap';
+  onSetSellerTab?: (
+    tab: "listings" | "settings" | "snap" | "orders" | "inventory" | "create",
+  ) => void;
+  activeSellerTab?:
+    | "listings"
+    | "settings"
+    | "snap"
+    | "orders"
+    | "inventory"
+    | "create";
 }
 
 export default function Navbar({
+  currentView,
+  onChangeView,
+  onSearchSubmit,
+  onOpenSearchModal,
+  onSelectPart,
+  onSnapImagesUploaded,
   cartCount,
   user,
   onLogout,
   onOpenCart,
-  searchTextValue = '',
+  searchTextValue = "",
   userRole,
   onChangeUserRole,
   profile,
   onOpenSupport,
   onOpenTour,
   onSetSellerTab,
-  activeSellerTab = 'listings'
+  activeSellerTab = "listings",
 }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -43,47 +63,39 @@ export default function Navbar({
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isUserMenuDrawerOpen, setIsUserMenuDrawerOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState(searchTextValue);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
-  const [placeholderText, setPlaceholderText] = useState("Search parts, VIN...");
+  const [placeholderText, setPlaceholderText] = useState(
+    "Search parts, VIN...",
+  );
 
   const userMenuRef = useRef<HTMLDivElement>(null);
-
-  const onChangeView = (view: string) => {
-    const path = view === 'home' ? '/' : `/${view}`;
-    router.push(path);
-  };
-
-  const onSearchSubmit = (text: string) => {
-    router.push(`/search?q=${encodeURIComponent(text)}`);
-  };
-
-  const onSelectPart = (partId: string) => {
-    router.push(`/listing/${partId}`);
-  };
 
   // Ephemeral toast notification system
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => {
-      setToastMsg((curr) => curr === msg ? null : curr);
+      setToastMsg((curr) => (curr === msg ? null : curr));
     }, 4500);
   };
 
   // Sync nav search local input when query text changes from other modals
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNavSearchText(searchTextValue);
   }, [searchTextValue]);
 
   // Click outside user menu watcher (Desktop dropdown only)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
         setIsUserMenuOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Responsive placeholder handler
@@ -96,14 +108,14 @@ export default function Navbar({
       }
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <>
-      <header 
-        className="bg-steel-black text-base-cream sticky top-0 z-40 border-b border-oil-dark h-16 shadow-lg shadow-black/20" 
+      <header
+        className="bg-zinc-950/80 backdrop-blur-md text-base-cream sticky top-0 z-50 border-b border-white/5 h-16 shadow-lg shadow-black/20"
         id="id-navbar-header"
       >
         {/* Desktop & Tablet Navigation (>= 768px) */}
@@ -111,18 +123,9 @@ export default function Navbar({
           <NavLeft onChangeView={onChangeView} currentView={pathname} />
 
           <div className="flex items-center gap-5 flex-1 justify-end">
-            <NavbarSearch
-              navSearchText={navSearchText}
-              setNavSearchText={setNavSearchText}
-              isDropdownOpen={isDropdownOpen}
-              setIsDropdownOpen={setIsDropdownOpen}
-              placeholderText={placeholderText}
-              onSearchSubmit={onSearchSubmit}
-              onChangeView={onChangeView}
-              onSelectPart={onSelectPart}
-            />
+            <NavbarSearch placeholderText={placeholderText} />
 
-            <UserActions 
+            <UserActions
               user={user}
               userRole={userRole}
               profile={profile}
@@ -143,10 +146,9 @@ export default function Navbar({
         </div>
 
         {/* Mobile Navigation (< 768px) */}
-        <MobileNavbar 
-          currentView={pathname}
+        <MobileNavbar
+          currentView={currentView}
           onChangeView={onChangeView}
-          onSearchSubmit={onSearchSubmit}
           onSelectPart={onSelectPart}
           cartCount={cartCount}
           user={user}
@@ -158,7 +160,6 @@ export default function Navbar({
           showToast={showToast}
           onSetSellerTab={onSetSellerTab}
           onOpenTour={onOpenTour}
-          searchTextValue={navSearchText}
           isMobileDrawerOpen={isMobileDrawerOpen}
           setIsMobileDrawerOpen={setIsMobileDrawerOpen}
           isUserMenuDrawerOpen={isUserMenuDrawerOpen}
@@ -166,7 +167,7 @@ export default function Navbar({
         />
       </header>
 
-      <BottomTabBar 
+      <BottomTabBar
         currentView={pathname}
         onChangeView={onChangeView}
         user={user}
@@ -179,7 +180,7 @@ export default function Navbar({
         <div className="fixed top-20 right-4 z-[9999] bg-charcoal border border-rust-copper/30 text-xs px-4 py-3 rounded-md shadow-xl text-base-cream animate-slide-in-right flex items-center gap-2 max-w-sm select-none font-sans">
           <span className="w-2 h-2 rounded-full bg-rust-copper animate-ping"></span>
           <span>{toastMsg}</span>
-          <button 
+          <button
             onClick={() => setToastMsg(null)}
             className="text-warm-gray hover:text-base-cream font-bold ml-2 text-[11px] min-w-[24px] h-6 flex items-center justify-center cursor-pointer"
           >
@@ -190,4 +191,3 @@ export default function Navbar({
     </>
   );
 }
-

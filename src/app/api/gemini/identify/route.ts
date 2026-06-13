@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       }
     });
     
-    return NextResponse.json(JSON.parse(result.text()));
+    return NextResponse.json(JSON.parse(result.text));
   } catch (error: any) {
     console.error("Gemini Scan Error:", error);
     return NextResponse.json({ error: error?.message || "Failed to identify auto part." }, { status: 500 });

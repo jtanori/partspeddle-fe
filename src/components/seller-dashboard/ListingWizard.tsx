@@ -60,7 +60,7 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
       try {
         const payload = {
           listing: { ...formData, seller_id: user?.id },
-          assets: uploadedUrls.map(url => ({ url, is_primary: true })),
+          assets: uploadedFiles.map(file => ({ url: file.id, is_primary: true })),
           fitment: fitmentArray.map(id => ({ vehicle_variant_id: id }))
         };
 

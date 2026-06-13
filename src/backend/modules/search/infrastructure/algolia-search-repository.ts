@@ -1,19 +1,42 @@
-import { SearchRepository } from '../domain/search-repository';
-import { SearchFilters } from '../domain/search-filters';
-import { SearchResult } from '../domain/search-result';
-import { SearchDocument } from '../domain/search-document';
-import { algoliaClient, SEARCH_INDEX_NAME } from './algolia-client';
+import { SearchRepository } from "../domain/search-repository";
+import { SearchFilters } from "../domain/search-filters";
+import { SearchResult } from "../domain/search-result";
+import { SearchDocument } from "../domain/search-document";
+import {
+  algoliaClient,
+  SEARCH_INDEX_NAME,
+  INDEX_PRICE_ASC,
+  INDEX_PRICE_DESC,
+  INDEX_NEWEST,
+} from "./algolia-client";
 
 export class AlgoliaSearchRepository implements SearchRepository {
-  async search(query: string, filters: SearchFilters, page: number, hitsPerPage: number): Promise<SearchResult> {
+  async search(
+    query: string,
+    filters: SearchFilters,
+    page: number,
+    hitsPerPage: number,
+  ): Promise<SearchResult> {
     const algoliaFilters = this.buildAlgoliaFilters(filters);
+
+    // Map sortBy to specific index/replica
+    const indexName =
+      filters.sortBy === "price_asc"
+        ? INDEX_PRICE_ASC
+        : filters.sortBy === "price_desc"
+          ? INDEX_PRICE_DESC
+          : filters.sortBy === "newest"
+            ? INDEX_NEWEST
+            : SEARCH_INDEX_NAME;
 
     const result = await algoliaClient.search({
       requests: [
         {
-          indexName: SEARCH_INDEX_NAME,
+          indexName,
           query,
-          filters: algoliaFilters,
+          ...(algoliaFilters.trim().length > 0
+            ? { filters: algoliaFilters }
+            : {}),
           page,
           hitsPerPage,
         },
@@ -22,23 +45,27 @@ export class AlgoliaSearchRepository implements SearchRepository {
 
     const response = result.results[0] as any;
 
+    if (response.error) {
+      throw new Error(`Algolia Search Error: ${response.error}`);
+    }
+
     return {
-      hits: response.hits as SearchDocument[],
-      totalHits: response.nbHits,
-      page: response.page,
-      totalPages: response.nbPages,
+      hits: (response.hits || []) as SearchDocument[],
+      totalHits: response.nbHits || 0,
+      page: response.page || 0,
+      totalPages: response.nbPages || 0,
       facets: response.facets,
       debug: {
-        matchedOn: response.processingTimingsMS, // Placeholder for actual match info
-        rankingFactors: ['sellerVerified', 'sellerTrustScore', 'listingQualityScore', 'createdAt']
-      }
+        matchedOn: response.processingTimingsMS,
+        rankingFactors: ["seller_verified", "created_at"],
+      },
     };
   }
 
   async saveDocument(document: SearchDocument): Promise<void> {
     await algoliaClient.saveObjects({
       indexName: SEARCH_INDEX_NAME,
-      objects: [document],
+      objects: [document as unknown as Record<string, unknown>],
     });
   }
 
@@ -52,53 +79,55 @@ export class AlgoliaSearchRepository implements SearchRepository {
   async saveDocuments(documents: SearchDocument[]): Promise<void> {
     await algoliaClient.saveObjects({
       indexName: SEARCH_INDEX_NAME,
-      objects: documents,
+      objects: documents as unknown as Record<string, unknown>[],
     });
+  }
+
+  private escapeFilterValue(value: any): string {
+    return String(value).replace(/'/g, "\\'");
   }
 
   private buildAlgoliaFilters(filters: SearchFilters): string {
     const parts: string[] = [];
 
-    if (filters.makeIds && filters.makeIds.length > 0) {
-      parts.push(`(${filters.makeIds.map(id => `makeIds:${id}`).join(' OR ')})`);
-    }
+    const addFilter = (field: string, values: any[] | undefined) => {
+      if (!values || !Array.isArray(values)) return;
+      const validValues = values.filter(
+        (v) => typeof v === "string" && v.trim() !== "",
+      );
+      if (validValues.length === 0) return;
+      parts.push(
+        `(${validValues.map((v) => `${field}:'${this.escapeFilterValue(v)}'`).join(" OR ")})`,
+      );
+    };
 
-    if (filters.modelIds && filters.modelIds.length > 0) {
-      parts.push(`(${filters.modelIds.map(id => `modelIds:${id}`).join(' OR ')})`);
-    }
+    addFilter("make", filters.makeIds);
+    addFilter("model", filters.modelIds);
 
-    if (filters.yearMin !== undefined) {
+    if (typeof filters.yearMin === "number" && !isNaN(filters.yearMin)) {
       parts.push(`year >= ${filters.yearMin}`);
     }
 
-    if (filters.yearMax !== undefined) {
+    if (typeof filters.yearMax === "number" && !isNaN(filters.yearMax)) {
       parts.push(`year <= ${filters.yearMax}`);
     }
 
-    if (filters.categoryIds && filters.categoryIds.length > 0) {
-      parts.push(`(${filters.categoryIds.map(id => `categoryIds:${id}`).join(' OR ')})`);
+    addFilter("category", filters.categoryIds);
+    addFilter("part_type", filters.partTypeIds);
+    addFilter("condition", filters.condition);
+
+    if (filters.verifiedOnly === true) {
+      parts.push("seller_verified:true");
     }
 
-    if (filters.partTypeIds && filters.partTypeIds.length > 0) {
-      parts.push(`(${filters.partTypeIds.map(id => `partTypeIds:${id}`).join(' OR ')})`);
-    }
-
-    if (filters.condition && filters.condition.length > 0) {
-      parts.push(`(${filters.condition.map(c => `condition:${c}`).join(' OR ')})`);
-    }
-
-    if (filters.verifiedOnly) {
-      parts.push('sellerVerified:true');
-    }
-
-    if (filters.priceMin !== undefined) {
+    if (typeof filters.priceMin === "number" && !isNaN(filters.priceMin)) {
       parts.push(`price >= ${filters.priceMin}`);
     }
 
-    if (filters.priceMax !== undefined) {
+    if (typeof filters.priceMax === "number" && !isNaN(filters.priceMax)) {
       parts.push(`price <= ${filters.priceMax}`);
     }
 
-    return parts.join(' AND ');
+    return parts.join(" AND ");
   }
 }

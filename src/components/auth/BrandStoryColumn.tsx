@@ -1,8 +1,8 @@
+'use client';
+
 import React from 'react';
 import { ShieldCheck, Hammer, Percent, Calendar } from 'lucide-react';
-// @ts-ignore
-import logoImg from '../../assets/images/logo_rusty.png';
-// @ts-ignore
+import logoImg from '../../assets/images/logo_solid.png';
 import hero1 from '../../assets/images/hero_1.png';
 
 interface BrandStoryColumnProps {
@@ -18,7 +18,7 @@ export const BrandStoryColumn: React.FC<BrandStoryColumnProps> = ({ isSignUp, ro
       id="id-brand-story-column"
     >
       {/* Vintage Workshop Background Image */}
-      <div className="absolute inset-0 bg-cover bg-center animate-fade-in duration-700" style={{ backgroundImage: `url(${hero1})` }} />
+      <div className="absolute inset-0 bg-cover bg-center animate-fade-in duration-700" style={{ backgroundImage: `url(${hero1.src})` }} />
 
       {/* Gradient Backdrop Layer - 80% opacity bottom to transition */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E1E]/85 via-[#1E1E1E]/60 to-transparent pointer-events-none" />
@@ -29,7 +29,7 @@ export const BrandStoryColumn: React.FC<BrandStoryColumnProps> = ({ isSignUp, ro
         className="relative flex items-center select-none z-10 flex-shrink-0 cursor-pointer transition-transform duration-300 hover:scale-[1.03] bg-transparent"
       >
         <img 
-          src={logoImg} 
+          src={logoImg.src} 
           alt="PartsPeddle Logo" 
           className="w-[185px] lg:w-[210px] h-auto object-contain bg-transparent" 
           referrerPolicy="no-referrer"

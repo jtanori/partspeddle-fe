@@ -4,9 +4,9 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 
 const searchIndexWorker = new SearchIndexWorker();
 
-export async function POST(req: NextRequest, { params }: { params: { partId?: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ partId: string }> }) {
   try {
-    const { partId } = params;
+    const { partId } = await params;
 
     if (partId) {
       // Reindex single part

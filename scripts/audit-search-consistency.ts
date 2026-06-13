@@ -18,7 +18,7 @@ async function auditSearchConsistency(): Promise<AuditResult> {
   // 1. Get all active part IDs and critical attributes from Supabase
   const { data: dbParts, error: dbError } = await supabaseAdmin
     .from('parts')
-    .select('id, status, title, price, condition, compatibility');
+    .select('id, status, title, price_mxn, condition');
 
   if (dbError) {
     logger.error('Failed to fetch parts from database', { error: dbError });
@@ -32,7 +32,8 @@ async function auditSearchConsistency(): Promise<AuditResult> {
   const indexPartsMap = new Map<string, any>();
   await algoliaClient.browseObjects<any>({
     indexName: SEARCH_INDEX_NAME,
-    attributesToRetrieve: ['objectID', 'status', 'title', 'price', 'condition', 'compatibility'],
+    // @ts-expect-error - Algolia client type mismatch in script context
+    attributesToRetrieve: ['objectID', 'status', 'title', 'price', 'condition'],
     batch: (hits) => {
       hits.forEach(hit => indexPartsMap.set(hit.objectID, hit));
     },
@@ -50,16 +51,19 @@ async function auditSearchConsistency(): Promise<AuditResult> {
     const dbPart = dbPartsMap.get(id)!;
     const indexPart = indexPartsMap.get(id)!;
 
-    const fieldsToCompare = ['title', 'price', 'condition'];
+    const fieldsToCompare = ['title', 'price_mxn', 'condition'];
     for (const field of fieldsToCompare) {
-      if (dbPart[field as keyof typeof dbPart] !== indexPart[field]) {
-        attributeMismatches.push({
-          id,
-          field,
-          db: dbPart[field as keyof typeof dbPart],
-          algolia: indexPart[field]
-        });
-      }
+        const dbField = field === 'price_mxn' ? 'price_mxn' : field;
+        const algoliaField = field === 'price_mxn' ? 'price' : field;
+        
+        if (dbPart[dbField as keyof typeof dbPart] !== indexPart[algoliaField]) {
+            attributeMismatches.push({
+            id,
+            field,
+            db: dbPart[dbField as keyof typeof dbPart],
+            algolia: indexPart[algoliaField]
+            });
+        }
     }
   }
 

@@ -1,11 +1,31 @@
-import { create } from 'zustand';
-import { Part, Seller, CartItem, UserSession, SearchFilters } from '../types';
-import { supabase } from '../lib/supabase';
+import { create } from "zustand";
+import { Part, Seller, CartItem, UserSession, SearchFilters } from "../types";
+import { supabase } from "../lib/supabase";
+
+// Safe localStorage access for SSR
+const isClient = typeof window !== "undefined";
+
+const safeGetItem = (key: string): string | null => {
+  if (!isClient) return null;
+  return localStorage.getItem(key);
+};
+
+const safeSetItem = (key: string, value: string) => {
+  if (isClient) {
+    localStorage.setItem(key, value);
+  }
+};
+
+const safeRemoveItem = (key: string) => {
+  if (isClient) {
+    localStorage.removeItem(key);
+  }
+};
 
 // Helper for live local cart persistence
 const getStoredCart = (): CartItem[] => {
   try {
-    const saved = localStorage.getItem('parts_peddle_cart');
+    const saved = safeGetItem("parts_peddle_cart");
     return saved ? JSON.parse(saved) : [];
   } catch (e) {
     return [];
@@ -15,17 +35,25 @@ const getStoredCart = (): CartItem[] => {
 interface AppState {
   // Auth & User System
   user: UserSession | null;
-  userRole: 'buyer' | 'seller';
+  userRole: "buyer" | "seller";
   profile: any | null; // Starts clean, hydrated securely from database
   setUser: (user: UserSession | null) => void;
-  setUserRole: (role: 'buyer' | 'seller') => void;
+  setUserRole: (role: "buyer" | "seller") => void;
   setProfile: (profile: any) => void;
   logout: () => Promise<void>;
 
   // Consolidated Navigation Structure
-  activeSellerTab: 'listings' | 'inventory' | 'orders' | 'settings' | 'snap'; 
+  activeSellerTab:
+    | "listings"
+    | "inventory"
+    | "orders"
+    | "settings"
+    | "snap"
+    | "create";
   pendingSnapImages: string[] | undefined;
-  setActiveSellerTab: (tab: 'listings' | 'inventory' | 'orders' | 'settings' | 'snap') => void;
+  setActiveSellerTab: (
+    tab: "listings" | "inventory" | "orders" | "settings" | "snap" | "create",
+  ) => void;
   setPendingSnapImages: (images: string[] | undefined) => void;
 
   // Search Framework
@@ -48,41 +76,44 @@ interface AppState {
   // Global UX Context Overlays
   isTourActive: boolean;
   highlightedElement: string | undefined;
-  infoModalType: 'about' | 'privacy' | 'terms' | 'contact' | null;
+  infoModalType: "about" | "privacy" | "terms" | "contact" | null;
   isSearchModalOpen: boolean;
   setTourActive: (active: boolean) => void;
   setHighlightedElement: (elId: string | undefined) => void;
-  setInfoModalType: (type: 'about' | 'privacy' | 'terms' | 'contact' | null) => void;
+  setInfoModalType: (
+    type: "about" | "privacy" | "terms" | "contact" | null,
+  ) => void;
   setSearchModalOpen: (open: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
   // Auth & User Lifecycle Initializers
   user: null,
-  userRole: (localStorage.getItem('parts_peddle_user_role') as 'buyer' | 'seller') || 'buyer',
+  userRole:
+    (safeGetItem("parts_peddle_user_role") as "buyer" | "seller") || "buyer",
   profile: null, // Zero client-side placeholders. Await Supabase hook hydration.
-  
+
   setUser: (user) => set({ user }),
   setUserRole: (role) => {
-    localStorage.setItem('parts_peddle_user_role', role);
+    safeSetItem("parts_peddle_user_role", role);
     set({ userRole: role });
   },
   setProfile: (profile) => set({ profile }),
   logout: async () => {
     await supabase.auth.signOut();
-    set({ user: null, userRole: 'buyer', profile: null });
-    localStorage.setItem('parts_peddle_user_role', 'buyer');
+    set({ user: null, userRole: "buyer", profile: null });
+    safeSetItem("parts_peddle_user_role", "buyer");
   },
 
   // Navigation Initialization
-  activeSellerTab: 'listings',
+  activeSellerTab: "listings",
   pendingSnapImages: undefined,
   setActiveSellerTab: (tab) => set({ activeSellerTab: tab }),
   setPendingSnapImages: (images) => set({ pendingSnapImages: images }),
 
   // Catalog Discovery Sync
-  searchQueryText: '',
-  searchCategory: 'All Parts',
+  searchQueryText: "",
+  searchCategory: "All Parts",
   setSearchQueryText: (searchQueryText) => set({ searchQueryText }),
   setSearchCategory: (searchCategory) => set({ searchCategory }),
 
@@ -101,26 +132,26 @@ export const useAppStore = create<AppState>((set, get) => ({
     } else {
       cart.push({ part, quantity: 1 });
     }
-    localStorage.setItem('parts_peddle_cart', JSON.stringify(cart));
+    safeSetItem("parts_peddle_cart", JSON.stringify(cart));
     set({ cart: [...cart], isCartOpen: true });
   },
   removeFromCart: (partId: string) => {
     const cart = getStoredCart().filter((item) => item.part.id !== partId);
-    localStorage.setItem('parts_peddle_cart', JSON.stringify(cart));
+    safeSetItem("parts_peddle_cart", JSON.stringify(cart));
     set({ cart: [...cart] });
   },
   clearCart: () => {
-    localStorage.removeItem('parts_peddle_cart');
+    safeRemoveItem("parts_peddle_cart");
     set({ cart: [] });
   },
 
   // UI Flow Control Tokens
-  isTourActive: !localStorage.getItem('parts_peddle_tour_done'),
+  isTourActive: !safeGetItem("parts_peddle_tour_done"),
   highlightedElement: undefined,
   infoModalType: null,
   isSearchModalOpen: false,
   setTourActive: (isTourActive) => {
-    if (!isTourActive) localStorage.setItem('parts_peddle_tour_done', 'true');
+    if (!isTourActive) safeSetItem("parts_peddle_tour_done", "true");
     set({ isTourActive });
   },
   setHighlightedElement: (highlightedElement) => set({ highlightedElement }),

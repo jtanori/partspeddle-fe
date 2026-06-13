@@ -1,6 +1,5 @@
 import { Share2, Lock, Mail, ShieldAlert, FileText, Info } from 'lucide-react';
-// @ts-ignore
-import logoImg from '../assets/images/logo_rusty.png';
+import logoImg from '../assets/images/logo_solid.png';
 
 interface FooterProps {
   onChangeView: (view: string) => void;
@@ -27,7 +26,7 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
             id="footer-logo"
           >
             <img 
-              src={logoImg} 
+              src={logoImg.src} 
               alt="PartsPeddle Logo" 
               className="w-[200px] h-auto object-contain filter drop-shadow bg-transparent" 
               referrerPolicy="no-referrer"

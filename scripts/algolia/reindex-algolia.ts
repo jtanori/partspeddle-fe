@@ -18,7 +18,7 @@ async function reindexAll() {
     
     await algoliaClient.saveObjects({
       indexName: SEARCH_INDEX_NAME,
-      objects: documents,
+      objects: documents as unknown as Record<string, unknown>[],
     });
     console.log(`✅ Indexed ${i + batchIds.length}/${partIds.length} parts`);
   }

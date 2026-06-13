@@ -4,7 +4,6 @@ import { useAppStore } from '../../store/useAppStore';
 import { LayoutDashboard, Package, ShoppingBag, LogOut, ArrowLeftRight, ChevronDown, ChevronRight, Plus, GitBranch } from 'lucide-react';
 import { SidebarLink } from '../layout/SidebarLink';
 import Link from 'next/link';
-// @ts-ignore
 import logoSolidImg from '../../assets/images/logo_solid.png';
 
 export const SellerSidebar: React.FC = () => {
@@ -37,7 +36,7 @@ export const SellerSidebar: React.FC = () => {
       <div className="space-y-6">
         {/* Brand Anchor: Official Logo */}
         <div className="px-2 py-4 border-b border-dashed border-zinc-800 pb-6">
-          <img src={logoSolidImg} alt="PartsPeddle" className="w-full h-auto object-contain" />
+          <img src={logoSolidImg.src} alt="PartsPeddle" className="w-full h-auto object-contain" />
         </div>
 
         {/* Primary CTA Block */}

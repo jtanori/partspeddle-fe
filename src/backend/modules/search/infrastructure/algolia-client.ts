@@ -1,35 +1,18 @@
-import { algoliasearch } from 'algoliasearch';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
+import { algoliasearch } from "algoliasearch";
+import * as dotenv from "dotenv";
+import * as path from "path";
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 export const algoliaClient = algoliasearch(
-  process.env.VITE_ALGOLIA_APP_ID || '',
-  process.env.VITE_ALGOLIA_ADMIN_API_KEY || ''
+  process.env.ALGOLIA_APP_ID || "",
+  process.env.ALGOLIA_ADMIN_API_KEY || "",
 );
 
-export const SEARCH_INDEX_NAME = 'vintrack_parts_v1';
-
-// Set settings for ranking
-algoliaClient.setSettings({
-  indexName: SEARCH_INDEX_NAME,
-  indexSettings: {
-    searchableAttributes: ['title', 'partTypeName', 'categoryName', 'description'],
-    attributesForFaceting: ['condition', 'categoryName', 'partTypeName', 'sellerVerified', 'makeNames', 'modelNames'],
-    ranking: [
-      'desc(sellerVerified)',
-      'desc(sellerTrustScore)',
-      'desc(listingQualityScore)',
-      'desc(createdAt)',
-      'typo',
-      'geo',
-      'words',
-      'filters',
-      'proximity',
-      'attribute',
-      'exact',
-      'custom'
-    ]
-  }
-}).catch(console.error);
+export const SEARCH_INDEX_NAME =
+  process.env.ALGOLIA_SEARCH_INDEX_NAME || "parts";
+export const INDEX_PRICE_ASC =
+  process.env.ALGOLIA_INDEX_PRICE_ASC || "parts_price_asc";
+export const INDEX_PRICE_DESC =
+  process.env.ALGOLIA_INDEX_PRICE_DESC || "parts_price_desc";
+export const INDEX_NEWEST = process.env.ALGOLIA_INDEX_NEWEST || "parts_newest";

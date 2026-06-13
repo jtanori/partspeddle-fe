@@ -5,11 +5,11 @@ import * as path from 'path';
 // Forzar la carga de .env desde la raíz del proyecto
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error('❌ Error: Variables de entorno de Supabase (VITE_SUPABASE_URL, VITE_SUPABASE_SERVICE_ROLE_KEY) faltantes.');
+  console.error('❌ Error: Variables de entorno de Supabase (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) faltantes.');
   process.exit(1);
 }
 

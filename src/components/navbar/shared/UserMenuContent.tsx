@@ -1,6 +1,8 @@
 import React from 'react';
 import { User, Heart, History, HelpCircle, LayoutDashboard, Package, Tag, Settings, LogOut, BookOpen } from 'lucide-react';
 import { UserSession } from '../../../types';
+import userAvatarImg from '../../../assets/images/user_avatar.png';
+import userSellerAvatarImg from '../../../assets/images/user_seller_avatar.png';
 
 interface UserMenuContentProps {
   user: UserSession | null;
@@ -40,7 +42,13 @@ export const UserMenuContent: React.FC<UserMenuContentProps> = ({
     <div className="py-2">
       <div className="px-5 py-3 border-b border-stone-800 flex items-center gap-3">
         <div className="w-11 h-11 rounded-lg bg-charcoal border-2 border-rust-copper overflow-hidden flex-shrink-0">
-          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=120" alt={user.email || 'avatar'} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          <img 
+            src={profile?.avatar_url || profile?.logo_url || profile?.logoUrl || (userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src)} 
+            alt={user.email || 'avatar'} 
+            className="w-full h-full object-cover" 
+            referrerPolicy="no-referrer"
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src; }}
+          />
         </div>
         <div className="min-w-0">
           <p className="font-display text-[10px] text-warm-gray uppercase tracking-wider font-bold">LOGGED IN ACCOUNT</p>

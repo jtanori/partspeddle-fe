@@ -1,22 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Search, 
-  X, 
-  Check, 
-  HelpCircle, 
-  Cog, 
-  Compass, 
-  Disc, 
-  Zap, 
-  Car, 
-  Armchair, 
-  ArrowRight, 
-  ShieldAlert, 
+import React, { useState, useEffect, useRef } from "react";
+import { supabase } from "@/lib/supabase";
+import {
+  Search,
+  X,
+  Cog,
+  Compass,
+  Disc,
+  Zap,
+  Car,
+  Armchair,
+  ArrowRight,
+  ShieldAlert,
   Clock,
-  Trash2
-} from 'lucide-react';
-// ... imports
-import { Part, PARTS_FALLBACK_IMAGE } from '../types';
+  Trash2,
+} from "lucide-react";
+import { Part, PARTS_FALLBACK_IMAGE } from "../types";
+import { saveRecentSearch } from "./search/utils/recent-searches";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -26,21 +25,28 @@ interface SearchModalProps {
   initialQuery?: string;
 }
 
-const SYSTEMS_LIST = ['Powertrain', 'Suspension & Steering', 'Brake System', 'Electrical System', 'Body & Exterior', 'Interior'];
+const SYSTEMS_LIST = [
+  "Powertrain",
+  "Suspension & Steering",
+  "Brake System",
+  "Electrical System",
+  "Body & Exterior",
+  "Interior",
+];
 
 const getSystemIcon = (sysId: string) => {
   switch (sysId) {
-    case 'Powertrain':
+    case "Powertrain":
       return Cog;
-    case 'Suspension & Steering':
+    case "Suspension & Steering":
       return Compass;
-    case 'Brake System':
+    case "Brake System":
       return Disc;
-    case 'Electrical System':
+    case "Electrical System":
       return Zap;
-    case 'Body & Exterior':
+    case "Body & Exterior":
       return Car;
-    case 'Interior':
+    case "Interior":
       return Armchair;
     default:
       return Cog;
@@ -48,22 +54,38 @@ const getSystemIcon = (sysId: string) => {
 };
 
 const PART_THUMBNAILS: Record<string, string> = {
-  '1100428': 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=300',
-  '1100429': 'https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?auto=format&fit=crop&q=80&w=300',
-  '1100430': 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=300',
-  '1100431': 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&q=80&w=300',
-  '1100432': 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300',
-  'th400-trans': 'https://images.unsplash.com/photo-1504222014244-63be825126f5?auto=format&fit=crop&q=80&w=300',
-  'holley-4160': 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=300',
-  'f150-door': 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=300',
-  'ford9-rearend': 'https://images.unsplash.com/photo-1530047625168-4b18fa65f242?auto=format&fit=crop&q=80&w=300',
-  'brembo-caliper-red': 'https://images.unsplash.com/photo-1606577924006-27d39b132af2?auto=format&fit=crop&q=80&w=300',
-  'eibach-springs-sports': 'https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=300',
-  'wilwood-disc-rotors': 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=300',
-  'bilstein-b6-strut': 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=300',
-  'custom-steering-wheel': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=300',
-  'edelbrock-manifold': 'https://images.unsplash.com/photo-1551524559-8af4e6624178?auto=format&fit=crop&q=80&w=300',
-  'msd-ignition-box': 'https://images.unsplash.com/photo-1532585078488-03b0ff297fea?auto=format&fit=crop&q=80&w=300'
+  "1100428":
+    "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=300",
+  "1100429":
+    "https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?auto=format&fit=crop&q=80&w=300",
+  "1100430":
+    "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=300",
+  "1100431":
+    "https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&q=80&w=300",
+  "1100432":
+    "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300",
+  "th400-trans":
+    "https://images.unsplash.com/photo-1504222014244-63be825126f5?auto=format&fit=crop&q=80&w=300",
+  "holley-4160":
+    "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=300",
+  "f150-door":
+    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=300",
+  "ford9-rearend":
+    "https://images.unsplash.com/photo-1530047625168-4b18fa65f242?auto=format&fit=crop&q=80&w=300",
+  "brembo-caliper-red":
+    "https://images.unsplash.com/photo-1606577924006-27d39b132af2?auto=format&fit=crop&q=80&w=300",
+  "eibach-springs-sports":
+    "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=300",
+  "wilwood-disc-rotors":
+    "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=300",
+  "bilstein-b6-strut":
+    "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=300",
+  "custom-steering-wheel":
+    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=300",
+  "edelbrock-manifold":
+    "https://images.unsplash.com/photo-1551524559-8af4e6624178?auto=format&fit=crop&q=80&w=300",
+  "msd-ignition-box":
+    "https://images.unsplash.com/photo-1532585078488-03b0ff297fea?auto=format&fit=crop&q=80&w=300",
 };
 
 export default function SearchModal({
@@ -71,10 +93,10 @@ export default function SearchModal({
   onClose,
   onSelectPart,
   onSeeAllResults,
-  initialQuery = ''
+  initialQuery = "",
 }: SearchModalProps) {
   const [query, setQuery] = useState(initialQuery);
-  const [selectedSystem, setSelectedSystem] = useState<string>('');
+  const [selectedSystem, setSelectedSystem] = useState<string>("");
   const [matchingParts, setMatchingParts] = useState<Part[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -88,13 +110,21 @@ export default function SearchModal({
   useEffect(() => {
     if (isOpen) {
       try {
-        const saved = localStorage.getItem('partspeddle_recent_searches');
+        const saved = localStorage.getItem("partspeddle_recent_searches");
         if (saved) {
-          setRecentSearches(JSON.parse(saved));
+          const parsed = JSON.parse(saved);
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setRecentSearches(
+            parsed.map((s: any) => (typeof s === "string" ? s : s.query)),
+          );
         } else {
           // Put some default helpful ones initially if empty
-          const defaults = ['alternator', 'transmission', 'springs', 'caliper'];
-          localStorage.setItem('partspeddle_recent_searches', JSON.stringify(defaults));
+          const defaults = ["alternator", "transmission", "springs", "caliper"];
+          localStorage.setItem(
+            "partspeddle_recent_searches",
+            JSON.stringify(defaults),
+          );
+
           setRecentSearches(defaults);
         }
       } catch (e) {
@@ -106,6 +136,7 @@ export default function SearchModal({
   // Focus the input when the modal opens
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery(initialQuery);
       setTimeout(() => {
         inputRef.current?.focus();
@@ -117,20 +148,20 @@ export default function SearchModal({
   useEffect(() => {
     const fetchResults = async () => {
       const trimmed = query.toLowerCase().trim();
-      
+
       if (trimmed.length < 3 && !selectedSystem) {
         setMatchingParts([]);
         return;
       }
 
-      let dbQuery = supabase.from('parts').select('*');
-      if (selectedSystem) dbQuery = dbQuery.eq('system', selectedSystem);
-      if (trimmed.length >= 3) dbQuery = dbQuery.textSearch('title', trimmed);
-      
+      let dbQuery = supabase.from("parts").select("*");
+      if (selectedSystem) dbQuery = dbQuery.eq("system", selectedSystem);
+      if (trimmed.length >= 3) dbQuery = dbQuery.textSearch("title", trimmed);
+
       const { data, error } = await dbQuery.limit(10);
 
       if (error) {
-        console.error('Search query error:', error);
+        console.error("Search query error:", error);
         setMatchingParts([]);
       } else if (data) {
         setMatchingParts(data as unknown as Part[]);
@@ -146,21 +177,13 @@ export default function SearchModal({
   if (!isOpen) return null;
 
   const saveSearchTerm = (term: string) => {
-    const trimmed = term.trim();
-    if (!trimmed || trimmed.length < 2) return;
-    const updated = [trimmed, ...recentSearches.filter(t => t.toLowerCase() !== trimmed.toLowerCase())].slice(0, 5);
-    setRecentSearches(updated);
-    try {
-      localStorage.setItem('partspeddle_recent_searches', JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
-    }
+    saveRecentSearch(term);
   };
 
   const clearRecentSearches = () => {
     setRecentSearches([]);
     try {
-      localStorage.setItem('partspeddle_recent_searches', JSON.stringify([]));
+      localStorage.removeItem("partspeddle_recent_searches");
     } catch (e) {
       console.error(e);
     }
@@ -168,16 +191,20 @@ export default function SearchModal({
 
   const getConditionColor = (cond: string) => {
     const c = cond.toLowerCase();
-    if (c.includes('new') || c.includes('oem original') || c.includes('original')) {
-      return 'bg-[#B87333] text-zinc-950 font-black';
+    if (
+      c.includes("new") ||
+      c.includes("oem original") ||
+      c.includes("original")
+    ) {
+      return "bg-[#B87333] text-zinc-950 font-black";
     }
-    if (c.includes('excellent')) {
-      return 'bg-[#7A8B6F] text-zinc-950 font-black';
+    if (c.includes("excellent")) {
+      return "bg-[#7A8B6F] text-zinc-950 font-black";
     }
-    if (c.includes('good')) {
-      return 'bg-[#E9DEC1] text-zinc-950 font-bold';
+    if (c.includes("good")) {
+      return "bg-[#E9DEC1] text-zinc-950 font-bold";
     }
-    return 'bg-[#8B6239] text-[#FCFAF8] font-semibold';
+    return "bg-[#8B6239] text-[#FCFAF8] font-semibold";
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -203,7 +230,7 @@ export default function SearchModal({
   };
 
   const handleSystemToggle = (system: string) => {
-    setSelectedSystem(prev => prev === system ? '' : system);
+    setSelectedSystem((prev) => (prev === system ? "" : system));
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -216,27 +243,30 @@ export default function SearchModal({
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[9999] flex items-end justify-center md:items-center md:justify-center transition-all duration-300 animate-fade-in" 
+    <div
+      className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[9999] flex items-end justify-center md:items-center md:justify-center transition-all duration-300 animate-fade-in"
       id="global-search-modal"
     >
       {/* Backdrop clicks dismiss the modal safely */}
-      <div 
-        className="absolute inset-0 z-10 cursor-pointer" 
-        onClick={onClose} 
-      />
+      <div className="absolute inset-0 z-10 cursor-pointer" onClick={onClose} />
 
       {/* Main container: Fullscreen on mobile (< 768px), beautiful centered dialogue on desktop */}
-      <div 
+      <div
         className="bg-[#1A1A1A] md:bg-white text-white md:text-zinc-900 w-full md:w-[75%] md:min-w-[700px] md:max-w-[75%] h-full md:h-[85vh] md:max-h-[85vh] rounded-none md:rounded-2xl z-20 flex flex-col shadow-[0_-15px_45px_rgba(0,0,0,0.5)] md:shadow-[0_20px_60px_rgba(0,0,0,0.2)] md:border md:border-zinc-200 overflow-hidden select-none"
-        style={typeof window !== 'undefined' && window.innerWidth >= 768 ? {} : { 
-          transform: `translateY(${translateY}px)`,
-          transition: isDragging ? 'none' : 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)'
-        }}
+        style={
+          typeof window !== "undefined" && window.innerWidth >= 768
+            ? {}
+            : {
+                transform: `translateY(${translateY}px)`,
+                transition: isDragging
+                  ? "none"
+                  : "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+              }
+        }
         id="search-overlay-container"
       >
         {/* Mobile-only draggable handlebar */}
-        <div 
+        <div
           className="md:hidden pt-3 pb-1 select-none cursor-row-resize active:cursor-grabbing flex-shrink-0 flex justify-center items-center"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -249,7 +279,7 @@ export default function SearchModal({
         {/* Header Region: [✕] close, [Search........................] input, [🔍] submit */}
         <div className="px-4 py-3 border-b border-zinc-800 md:border-zinc-100 flex-shrink-0 flex items-center gap-3">
           {/* Close button  */}
-          <button 
+          <button
             onClick={onClose}
             className="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white md:hover:text-[#1E1E1E] md:hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
             id="btn-close-search-modal"
@@ -276,7 +306,7 @@ export default function SearchModal({
               <button
                 type="button"
                 onClick={() => {
-                  setQuery('');
+                  setQuery("");
                   inputRef.current?.focus();
                 }}
                 className="absolute right-3 top-3 text-zinc-400 hover:text-white md:hover:text-zinc-600 transition-colors cursor-pointer"
@@ -288,7 +318,7 @@ export default function SearchModal({
           </form>
 
           {/* Submit Action Button */}
-          <button 
+          <button
             onClick={handleSearchSubmit}
             className="w-10 h-10 flex items-center justify-center bg-[#B87333] text-white rounded-lg hover:bg-[#A35D1F] active:translate-y-0.5 shadow-sm transition-all cursor-pointer"
             title="Submit Search"
@@ -300,7 +330,6 @@ export default function SearchModal({
 
         {/* Interactive Search Overlay Body Contents */}
         <div className="flex-grow overflow-y-auto p-5 md:p-6 space-y-6 bg-[#1A1A1A] md:bg-white">
-          
           {query.trim().length > 0 && query.trim().length < 3 ? (
             /* Helpful state prompting 3+ chars */
             <div className="text-center py-12 max-w-sm mx-auto space-y-4">
@@ -312,7 +341,11 @@ export default function SearchModal({
                   Entering Search Term...
                 </h4>
                 <p className="text-xs text-zinc-400 md:text-zinc-500 font-sans mt-1.5 leading-relaxed">
-                  Please type <span className="font-bold text-[#B87333]">at least 3 characters</span> to initiate live parts inventory search lookup.
+                  Please type{" "}
+                  <span className="font-bold text-[#B87333]">
+                    at least 3 characters
+                  </span>{" "}
+                  to initiate live parts inventory search lookup.
                 </p>
               </div>
             </div>
@@ -324,7 +357,7 @@ export default function SearchModal({
                 <div className="space-y-2.5">
                   <div className="flex justify-between items-center text-[10px] sm:text-xs font-mono font-bold tracking-wider text-zinc-500 uppercase">
                     <span>Recent Searches</span>
-                    <button 
+                    <button
                       onClick={clearRecentSearches}
                       className="text-zinc-500 hover:text-[#B87333] flex items-center gap-1 cursor-pointer transition-colors"
                     >
@@ -334,7 +367,7 @@ export default function SearchModal({
                   </div>
                   <div className="divide-y divide-zinc-800/50 md:divide-zinc-100 rounded-lg overflow-hidden border border-zinc-800/85 md:border-zinc-200 bg-[#222222] md:bg-zinc-50">
                     {recentSearches.map((term, idx) => (
-                      <div 
+                      <div
                         key={idx}
                         onClick={() => {
                           setQuery(term);
@@ -344,7 +377,9 @@ export default function SearchModal({
                       >
                         <div className="flex items-center gap-2.5">
                           <Clock className="w-4 h-4 text-zinc-500 group-hover:text-[#B87333] transition-colors" />
-                          <span className="font-sans font-medium uppercase tracking-wide">{term}</span>
+                          <span className="font-sans font-medium uppercase tracking-wide">
+                            {term}
+                          </span>
                         </div>
                         <ArrowRight className="w-3.5 h-3.5 text-zinc-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                       </div>
@@ -360,20 +395,25 @@ export default function SearchModal({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {SYSTEMS_LIST.map((sys) => {
-                    const isSelected = selectedSystem.toLowerCase() === sys.toLowerCase();
+                    const isSelected =
+                      selectedSystem.toLowerCase() === sys.toLowerCase();
                     const Icon = getSystemIcon(sys);
                     return (
                       <button
                         key={sys}
                         onClick={() => handleSystemToggle(sys)}
                         className={`p-3 rounded-lg flex items-center gap-2.5 text-left transition-all cursor-pointer border ${
-                          isSelected 
-                          ? 'bg-[#B87333] border-[#B87333] text-white font-bold shadow-md' 
-                          : 'bg-[#222222] md:bg-zinc-50 text-zinc-300 md:text-zinc-700 hover:bg-zinc-800 md:hover:bg-zinc-100 border-zinc-800 md:border-zinc-200'
+                          isSelected
+                            ? "bg-[#B87333] border-[#B87333] text-white font-bold shadow-md"
+                            : "bg-[#222222] md:bg-zinc-50 text-zinc-300 md:text-zinc-700 hover:bg-zinc-800 md:hover:bg-zinc-100 border-zinc-800 md:border-zinc-200"
                         }`}
                       >
-                        <Icon className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-white' : 'text-[#B87333]'}`} />
-                        <span className="text-xs uppercase font-sans font-semibold tracking-wide truncate">{sys}</span>
+                        <Icon
+                          className={`w-4 h-4 flex-shrink-0 ${isSelected ? "text-white" : "text-[#B87333]"}`}
+                        />
+                        <span className="text-xs uppercase font-sans font-semibold tracking-wide truncate">
+                          {sys}
+                        </span>
                       </button>
                     );
                   })}
@@ -384,16 +424,29 @@ export default function SearchModal({
             /* Results feed matching criteria */
             <div className="space-y-3">
               <div className="text-[10px] uppercase tracking-wider font-mono font-bold text-zinc-500 border-b border-zinc-800/80 md:border-zinc-100 pb-2 mb-3">
-                <span>Matching Live Inventory ({matchingParts.length} parts found)</span>
+                <span>
+                  Matching Live Inventory ({matchingParts.length} parts found)
+                </span>
               </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" id="search-modal-results-list">
+
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                id="search-modal-results-list"
+              >
                 {matchingParts.map((part) => {
-                  const thumb = PART_THUMBNAILS[part.id] || PARTS_FALLBACK_IMAGE;
-                  const cleanedTitle = (part.title || '').replace(/^\d{4}\s+/, '');
-                  const yearMatch = part.subtitle.match(/\d{4}-\d{4}/) || part.subtitle.match(/\d{4}/);
-                  const years = yearMatch ? yearMatch[0] : '1981–1987';
-                  const engines = (part.fits || '').replace(/\s+Engines?/gi, '').trim();
+                  const thumb =
+                    PART_THUMBNAILS[part.id] || PARTS_FALLBACK_IMAGE;
+                  const cleanedTitle = (part.title || "").replace(
+                    /^\d{4}\s+/,
+                    "",
+                  );
+                  const yearMatch =
+                    part.subtitle.match(/\d{4}-\d{4}/) ||
+                    part.subtitle.match(/\d{4}/);
+                  const years = yearMatch ? yearMatch[0] : "1981–1987";
+                  const engines = (part.fits || "")
+                    .replace(/\s+Engines?/gi, "")
+                    .trim();
                   const consolidatedSubtitle = `${years} • ${engines}`;
                   return (
                     <div
@@ -407,9 +460,9 @@ export default function SearchModal({
                     >
                       {/* TOP PART: Compacted Image */}
                       <div className="relative h-24 sm:h-26 w-full bg-zinc-950 flex-shrink-0 overflow-hidden">
-                        <img 
-                          src={thumb} 
-                          alt={part.title} 
+                        <img
+                          src={thumb}
+                          alt={part.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 brightness-95"
                           referrerPolicy="no-referrer"
                           onError={(e) => {
@@ -417,7 +470,7 @@ export default function SearchModal({
                             e.currentTarget.src = PARTS_FALLBACK_IMAGE;
                           }}
                         />
-                        
+
                         {/* Compacted Condition Badge */}
                         <span className="absolute bottom-2 left-2 text-[8px] font-display font-medium uppercase tracking-wider bg-black/75 text-[#C4A882] py-0.5 px-1.5 rounded-sm">
                           In Stock
@@ -431,7 +484,9 @@ export default function SearchModal({
                           <div className="flex items-center gap-1 text-[9px] text-[#B87333] font-display font-semibold uppercase tracking-wider mb-1">
                             {(() => {
                               const IconComp = getSystemIcon(part.system);
-                              return <IconComp className="w-3 h-3 text-[#B87333] stroke-[2]" />;
+                              return (
+                                <IconComp className="w-3 h-3 text-[#B87333] stroke-[2]" />
+                              );
                             })()}
                             <span>{part.system}</span>
                           </div>
@@ -441,12 +496,15 @@ export default function SearchModal({
                             {cleanedTitle}
                           </h5>
 
-                          <p className="text-[11px] text-zinc-400 mt-1 font-sans">{consolidatedSubtitle}</p>
+                          <p className="text-[11px] text-zinc-400 mt-1 font-sans">
+                            {consolidatedSubtitle}
+                          </p>
 
                           {/* Conditional specs tags - removed fits tag, keep mileage */}
                           {part.mileage && (
                             <div className="flex flex-wrap gap-1 mt-2 text-[8.5px] font-sans text-zinc-400 font-semibold uppercase">
-                              {typeof part.mileage === 'number' && part.mileage > 0 ? (
+                              {typeof part.mileage === "number" &&
+                              part.mileage > 0 ? (
                                 <span className="bg-[#242424] md:bg-[#F5F0EB]/60 px-1.5 py-0.5 rounded border border-zinc-800 md:border-zinc-150 text-zinc-450">
                                   {part.mileage.toLocaleString()} mi
                                 </span>
@@ -463,7 +521,9 @@ export default function SearchModal({
                             </span>
                           </div>
 
-                          <span className={`font-bold px-2 py-0.5 rounded text-[8.5px] uppercase tracking-wide leading-none font-sans shadow-xs ${getConditionColor(part.condition)}`}>
+                          <span
+                            className={`font-bold px-2 py-0.5 rounded text-[8.5px] uppercase tracking-wide leading-none font-sans shadow-xs ${getConditionColor(part.condition)}`}
+                          >
                             {part.condition}
                           </span>
                         </div>
@@ -484,17 +544,21 @@ export default function SearchModal({
                   No Matching Listings Listed
                 </h4>
                 <p className="text-xs text-zinc-400 md:text-zinc-500 font-sans mt-1.5 leading-relaxed">
-                  We couldn't locate any auto parts matches under "{query}" filter on {selectedSystem || 'all'} systems. Try entering a broader keyword.
+                  We couldn&apos;t locate any auto parts matches under &quot;
+                  {query}&quot; filter on {selectedSystem || "all"} systems. Try
+                  entering a broader keyword.
                 </p>
               </div>
             </div>
           )}
-
         </div>
 
         {/* Footer info layout */}
         {matchingParts.length > 0 && (
-          <div className="px-5 py-3.5 bg-[#222222] md:bg-zinc-50 border-t border-zinc-800 md:border-zinc-200 flex items-center justify-end flex-shrink-0 w-full" id="search-modal-footer-btn-bar">
+          <div
+            className="px-5 py-3.5 bg-[#222222] md:bg-zinc-50 border-t border-zinc-800 md:border-zinc-200 flex items-center justify-end flex-shrink-0 w-full"
+            id="search-modal-footer-btn-bar"
+          >
             <button
               onClick={() => {
                 saveSearchTerm(query);
@@ -509,7 +573,6 @@ export default function SearchModal({
             </button>
           </div>
         )}
-
       </div>
     </div>
   );

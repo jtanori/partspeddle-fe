@@ -1,6 +1,5 @@
 import React from 'react';
-// @ts-expect-error
-import logoImg from '../../../assets/images/logo_rusty.png';
+import logoImg from '../../../assets/images/logo_solid.png';
 
 interface LogoProps {
   onClick: () => void;
@@ -9,7 +8,7 @@ interface LogoProps {
   id?: string;
 }
 
-export const Logo: React.FC<LogoProps> = ({ onClick, src = logoImg, className = "", id }) => (
+export const Logo: React.FC<LogoProps> = ({ onClick, src = logoImg.src, className = "", id }) => (
   <div 
     onClick={onClick} 
     className={`flex items-center cursor-pointer flex-shrink-0 ${className}`}

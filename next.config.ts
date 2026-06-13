@@ -1,9 +1,24 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  experimental: {
-    // Enable any experimental features needed for App Router if necessary
+  async redirects() {
+    return [
+      {
+        source: "/listing",
+        destination: "/search",
+        permanent: true,
+      },
+      {
+        source: "/detail/:id",
+        destination: "/listing/:id",
+        permanent: true,
+      },
+      {
+        source: "/auth",
+        destination: "/login",
+        permanent: false,
+      },
+    ];
   },
 };
 

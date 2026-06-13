@@ -46,13 +46,13 @@ export default function LiveSearchDropdown({
       try {
         const results = await supabaseDb.searchParts({ query: query, partTypes: [], priceRange: [0, 999999] } as any);
         
-        const listingSuggestions = results.slice(0, 8).map((part: Part) => ({
+        const listingSuggestions = results.hits.slice(0, 8).map((part: Part) => ({
           id: `list-${part.id}`,
           type: 'listing',
           partId: part.id,
           part: part,
           label: part.title,
-          desc: `OEM Part • ${part.brand || ''} ${part.model || ''}`
+          desc: `OEM Part • ${part.compatibility?.[0]?.make || 'N/A'} ${part.compatibility?.[0]?.model || ''}`
         }));
         
         setSuggestions(listingSuggestions);

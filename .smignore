@@ -1,0 +1,12 @@
+# SMU Exclusion Patterns
+# Lines starting with # are comments.
+# Patterns are line-separated globs.
+# Trailing slash = directory exclusion.
+
+*.bak
+*.tmp
+*.out
+node_modules/
+.git/
+.next/
+dist/

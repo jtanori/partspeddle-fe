@@ -1,0 +1,4 @@
+{
+  "p95_latency_ms": 500,
+  "error_rate_threshold": 0.01
+}

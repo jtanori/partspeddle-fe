@@ -1,4 +1,4 @@
-import { UserSession, Part, Offer } from '../types';
+import { UserSession, Part, Offer } from '../../types';
 
 export const supabaseMock = {
   getUser: (): UserSession | null => {
@@ -16,6 +16,7 @@ export const supabaseMock = {
       return { error: 'Invalid email address', session: null };
     }
     const session: UserSession = {
+      id: 'mock-user-id',
       email,
       jwt: 'mock-sb-jwt-token-123',
       aud: 'authenticated',
@@ -30,6 +31,7 @@ export const supabaseMock = {
       return { error: 'Please enter a valid email address', session: null };
     }
     const session: UserSession = {
+      id: 'mock-user-id',
       email,
       jwt: 'mock-sb-jwt-token-created',
       aud: 'authenticated',

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 import { Star } from 'lucide-react';
 
 export const PopularSellersSection: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [sellers, setSellers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export const PopularSellersSection: React.FC = () => {
               </div>
             </div>
 
-            <button onClick={() => navigate('/listing')} className="mt-4 w-full text-center text-[10px] font-display font-medium border border-zinc-200 hover:border-[#B87333] hover:text-[#B87333] py-2 rounded-sm transition-all">
+            <button onClick={() => router.push('/search')} className="mt-4 w-full text-center text-[10px] font-display font-medium border border-zinc-200 hover:border-[#B87333] hover:text-[#B87333] py-2 rounded-sm transition-all">
               BROWSE YARD INVENTORY
             </button>
           </div>

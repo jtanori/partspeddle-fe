@@ -1,5 +1,7 @@
 import React from 'react';
 import { UserSession } from '../../../types';
+import userAvatarImg from '../../../assets/images/user_avatar.png';
+import userSellerAvatarImg from '../../../assets/images/user_seller_avatar.png';
 
 interface UserProfileHeaderProps {
   user: UserSession | null;
@@ -13,7 +15,13 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({ user, user
       {user ? (
         <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-lg bg-charcoal border-2 border-rust-copper overflow-hidden flex-shrink-0">
-              <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=120" alt={user.email || 'avatar'} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              <img 
+                src={profile?.avatar_url || profile?.logo_url || profile?.logoUrl || (userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src)} 
+                alt={user.email || 'avatar'} 
+                className="w-full h-full object-cover" 
+                referrerPolicy="no-referrer"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src; }}
+              />
             </div>
             <div className="min-w-0">
                 <p className="text-sm font-bold text-base-cream truncate font-sans">

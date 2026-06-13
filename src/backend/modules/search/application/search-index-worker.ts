@@ -12,7 +12,21 @@ export class SearchIndexWorker {
     this.builder = new BuildSearchDocumentUseCase();
   }
 
-  // ... existing methods ...
+    async processPartDeleted(partId: string): Promise<void> {
+    try {
+        await this.withRetry(async () => {
+            await algoliaClient.deleteObject({
+                indexName: SEARCH_INDEX_NAME,
+                objectID: partId,
+            });
+            logger.info('Part deleted from index successfully', { partId });
+        });
+    } catch (error) {
+        indexFailuresTotal.add(1);
+        logger.error('Failed to delete part from index', { partId, error });
+        throw error;
+    }
+  }
 
   async processPartsUpdated(partIds: string[]): Promise<void> {
     logger.info('Processing batch part update', { count: partIds.length });
@@ -33,20 +47,20 @@ export class SearchIndexWorker {
         await this.withRetry(async () => {
           await algoliaClient.saveObjects({
             indexName: SEARCH_INDEX_NAME,
-            objects: validDocuments,
+            objects: validDocuments as unknown as Record<string, unknown>[],
           });
           indexUpdatesTotal.add(validDocuments.length);
         });
     }
   }
 
-  private async reindexPart(partId: string): Promise<void> {
+  async processPartUpdated(partId: string): Promise<void> {
     try {
         const document = await this.builder.execute(partId);
         await this.withRetry(async () => {
             await algoliaClient.saveObjects({
                 indexName: SEARCH_INDEX_NAME,
-                objects: [document],
+                objects: [document as unknown as Record<string, unknown>],
             });
             indexUpdatesTotal.add(1);
             logger.info('Part reindexed successfully', { partId });

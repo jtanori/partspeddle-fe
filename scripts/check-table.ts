@@ -1,20 +1,13 @@
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-dotenv.config();
 
-const supabase = createClient(process.env.VITE_SUPABASE_URL!, process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!);
+import { supabaseAdmin } from '../src/lib/supabase-admin';
 
-async function checkTable() {
-  const { data, error } = await supabase
-    .from('parts')
-    .select('*')
-    .limit(1);
-
+async function test() {
+  const { data, error } = await supabaseAdmin.from('seller_profiles').select('*').limit(1);
   if (error) {
-    console.error('Error checking table:', error);
+    console.error(error);
   } else {
-    console.log('Table structure sample:', Object.keys(data[0] || {}));
+    console.log(Object.keys(data[0]));
   }
 }
 
-checkTable();
+test();

@@ -32,11 +32,11 @@ export const UserActions: React.FC<UserActionsProps> = ({
     {user && (
       <button 
         onClick={() => showToast('Direct Messages: No new salvage communications.')}
-        className="bg-charcoal border border-oil-dark rounded-lg w-10 h-10 text-base-cream hover:bg-oil-dark hover:text-rust-copper flex items-center justify-center cursor-pointer relative shadow-sm"
+        className="bg-zinc-900 border border-white/10 rounded-sm w-[40px] h-[40px] text-zinc-400 hover:text-base-cream hover:bg-zinc-800 flex items-center justify-center cursor-pointer relative shadow-sm transition-all"
         title="Salvage Direct Messages"
       >
         <MessageSquare className="w-5 h-5" />
-        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rust-copper rounded-full ring-2 ring-steel-black"></span>
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rust-copper rounded-full ring-2 ring-zinc-950"></span>
       </button>
     )}
 
@@ -46,13 +46,13 @@ export const UserActions: React.FC<UserActionsProps> = ({
         onChangeView('auth');
         showToast('Please log in or register to utilize the parts cart.');
       }}
-      className="bg-charcoal border border-oil-dark rounded-lg w-10 h-10 text-base-cream hover:bg-oil-dark hover:text-rust-copper flex items-center justify-center cursor-pointer relative shadow-sm"
+      className="bg-zinc-900 border border-white/10 rounded-sm w-[40px] h-[40px] text-zinc-400 hover:text-base-cream hover:bg-zinc-800 flex items-center justify-center cursor-pointer relative shadow-sm transition-all"
       id="nav-cart-trigger"
       title="Parts cart manager"
     >
       <ShoppingCart className="w-5 h-5" />
       {cartCount > 0 && (
-        <span className="absolute -top-1 -right-1 w-4 h-4 bg-rust-copper text-steel-black text-[10px] font-sans font-bold rounded-full ring-2 ring-steel-black flex items-center justify-center">
+        <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-rust-copper text-zinc-950 text-[10px] font-sans font-black rounded-full ring-2 ring-zinc-950 flex items-center justify-center px-1">
           {cartCount}
         </span>
       )}

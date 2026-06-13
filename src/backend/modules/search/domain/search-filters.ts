@@ -13,4 +13,5 @@ export interface SearchFilters {
 
   priceMin?: number;
   priceMax?: number;
+  sortBy?: 'relevance' | 'price_asc' | 'price_desc' | 'newest';
 }

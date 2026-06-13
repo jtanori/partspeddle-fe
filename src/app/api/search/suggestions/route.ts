@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       ],
     });
 
-    const hits = result.results[0].hits;
+    const hits = (result.results[0] as any).hits;
     const suggestions = Array.from(new Set(hits.map((hit: any) => hit.title))).slice(0, 5);
 
     return NextResponse.json({ suggestions });

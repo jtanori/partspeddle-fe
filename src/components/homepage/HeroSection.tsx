@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useAppStore } from '../../store/useAppStore';
 import { Search } from 'lucide-react';
-// @ts-ignore
 import hero2 from '../../assets/images/hero_2.png';
-// @ts-ignore
 import hero3 from '../../assets/images/hero_3.png';
-// @ts-ignore
 import hero4 from '../../assets/images/hero_4.png';
-// @ts-ignore
 import hero5 from '../../assets/images/hero_5.png';
 
 const HERO_BACKGROUNDS = [
-  { id: 'hero2', url: hero2, title: 'Salvage Sunset', desc: 'Active salvage yard stacks' },
-  { id: 'hero3', url: hero3, title: 'Tractor Repair Yard', desc: 'Iron Horse agricultural repair' },
-  { id: 'hero4', url: hero4, title: 'Muscle Car Shop', desc: 'Vintage dodge restoration workshop' },
-  { id: 'hero5', url: hero5, title: 'Repair Garage', desc: 'Pre-vetted mechanical diagnostic deck' }
+  { id: 'hero2', url: hero2.src, title: 'Salvage Sunset', desc: 'Active salvage yard stacks' },
+  { id: 'hero3', url: hero3.src, title: 'Tractor Repair Yard', desc: 'Iron Horse agricultural repair' },
+  { id: 'hero4', url: hero4.src, title: 'Muscle Car Shop', desc: 'Vintage dodge restoration workshop' },
+  { id: 'hero5', url: hero5.src, title: 'Repair Garage', desc: 'Pre-vetted mechanical diagnostic deck' }
 ];
 
 export const HeroSection: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { searchQueryText, setSearchQueryText, setSearchCategory, setSearchModalOpen } = useAppStore();
   const [activeBgIndex, setActiveBgIndex] = useState(0);
 
@@ -33,7 +29,7 @@ export const HeroSection: React.FC = () => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchCategory('All Parts');
-    navigate('/listing');
+    router.push('/search');
   };
 
   return (

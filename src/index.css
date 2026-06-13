@@ -1,17 +1,16 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-heading: "Inter Tight", "Rajdhani", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --font-display: "Oswald", sans-serif;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-heading: var(--font-heading), sans-serif;
+  --font-heading-tight: var(--font-heading-tight), sans-serif;
+  --font-mono: var(--font-mono), monospace;
+  --font-display: var(--font-display), sans-serif;
 
-  /* Industrial Graphite Tokens (Scoped to Dashboard Only) */
+  /* Industrial Graphite Tokens */
   --color-shell-sidebar: #111315;
   --color-shell-canvas: #171a1e;
   --color-shell-workspace: #1b2025;
@@ -46,11 +45,32 @@
 
   --shadow-panel: 0 8px 24px rgba(0,0,0,.35);
   --shadow-elevated: 0 12px 32px rgba(0,0,0,.45);
+}
 
-  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@layer utilities {
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .animate-fade-in { animation: fade-in 0.5s ease-in-out; }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  .animate-slide-in-right { animation: slide-in-right 0.3s ease-out; }
 }
 
 @layer components {
+  .pp-container {
+    max-width: 80rem; /* 1280px */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width: 100%;
+  }
+
   .terminal-panel {
     background: var(--color-shell-surface);
     border: 1px solid var(--color-border-default);
@@ -63,12 +83,6 @@
     border: 1px solid var(--color-border-default);
     box-shadow: var(--shadow-elevated);
     border-radius: 2px;
-  }
-
-  .terminal-accent-bar {
-    width: 4px;
-    background: var(--color-accent-amber);
-    border-radius: 999px;
   }
 
   .dashboard-shell {
@@ -88,6 +102,11 @@
     pointer-events: none;
     opacity: .25;
     z-index: 50;
+  }
+  
+  .hero-texture {
+    background-image: linear-gradient(to bottom, rgba(139, 98, 57, 0.95), rgba(92, 62, 33, 0.98)), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='brushed'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.12 0.03' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0 0 0 0'/%3E%3C/filter%3E%3Cfilter id='rust'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23brushed)' opacity='0.45'/%3E%3Crect width='100%25' height='100%25' filter='url(%23rust)' opacity='0.35' mix-blend-mode='color-burn'/%3E%3C/svg%3E");
+    background-blend-mode: overlay;
   }
   
   .dashboard-shell * {

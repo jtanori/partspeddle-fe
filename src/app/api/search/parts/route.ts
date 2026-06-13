@@ -1,76 +1,148 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { AlgoliaSearchRepository } from '@/backend/modules/search/infrastructure/algolia-search-repository';
-import { VehicleFitmentSearchService } from '@/backend/modules/search/application/vehicle-fitment-search-service';
-import { searchRequestsTotal, searchSuccessTotal, searchFailuresTotal, searchLatencyMs, tracer } from '@/lib/observability';
-import { logger } from '@/lib/logger';
+import { NextRequest, NextResponse } from "next/server";
+import { AlgoliaSearchRepository } from "@/backend/modules/search/infrastructure/algolia-search-repository";
+import { VehicleFitmentSearchService } from "@/backend/modules/search/application/vehicle-fitment-search-service";
+import {
+  searchRequestsTotal,
+  searchSuccessTotal,
+  searchFailuresTotal,
+  searchLatencyMs,
+  tracer,
+} from "@/lib/observability";
+import { logger } from "@/lib/logger";
 
 const searchRepository = new AlgoliaSearchRepository();
 const fitmentService = new VehicleFitmentSearchService();
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   searchRequestsTotal.add(1);
   const startTime = performance.now();
 
   try {
-    const { searchParams } = new URL(req.url);
-    const q = searchParams.get('q') || '';
-    const makeId = searchParams.get('makeId');
-    const modelId = searchParams.get('modelId');
-    const year = searchParams.get('year');
-    const makeIds = searchParams.get('makeIds');
-    const modelIds = searchParams.get('modelIds');
-    const yearMin = searchParams.get('yearMin');
-    const yearMax = searchParams.get('yearMax');
-    const categoryIds = searchParams.get('categoryIds');
-    const partTypeIds = searchParams.get('partTypeIds');
-    const condition = searchParams.get('condition');
-    const verifiedOnly = searchParams.get('verifiedOnly');
-    const priceMin = searchParams.get('priceMin');
-    const priceMax = searchParams.get('priceMax');
-    const page = searchParams.get('page') || '0';
-    const hitsPerPage = searchParams.get('hitsPerPage') || '20';
+    const body = await req.json();
+    const {
+      query = "",
+      page = 0,
+      hitsPerPage = 20,
+      fitment, // Optional: { makeId, modelId, year }
+      system,
+      category,
+      partTypes,
+      fitmentMake,
+      fitmentModel,
+      fitmentYear,
+      fitmentEngine,
+      conditions,
+      priceRange,
+      sellerType,
+      sortBy,
+    } = body;
+
+    if (query && query.length > 1000) {
+      return NextResponse.json({ error: "Query too long" }, { status: 400 });
+    }
+
+    const filters = {
+      makeIds:
+        fitmentMake && fitmentMake !== "All Makes"
+          ? Array.isArray(fitmentMake)
+            ? fitmentMake
+            : [fitmentMake]
+          : [],
+      modelIds:
+        fitmentModel && fitmentModel !== "All Models"
+          ? Array.isArray(fitmentModel)
+            ? fitmentModel
+            : [fitmentModel]
+          : [],
+      yearMin:
+        fitmentYear && fitmentYear !== "All Years"
+          ? typeof fitmentYear === "string"
+            ? parseInt(fitmentYear)
+            : fitmentYear
+          : undefined,
+      categoryIds: category
+        ? Array.isArray(category)
+          ? category
+          : [category]
+        : system
+          ? Array.isArray(system)
+            ? system
+            : [system]
+          : [],
+      partTypeIds: Array.isArray(partTypes)
+        ? partTypes
+        : partTypes
+          ? [partTypes]
+          : [],
+      condition: Array.isArray(conditions)
+        ? conditions
+        : conditions
+          ? [conditions]
+          : [],
+      verifiedOnly: sellerType === "trusted",
+      // Ignore default range [0, 10000]
+      priceMin:
+        Array.isArray(priceRange) && priceRange[0] > 0
+          ? priceRange[0]
+          : undefined,
+      priceMax:
+        Array.isArray(priceRange) && priceRange[1] < 10000
+          ? priceRange[1]
+          : undefined,
+      sortBy,
+    };
 
     let fitmentFilterIds: string[] | null = null;
-    if (makeId && modelId && year) {
-      fitmentFilterIds = await fitmentService.getPartIdsForVehicle(makeId, modelId, parseInt(year));
+    if (fitment?.makeId && fitment?.modelId && fitment?.year) {
+      fitmentFilterIds = await fitmentService.getCompatiblePartIds(fitment);
     }
-    
-    const filters = {
-      makeIds: makeIds ? makeIds.split(',') : [],
-      modelIds: modelIds ? modelIds.split(',') : [],
-      yearMin: yearMin ? parseInt(yearMin) : undefined,
-      yearMax: yearMax ? parseInt(yearMax) : undefined,
-      categoryIds: categoryIds ? categoryIds.split(',') : [],
-      partTypeIds: partTypeIds ? partTypeIds.split(',') : [],
-      condition: condition ? condition.split(',') : [],
-      verifiedOnly: verifiedOnly === 'true',
-      priceMin: priceMin ? parseFloat(priceMin) : undefined,
-      priceMax: priceMax ? parseFloat(priceMax) : undefined,
-    };
-    
-    const result = await tracer.startActiveSpan('search-repository-query', async (span) => {
-      span.setAttributes({ query: q, page, hitsPerPage });
-      const searchResult = await searchRepository.search(
-        q, 
-        filters, 
-        Number(page), 
-        Number(hitsPerPage)
-      );
-      span.end();
-      return searchResult;
-    });
 
-    const filteredHits = fitmentFilterIds 
-      ? result.hits.filter(hit => fitmentFilterIds!.includes(hit.partId))
+    const result = await tracer.startActiveSpan(
+      "search-repository-query",
+      async (span) => {
+        span.setAttributes({ query, page, hitsPerPage });
+        const searchResult = await searchRepository.search(
+          query,
+          filters,
+          Number(page),
+          Number(hitsPerPage),
+        );
+        span.end();
+        return searchResult;
+      },
+    );
+
+    const filteredHits = fitmentFilterIds
+      ? result.hits.filter((hit) => fitmentFilterIds!.includes(hit.objectID))
       : result.hits;
 
     searchSuccessTotal.add(1);
     searchLatencyMs.record(performance.now() - startTime);
 
-    return NextResponse.json({ ...result, hits: filteredHits, totalHits: filteredHits.length });
+    return NextResponse.json({
+      hits: filteredHits,
+      facets: result.facets || {},
+      totalHits: result.totalHits,
+      page: result.page,
+      totalPages: result.totalPages,
+    });
   } catch (error: any) {
     searchFailuresTotal.add(1);
-    logger.error('Search API handler failed', { error: error.message });
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Log detailed error for debugging
+    console.error("❌ Search API Error:", error);
+    logger.error("Search API degradation - returning empty results", {
+      errorMessage: error.message,
+      errorName: error.name,
+      stack: error.stack,
+    });
+    return NextResponse.json(
+      {
+        hits: [],
+        facets: {},
+        totalHits: 0,
+        warning: `Search currently unavailable: ${error.message}`,
+      },
+      { status: 200 },
+    );
   }
 }

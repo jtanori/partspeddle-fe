@@ -45,16 +45,22 @@ async function processOutbox() {
       }
       
       // 3. Mark processed
-      await supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .from('search_outbox')
         .update({ processed: true, processed_at: new Date().toISOString() })
         .eq('id', event.id);
+      if (updateError) logger.error(`Failed to mark event ${event.id} as processed`, { error: updateError });
     } catch (err) {
-      logger.error(`Failed to process event ${event.id}`, { error: err });
-      // Optionally mark as failed
+      const errorMsg = (err as Error).message || JSON.stringify(err);
+      logger.error(`Failed to process event ${event.id}: ${errorMsg}`);
+      
+      // Mark as failed and increment retry_count
       await supabaseAdmin
         .from('search_outbox')
-        .update({ last_error: (err as Error).message, attempts: (event.attempts || 0) + 1 })
+        .update({ 
+            last_error: errorMsg, 
+            retry_count: (event.retry_count || 0) + 1 
+        })
         .eq('id', event.id);
     }
   }

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import { Eye, Package, TrendingUp, AlertCircle } from 'lucide-react';
@@ -9,7 +9,7 @@ interface InventoryTableProps {
 }
 
 export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user } = useAppStore();
   const [parts, setParts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,7 +126,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
                 </td>
                 <td className="px-8 py-6 text-right">
                     <button 
-                        onClick={() => navigate(`/detail/${part.id}`)} 
+                        onClick={() => router.push(`/listing/${part.id}`)} 
                         className="px-5 py-2.5 bg-shell-canvas border border-border-strong rounded-sm text-text-secondary hover:text-accent-amber hover:border-accent-amber transition-all uppercase font-black text-[10px] tracking-widest shadow-sm active:translate-y-0.5"
                     >
                         Access Node
@@ -166,7 +166,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
                     </div>
                 </div>
                 <button 
-                    onClick={() => navigate(`/detail/${part.id}`)}
+                    onClick={() => router.push(`/listing/${part.id}`)}
                     className="px-4 py-2 bg-shell-canvas border border-border-strong rounded-sm text-[10px] font-black text-accent-amber uppercase tracking-widest"
                 >
                     Access

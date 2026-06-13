@@ -1,74 +1,108 @@
-import React from 'react';
-import { Search } from 'lucide-react';
-import LiveSearchDropdown from './LiveSearchDropdown';
+import React, { useState } from "react";
+import { Search, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { SearchDropdownController } from "../search/SearchDropdownController";
+import { SearchResultsDropdown } from "../search/SearchResultsDropdown";
+import { useSearchCommandRegistry } from "../search/utils/search-command-registry";
+import { LiveSearchResults } from "../search/types/search-types";
+import { saveRecentSearch } from "../search/utils/recent-searches";
 
 interface NavbarSearchProps {
-  navSearchText: string;
-  setNavSearchText: (text: string) => void;
-  isDropdownOpen: boolean;
-  setIsDropdownOpen: (isOpen: boolean) => void;
   placeholderText: string;
-  onSearchSubmit: (text: string) => void;
-  onChangeView: (view: string) => void;
-  onSelectPart?: (partId: string) => void;
 }
 
 export const NavbarSearch: React.FC<NavbarSearchProps> = ({
-  navSearchText,
-  setNavSearchText,
-  isDropdownOpen,
-  setIsDropdownOpen,
   placeholderText,
-  onSearchSubmit,
-  onChangeView,
-  onSelectPart,
 }) => {
-  const handleSearchSubmitLocal = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearchSubmit(navSearchText);
-    onChangeView('listing');
-    setIsDropdownOpen(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [results, setResults] = useState<
+    LiveSearchResults | { recent: any[]; popular: any[] } | null
+  >(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const { executeCommand } = useSearchCommandRegistry();
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (query) {
+      saveRecentSearch(query);
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+    } else {
+      router.push("/search");
+    }
+    setIsFocused(false);
   };
 
   return (
-    <div 
+    <div
       className="relative w-80 lg:w-96 hidden min-[860px]:block portrait:!hidden"
       id="tour-search"
+      onBlur={(e) => {
+        // Prevent closing when clicking inside dropdown
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          setIsFocused(false);
+        }
+      }}
     >
-      <form onSubmit={handleSearchSubmitLocal} className="relative">
+      <form onSubmit={handleSearchSubmit} className="relative">
         <input
+          name="q"
           type="text"
+          autoComplete="off"
           placeholder={placeholderText}
-          value={navSearchText}
-          onChange={(e) => {
-            setNavSearchText(e.target.value);
-            setIsDropdownOpen(true);
-          }}
-          onFocus={() => setIsDropdownOpen(true)}
-          className="w-full bg-charcoal border border-oil-dark rounded-sm px-3 py-2 text-sm text-base-cream placeholder-warm-gray focus:outline-none focus:border-rust-copper focus:ring-1 focus:ring-rust-copper/50 transition-all font-sans font-medium h-[40px]"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          className="w-full bg-charcoal border border-oil-dark rounded-sm px-3 py-2 text-sm text-base-cream placeholder-warm-gray focus:outline-none focus:border-rust-copper focus:ring-1 focus:ring-rust-copper/50 transition-all font-sans font-medium h-[40px] pr-16"
           id="input-nav-search"
         />
-        <button 
-          type="submit"
-          className="absolute right-3 top-2.5 text-warm-gray hover:text-rust-copper cursor-pointer"
-        >
-          <Search className="w-4 h-4" />
-        </button>
+        <div className="absolute right-3 top-2.5 flex items-center gap-2">
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setIsFocused(true);
+              }}
+              className="text-warm-gray hover:text-white cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            type="submit"
+            className="text-warm-gray hover:text-rust-copper cursor-pointer"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        </div>
       </form>
 
-      {isDropdownOpen && (
-        <LiveSearchDropdown 
-          query={navSearchText}
-          onSelectPart={(partId) => {
-            if (onSelectPart) onSelectPart(partId);
-            setIsDropdownOpen(false);
+      {isFocused && (
+        <SearchDropdownController
+          query={query}
+          onResults={setResults}
+          onStateChange={(state) => {
+            if (state === 6) setIsFocused(false); // Executed state
           }}
-          onSeeAll={(q) => {
-            onSearchSubmit(q);
-            onChangeView('listing');
-            setIsDropdownOpen(false);
+        />
+      )}
+
+      {isFocused && results && (
+        <SearchResultsDropdown
+          results={results}
+          onSelect={(s) => {
+            executeCommand(s);
+            setIsFocused(false);
           }}
-          onClose={() => setIsDropdownOpen(false)}
+          onViewAll={() => handleSearchSubmit()}
+          onViewAllSection={(section) => {
+            // Navigate to search page with current query
+            handleSearchSubmit();
+          }}
+          query={query}
+          onClose={() => setIsFocused(false)}
         />
       )}
     </div>

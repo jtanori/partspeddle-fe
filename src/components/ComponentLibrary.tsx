@@ -9,17 +9,8 @@ export default function ComponentLibrary() {
 
   const handleSeed = async () => {
     setSeedStatus('loading');
-    try {
-      const result = await seedDatabase();
-      if (result.success) {
-        setSeedStatus('success');
-      } else {
-        setSeedStatus('error');
-      }
-    } catch (e) {
-      console.error(e);
-      setSeedStatus('error');
-    }
+    setSeedStatus('error');
+    console.warn('Database seeding functionality is currently unavailable.');
   };
 
   // Design foundation color list
@@ -76,7 +67,7 @@ export default function ComponentLibrary() {
         </div>
         <p className="text-xs text-zinc-400 max-w-2xl font-sans">
           Use these tools to manage the transition from mock data to the real Supabase PostgreSQL instance. 
-          Ensure <code className="text-amber-500 font-mono">VITE_SUPABASE_URL</code> and <code className="text-amber-500 font-mono">VITE_SUPABASE_ANON_KEY</code> are set in your <code className="text-zinc-300">.env</code> file.
+          Ensure <code className="text-amber-500 font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and <code className="text-amber-500 font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> are set in your <code className="text-zinc-300">.env</code> file.
         </p>
         <div className="flex items-center gap-4 pt-2">
           <button 

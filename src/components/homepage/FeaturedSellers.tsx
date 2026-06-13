@@ -1,33 +1,47 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Star, MapPin, Award } from 'lucide-react';
 import { supabaseDb } from '../../services/supabase-db';
 import { Seller } from '../../types';
+import { SectionHeader } from '../common/SectionHeader';
+import { EmptyState } from '../common/EmptyState';
+import { ViewAllButton } from '../common/ViewAllButton';
 
-export const FeaturedSellers: React.FC = () => {
-  const navigate = useNavigate();
-  const [sellers, setSellers] = useState<Seller[]>([]);
+interface FeaturedSellersProps {
+  sellers?: Seller[];
+  onViewAll?: () => void;
+}
+
+export const FeaturedSellers: React.FC<FeaturedSellersProps> = ({ sellers: propsSellers, onViewAll }) => {
+  const router = useRouter();
+  const [sellers, setSellers] = useState<Seller[]>(propsSellers || []);
 
   useEffect(() => {
-    const fetchSellers = async () => {
-        try {
-            const data = await supabaseDb.getTopSellers();
-            setSellers(data || []);
-        } catch (err) {
-            console.error('Error fetching featured sellers:', err);
-        }
-    };
-    fetchSellers();
-  }, []);
-
-
+    if (!propsSellers) {
+        const fetchSellers = async () => {
+            try {
+                const data = await supabaseDb.getTopSellers();
+                setSellers(data || []);
+            } catch (err) {
+                console.error('Error fetching featured sellers:', err);
+            }
+        };
+        fetchSellers();
+    } else {
+        setSellers(propsSellers);
+    }
+  }, [propsSellers]);
+  
   return (
     <section className="bg-zinc-100 py-20 px-4">
       <div className="max-w-7xl mx-auto space-y-12">
-        <div className="space-y-2 border-l-4 border-[#B87333] pl-6">
-          <span className="text-[#B87333] font-display font-bold uppercase tracking-widest text-sm">Verified Network</span>
-          <h2 className="text-4xl font-display font-black uppercase text-zinc-900">Featured Recycling Yards</h2>
-        </div>
+        <SectionHeader 
+          title="Featured Recycling Yards"
+          subtitle="Verified Network • Inspected and certified salvage facilities"
+          actions={<ViewAllButton onClick={onViewAll || (() => router.push('/search'))} />}
+        />
 
         {sellers.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -58,7 +72,7 @@ export const FeaturedSellers: React.FC = () => {
                   </div>
 
                   <button 
-                    onClick={() => navigate('/listing')}
+                    onClick={() => router.push('/search')}
                     className="w-full py-2.5 rounded-sm border-2 border-zinc-900 text-zinc-900 font-display font-bold uppercase text-xs hover:bg-zinc-900 hover:text-white transition-all"
                   >
                     View Inventory
@@ -68,16 +82,12 @@ export const FeaturedSellers: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white border-2 border-dashed border-zinc-300 rounded-sm p-12 text-center space-y-6">
-            <h3 className="font-display font-black text-2xl uppercase text-zinc-800">No Verified Yards Currently Active</h3>
-            <p className="text-zinc-500 font-sans max-w-lg mx-auto">Be the first to bring your inventory to the PartsPeddle network. Start listing your salvage units today.</p>
-            <button
-                onClick={() => navigate('/dashboard/snap')}
-                className="px-8 py-3 bg-[#B87333] hover:bg-[#9c5f2b] text-white font-display font-bold uppercase transition-all"
-            >
-                Start Selling Now
-            </button>
-          </div>
+          <EmptyState 
+            title="No Verified Yards Currently Active"
+            description="Be the first to bring your inventory to the PartsPeddle network. Start listing your salvage units today."
+            actionText="Start Selling Now"
+            onAction={() => router.push('/register?role=seller')}
+          />
         )}
       </div>
     </section>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ChevronRight, Heart, Cog, Compass, Disc, Zap, Car, Armchair } from 'lucide-react';
 import { PARTS_FALLBACK_IMAGE } from '../../types';
 import { supabaseDb } from '../../services/supabase-db';
@@ -7,8 +7,27 @@ import { Part } from '../../types';
 
 // ... (getSystemIcon stays)
 
+const getSystemIcon = (sysName: string) => {
+  switch (sysName) {
+    case 'Powertrain':
+      return Cog;
+    case 'Suspension & Steering':
+      return Compass;
+    case 'Brake System':
+      return Disc;
+    case 'Electrical System':
+      return Zap;
+    case 'Body & Exterior':
+      return Car;
+    case 'Interior':
+      return Armchair;
+    default:
+      return Cog;
+  }
+};
+
 export const FeaturedParts: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [parts, setParts] = useState<Part[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +71,7 @@ export const FeaturedParts: React.FC = () => {
             Inspected listings from our highest rated sellers
           </p>
         </div>
-        <button onClick={() => navigate('/listing')} className="text-sm uppercase tracking-wider font-display font-bold text-[#B87333] hover:text-[#C4A882] transition-colors flex items-center gap-1">
+        <button onClick={() => router.push('/search')} className="text-sm uppercase tracking-wider font-display font-bold text-[#B87333] hover:text-[#C4A882] transition-colors flex items-center gap-1">
           View All Parts
           <ChevronRight className="w-4 h-4 stroke-[2.5]" />
         </button>
@@ -64,7 +83,7 @@ export const FeaturedParts: React.FC = () => {
           return (
             <div
               key={part.id}
-              onClick={() => navigate(`/detail/${part.id}`)}
+              onClick={() => router.push(`/listing/${part.id}`)}
               className="w-[82%] sm:w-full flex-shrink-0 sm:flex-shrink snap-start bg-white border border-stone-800/10 rounded shadow-sm hover:shadow-xl hover:border-[#B87333] transition-all flex flex-col justify-between cursor-pointer group"
             >
               <div className="aspect-video relative overflow-hidden bg-zinc-900 rounded-t">

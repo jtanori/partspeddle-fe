@@ -2,6 +2,8 @@ import React from 'react';
 import { UserSession } from '../../../types';
 import { UserMenu } from './UserMenu';
 import { AuthActions } from './AuthActions';
+import userAvatarImg from '../../../assets/images/user_avatar.png';
+import userSellerAvatarImg from '../../../assets/images/user_seller_avatar.png';
 
 interface UserAvatarMenuProps {
   user: UserSession | null;
@@ -29,16 +31,17 @@ export const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
       {user ? (
         <button 
           onClick={handleAvatarClick}
-          className="flex items-center transition-all focus:outline-none cursor-pointer"
+          className="flex items-center transition-all focus:outline-none cursor-pointer rounded-sm overflow-hidden border border-white/10 hover:border-rust-copper/50"
           id="btn-nav-user-menu"
           title="Account menu"
         >
-          <div className="relative w-10 h-10 rounded-lg border border-oil-dark overflow-hidden bg-charcoal">
+          <div className="relative w-[40px] h-[40px] bg-zinc-900">
             <img 
-              src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=120"
+              src={profile?.avatar_url || profile?.logo_url || profile?.logoUrl || (userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src)}
               alt={user.email || 'User avatar'}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src; }}
             />
           </div>
         </button>

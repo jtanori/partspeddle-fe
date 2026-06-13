@@ -1,50 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { HighFidelityHero } from './homepage/HighFidelityHero';
-import { TrustBar } from './homepage/TrustBar';
-import { ListingsGrid } from './homepage/ListingsGrid';
-import { FeaturedSellers } from './homepage/FeaturedSellers';
-import { FinalCTA } from './homepage/FinalCTA';
-import { supabaseDb } from '../services/supabase-db';
-import { Part } from '../types';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { HighFidelityHero } from "./homepage/HighFidelityHero";
+import { TrustBar } from "./homepage/TrustBar";
+import { ListingsGrid } from "./homepage/ListingsGrid";
+import { FeaturedSellers } from "./homepage/FeaturedSellers";
+import { FinalCTA } from "./homepage/FinalCTA";
+import { supabaseDb } from "../services/supabase-db";
+import { Part, Seller } from "../types";
 
 export default function Homepage() {
+  const router = useRouter();
   const [featuredParts, setFeaturedParts] = useState<Part[]>([]);
   const [recentParts, setRecentParts] = useState<Part[]>([]);
+  const [sellers, setSellers] = useState<Seller[]>([]);
 
   useEffect(() => {
-    const fetchParts = async () => {
+    const fetchHomeData = async () => {
       try {
-        const [featured, recent] = await Promise.all([
+        const [featured, recent, topSellers] = await Promise.all([
           supabaseDb.getFeaturedParts(8),
-          supabaseDb.getFeaturedParts(4)
+          supabaseDb.getFeaturedParts(4),
+          supabaseDb.getTopSellers(4),
         ]);
         setFeaturedParts(featured || []);
         setRecentParts(recent || []);
+        setSellers(topSellers || []);
       } catch (err) {
-        console.error('Error fetching parts:', err);
+        console.error("Error fetching home page data:", err);
       }
     };
-    fetchParts();
+    fetchHomeData();
   }, []);
+
+  const handleViewAllParts = () => router.push("/search");
+  const handleViewAllSellers = () => router.push("/search");
 
   return (
     <div className="flex flex-col">
       <HighFidelityHero />
       <TrustBar />
-      
-      <ListingsGrid 
-        title="Featured Parts Index" 
-        subtitle="Inspected listings from our highest rated sellers"
-        parts={featuredParts}
-      />
 
-      <ListingsGrid 
-        title="Recently Added Listings" 
+      <ListingsGrid
+        title="Recently Added Listings"
         subtitle="Fresh inventory just hit the floor"
         parts={recentParts}
+        onViewAll={handleViewAllParts}
       />
 
-      <FeaturedSellers />
+      <ListingsGrid
+        title="Featured Parts Index"
+        subtitle="Inspected listings from our highest rated sellers"
+        parts={featuredParts}
+        onViewAll={handleViewAllParts}
+      />
+
+      <FeaturedSellers sellers={sellers} onViewAll={handleViewAllSellers} />
       <FinalCTA />
     </div>
   );

@@ -22,7 +22,7 @@ export const getSearchSuggestionsHandler = async (req: Request, res: Response) =
       ],
     });
 
-    const hits = result.results[0].hits;
+    const hits = (result.results[0] as any).hits;
     
     // Extract unique suggestions from hits (e.g., titles, part types)
     const suggestions = Array.from(new Set(hits.map((hit: any) => hit.title))).slice(0, 5);

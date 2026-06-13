@@ -1,0 +1,14 @@
+[
+  {
+    "query": "Alternador",
+    "expectedTopIds": ["61360ca5-ac44-4a2e-bbf1-ab9748d1c3e0"]
+  },
+  {
+    "query": "Toyota Corolla",
+    "expectedTopIds": ["6c8fef5e-5b0e-4fd2-a680-c239f41628e1"]
+  },
+  {
+    "query": "Ford F-150",
+    "expectedTopIds": ["61360ca5-ac44-4a2e-bbf1-ab9748d1c3e0"]
+  }
+]
