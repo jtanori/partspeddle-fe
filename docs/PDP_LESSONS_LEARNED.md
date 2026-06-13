@@ -19,3 +19,9 @@ This document captures critical architectural and procedural insights gained dur
 ## 4. Operational Hygiene
 - **Artifact Control**: Regular audits and removal of temporary diagnostic files, logs, and unused scripts are critical to maintaining repository health.
 - **Standardized Planning**: Adopting the standardized planning template (Vision ➝ Architecture ➝ Phased Implementation ➝ Promotion Gates) resulted in clearer requirements and higher agent performance.
+
+## 5. Operational & Tooling Lessons
+- **`rtk proxy` for Observability**: When executing commands that generate large volumes of output or require strict output capture, `rtk proxy` is essential to prevent token overhead and ensure the agent correctly monitors execution stdout/stderr.
+- **`npx` as the Fallback**: If the proxy or global tool execution fails, falling back to `npx <command>` directly in a shell command is the definitive way to confirm if the tool exists and is executable in the current environment.
+- **The "Step Down" Principle**: When automated debugging steps (like sub-agent invocations or sequential shell commands) fail repeatedly or behave unpredictably, stop, pause execution, and ask the user for manual verification or intervention. Never force a path that is clearly unstable.
+- **Git Safety First**: Never perform complex refactoring or file deletion without staging and committing stable states *before* the next potentially destructive action. Always verify file existence (`ls -l`, `cat`) before assuming a file is safe to delete or edit.
