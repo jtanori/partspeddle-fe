@@ -1,15 +1,20 @@
 # Documentation Index
 
-Welcome to the PartsPeddle FE documentation. This index provides quick access to active documentation.
+Welcome to the PartsPeddle FE documentation.
+
+## Search Platform (Master Guide)
+- [Search Engine Infrastructure](SEARCH_INFRASTRUCTURE.md)
+  - _High-level system guide, data modeling, synchronization, and ranking principles._
+
+### Search Technical References (Details)
+- [Search Data Flow](SEARCH_DATA_FLOW.md)
+- [Search Index Contract](SEARCH_INDEX_CONTRACT.md)
+- [Search V2 Index Spec](SEARCH_V2_INDEX_SPEC.md)
+- [Search Architecture Snapshot](SEARCH_ARCHITECTURE_SNAPSHOT.md)
+- [Search Command Surface V2 Plan](SEARCH_COMMAND_SURFACE_V2_PLAN.md)
+- [Search Source of Truth](SEARCH_SOURCE_OF_TRUTH.md)
 
 ## Core Architecture
-- [Search Architecture Snapshot](SEARCH_ARCHITECTURE_SNAPSHOT.md)
-- [Search Data Flow](SEARCH_DATA_FLOW.md)
-- [Search Infrastructure](SEARCH_INFRASTRUCTURE.md)
-- [Search Index Contract](SEARCH_INDEX_CONTRACT.md)
-- [Search Source of Truth](SEARCH_SOURCE_OF_TRUTH.md)
-- [Search V2 Index Spec](SEARCH_V2_INDEX_SPEC.md)
-- [Search Command Surface V2 Plan](SEARCH_COMMAND_SURFACE_V2_PLAN.md)
 - [System of Record](SYSTEM_OF_RECORD.md)
 - [Next App Router Architecture](NEXT_APP_ROUTER_ARCHITECTURE.md)
 

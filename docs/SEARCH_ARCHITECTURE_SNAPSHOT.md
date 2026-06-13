@@ -1,8 +1,10 @@
 # Search Architecture Snapshot
 
-## Overview
+> **Master Reference**: For detailed system architecture, data modeling, and synchronization strategies, please refer to the [Search Engine Infrastructure](SEARCH_INFRASTRUCTURE.md) document.
 
+## Overview
 This document serves as a consolidated reference for the current search implementation, designed for architectural review and remediation planning.
+
 
 ## 1. Methodology & Workflow
 
