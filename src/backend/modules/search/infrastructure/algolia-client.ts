@@ -6,7 +6,7 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 export const algoliaClient = algoliasearch(
   process.env.ALGOLIA_APP_ID || "",
-  process.env.ALGOLIA_ADMIN_API_KEY || "",
+  process.env.ALGOLIA_ADMIN_KEY || "",
 );
 
 export const SEARCH_INDEX_NAME =

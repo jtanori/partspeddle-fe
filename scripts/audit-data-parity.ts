@@ -5,7 +5,7 @@ dotenv.config();
 
 const algoliaClient = algoliasearch(
   process.env.ALGOLIA_APP_ID || "",
-  process.env.ALGOLIA_ADMIN_API_KEY || "",
+  process.env.ALGOLIA_ADMIN_KEY || "",
 );
 const INDEX_NAME = "parts";
 

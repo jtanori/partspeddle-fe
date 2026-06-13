@@ -27,11 +27,11 @@
 
 ## 4. Required Secrets
 
-| Component      | Variable                                                                        |
-| :------------- | :------------------------------------------------------------------------------ |
-| **Supabase**   | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SUPABASE_SERVICE_ROLE_KEY` |
-| **Algolia**    | `VITE_ALGOLIA_APP_ID`, `VITE_ALGOLIA_ADMIN_API_KEY`, `VITE_ALGOLIA_SEARCH_KEY`  |
-| **Monitoring** | `SENTRY_DSN`                                                                    |
+| Component      | Variable                                                         |
+| :------------- | :--------------------------------------------------------------- |
+| **Supabase**   | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` |
+| **Algolia**    | `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, `ALGOLIA_SEARCH_KEY`      |
+| **Monitoring** | `SENTRY_DSN`                                                     |
 
 ## 5. Configuration (`fly.toml`)
 

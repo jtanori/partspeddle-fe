@@ -1,27 +1,28 @@
-'use client';
+import React from "react";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import ProductDetailClient from "@/components/ProductDetailClient";
 
-import React from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import ProductDetail from '@/components/ProductDetail';
-import { useAppStore } from '@/store/useAppStore';
+interface Props {
+  params: Promise<{ id: string }>;
+}
 
-export default function ListingDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const { addToCart } = useAppStore();
-  
-  const id = params.id as string;
+export default async function ListingDetailPage({ params }: Props) {
+  const { id } = await params;
 
-  if (!id) return null;
+  // Server-side fetch
+  const { data: part, error } = await supabaseAdmin
+    .from("parts")
+    .select("*, seller_profiles(*)")
+    .eq("id", id)
+    .single();
+
+  if (error || !part) {
+    return <div>Part not found</div>;
+  }
 
   return (
     <div className="bg-base-cream min-h-screen">
-      <ProductDetail 
-        partId={id} 
-        onBack={() => router.back()} 
-        onAddToCart={addToCart}
-        onSelectPart={(partId) => router.push(`/listing/${partId}`)}
-      />
+      <ProductDetailClient initialPart={part} />
     </div>
   );
 }

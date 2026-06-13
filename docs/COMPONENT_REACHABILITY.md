@@ -1,5 +1,3 @@
-<!-- generated-by: gsd-doc-writer -->
-
 # Component Reachability Audit
 
 | Component                   | Status       | File Path                                           |
@@ -14,18 +12,7 @@
 | **SearchModal**             | ACTIVE       | `src/components/SearchModal.tsx`                    |
 | **GridResultsView**         | ACTIVE       | `src/components/search/GridResultsView.tsx`         |
 | **SearchResultsController** | ACTIVE       | `src/components/search/SearchResultsController.tsx` |
-| **EmptyInventoryState**     | **ORPHANED** | `src/components/catalog/EmptyInventoryState.tsx`    |
-| **ProductCard**             | **ORPHANED** | `src/components/catalog/ProductCard.tsx`            |
-| **ConfidenceBadge**         | **ORPHANED** | `src/components/common/ConfidenceBadge.tsx`         |
-| **ImageOptimizer**          | **ORPHANED** | `src/components/common/ImageOptimizer.tsx`          |
-| **ProfileGridCard**         | **ORPHANED** | `src/components/common/ProfileGridCard.tsx`         |
-| **AbortConfirmationModal**  | **ORPHANED** | `src/components/modals/AbortConfirmationModal.tsx`  |
-| **SearchErrorBoundary**     | **ORPHANED** | `src/components/SearchErrorBoundary.tsx`            |
-
-## Required Action
-
-Delete **ORPHANED** components before promotion to clean up the codebase.
 
 ## Audit Verdict
 
-**STATUS: FAIL** (Orphaned components detected)
+**STATUS: PASS**

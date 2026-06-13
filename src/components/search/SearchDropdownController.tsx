@@ -49,12 +49,29 @@ export const SearchDropdownController: React.FC<
       return;
     }
 
-    // Special Detection Logic (VIN/Part Number)
+    // Special Detection Logic (VIN/Part Number/Vehicle)
     const isVin = query.length === 17;
     const isPartNumber = /^[A-Z0-9-]{5,}$/.test(query);
+    // Rough pattern for Make/Model/Year, e.g., "Toyota Corolla 2020"
+    const isVehicleCombo = /^[A-Z][a-z]+ [A-Z][a-z]+ \d{4}$/.test(query);
+
+    // Don't search if query is too short
+    if (query.length < 2 && !isVin && !isPartNumber && !isVehicleCombo) {
+      transition(SearchInputState.FOCUSED);
+      onResults(null);
+      return;
+    }
 
     transition(SearchInputState.LOADING);
     const { version, signal } = startNewRequest();
+
+    const emptyResults: LiveSearchResults = {
+      metadata: { totalHits: 0, query: query, generatedAt: Date.now() },
+      products: { hits: [], total: 0 },
+      vehicles: { hits: [], total: 0 },
+      taxonomy: { hits: [], total: 0 },
+      manufacturers: { hits: [], total: 0 },
+    };
 
     const debounce = globalThis.setTimeout(async () => {
       try {
@@ -64,7 +81,6 @@ export const SearchDropdownController: React.FC<
         } as any);
 
         if (version === getCurrentVersion() && !signal.aborted) {
-          console.log("DEBUG: Algolia Hit Example:", (rawHits || hits)[0]);
           const projectedResults = projectSearchResults(
             (rawHits || hits) as Record<string, unknown>[],
             totalHits,
@@ -88,6 +104,12 @@ export const SearchDropdownController: React.FC<
               type: "part_number",
               label: "Part Number Match: Search This Part →",
             });
+          } else if (isVehicleCombo) {
+            decoratedResults.special.push({
+              id: "vehicle-match",
+              type: "vehicle",
+              label: `Vehicle Match: See parts for "${query}" →`,
+            });
           }
 
           if (
@@ -98,7 +120,7 @@ export const SearchDropdownController: React.FC<
             decoratedResults.special.length === 0
           ) {
             transition(SearchInputState.NO_RESULTS);
-            onResults(null);
+            onResults(emptyResults);
           } else {
             transition(SearchInputState.RESULTS);
             onResults(decoratedResults as any);
@@ -108,7 +130,7 @@ export const SearchDropdownController: React.FC<
         if (!signal.aborted) {
           console.error("Search error:", err);
           transition(SearchInputState.NO_RESULTS);
-          onResults(null);
+          onResults(emptyResults);
         }
       }
     }, 150);

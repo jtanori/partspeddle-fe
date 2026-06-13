@@ -8,6 +8,7 @@ import {
   Clock,
   Zap,
   AlertCircle,
+  AlertTriangle,
 } from "lucide-react";
 
 interface SearchResultsDropdownProps {
@@ -68,14 +69,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
         case "Tab":
           if (allSuggestions[selectedIndex]) {
             e.preventDefault();
-            console.log("analytics:suggestion_clicked", {
-              type: allSuggestions[selectedIndex].type,
-            });
             onSelect(allSuggestions[selectedIndex]);
           }
           break;
         case "Escape":
-          console.log("analytics:dropdown_closed");
           onClose();
           break;
       }
@@ -85,11 +82,43 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
       globalThis.window.removeEventListener("keydown", handleKeyDown);
   }, [allSuggestions, selectedIndex, onSelect, onClose, results]);
 
+  const isNoResults = allSuggestions.length === 0 && !("recent" in results);
   const isFocusedState = "recent" in results;
 
+  const isSpecialState = isNoResults || (results as any).special?.length > 0;
+  const wrapperWidth = isSpecialState ? "w-fit min-w-[300px]" : "w-[800px]";
+
   return (
-    <div className="absolute top-[calc(100%+8px)] right-0 w-[800px] max-w-[90vw] bg-white border border-zinc-200 shadow-2xl z-50 rounded-lg overflow-hidden max-h-[720px] overflow-y-auto">
-      {isFocusedState ? (
+    <div
+      className={`absolute top-[calc(100%+8px)] right-0 ${wrapperWidth} max-w-[90vw] bg-white border border-zinc-200 shadow-2xl z-50 rounded-lg overflow-hidden max-h-[720px] overflow-y-auto`}
+    >
+      {isNoResults ? (
+        <div className="p-6">
+          <div className="flex flex-col items-center justify-center text-center space-y-4">
+            <div className="flex items-center gap-3 text-zinc-900">
+              <Search className="w-6 h-6 text-zinc-400" />
+              <h3 className="text-lg font-bold">No matches found</h3>
+            </div>
+            <div className="text-sm text-zinc-500 text-left w-full max-w-[200px]">
+              <p className="mb-2 font-medium">Try searching by:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Part Number</li>
+                <li>VIN</li>
+                <li>Make / Model / Year</li>
+                <li>Category</li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-zinc-100 mt-6 pt-4 text-center">
+            <button
+              onClick={() => onViewAll()}
+              className="text-blue-600 font-semibold hover:underline text-sm"
+            >
+              Search anyway for &quot;{query}&quot; →
+            </button>
+          </div>
+        </div>
+      ) : isFocusedState ? (
         <div className="grid grid-cols-2 divide-x divide-zinc-100">
           <Section
             title="Recent Searches"
@@ -112,14 +141,32 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
         <>
           <div className="grid grid-cols-4 divide-x divide-zinc-100">
             {(results as any).special?.length > 0 && (
-              <div className="col-span-4 p-4 border-b border-zinc-100 bg-orange-50">
+              <div className="col-span-4 border-b border-zinc-100">
                 {(results as any).special.map((item: SearchSuggestion) => (
                   <div
                     key={item.id}
                     onClick={() => onSelect(item)}
-                    className="text-orange-800 font-bold flex items-center gap-2 cursor-pointer"
+                    onMouseDown={(e) => e.preventDefault()}
+                    className="p-4 bg-zinc-50 hover:bg-zinc-100 flex items-center gap-3 cursor-pointer transition-colors border-b border-zinc-100 last:border-0"
                   >
-                    <AlertCircle className="w-5 h-5" /> {item.label}
+                    <div className="p-2 bg-white rounded-lg border border-zinc-200">
+                      <Search className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-zinc-900">
+                        {item.type === "vin"
+                          ? "VIN Detected"
+                          : item.type === "vehicle"
+                            ? "Vehicle Match"
+                            : "Part Number Match"}
+                      </div>
+                      <div className="text-sm text-blue-600 flex items-center gap-1">
+                        {item.type === "part_number"
+                          ? "Search this part"
+                          : item.label}{" "}
+                        →
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -237,6 +284,7 @@ const Section = ({
           return (
             <li
               key={`${title}-${item.id || "no-id"}-${idx}`}
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => onSelect(item)}
               className={`text-sm flex items-center gap-2 cursor-pointer p-1.5 rounded transition-colors ${
                 isSelected

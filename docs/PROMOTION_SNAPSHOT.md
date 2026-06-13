@@ -4,7 +4,7 @@
 
 ## Promotion Metadata
 
-- **Certification Date**: 2026-06-11
+- **Certification Date**: 2026-06-13
 - **Certification Level**: Platinum
 - **Status**: PASS
 - **Test coverage verified**: Yes
@@ -12,22 +12,21 @@
 
 ## Repository State
 
-- **Current Branch**: `feat/current-refactor`
-- **Commit SHA**: N/A (Local changes pending commit)
+- **Current Branch**: `feat/search-architecture-consolidation`
 
 ## Changes in This Promotion
 
-- **Scope**: UI Refactor (Backend certified)
+- **Scope**: Search architecture consolidation, legacy index decommissioning, and server-side data fetching refactor for listing detail page.
 
 ## Promotion Status & Risk
 
-- **RPS (Regression Potential Score)**: 25 (Low, as UI refactor only, backend certified)
+- **RPS (Regression Potential Score)**: 25 (Low, as backend logic remains stable)
 - **Final Verdict**: ✅ **PASS**
 
 ## Final Verification Results
 
-- **Functional Test Suite**: 38/38 tests passed.
-- **API Smoke Tests (/, /search, /api/search/parts, /api/health)**: 100% 200 OK.
+- **Functional Test Suite**: 37/37 tests passed.
+- **API Smoke Tests (/, /search, /api/health)**: 100% 200 OK.
 - **Build Status**: Compiled successfully (Turbopack).
 - **Recommendation**: Ready for Promotion.
 

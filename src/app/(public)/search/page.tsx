@@ -29,6 +29,7 @@ function SearchPageContent() {
     totalHits: 0,
   });
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Derive filters from URL
   const filters: SearchFilters = useMemo(
@@ -192,11 +193,9 @@ function SearchPageContent() {
       <main className="flex-1">
         <div className="flex justify-between items-center mb-6">
           <SearchResultsHeader
-            count={hits.length}
+            filters={filters}
             totalCount={pagination.totalHits}
-            currentPage={pagination.currentPage}
-            hitsPerPage={20}
-            query={query}
+            isLoading={isLoading}
           />
           <div className="flex gap-4">
             <SortDropdown
@@ -213,23 +212,9 @@ function SearchPageContent() {
           </div>
         </div>
 
-        {hits.length > 0 && (
-          <div className="mb-6">
-            <Pagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              onPageChange={(page) => {
-                const params = new globalThis.URLSearchParams(
-                  searchParams.toString(),
-                );
-                params.set("page", page.toString());
-                router.replace(`${pathname}?${params.toString()}`);
-              }}
-            />
-          </div>
-        )}
-
-        {hits.length === 0 && query !== "" ? (
+        {isLoading ? (
+          <div className="p-8 text-center text-zinc-500">Searching...</div>
+        ) : hits.length === 0 ? (
           <SearchNoResults onClearSearch={() => router.replace(pathname)} />
         ) : (
           <>
@@ -269,6 +254,7 @@ function SearchPageContent() {
           filters={filters}
           sortBy={sortBy}
           currentPage={Number(searchParams.get("page") || 1)}
+          onLoading={setIsLoading}
           onResults={handleResults}
         />
       </main>

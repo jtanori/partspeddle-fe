@@ -39,4 +39,4 @@ This document defines the target Algolia object structure for the search page re
 1. **Source of Truth**: Consolidate on the `parts` table/index path.
 2. **Schema Migration**: Update `supabase/functions/sync-algolia-webhook/` to transform data into this flat structure.
 3. **Data Enrichment**: Ensure `condition`, `seller_verified`, `seller_trust_score`, and `listing_quality_score` are fetched and indexed.
-4. **Deprecation**: Remove `scripts/sync-to-algolia.ts` and the `parts_inventory` index once the `parts` index is fully migrated and tested.
+4. **Deprecation**: Legacy index cleanup completed.

@@ -1,43 +1,32 @@
 import React from "react";
+import { SearchFilters } from "@/types";
+import { composeSearchHeader } from "./utils/header-utils";
 
 interface SearchResultsHeaderProps {
-  query: string;
-  count: number;
+  filters: SearchFilters;
   totalCount: number;
-  currentPage: number;
-  hitsPerPage: number;
+  isLoading: boolean;
   className?: string;
 }
 
 export const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({
-  query,
-  count,
+  filters,
   totalCount,
-  currentPage,
-  hitsPerPage,
+  isLoading,
   className = "",
 }) => {
-  const currentRangeEnd = Math.min(currentPage * hitsPerPage, totalCount);
+  const { title, subtitle } = composeSearchHeader(
+    filters,
+    totalCount,
+    isLoading,
+  );
 
   return (
     <div className={className}>
       <h1 className="text-2xl font-bold uppercase tracking-tight text-zinc-900">
-        {query ? (
-          <>
-            {count} RESULTS FOR &quot;{query.toUpperCase()}&quot;
-          </>
-        ) : (
-          <>FULL PARTS CATALOG</>
-        )}
+        {title}
       </h1>
-      {!query && (
-        <p className="text-base text-zinc-500 mt-1">
-          Viewing{" "}
-          <span className="font-bold text-zinc-900">{currentRangeEnd}</span> of{" "}
-          <span className="font-bold text-zinc-900">{totalCount}</span> parts in
-          the store
-        </p>
-      )}
+      <p className="text-base text-zinc-500 mt-1">{subtitle}</p>
     </div>
   );
 };

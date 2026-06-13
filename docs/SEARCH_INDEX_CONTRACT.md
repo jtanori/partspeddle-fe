@@ -1,9 +1,11 @@
 # Search Index Contract Audit
 
 ## Overview
+
 This document defines the current state, constraints, and requirements for the Algolia search index implementation for PartsPeddle.
 
 ## Current Indexed Fields (from Edge Function `parts` index)
+
 - objectID (part.id)
 - title
 - description
@@ -18,13 +20,11 @@ This document defines the current state, constraints, and requirements for the A
 - created_at
 
 ## Identified Discrepancies
-- **Dual-Indexing Conflict**: The system appears to be maintaining two separate indexing paths:
-    1. Real-time sync: `parts` table -> `parts` Algolia index (via `supabase/functions/sync-algolia-webhook/`)
-    2. Batch sync: `listings` table -> `parts_inventory` Algolia index (via `scripts/sync-to-algolia.ts`)
 
-This dual-indexing is a critical architectural issue that must be addressed before proceeding with the search page redesign.
+- None currently identified. The system now uses a single `parts` index for all search operations.
 
 ## Required UI Fields (Target)
+
 - Title
 - Price
 - Condition (Currently Missing)

@@ -262,7 +262,7 @@ async function runRetryStormTest(): Promise<{
 
     reportLines.push("", "## Phase 2: Simulate Algolia API Failure");
 
-    const invalidEnv = { ...process.env, ALGOLIA_ADMIN_API_KEY: "invalid_key" };
+    const invalidEnv = { ...process.env, ALGOLIA_ADMIN_KEY: "invalid_key" };
     try {
       await runWorker(invalidEnv);
     } catch (error) {

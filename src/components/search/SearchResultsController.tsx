@@ -9,14 +9,19 @@ export const SearchResultsController: React.FC<{
   filters: any;
   sortBy: string;
   currentPage: number;
+  onLoading?: (loading: boolean) => void;
   onResults: (
     hits: Part[],
     facets: any,
     meta: { totalPages: number; page: number; totalHits: number },
   ) => void;
-}> = ({ query, filters, sortBy, currentPage, onResults }) => {
+}> = ({ query, filters, sortBy, currentPage, onLoading, onResults }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (onLoading) onLoading(loading);
+  }, [loading, onLoading]);
 
   useEffect(() => {
     const fetchResults = async () => {

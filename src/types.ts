@@ -107,6 +107,8 @@ export interface SearchFilters {
   fitmentEngine?: string;
   page?: number;
   hitsPerPage?: number;
+  sortBy?: "price_asc" | "price_desc" | "newest";
+  viewMode?: "grid" | "list";
 }
 
 export interface TourStep {

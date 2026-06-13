@@ -39,10 +39,13 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({
       className="relative w-80 lg:w-96 hidden min-[860px]:block portrait:!hidden"
       id="tour-search"
       onBlur={(e) => {
-        // Prevent closing when clicking inside dropdown
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-          setIsFocused(false);
-        }
+        const target = e.currentTarget;
+        // Use setTimeout to allow click events to register before closing
+        setTimeout(() => {
+          if (target && !target.contains(document.activeElement)) {
+            setIsFocused(false);
+          }
+        }, 150);
       }}
     >
       <form onSubmit={handleSearchSubmit} className="relative">
@@ -54,6 +57,7 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
+          onClick={() => setIsFocused(true)}
           className="w-full bg-charcoal border border-oil-dark rounded-sm px-3 py-2 text-sm text-base-cream placeholder-warm-gray focus:outline-none focus:border-rust-copper focus:ring-1 focus:ring-rust-copper/50 transition-all font-sans font-medium h-[40px] pr-16"
           id="input-nav-search"
         />
@@ -89,22 +93,22 @@ export const NavbarSearch: React.FC<NavbarSearchProps> = ({
         />
       )}
 
-      {isFocused && results && (
+      {/* Always render, use CSS to hide */}
+      <div className={!isFocused ? "hidden" : ""}>
         <SearchResultsDropdown
-          results={results}
+          results={results || { recent: [], popular: [] }}
           onSelect={(s) => {
             executeCommand(s);
             setIsFocused(false);
           }}
           onViewAll={() => handleSearchSubmit()}
           onViewAllSection={(section) => {
-            // Navigate to search page with current query
             handleSearchSubmit();
           }}
           query={query}
           onClose={() => setIsFocused(false)}
         />
-      )}
+      </div>
     </div>
   );
 };
