@@ -28,21 +28,35 @@ export interface FitmentViewModel {
   vehicles: Array<{ year: number; make: string; model: string; engine: string }>;
 }
 
+export interface ShippingViewModel {
+  isFree: boolean;
+  eta: string;
+}
+
+export interface HeaderViewModel {
+  title: string;
+  subtitle: string;
+  rating: number;
+  ratingCount: number;
+  sku: string;
+}
+
 export interface BadgeViewModel {
   isOEM: boolean;
   isTested: boolean;
   warrantyIncluded: boolean;
+  isGoodFit: boolean;
 }
 
 export interface PartViewModel {
   id: string;
-  title: string;
-  subtitle: string;
+  header: HeaderViewModel;
   images: string[];
   pricing: PricingViewModel;
   inventory: InventoryViewModel;
   seller: SellerViewModel;
   fitment: FitmentViewModel;
   badges: BadgeViewModel;
+  shipping: ShippingViewModel;
   description: string;
 }
