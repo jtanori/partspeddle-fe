@@ -16,7 +16,13 @@ export default async function ListingDetailPage({ params }: Props) {
     .eq('id', id)
     .maybeSingle();
 
-  if (error || !part) {
+  if (error) {
+    console.error('Supabase Error:', error);
+    return <div>Error loading part: {error.message}</div>;
+  }
+  
+  if (!part) {
+    console.error('Part not found for ID:', id);
     return <div>Part not found</div>;
   }
 
