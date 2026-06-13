@@ -19,7 +19,10 @@ describe('PriceBlock', () => {
 
   it('renders core charge when present', () => {
     render(<PriceBlock pricing={mockPricing} onAddToCart={() => {}} />);
-    expect(screen.getByText(/Core Charge/i)).toBeDefined();
-    expect(screen.getByText('$30.00')).toBeDefined();
+    // Check for the specific element containing the core charge amount and text
+    const coreChargeElement = screen.getByText((content, element) => {
+        return element?.tagName === 'P' && element.textContent?.includes('Core Charge') && element.textContent?.includes('$30.00');
+    });
+    expect(coreChargeElement).toBeDefined();
   });
 });
