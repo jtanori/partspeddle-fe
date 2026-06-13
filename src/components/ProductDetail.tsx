@@ -15,7 +15,12 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ partId, initialPart, onBack, onAddToCart, onSelectPart }: ProductDetailProps) {
+  console.log('DEBUG: ProductDetail received partId:', partId, 'initialPart:', !!initialPart);
   const [part, setPart] = useState<Part | null>(initialPart || null);
+  
+  useEffect(() => {
+    console.log('DEBUG: ProductDetail part state:', !!part);
+  }, [part]);
   const [seller, setSeller] = useState<Seller | null>(null);
   const [loading, setLoading] = useState(!initialPart);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
