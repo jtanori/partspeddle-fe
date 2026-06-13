@@ -11,3 +11,5 @@ coverage/
 supabase/.temp/
 test-results/
 reports/*.json
+logs/
+tsconfig.tsbuildinfo
