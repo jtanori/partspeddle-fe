@@ -1,6 +1,6 @@
-import React from "react";
-import { supabaseAdmin } from "@/lib/supabase-admin";
-import ProductDetailClient from "@/components/ProductDetailClient";
+import React from 'react';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import ProductDetailClient from '@/components/ProductDetailClient';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -11,10 +11,10 @@ export default async function ListingDetailPage({ params }: Props) {
 
   // Server-side fetch
   const { data: part, error } = await supabaseAdmin
-    .from("parts")
-    .select("*, seller_profiles(*)")
-    .eq("id", id)
-    .single();
+    .from('parts')
+    .select('*, seller_profiles(*)')
+    .eq('id', id)
+    .maybeSingle();
 
   if (error || !part) {
     return <div>Part not found</div>;

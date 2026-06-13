@@ -1,25 +1,22 @@
-"use client";
+'use client';
 
-import { Part } from "../types";
-import ProductDetail from "./ProductDetail";
-import { useRouter } from "next/navigation";
-import { useAppStore } from "@/store/useAppStore";
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useAppStore } from '@/store/useAppStore';
+import { Part } from '../types';
+import ProductDetail from './ProductDetail';
 
-export default function ProductDetailClient({
-  initialPart,
-}: {
-  initialPart: Part;
-}) {
+export default function ProductDetailClient({ initialPart }: { initialPart: Part }) {
   const router = useRouter();
   const { addToCart } = useAppStore();
-
+  
   return (
-    <ProductDetail
-      partId={initialPart.id}
+    <ProductDetail 
+      partId={initialPart.id} 
       initialPart={initialPart}
-      onBack={() => router.back()}
-      onAddToCart={addToCart}
-      onSelectPart={(partId) => router.push(`/listing/${partId}`)}
+      onBack={() => router.back()} 
+      onAddToCart={addToCart} 
+      onSelectPart={(partId) => router.push(`/listing/${partId}`)} 
     />
   );
 }
