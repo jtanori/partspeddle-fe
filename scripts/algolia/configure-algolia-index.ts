@@ -34,11 +34,7 @@ async function configureIndex() {
           "location",
           "year",
         ],
-        customRanking: [
-          "desc(listing_quality_score)",
-          "desc(seller_trust_score)",
-          "desc(created_at)",
-        ],
+        customRanking: [],
         ranking: [
           "typo",
           "geo",
@@ -47,7 +43,6 @@ async function configureIndex() {
           "proximity",
           "attribute",
           "exact",
-          "custom",
         ],
         // Set replicas
         replicas: [INDEX_PRICE_ASC, INDEX_PRICE_DESC, INDEX_NEWEST],
