@@ -5,10 +5,9 @@ import goldenQueries from "./golden-queries.json";
 // Mock the repository
 vi.mock(
   "@/backend/modules/search/infrastructure/algolia-search-repository",
-  () => ({
-    AlgoliaSearchRepository: vi.fn(() => ({
-      search: vi.fn().mockImplementation((query) => {
-        // Return dummy results based on query
+  () => {
+    class MockAlgoliaSearchRepository {
+      search = vi.fn().mockImplementation((query) => {
         if (query === "Alternador") {
           return {
             hits: [
@@ -40,9 +39,10 @@ vi.mock(
           };
         }
         return { hits: [] };
-      }),
-    })),
-  }),
+      });
+    }
+    return { AlgoliaSearchRepository: MockAlgoliaSearchRepository };
+  }
 );
 
 import { POST } from "@/app/api/search/parts/route";

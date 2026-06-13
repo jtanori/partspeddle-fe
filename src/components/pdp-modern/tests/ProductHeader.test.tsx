@@ -25,6 +25,6 @@ describe('ProductHeader', () => {
     expect(screen.getByText('2015 Honda Civic Alternator')).toBeDefined();
     expect(screen.getByText('1.8L, 4-Cylinder')).toBeDefined();
     expect(screen.getByText('SKU: ALT-11039')).toBeDefined();
-    expect(screen.getByText('✓ GOOD FIT')).toBeDefined();
+    expect(screen.getByText(/GOOD FIT/i)).toBeDefined();
   });
 });

@@ -61,6 +61,7 @@
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/express": "^4.17.25",
     "@types/next": "^8.0.7",
     "@types/node": "^22.19.19",

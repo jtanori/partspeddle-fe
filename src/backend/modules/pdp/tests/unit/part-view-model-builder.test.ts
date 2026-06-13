@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { PartViewModelBuilder } from '../application/part-view-model-builder';
+import { PartViewModelBuilder } from '../../application/part-view-model-builder';
+
 import { Part } from '@/types';
 
 describe('PartViewModelBuilder', () => {
