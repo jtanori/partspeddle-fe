@@ -15,13 +15,8 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ partId, initialPart, onBack, onAddToCart, onSelectPart }: ProductDetailProps) {
-  console.log('DEBUG: ProductDetail received partId:', partId, 'initialPart:', !!initialPart);
   const [part, setPart] = useState<Part | null>(initialPart || null);
-  
-  useEffect(() => {
-    console.log('DEBUG: ProductDetail part state:', !!part);
-  }, [part]);
-  const [seller, setSeller] = useState<Seller | null>(null);
+  const [seller, setSeller] = useState<Seller | null>(initialPart?.seller ? (initialPart.seller as Seller) : null);
   const [loading, setLoading] = useState(!initialPart);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -31,33 +26,36 @@ export default function ProductDetail({ partId, initialPart, onBack, onAddToCart
   const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
   const [relatedParts, setRelatedParts] = useState<Part[]>([]);
   const [negotiationState, setNegotiationState] = useState<'idle' | 'sending' | 'replied'>('idle');
-
-  useEffect(() => {
-    if (initialPart) {
-      setLoading(false);
+useEffect(() => {
+  if (initialPart) {
+    setLoading(false);
+    // If seller is not in initialPart, fetch it. Otherwise use initialPart.seller
+    if (!initialPart.seller) {
       const fetchSeller = async () => {
         const { data: sellerData } = await supabase
           .from('seller_profiles')
           .select('*')
           .eq('user_id', initialPart.sellerId)
           .maybeSingle();
+
         if (sellerData) {
-          setSeller({
-            id: sellerData.id,
-            name: sellerData.business_name,
-            rating: 4.8,
-            reviewCount: 0,
-            location: sellerData.location || 'Unknown',
-            partCount: 0,
-            feedbackPercentage: 100,
-            shipsWithin: '1 business day',
-            returnPolicy: '30 Day Returns'
-          });
+           setSeller({
+              id: sellerData.id,
+              name: sellerData.business_name,
+              rating: 4.8,
+              reviewCount: 0,
+              location: sellerData.location || 'Unknown',
+              partCount: 0,
+              feedbackPercentage: 100,
+              shipsWithin: '1 business day',
+              returnPolicy: '30 Day Returns'
+           });
         }
       };
       fetchSeller();
-      return;
     }
+    return;
+  }
 
     let isCurrentFetch = true;
     const loadData = async () => {
@@ -107,8 +105,9 @@ export default function ProductDetail({ partId, initialPart, onBack, onAddToCart
   }, [partId, initialPart]);
 
   useEffect(() => {
-    if (part) {
-      const fetchRelated = async () => {
+    if (initialPart || !part) return; // STRICT GATE
+
+    const fetchRelated = async () => {
         const { data } = await supabase
           .from('parts')
           .select('*')
@@ -116,10 +115,9 @@ export default function ProductDetail({ partId, initialPart, onBack, onAddToCart
           .neq('id', part.id)
           .limit(4);
         if (data) setRelatedParts(data as unknown as Part[]);
-      };
-      fetchRelated();
-    }
-  }, [part]);
+    };
+    fetchRelated();
+  }, [part, initialPart]);
 
   const handlePrevPhoto = () => setActiveImageIdx((prev) => (prev - 1 + (detailPartImages[part?.id || '1100428']?.length || 4)) % (detailPartImages[part?.id || '1100428']?.length || 4));
   const handleNextPhoto = () => setActiveImageIdx((prev) => (prev + 1) % (detailPartImages[part?.id || '1100428']?.length || 4));
