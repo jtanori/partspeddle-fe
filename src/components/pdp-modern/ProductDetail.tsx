@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { PartViewModel } from '@/domain/types/pdp.types';
 import ProductGallery from './ProductGallery';
@@ -12,12 +14,12 @@ import RecentlyViewed from './RecentlyViewed';
 import NeedHelp from './NeedHelp';
 import TrustBar from './TrustBar';
 
-interface PDPRootProps {
+interface ProductDetailProps {
   viewModel: PartViewModel;
   onAddToCart: () => void;
 }
 
-export default function PDPRoot({ viewModel, onAddToCart }: PDPRootProps) {
+export default function ProductDetail({ viewModel, onAddToCart }: ProductDetailProps) {
   const tabs = [
     { id: 'spec', label: 'Specifications', content: <div>Specifications Content</div> },
     { id: 'fitment', label: 'Fitment', content: <div>Fitment Content</div> },

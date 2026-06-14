@@ -5,39 +5,50 @@ export class PartViewModelBuilder {
   build(part: Part, seller: Seller | null): PartViewModel {
     return {
       id: part.id,
-      title: part.title,
-      subtitle: part.subtitle || '',
+      header: {
+        title: part.title,
+        subtitle: part.subtitle || '',
+        rating: 4.8,
+        ratingCount: 128,
+        sku: part.sku || 'N/A',
+      },
       images: part.images || [],
       pricing: {
         partPrice: part.price,
-        coreCharge: 0, // Need to add to DB schema later
-        isCoreRefundable: false,
-        shippingEstimate: 'Calculated at checkout',
-        totalEstimated: part.price,
+        coreCharge: part.coreCharge || 0,
+        isCoreRefundable: !!part.coreCharge,
+        shippingEstimate: 'Free shipping to 12345',
+        totalEstimated: part.price + (part.coreCharge || 0),
       },
       inventory: {
-        quantity: 1, // Need to add to DB schema later
-        status: 'available',
-        isInStock: true,
+        quantity: part.quantity || 0,
+        status: part.status as any || 'available',
+        isInStock: (part.quantity || 0) > 0,
       },
       seller: {
         id: seller?.id || 'unknown',
         displayName: seller?.name || 'Unknown Seller',
-        rating: seller?.rating || 0,
+        rating: seller?.rating || 4.8,
         location: seller?.location || 'Unknown',
         responseTime: '24h',
       },
       fitment: {
         confidence: 'high',
         fitmentScore: 100,
-        vehicles: [],
+        vehicles: part.fitment || [],
       },
       badges: {
         isOEM: part.condition === 'NEW',
         isTested: true,
         warrantyIncluded: true,
+        isGoodFit: true,
       },
-      description: part.description,
+      shipping: {
+        isFree: true,
+        eta: '2 days',
+      },
+      description: part.description || '',
+      crossSell: [], // To be populated by cross-sell service
     };
   }
 }
