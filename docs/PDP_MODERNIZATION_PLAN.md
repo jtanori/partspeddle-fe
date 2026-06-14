@@ -625,11 +625,13 @@ Buy Now
 - [ ] 2.2 Tabs: TabSystem with lazy-loading content.
 - [ ] 2.3 Sidebar: Responsive Sidebar module stack.
 
-## Phase 3: Certification & Regression Testing
+### Phase 5 — Certification & Regression Testing
 - [ ] State matrix validation.
 - [ ] Responsive validation.
 - [ ] Search integration validation.
 - [ ] Cart flow validation.
+- [ ] Execute [Product Detail Page PRC](PDP_PRODUCTION_READY_CERTIFICATION.md).
+
 
 ---
 
