@@ -14,11 +14,11 @@ export class PartViewModelBuilder {
       },
       images: part.images || [],
       pricing: {
-        partPrice: part.price,
+        partPrice: part.price || 0,
         coreCharge: part.coreCharge || 0,
         isCoreRefundable: !!part.coreCharge,
         shippingEstimate: 'Free shipping to 12345',
-        totalEstimated: part.price + (part.coreCharge || 0),
+        totalEstimated: (part.price || 0) + (part.coreCharge || 0),
       },
       inventory: {
         quantity: part.quantity || 0,
