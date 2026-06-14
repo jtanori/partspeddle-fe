@@ -12,8 +12,8 @@ import { injectGroupDrift } from './harness/driftSimulator';
 
 // Mock compiler and adapters for parity gate
 import { SpecificationCompilerImpl } from '../../src/domain/services/specification.compiler';
-import { mapPartToViewModel } from '@/mappers/part.mapper';
-import { projectToSearchDocument } from '@/mappers/search-projection.engine';
+import { mapPartToViewModel } from '../../src/mappers/part.mapper';
+import { projectToSearchDocument } from '../../src/mappers/search-projection.engine';
 
 
 describe("C.0.8 - Specification Semantic Parity Gate", () => {
