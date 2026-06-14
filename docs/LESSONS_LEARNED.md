@@ -29,3 +29,8 @@ This section captures insights gained during the Product Detail Page (PDP) moder
 - **`npx` as the Fallback**: If the proxy or global tool execution fails, falling back to `npx <command>` directly in a shell command is the definitive way to confirm if the tool exists and is executable in the current environment.
 - **The "Step Down" Principle**: When automated debugging steps (like sub-agent invocations or sequential shell commands) fail repeatedly or behave unpredictably, stop, pause execution, and ask the user for manual verification or intervention. Never force a path that is clearly unstable.
 - **Git Safety First**: Never perform complex refactoring or file deletion without staging and committing stable states *before* the next potentially destructive action. Always verify file existence (`ls -l`, `cat`) before assuming a file is safe to delete or edit.
+
+## 6. Composition & Integration Lessons
+- **The "Glue" Layer Risk**: Treating the orchestration layer (Server Component page) as an afterthought causes architectural leaks, forcing business logic back into UI components and creating invalid dependencies between raw DB types and presentational components.
+- **Visual Fidelity as a TDD Constraint**: TDD ensures functional correctness, but it does not guarantee visual fidelity. Component visual specifications must be defined and strictly adhered to during implementation to prevent the "functional but aesthetically hollow" syndrome.
+- **Design System First**: If styling tokens (colors, spacing, typography) are not implemented *before* component implementation, the code rapidly accumulates technical debt via hardcoded values. Refactoring hardcoded values to tokens is exponentially more expensive than using them from the start.
