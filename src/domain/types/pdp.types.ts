@@ -1,5 +1,3 @@
-import { Part } from '../../types';
-
 export interface PricingViewModel {
   partPrice: number;
   coreCharge: number;
@@ -55,6 +53,12 @@ export interface PartSummaryViewModel {
   imageUrl: string;
 }
 
+export interface TabViewModel {
+  id: string;
+  label: string;
+  content: any;
+}
+
 export interface PartViewModel {
   id: string;
   header: HeaderViewModel;
@@ -67,4 +71,5 @@ export interface PartViewModel {
   shipping: ShippingViewModel;
   description: string;
   crossSell: PartSummaryViewModel[];
+  tabs: TabViewModel[];
 }

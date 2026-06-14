@@ -34,7 +34,7 @@ export default async function ListingDetailPage({ params }: Props) {
 
   return (
     <div className="bg-base-cream min-h-screen">
-      <ProductDetail viewModel={viewModel} onAddToCart={() => {}} />
+      <ProductDetail viewModel={viewModel} />
     </div>
   );
 }

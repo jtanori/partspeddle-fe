@@ -48,7 +48,11 @@ export class PartViewModelBuilder {
         eta: '2 days',
       },
       description: part.description || '',
-      crossSell: [], // To be populated by cross-sell service
+      crossSell: [],
+      tabs: [
+        { id: 'spec', label: 'Specifications', content: 'Specs Data' },
+        { id: 'fitment', label: 'Fitment', content: 'Fitment Data' },
+      ],
     };
   }
 }

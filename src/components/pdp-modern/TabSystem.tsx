@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
-
-interface Tab {
-  id: string;
-  label: string;
-  content: React.ReactNode;
-}
+import { PartViewModel } from '@/domain/types/pdp.types';
 
 interface TabSystemProps {
-  tabs: Tab[];
+  viewModel: PartViewModel;
 }
 
-export default function TabSystem({ tabs }: TabSystemProps) {
-  const [activeTab, setActiveTab] = useState(tabs[0].id);
+export default function TabSystem({ viewModel }: TabSystemProps) {
+  const [activeTab, setActiveTab] = useState(viewModel.tabs[0].id);
 
   return (
     <div className="w-full">
       <div className="flex border-b border-zinc-200">
-        {tabs.map((tab) => (
+        {viewModel.tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -31,7 +26,7 @@ export default function TabSystem({ tabs }: TabSystemProps) {
         ))}
       </div>
       <div className="py-6">
-        {tabs.find((t) => t.id === activeTab)?.content}
+        {viewModel.tabs.find((t) => t.id === activeTab)?.content}
       </div>
     </div>
   );
