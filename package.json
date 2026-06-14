@@ -11,7 +11,7 @@
     "clean": "rm -rf .next dist",
     "deps:restore": "bash scripts/restore-deps.sh",
     "preinstall": "npx only-allow pnpm",
-    "test": "vitest run",
+    "test": "vitest run tests/c0_8 tests/certification",
     "db:seed": "tsx src/services/seed-runner.ts",
     "db:seed:users": "tsx scripts/seed-users.ts",
     "db:seed:listings": "tsx scripts/seed-listings.ts",
