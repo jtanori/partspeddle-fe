@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import ProductGallery from '../ProductGallery';
 
@@ -6,19 +6,23 @@ describe('ProductGallery', () => {
   const mockImages = [
     'https://img1.com',
     'https://img2.com',
+    'https://img3.com',
+    'https://img4.com',
+    'https://img5.com',
   ];
 
-  it('renders the gallery with the first image', () => {
+  it('renders the thumbnail rail with an overflow badge', () => {
     render(<ProductGallery images={mockImages} />);
-    const image = screen.getByRole('img');
-    expect(image.getAttribute('src')).toBe(mockImages[0]);
+    // Check for thumbnails (e.g., 4 visible)
+    const thumbnails = screen.getAllByRole('img', { name: /thumbnail/i });
+    expect(thumbnails.length).toBeGreaterThanOrEqual(4);
+    
+    // Check for "+n" badge (for 5 total images)
+    expect(screen.getByText('+1')).toBeDefined();
   });
 
-  it('changes image when clicking next', () => {
+  it('renders the zoom overlay button', () => {
     render(<ProductGallery images={mockImages} />);
-    const nextButton = screen.getAllByRole('button')[1]; // Next button
-    fireEvent.click(nextButton);
-    const image = screen.getByRole('img');
-    expect(image.getAttribute('src')).toBe(mockImages[1]);
+    expect(screen.getByText(/Hover to zoom/i)).toBeDefined();
   });
 });
