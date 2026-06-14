@@ -598,39 +598,38 @@ Buy Now
 
 ---
 
-# Recommended Implementation Order
+# Implementation Plan
 
-### Phase 0 — Infrastructure & Domain
-- Phase I of Vite Decommissioning: Tailwind Native Migration.
-- Domain Contract Design (PartViewModel, PricingViewModel, etc.).
+## Phase 0: Infrastructure & Domain (COMPLETED)
+- [x] Phase I of Vite Decommissioning: Tailwind Native Migration.
+- [x] Domain Contract Design (PartViewModel, PricingViewModel, etc.).
+- [x] Repository layer implementation.
+- [x] ViewModelBuilder implementation.
 
-### Phase 1 — Repository & Domain Definition
-- Repository layer implementation.
-- ViewModelBuilder implementation.
+---
 
-### Phase 2 — Hero Experience
-- Gallery
-- ProductHeader
-- PriceBlock
-- SellerSupportCard
-- Trust Summary Strip
+# New UI/Design System Modernization Roadmap
 
-### Phase 3 — Content Modules
-- Description/Fitment panel
-- Tabs
-- Specifications
+## Phase 0: Design System Foundation
+- [ ] 0.1 Tokens: Centralize Palette, Spacing, Typography.
+- [ ] 0.2 Grid: Implement `PDPLayoutEngine` using 12-column grid.
+- [ ] 0.3 UI Atoms: Create reusable Atoms (Button, Badge, Skeleton).
 
-### Phase 4 — Commerce Enhancements
-- Compatible Parts
-- Recently Viewed
-- Need Help
-- Trust Bar
+## Phase 1: Hero Section (High-Fidelity)
+- [ ] 1.1 Gallery: Implement high-fidelity gallery with hover-zoom.
+- [ ] 1.2 Header: Implement high-fidelity header using HeaderViewModel.
+- [ ] 1.3 Pricing: Implement PriceBlock with Core Charge state variations.
 
-### Phase 5 — Certification & Regression Testing
-- State matrix validation
-- Responsive validation
-- Search integration validation
-- Cart flow validation
+## Phase 2: Information Architecture
+- [ ] 2.1 Panel: Description/Fitment grid panel.
+- [ ] 2.2 Tabs: TabSystem with lazy-loading content.
+- [ ] 2.3 Sidebar: Responsive Sidebar module stack.
+
+## Phase 3: Certification & Regression Testing
+- [ ] State matrix validation.
+- [ ] Responsive validation.
+- [ ] Search integration validation.
+- [ ] Cart flow validation.
 
 ---
 
