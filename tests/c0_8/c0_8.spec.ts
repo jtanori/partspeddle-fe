@@ -1,4 +1,11 @@
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, vi, beforeAll } from 'vitest';
+
+beforeAll(() => {
+  process.env.SUPABASE_URL = 'http://mock';
+  process.env.SUPABASE_ANON_KEY = 'mock';
+  process.env.ALGOLIA_APP_ID = 'mock';
+  process.env.ALGOLIA_ADMIN_KEY = 'mock';
+});
 import { C08_FIXTURES } from './fixtures/c0_8.fixtures';
 import { extractPDPSignature, extractSearchSignature } from './harness/semanticExtractor';
 import { injectGroupDrift } from './harness/driftSimulator';
@@ -7,6 +14,7 @@ import { injectGroupDrift } from './harness/driftSimulator';
 import { SpecificationCompilerImpl } from '../../src/domain/services/specification.compiler';
 import { mapPartToViewModel } from '../../src/mappers/part.mapper';
 import { projectToSearchDocument } from '../../src/mappers/search-projection.engine';
+
 
 describe("C.0.8 - Specification Semantic Parity Gate", () => {
   // In a real implementation, these would be integration tests
