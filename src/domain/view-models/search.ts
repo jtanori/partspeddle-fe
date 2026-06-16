@@ -8,32 +8,35 @@ export interface FacetViewModel {
   }>;
 }
 
-export interface SearchResultViewModel {
+export interface SearchResultCardModel {
   id: string;
   title: string;
-  price: number;
-  image?: string;
-
+  price: string;
+  imageUrl?: string;
   subtitle?: string;
-  facets: Record<string, string | number | boolean>;
-  ranking?: {
-    score: number;
-    reasons?: string[];
+  conditionLabel?: string;
+  conditionColor?: string;
+  sellerName?: string;
+  sellerRating?: number;
+  sellerReviewCount?: number;
+  fitmentSummary?: string;
+  badges: {
+    isOEM: boolean;
+    isTested: boolean;
+    isGoodFit: boolean;
   };
+  facets: Record<string, string | number | boolean>;
 }
 
 export interface SearchViewModel {
-  results: SearchResultViewModel[];
-
+  results: SearchResultCardModel[];
   facets: FacetViewModel[];
-
   pagination: {
     page: number;
     pageSize: number;
     total: number;
     totalPages: number;
   };
-
   meta: {
     source: "ALGOLIA" | "SCGS";
     queryMs?: number;

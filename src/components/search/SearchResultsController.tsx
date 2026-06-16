@@ -3,10 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { supabaseDb } from "@/services/supabase-db";
 import { Part } from "@/types";
-import { computeSearchParity } from "@/projection/search-parity";
-
-// Feature flag simulation
-const ENABLE_SCGS_SHADOW = process.env.NEXT_PUBLIC_ENABLE_SCGS_SHADOW === "true";
+import { buildSearchResultCard } from "@/projection/search";
+import { SearchResultCardModel } from "@/domain/view-models/search";
 
 export const SearchResultsController: React.FC<{
   query: string;
@@ -15,7 +13,7 @@ export const SearchResultsController: React.FC<{
   currentPage: number;
   onLoading?: (loading: boolean) => void;
   onResults: (
-    hits: Part[],
+    cards: SearchResultCardModel[],
     facets: any,
     meta: { totalPages: number; page: number; totalHits: number },
   ) => void;
@@ -39,24 +37,13 @@ export const SearchResultsController: React.FC<{
           page: currentPage - 1, // Algolia is 0-indexed
         };
         
-        // 1. Primary path (Algolia)
         const { hits, facets, page, totalPages, totalHits } =
           await supabaseDb.searchParts(apiFilters as any);
 
-        // 2. Dual-Read Shadow Path (SCGS)
-        if (ENABLE_SCGS_SHADOW) {
-          fetch(`/api/search.scgs?q=${query}&page=${currentPage - 1}`)
-            .then(res => res.json())
-            .then(scgsResults => {
-              if (process.env.NODE_ENV === "development") {
-                const parity = computeSearchParity(hits as any, scgsResults); // Simplified
-                console.table(parity);
-              }
-            })
-            .catch(console.error);
-        }
-
-        onResults(hits, facets, { page, totalPages, totalHits });
+        // Project to SearchViewModel contract
+        const cardModels = (hits as Part[]).map(buildSearchResultCard);
+        
+        onResults(cardModels, facets, { page, totalPages, totalHits });
       } catch (err: any) {
         setError(err.message);
       } finally {

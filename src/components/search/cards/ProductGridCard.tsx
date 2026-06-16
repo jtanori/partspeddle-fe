@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { ThumbsUp, Star, Camera } from "lucide-react";
-import { Part, PartCondition, PARTS_FALLBACK_IMAGE } from "@/types";
-import { getConditionLabel } from "../utils/condition-utils";
+import { PARTS_FALLBACK_IMAGE } from "@/types";
 import { useRouter } from "next/navigation";
 import { ImageModal } from "../ImageModal";
+import { SearchResultCardModel } from "@/domain/view-models/search";
 
 interface ProductGridCardProps {
-  part: Part;
+  card: SearchResultCardModel;
   isFavorite: boolean;
   toggleFavorite: (id: string) => void;
   onSelectPart: (id: string) => void;
-  getConditionColor: (cond: PartCondition) => string;
-  partThumbnail?: string;
 }
 
 const RatingStars = ({ rating, count }: { rating: number; count: number }) => {
@@ -33,34 +31,27 @@ const RatingStars = ({ rating, count }: { rating: number; count: number }) => {
 };
 
 export const ProductGridCard: React.FC<ProductGridCardProps> = ({
-  part,
+  card,
   isFavorite,
   toggleFavorite,
   onSelectPart,
-  getConditionColor,
-  partThumbnail,
 }) => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const hasImage = !!partThumbnail || (part.images && part.images.length > 0);
-  const imageUrl =
-    partThumbnail || (part.images && part.images[0]) || PARTS_FALLBACK_IMAGE;
-
-  const sellerName = part.seller?.businessName || part.seller?.name || "N/A";
-  const sellerRating = part.seller?.rating || 0;
-  const sellerReviewCount = part.seller?.reviewCount || 0;
+  const hasImage = !!card.imageUrl;
+  const imageUrl = card.imageUrl || PARTS_FALLBACK_IMAGE;
 
   return (
     <>
       <div
-        onClick={() => onSelectPart(part.id)}
+        onClick={() => onSelectPart(card.id)}
         className="bg-white border border-zinc-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col cursor-pointer overflow-hidden"
       >
         <div className="aspect-square relative bg-zinc-100 flex items-center justify-center">
           {hasImage ? (
             <img
               src={imageUrl}
-              alt={part.title}
+              alt={card.title}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
@@ -74,7 +65,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              toggleFavorite(part.id);
+              toggleFavorite(card.id);
             }}
             className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full border border-zinc-200 hover:text-blue-500 transition-colors"
           >
@@ -95,37 +86,28 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
 
         <div className="p-4 space-y-1">
           <h3 className="font-bold text-sm text-zinc-900 leading-tight line-clamp-2">
-            {part.title}
+            {card.title}
           </h3>
-          <p className="text-xs text-zinc-500">{part.subtitle}</p>
+          <p className="text-xs text-zinc-500">{card.subtitle}</p>
 
           <div className="pt-2">
             <span className="font-bold text-lg text-zinc-900">
-              {new Intl.NumberFormat("es-MX", {
-                style: "currency",
-                currency: "MXN",
-              }).format(part.price || 0)}
+              {card.price}
             </span>
           </div>
 
           <div className="pt-1">
             <span
-              className={`inline-block px-2 py-0.5 rounded-sm text-[10px] font-semibold ${getConditionColor(part.condition)}`}
+              className={`inline-block px-2 py-0.5 rounded-sm text-[10px] font-semibold ${card.conditionColor}`}
             >
-              {getConditionLabel(part.condition)}
+              {card.conditionLabel}
             </span>
           </div>
 
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/seller/${part.sellerId}`);
-            }}
-            className="pt-2 text-xs text-blue-600 font-bold hover:underline cursor-pointer"
-          >
-            {sellerName}
+          <div className="pt-2 text-xs text-blue-600 font-bold hover:underline cursor-pointer">
+            {card.sellerName}
           </div>
-          <RatingStars rating={sellerRating} count={sellerReviewCount} />
+          <RatingStars rating={card.sellerRating || 0} count={card.sellerReviewCount || 0} />
         </div>
       </div>
       {isModalOpen && (
