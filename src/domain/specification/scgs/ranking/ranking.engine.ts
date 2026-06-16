@@ -21,25 +21,39 @@ export class RankingEngine {
         return a.listingId.localeCompare(b.listingId);
       });
   }
+private static score(artifact: CompiledSemanticArtifact): RankedResult {
+  const factors = artifact.compiled.rankingFactors;
 
-  private static score(artifact: CompiledSemanticArtifact): RankedResult {
-    const factors = artifact.compiled.rankingFactors;
+  const contributions = [
+    { 
+      factor: "listing_quality_score", 
+      weight: this.WEIGHTS.listingQuality, 
+      rawValue: factors.listingQuality, 
+      contribution: this.WEIGHTS.listingQuality * factors.listingQuality 
+    },
+    { 
+      factor: "seller_trust_score", 
+      weight: this.WEIGHTS.sellerTrust, 
+      rawValue: factors.sellerTrust, 
+      contribution: this.WEIGHTS.sellerTrust * factors.sellerTrust 
+    },
+    { 
+      factor: "created_at", 
+      weight: this.WEIGHTS.recency, 
+      rawValue: factors.recency, 
+      contribution: this.WEIGHTS.recency * factors.recency 
+    }
+  ];
 
-    const contributions = [
-      { factor: "listing_quality_score", weight: this.WEIGHTS.listingQuality, rawValue: factors.listingQuality, contribution: this.WEIGHTS.listingQuality * factors.listingQuality },
-      { factor: "seller_trust_score", weight: this.WEIGHTS.sellerTrust, rawValue: factors.sellerTrust, contribution: this.WEIGHTS.sellerTrust * factors.sellerTrust },
-      { factor: "created_at", weight: this.WEIGHTS.recency, rawValue: factors.recency, contribution: this.WEIGHTS.recency * factors.recency }
-    ];
+  const finalScore = contributions.reduce((sum, c) => sum + c.contribution, 0);
 
-    const finalScore = contributions.reduce((sum, c) => sum + c.contribution, 0);
-
-    return {
-      listingId: artifact.listingId,
-      score: finalScore,
-      explanation: {
-        finalScore,
-        contributions
-      }
-    };
-  }
+  return {
+    listingId: artifact.listingId,
+    score: finalScore,
+    explanation: {
+      finalScore,
+      contributions
+    }
+  };
+}
 }
