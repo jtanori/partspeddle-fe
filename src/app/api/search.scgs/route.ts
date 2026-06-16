@@ -15,7 +15,10 @@ export async function GET(req: Request) {
   // 2. Project via new SCGS projection layer, wrapped with RankingEngine integration
   const ranked = RankingEngine.rank(hits.map(h => ({ listingId: h.objectID, categoryId: h.categorySlug } as CompiledSemanticArtifact)));
   
-  const viewModel = buildSearchProjection(hits as any, p, 20, nbHits);
+  // Map ranked order back to original hits
+  const rankedHits = ranked.map(r => hits.find(h => h.objectID === r.listingId)).filter(Boolean);
+
+  const viewModel = buildSearchProjection(rankedHits as any, p, 20, nbHits);
   viewModel.meta.source = "SCGS"; // Now powered by the pipeline
 
   // Attach ranking explainability to results
