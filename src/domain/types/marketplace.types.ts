@@ -38,6 +38,10 @@ export interface MarketplaceListing {
   inventory: InventoryState;
   pricing: PricingState;
   specifications: ListingSpecification[];
+
+  // Ranking factors
+  listingQualityScore: number;
+  sellerTrustScore: number;
 }
 
 export interface PartListing extends MarketplaceListing {

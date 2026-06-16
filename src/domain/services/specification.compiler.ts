@@ -101,8 +101,8 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
       grouped, 
       facets,
       rankingFactors: {
-        listingQuality: listing ? (listing as any).listing_quality_score || 0.5 : 0.5,
-        sellerTrust: listing ? (listing as any).seller_trust_score || 0.5 : 0.5,
+        listingQuality: listing?.listingQualityScore || 0.5,
+        sellerTrust: listing?.sellerTrustScore || 0.5,
         recency: listing ? 1.0 - (Date.now() - new Date(listing.createdAt).getTime()) / (30 * 86400000) : 0.5 
       }
     };
