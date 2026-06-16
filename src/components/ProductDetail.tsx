@@ -1,125 +1,35 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Star, Heart, ShieldCheck, AlertTriangle, RefreshCw, Lock } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { Part, Seller, Offer, PARTS_FALLBACK_IMAGE } from '../types';
 import { NegotiationModal } from './catalog/detail/NegotiationModal';
 
 interface ProductDetailProps {
   partId: string;
-  initialPart?: Part;
+  initialPart: Part & { seller?: Seller | null };
   onBack: () => void;
   onAddToCart: (part: Part) => void;
   onSelectPart: (partId: string) => void;
 }
 
 export default function ProductDetail({ partId, initialPart, onBack, onAddToCart, onSelectPart }: ProductDetailProps) {
-  const [part, setPart] = useState<Part | null>(initialPart || null);
-  const [seller, setSeller] = useState<Seller | null>(null);
-  const [loading, setLoading] = useState(!initialPart);
+  const [part] = useState<Part>(initialPart);
+  const [seller] = useState<Seller | null>(initialPart.seller || null);
+  
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
   const [offerPrice, setOfferPrice] = useState<number>(initialPart?.price || 0);
   const [offerMessage, setOfferMessage] = useState("Hi builder! Submitting an offer for my vintage restorers stack.");
   const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
-  const [relatedParts, setRelatedParts] = useState<Part[]>([]);
   const [negotiationState, setNegotiationState] = useState<'idle' | 'sending' | 'replied'>('idle');
-
-  useEffect(() => {
-    if (initialPart) {
-      setLoading(false);
-      const fetchSeller = async () => {
-        const { data: sellerData } = await supabase
-          .from('seller_profiles')
-          .select('*')
-          .eq('user_id', initialPart.sellerId)
-          .maybeSingle();
-        if (sellerData) {
-          setSeller({
-            id: sellerData.id,
-            name: sellerData.business_name,
-            rating: 4.8,
-            reviewCount: 0,
-            location: sellerData.location || 'Unknown',
-            partCount: 0,
-            feedbackPercentage: 100,
-            shipsWithin: '1 business day',
-            returnPolicy: '30 Day Returns'
-          });
-        }
-      };
-      fetchSeller();
-      return;
-    }
-
-    let isCurrentFetch = true;
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const { data: partData, error: partError } = await supabase
-          .from('parts')
-          .select('*')
-          .eq('id', partId)
-          .maybeSingle();
-        
-        if (partError) throw partError;
-
-        if (isCurrentFetch && partData) {
-          const partAsPart = partData as unknown as Part;
-          setPart(partAsPart);
-          setOfferPrice(Math.round(partAsPart.price * 0.85));
-          
-          const { data: sellerData } = await supabase
-            .from('seller_profiles')
-            .select('*')
-            .eq('user_id', partAsPart.sellerId)
-            .maybeSingle();
-            
-          if (isCurrentFetch && sellerData) {
-             setSeller({
-                id: sellerData.id,
-                name: sellerData.business_name,
-                rating: 4.8,
-                reviewCount: 0,
-                location: sellerData.location || 'Unknown',
-                partCount: 0,
-                feedbackPercentage: 100,
-                shipsWithin: '1 business day',
-                returnPolicy: '30 Day Returns'
-             });
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load part detail:', err);
-      } finally {
-        if (isCurrentFetch) setLoading(false);
-      }
-    };
-    loadData();
-    return () => { isCurrentFetch = false; };
-  }, [partId, initialPart]);
-
-  useEffect(() => {
-    if (part) {
-      const fetchRelated = async () => {
-        const { data } = await supabase
-          .from('parts')
-          .select('*')
-          .eq('system', part.system)
-          .neq('id', part.id)
-          .limit(4);
-        if (data) setRelatedParts(data as unknown as Part[]);
-      };
-      fetchRelated();
-    }
-  }, [part]);
 
   const handlePrevPhoto = () => setActiveImageIdx((prev) => (prev - 1 + (detailPartImages[part?.id || '1100428']?.length || 4)) % (detailPartImages[part?.id || '1100428']?.length || 4));
   const handleNextPhoto = () => setActiveImageIdx((prev) => (prev + 1) % (detailPartImages[part?.id || '1100428']?.length || 4));
   const toggleFavorite = (id: string) => setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
   const triggerSendOffer = async (e: React.FormEvent) => { e.preventDefault(); setNegotiationState('sending'); setTimeout(() => setNegotiationState('replied'), 1500); };
+  
   const getConditionColor = (cond: string) => {
     const c = cond.toLowerCase();
     if (c.includes('new') || c.includes('original')) return 'bg-[#B87333] text-zinc-950 font-black border border-[#A25D1D]/20';
@@ -133,7 +43,6 @@ export default function ProductDetail({ partId, initialPart, onBack, onAddToCart
   };
   const inlinePartImages = detailPartImages[part?.id || '1100428'] || detailPartImages['1100428'];
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#F5F0EB]"><div className="w-8 h-8 border-4 border-[#B87333] border-t-transparent rounded-full animate-spin"></div></div>;
   if (!part) return <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F0EB] text-zinc-500 space-y-4"><AlertTriangle className="w-12 h-12 text-[#B87333]" /><h2 className="text-xl font-display font-bold uppercase">Part Not Found</h2><button onClick={onBack} className="text-[#B87333] hover:underline uppercase text-sm font-bold">Back to Marketplace</button></div>;
   if (!seller) return null;
 
@@ -162,7 +71,7 @@ export default function ProductDetail({ partId, initialPart, onBack, onAddToCart
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white border border-zinc-250 rounded p-6 shadow-xl space-y-5" id="tour-cta">
              <div className="flex items-end justify-between border-b border-zinc-100 pb-4">
-                <div><span className="text-[10px] text-zinc-400 font-sans uppercase tracking-widest block font-semibold">OEM Part Ask</span><span className="font-display font-black text-4xl text-[#1E1E1E]">${part.price.toFixed(2)}</span></div>
+                <div><span className="text-[10px] text-zinc-400 font-sans uppercase tracking-widest block font-semibold">OEM Part Ask</span><span className="font-display font-black text-4xl text-[#1E1E1E]">${(part.price || 0).toFixed(2)}</span></div>
                 <span className="text-xs font-mono bg-emerald-50 text-emerald-800 py-1 px-2.5 rounded-sm border border-emerald-150">🌿 Free Shipping</span>
              </div>
              <button onClick={() => onAddToCart(part)} className="w-full bg-[#B87333] hover:bg-[#8B6239] text-white font-display font-bold uppercase tracking-wider py-3.5 px-4 rounded-sm shadow-md">ADD TO CART</button>

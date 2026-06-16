@@ -40,12 +40,13 @@
     "src",
     "app",
     "scripts",
-
+    "tests",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "supabase",
-    "node_modules"
+    "node_modules",
+    "scripts/archive"
   ]
 }
