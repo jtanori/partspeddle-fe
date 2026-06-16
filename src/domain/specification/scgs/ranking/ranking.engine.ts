@@ -23,17 +23,12 @@ export class RankingEngine {
   }
 
   private static score(artifact: CompiledSemanticArtifact): RankedResult {
-    // Ported factors from inventory
-    const factors: RankingFeatureFactors = {
-      listingQualityScore: 0.8, // In production, extract from artifact.compiled.metadata
-      sellerTrustScore: 0.7,
-      recencyScore: 0.9
-    };
+    const factors = artifact.compiled.rankingFactors;
 
     const contributions = [
-      { factor: "listing_quality_score", weight: this.WEIGHTS.listingQuality, rawValue: factors.listingQualityScore, contribution: this.WEIGHTS.listingQuality * factors.listingQualityScore },
-      { factor: "seller_trust_score", weight: this.WEIGHTS.sellerTrust, rawValue: factors.sellerTrustScore, contribution: this.WEIGHTS.sellerTrust * factors.sellerTrustScore },
-      { factor: "created_at", weight: this.WEIGHTS.recency, rawValue: factors.recencyScore, contribution: this.WEIGHTS.recency * factors.recencyScore }
+      { factor: "listing_quality_score", weight: this.WEIGHTS.listingQuality, rawValue: factors.listingQuality, contribution: this.WEIGHTS.listingQuality * factors.listingQuality },
+      { factor: "seller_trust_score", weight: this.WEIGHTS.sellerTrust, rawValue: factors.sellerTrust, contribution: this.WEIGHTS.sellerTrust * factors.sellerTrust },
+      { factor: "created_at", weight: this.WEIGHTS.recency, rawValue: factors.recency, contribution: this.WEIGHTS.recency * factors.recency }
     ];
 
     const finalScore = contributions.reduce((sum, c) => sum + c.contribution, 0);

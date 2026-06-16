@@ -5,6 +5,11 @@ export interface CompiledSemanticArtifact {
   categoryId: string;
   version: string;
   compiled: CompiledSpecificationSet;
+  rankingFactors: {
+    listingQuality: number;
+    sellerTrust: number;
+    recency: number;
+  };
   checksum: string;
   metadata: {
     createdAt: string;
