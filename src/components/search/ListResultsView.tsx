@@ -1,11 +1,9 @@
 import React from "react";
-import { Part } from "../../types";
-import { ProductListCard } from "./cards/ProductListCard";
-import { getSystemIcon } from "./constants";
-import { getConditionColor } from "./utils/condition-utils";
+import { ProductGridCard } from "./cards/ProductGridCard";
+import { SearchResultCardModel } from "@/domain/view-models/search";
 
 interface ListResultsViewProps {
-  parts: Part[];
+  cards: SearchResultCardModel[];
   favorites: string[];
   toggleFavorite: (partId: string) => void;
   onSelectPart: (partId: string) => void;
@@ -13,7 +11,7 @@ interface ListResultsViewProps {
 }
 
 export const ListResultsView: React.FC<ListResultsViewProps> = ({
-  parts,
+  cards,
   favorites,
   toggleFavorite,
   onSelectPart,
@@ -21,16 +19,16 @@ export const ListResultsView: React.FC<ListResultsViewProps> = ({
 }) => {
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
-      {parts.map((part) => (
-        <ProductListCard
-          key={part.id}
-          part={part}
-          isFavorite={favorites.includes(part.id)}
+      {cards.map((card) => (
+        <ProductGridCard
+          key={card.id}
+          card={card}
+          isFavorite={favorites.includes(card.id)}
           toggleFavorite={toggleFavorite}
           onSelectPart={onSelectPart}
-          getConditionColor={getConditionColor as (condition: string) => string}
         />
       ))}
     </div>
   );
 };
+

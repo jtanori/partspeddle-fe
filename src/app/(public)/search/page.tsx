@@ -11,7 +11,8 @@ import { GridResultsView } from "@/components/search/GridResultsView";
 import { ListResultsView } from "@/components/search/ListResultsView";
 import { SearchNoResults } from "@/components/search/SearchNoResults";
 import { Pagination } from "@/components/search/Pagination";
-import { Part, SearchFilters, PartCondition } from "@/types";
+import { PartCondition, SearchFilters } from "@/types";
+import { SearchResultCardModel } from "@/domain/view-models/search";
 
 function SearchPageContent() {
   const searchParams = useSearchParams();
@@ -21,7 +22,7 @@ function SearchPageContent() {
   const view = (searchParams.get("view") as "grid" | "list") || "grid";
   const sortBy = searchParams.get("sort") || "newest";
 
-  const [hits, setHits] = useState<Part[]>([]);
+  const [cards, setCards] = useState<SearchResultCardModel[]>([]);
   const [facets, setFacets] = useState<any>({});
   const [pagination, setPagination] = useState({
     totalPages: 1,
@@ -67,11 +68,11 @@ function SearchPageContent() {
   });
 
   const handleResults = (
-    newHits: Part[],
+    newCards: SearchResultCardModel[],
     newFacets: any,
     meta: { totalPages: number; page: number; totalHits: number },
   ) => {
-    setHits(newHits);
+    setCards(newCards);
     setFacets(newFacets);
     setPagination({
       totalPages: meta.totalPages,
@@ -186,7 +187,7 @@ function SearchPageContent() {
           toggleCondition={toggleCondition}
           handlePriceChange={handlePriceChange}
           setAndSyncFilters={setAndSyncFilters}
-          isDisabled={hits.length === 0 && query !== ""}
+          isDisabled={cards.length === 0 && query !== ""}
         />
       </aside>
 
@@ -214,20 +215,20 @@ function SearchPageContent() {
 
         {isLoading ? (
           <div className="p-8 text-center text-zinc-500">Searching...</div>
-        ) : hits.length === 0 ? (
+        ) : cards.length === 0 ? (
           <SearchNoResults onClearSearch={() => router.replace(pathname)} />
         ) : (
           <>
             {view === "grid" ? (
               <GridResultsView
-                parts={hits}
+                cards={cards}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
                 onSelectPart={onSelectPart}
               />
             ) : (
               <ListResultsView
-                parts={hits}
+                cards={cards}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
                 onSelectPart={onSelectPart}

@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { supabaseDb } from "@/services/supabase-db";
 import { Part } from "@/types";
+import { buildSearchResultCard } from "@/projection/search";
+import { SearchResultCardModel } from "@/domain/view-models/search";
 
 export const SearchResultsController: React.FC<{
   query: string;
@@ -11,7 +13,7 @@ export const SearchResultsController: React.FC<{
   currentPage: number;
   onLoading?: (loading: boolean) => void;
   onResults: (
-    hits: Part[],
+    cards: SearchResultCardModel[],
     facets: any,
     meta: { totalPages: number; page: number; totalHits: number },
   ) => void;
@@ -34,9 +36,14 @@ export const SearchResultsController: React.FC<{
           sortBy,
           page: currentPage - 1, // Algolia is 0-indexed
         };
+        
         const { hits, facets, page, totalPages, totalHits } =
           await supabaseDb.searchParts(apiFilters as any);
-        onResults(hits, facets, { page, totalPages, totalHits });
+
+        // Project to SearchViewModel contract
+        const cardModels = (hits as Part[]).map(buildSearchResultCard);
+        
+        onResults(cardModels, facets, { page, totalPages, totalHits });
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -51,7 +58,7 @@ export const SearchResultsController: React.FC<{
   if (error)
     return <div className="p-8 text-center text-red-500">Error: {error}</div>;
 
-  return null; // The component no longer renders the grid itself if it's delegating that to the parent
+  return null;
 };
 
 export default SearchResultsController;
