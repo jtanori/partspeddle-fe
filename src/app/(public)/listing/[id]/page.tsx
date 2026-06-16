@@ -1,7 +1,24 @@
 import React from 'react';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { PartViewModelBuilder } from '@/backend/modules/pdp/application/part-view-model-builder';
-import ProductDetail from '@/components/pdp-modern/ProductDetail';
+import PDPRoot from '@/components/pdp-modern/PDPRoot';
+import { SpecificationCompilerImpl } from '@/domain/services/specification.compiler';
+import { buildPDPView } from '@/projection/pdp';
+import { SpecificationRepository } from '@/repositories/specification.repository';
+import { CatalogRepository } from '@/repositories/catalog.repository';
+
+// Mock implementations for demo
+const specRepo: SpecificationRepository = {
+  findByListingId: async (id) => [],
+  getAllDefinitions: async () => [],
+};
+const catRepo: CatalogRepository = {
+  getCategory: async (slug) => null,
+  getSpecificationsForCategory: async (id) => [],
+  getDefinition: async (id) => null,
+};
+const listingRepo: ListingRepository = {
+  findById: async (id) => null
+};
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -28,13 +45,14 @@ export default async function ListingDetailPage({ params }: Props) {
     .eq('user_id', part.seller_id)
     .maybeSingle();
 
-  // Build ViewModel
-  const builder = new PartViewModelBuilder();
-  const viewModel = builder.build(part, seller);
+  // New projection flow
+  const compiler = new SpecificationCompilerImpl(specRepo, catRepo, listingRepo);
+  const compiled = await compiler.compile({ listingId: id, categoryId: part.category_id });
+  const viewModel = buildPDPView(part, seller, compiled);
 
   return (
     <div className="bg-base-cream min-h-screen">
-      <ProductDetail viewModel={viewModel} />
+      <PDPRoot viewModel={viewModel} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import {
 } from '../types/catalog.types';
 import { SpecificationRepository } from '../../repositories/specification.repository';
 import { CatalogRepository } from '../../repositories/catalog.repository';
+import { ListingRepository } from '../../repositories/listing.repository';
 
 export interface ResolvedSpec {
   key: string;
@@ -41,17 +42,19 @@ export interface SpecificationCompiler {
 export class SpecificationCompilerImpl implements SpecificationCompiler {
   constructor(
     private readonly specRepo: SpecificationRepository,
-    private readonly catalogRepo: CatalogRepository
+    private readonly catalogRepo: CatalogRepository,
+    private readonly listingRepo: ListingRepository
   ) {}
 
   async compile(input: { listingId: string; categoryId: string }): Promise<CompiledSpecificationSet> {
     const { listingId, categoryId } = input;
 
     // Fetch dependencies
-    const [specs, catSpecs, definitions] = await Promise.all([
+    const [specs, catSpecs, definitions, listing] = await Promise.all([
       this.specRepo.findByListingId(listingId),
       this.catalogRepo.getSpecificationsForCategory(categoryId),
-      this.specRepo.getAllDefinitions()
+      this.specRepo.getAllDefinitions(),
+      this.listingRepo.findById(listingId)
     ]);
 
     const flat: ResolvedSpec[] = [];
@@ -93,15 +96,14 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
     const grouped = Object.values(groupedMap).sort((a, b) => a.order - b.order);
     grouped.forEach(g => g.items.sort((a, b) => a.displayOrder - b.displayOrder));
 
-    // ... in compile method
     return { 
       flat, 
       grouped, 
       facets,
       rankingFactors: {
-        listingQuality: 0.8, // Ported from inventory
-        sellerTrust: 0.7,
-        recency: 0.9
+        listingQuality: listing ? (listing as any).listing_quality_score || 0.5 : 0.5,
+        sellerTrust: listing ? (listing as any).seller_trust_score || 0.5 : 0.5,
+        recency: listing ? 1.0 - (Date.now() - new Date(listing.createdAt).getTime()) / (30 * 86400000) : 0.5 
       }
     };
   }
