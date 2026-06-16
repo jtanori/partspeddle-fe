@@ -11,6 +11,8 @@ import { SnapshotStore } from './snapshot.store';
 import { diffGroups, diffFacets, scoreDiff } from './diff.engine';
 import { evaluateGovernance } from './governance';
 import { evaluatePTS } from './pts.engine';
+import { RankingEngine } from './ranking/ranking.engine';
+import { SemanticReplayTrace } from './replay/types';
 
 export class SemanticCompilerGovernanceSystem {
   constructor(
@@ -29,6 +31,7 @@ export class SemanticCompilerGovernanceSystem {
     evolution: EvolutionReport;
     governance: GovernanceResult;
     pts: PTSVector;
+    replayEvents: any[]; // Temporary structure
   }> {
     const compiled = await this.compiler.compile(input);
 
@@ -42,6 +45,10 @@ export class SemanticCompilerGovernanceSystem {
       }
     };
 
+    // 1. Ranking Integration
+    const rankedArtifacts = RankingEngine.rank([artifact]);
+    const ranked = rankedArtifacts[0];
+
     const prev = await this.store.loadPrevious(input);
 
     const consistency = this.checkConsistency(artifact);
@@ -49,8 +56,20 @@ export class SemanticCompilerGovernanceSystem {
     const governance = evaluateGovernance(evolution, this.policy);
     const pts = evaluatePTS(evolution);
 
-    return { artifact, consistency, evolution, governance, pts };
+    // 2. Forensics: Emit RANKING_COMPUTED
+    const replayEvents = [
+        {
+            type: "RANKING_COMPUTED",
+            step: 0,
+            listingId: ranked.listingId,
+            score: ranked.score,
+            explanation: ranked.explanation
+        }
+    ];
+
+    return { artifact, consistency, evolution, governance, pts, replayEvents };
   }
+  // ... rest of methods
 
   private checkConsistency(artifact: CompiledSemanticArtifact): ConsistencyReport {
     return { pass: true, diff: null };
