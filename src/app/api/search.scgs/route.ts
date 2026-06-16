@@ -13,7 +13,17 @@ export async function GET(req: Request) {
   const { hits, page: p, nbPages, nbHits } = await algoliaClient.search(query, { page });
 
   // 2. Project via new SCGS projection layer, wrapped with RankingEngine integration
-  const ranked = RankingEngine.rank(hits.map(h => ({ listingId: h.objectID, categoryId: h.categorySlug } as CompiledSemanticArtifact)));
+  const ranked = RankingEngine.rank(hits.map(h => ({ 
+      listingId: h.objectID, 
+      categoryId: h.categorySlug,
+      compiled: {
+          rankingFactors: {
+              listingQuality: h.listing_quality_score || 0.5,
+              sellerTrust: h.seller_trust_score || 0.5,
+              recency: h.created_at ? 1.0 - (Date.now() - new Date(h.created_at).getTime()) / (30 * 86400000) : 0.5
+          }
+      }
+  } as unknown as CompiledSemanticArtifact)));
   
   // Map ranked order back to original hits
   const rankedHits = ranked.map(r => hits.find(h => h.objectID === r.listingId)).filter(Boolean);
