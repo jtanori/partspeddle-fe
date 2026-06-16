@@ -3,6 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { supabaseDb } from "@/services/supabase-db";
 import { Part } from "@/types";
+import { computeSearchParity } from "@/projection/search-parity";
+
+// Feature flag simulation
+const ENABLE_SCGS_SHADOW = process.env.NEXT_PUBLIC_ENABLE_SCGS_SHADOW === "true";
 
 export const SearchResultsController: React.FC<{
   query: string;
@@ -34,8 +38,24 @@ export const SearchResultsController: React.FC<{
           sortBy,
           page: currentPage - 1, // Algolia is 0-indexed
         };
+        
+        // 1. Primary path (Algolia)
         const { hits, facets, page, totalPages, totalHits } =
           await supabaseDb.searchParts(apiFilters as any);
+
+        // 2. Dual-Read Shadow Path (SCGS)
+        if (ENABLE_SCGS_SHADOW) {
+          fetch(`/api/search.scgs?q=${query}&page=${currentPage - 1}`)
+            .then(res => res.json())
+            .then(scgsResults => {
+              if (process.env.NODE_ENV === "development") {
+                const parity = computeSearchParity(hits as any, scgsResults); // Simplified
+                console.table(parity);
+              }
+            })
+            .catch(console.error);
+        }
+
         onResults(hits, facets, { page, totalPages, totalHits });
       } catch (err: any) {
         setError(err.message);
@@ -51,7 +71,7 @@ export const SearchResultsController: React.FC<{
   if (error)
     return <div className="p-8 text-center text-red-500">Error: {error}</div>;
 
-  return null; // The component no longer renders the grid itself if it's delegating that to the parent
+  return null;
 };
 
 export default SearchResultsController;
