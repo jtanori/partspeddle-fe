@@ -8,6 +8,17 @@ export interface FacetViewModel {
   }>;
 }
 
+export interface RankingContribution {
+  factor: string;
+  weight: number;
+  contribution: number;
+}
+
+export interface RankingExplanation {
+  finalScore: number;
+  contributions: RankingContribution[];
+}
+
 export interface SearchResultCardModel {
   id: string;
   title: string;
@@ -26,6 +37,7 @@ export interface SearchResultCardModel {
     isGoodFit: boolean;
   };
   facets: Record<string, string | number | boolean>;
+  ranking?: RankingExplanation;
 }
 
 export interface SearchViewModel {
