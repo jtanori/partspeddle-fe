@@ -42,7 +42,8 @@ export class BuildSearchDocumentUseCase {
             business_name,
             location,
             verification_status,
-            whatsapp
+            whatsapp,
+            seller_trust_score
           )
         ),
         part_images (

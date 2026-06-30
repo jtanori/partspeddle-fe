@@ -10,21 +10,26 @@ export class RankingEngine {
   };
 
   static rank(artifacts: CompiledSemanticArtifact[]): RankedResult[] {
-    return artifacts
+    const ranked = artifacts
       .map(artifact => this.score(artifact))
       .sort((a, b) => {
-        // Deterministic ranking with tie-breaking
         if (Math.abs(b.score - a.score) > 0.0001) {
             return b.score - a.score;
         }
-        // Tie-breaker: lexicographical listingId ASC
         return a.listingId.localeCompare(b.listingId);
       });
+    
+    // Log ranking details for diagnostic
+    console.log("Ranked IDs and Scores:", ranked.map(r => ({ id: r.listingId, score: r.score })));
+    
+    return ranked;
   }
 private static score(artifact: CompiledSemanticArtifact): RankedResult {
   const factors = artifact.compiled.rankingFactors;
+  console.log(`[SCGS DEBUG] Listing ${artifact.listingId} factors:`, factors);
 
   const contributions = [
+
     { 
       factor: "listing_quality_score", 
       weight: this.WEIGHTS.listingQuality, 

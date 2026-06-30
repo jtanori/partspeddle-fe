@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../src/lib/supabase-admin.ts';
+import { supabaseAdmin } from '../../src/lib/supabase-admin.ts';
 import 'dotenv/config';
 
 async function analyzeAuditTriggers() {

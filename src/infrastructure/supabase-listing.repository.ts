@@ -20,6 +20,12 @@ export class SupabaseListingRepository implements ListingRepository {
 
     if (error || !data) return null;
 
+    console.log(`[SCGS DEBUG] Raw DB data for ${id}:`, { 
+        listing_quality_score: (data as any).listing_quality_score,
+        seller_trust_score: (data as any).seller_trust_score,
+        created_at: data.created_at
+    });
+
     const baseListing = {
       id: data.id,
       listingType: data.listing_type,
