@@ -265,7 +265,7 @@ async function runRetryStormTest(): Promise<{
     const invalidEnv = { ...process.env, ALGOLIA_ADMIN_KEY: "invalid_key" };
     try {
       await runWorker(invalidEnv);
-    } catch (error) {
+    } catch {
       // Expected to fail
     }
     reportLines.push(

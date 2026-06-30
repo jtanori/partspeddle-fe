@@ -1,14 +1,13 @@
 import React from "react";
 import { Heart, Star } from "lucide-react";
-import { Part, PartCondition } from "@/types";
-import { getConditionLabel } from "../utils/condition-utils";
+import { useRouter } from "next/navigation";
+import { SearchResultCardModel } from "@/domain/view-models/search";
 
-interface ListResultsViewProps {
-  parts: Part[];
-  favorites: string[];
-  toggleFavorite: (partId: string) => void;
-  onSelectPart: (partId: string) => void;
-  className?: string;
+interface ProductListCardProps {
+  card: SearchResultCardModel;
+  isFavorite: boolean;
+  toggleFavorite: (id: string) => void;
+  onSelectPart: (id: string) => void;
 }
 
 const RatingStars = ({ rating, count }: { rating: number; count: number }) => {
@@ -29,34 +28,24 @@ const RatingStars = ({ rating, count }: { rating: number; count: number }) => {
   );
 };
 
-export const ProductListCard: React.FC<{
-  part: Part;
-  isFavorite: boolean;
-  toggleFavorite: (id: string) => void;
-  onSelectPart: (id: string) => void;
-  getConditionColor: (cond: PartCondition) => string;
-}> = ({
-  part,
+export const ProductListCard: React.FC<ProductListCardProps> = ({
+  card,
   isFavorite,
   toggleFavorite,
   onSelectPart,
-  getConditionColor,
 }) => {
-  const sellerName = part.seller?.businessName || part.seller?.name || "N/A";
-  const sellerRating = part.seller?.rating || 0;
-  const sellerReviewCount = part.seller?.reviewCount || 0;
-  const imageUrl = (part.images && part.images[0]) || "";
+  const router = useRouter();
 
   return (
     <div
-      onClick={() => onSelectPart(part.id)}
+      onClick={() => onSelectPart(card.id)}
       className="bg-white border border-zinc-200 rounded-lg shadow-sm p-4 flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="w-24 h-24 bg-zinc-100 rounded-md overflow-hidden flex-shrink-0">
-        {imageUrl ? (
+        {card.imageUrl ? (
           <img
-            src={imageUrl}
-            alt={part.title}
+            src={card.imageUrl}
+            alt={card.title}
             className="w-full h-full object-cover"
           />
         ) : (
@@ -67,41 +56,36 @@ export const ProductListCard: React.FC<{
       </div>
 
       <div className="flex-grow space-y-1">
-        <h3 className="font-bold text-sm text-zinc-900">{part.title}</h3>
+        <h3 className="font-bold text-sm text-zinc-900">{card.title}</h3>
         <p className="text-xs text-zinc-500">
-          {part.subtitle || "Specifications"}
+          {card.subtitle || "Specifications"}
         </p>
 
         <div className="flex items-center gap-2 pt-1">
           <span
-            className={`px-2 py-0.5 rounded-sm text-[10px] font-semibold ${getConditionColor(part.condition)}`}
+            className={`px-2 py-0.5 rounded-sm text-[10px] font-semibold ${card.conditionColor}`}
           >
-            {getConditionLabel(part.condition)}
+            {card.conditionLabel}
           </span>
           <span className="text-xs text-zinc-500">
-            {typeof part.mileage === "number"
-              ? `${part.mileage.toLocaleString()} mi`
-              : "Tested"}
+            {card.fitmentSummary}
           </span>
         </div>
 
         <div className="flex items-center gap-2 pt-1">
-          <span className="text-xs font-bold text-zinc-800">{sellerName}</span>
-          <RatingStars rating={sellerRating} count={sellerReviewCount} />
+          <span className="text-xs font-bold text-zinc-800">{card.sellerName}</span>
+          <RatingStars rating={card.sellerRating || 0} count={card.sellerReviewCount || 0} />
         </div>
       </div>
 
       <div className="flex flex-col items-end gap-2 shrink-0">
         <span className="font-bold text-lg text-zinc-900">
-          {new Intl.NumberFormat("es-MX", {
-            style: "currency",
-            currency: "MXN",
-          }).format(part.price || 0)}
+          {card.price}
         </span>
         <button
           onClick={(e) => {
             e.stopPropagation();
-            toggleFavorite(part.id);
+            toggleFavorite(card.id);
           }}
           className="p-2 text-zinc-500 hover:text-red-500 transition-colors"
         >

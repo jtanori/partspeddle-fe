@@ -1,4 +1,5 @@
-import { CompiledSpecificationSet } from '../services/specification.compiler';
+import { CompiledSpecificationSet } from '../../services/specification.compiler';
+export { CompiledSpecificationSet };
 
 export interface CompiledSemanticArtifact {
   listingId: string;

@@ -34,7 +34,11 @@ async function configureIndex() {
           "location",
           "year",
         ],
-        customRanking: [],
+        customRanking: [
+          "desc(listing_quality_score)",
+          "desc(seller_trust_score)",
+          "desc(created_at)",
+        ],
         ranking: [
           "typo",
           "geo",

@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import { Part } from "../../types";
 import { SectionHeader } from "../common/SectionHeader";
 import { ProductGridCard } from "../search/cards/ProductGridCard";
-import { getSystemIcon } from "../search/constants";
-import { getConditionColor } from "../search/utils/condition-utils";
 import { EmptyState } from "../common/EmptyState";
 import { ViewAllButton } from "../common/ViewAllButton";
+import { buildSearchResultCard } from "@/projection/search";
 
 interface ListingsGridProps {
   title: string;
@@ -56,12 +55,10 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
           {parts.map((part) => (
             <ProductGridCard
               key={part.id}
-              part={part}
+              card={buildSearchResultCard(part)}
               isFavorite={favorites.includes(part.id)}
               toggleFavorite={toggleFavorite}
               onSelectPart={(id) => router.push(`/listing/${id}`)}
-              getConditionColor={getConditionColor as any}
-              partThumbnail={part.images?.[0]}
             />
           ))}
         </div>

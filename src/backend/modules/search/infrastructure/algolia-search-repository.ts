@@ -39,6 +39,16 @@ export class AlgoliaSearchRepository implements SearchRepository {
             : {}),
           page,
           hitsPerPage,
+          attributesToRetrieve: [
+            "objectID",
+            "title",
+            "subtitle",
+            "price",
+            "listing_quality_score",
+            "seller_trust_score",
+            "created_at",
+            "facets"
+          ],
         },
       ],
     });

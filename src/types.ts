@@ -57,6 +57,7 @@ export interface Part {
   notes?: string;
   images: string[];
   sellerId: string;
+  status?: "draft" | "pending_review" | "available" | "reserved" | "sold" | "removed" | "archived";
   compatibility: {
     make: string;
     model: string;

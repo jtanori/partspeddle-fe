@@ -1,75 +1,15 @@
-export interface PricingViewModel {
-  partPrice: number;
-  coreCharge: number;
-  isCoreRefundable: boolean;
-  shippingEstimate: string;
-  totalEstimated: number;
-}
+// PDP Domain Types (P2)
+import { PartListing, DonorVehicleListing } from './marketplace.types';
+import { TabViewModel, PartSummaryViewModel } from './pdp.shared';
 
-export interface InventoryViewModel {
-  quantity: number;
-  status: 'available' | 'reserved' | 'sold' | 'pending';
-  isInStock: boolean;
-}
-
-export interface SellerViewModel {
-  id: string;
-  displayName: string;
-  rating: number;
-  location: string;
-  responseTime: string; // e.g. "24h"
-}
-
-export interface FitmentViewModel {
-  confidence: 'verified' | 'high' | 'medium' | 'low';
-  fitmentScore: number;
-  vehicles: Array<{ year: number; make: string; model: string; engine: string }>;
-}
-
-export interface ShippingViewModel {
-  isFree: boolean;
-  eta: string;
-}
-
-export interface HeaderViewModel {
-  title: string;
-  subtitle: string;
-  rating: number;
-  ratingCount: number;
-  sku: string;
-}
-
-export interface BadgeViewModel {
-  isOEM: boolean;
-  isTested: boolean;
-  warrantyIncluded: boolean;
-  isGoodFit: boolean;
-}
-
-export interface PartSummaryViewModel {
-  id: string;
-  title: string;
-  price: number;
-  imageUrl: string;
-}
-
-export interface TabViewModel {
-  id: string;
-  label: string;
-  content: any;
-}
-
-export interface PartViewModel {
-  id: string;
-  header: HeaderViewModel;
-  images: string[];
-  pricing: PricingViewModel;
-  inventory: InventoryViewModel;
-  seller: SellerViewModel;
-  fitment: FitmentViewModel;
-  badges: BadgeViewModel;
-  shipping: ShippingViewModel;
-  description: string;
+// PDP ViewModels are now derived from Listing specializations
+export interface PartViewModel extends PartListing {
+  // Adds PDP-specific presentation data
   crossSell: PartSummaryViewModel[];
   tabs: TabViewModel[];
+}
+
+export interface DonorVehicleViewModel extends DonorVehicleListing {
+  // Adds VDP-specific presentation data
+  availableParts: PartSummaryViewModel[];
 }

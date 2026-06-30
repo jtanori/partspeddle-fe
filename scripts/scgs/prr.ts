@@ -1,8 +1,4 @@
 import { execSync } from 'node:child_process';
-import { SpecificationCompilerImpl } from '../../src/domain/services/specification.compiler';
-import { SemanticCompilerGovernanceSystem } from '../../src/domain/specification/scgs/pipeline';
-import { SnapshotStore } from '../../src/domain/specification/scgs/snapshot.store';
-import { DEFAULT_POLICY } from '../../src/domain/specification/scgs/governance';
 
 // Utilities
 const scanCodebase = (pattern: string, exclude: string = "") => {

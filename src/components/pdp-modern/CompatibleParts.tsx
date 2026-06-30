@@ -7,20 +7,23 @@ interface CompatiblePartsProps {
 
 export default function CompatibleParts({ parts }: CompatiblePartsProps) {
   return (
-    <div className="bg-white border border-zinc-250 rounded p-6 shadow-sm space-y-4">
-      <h3 className="font-display font-bold uppercase text-sm">Compatible Parts (Cross Sell)</h3>
+    <div className="bg-white border border-zinc-200 rounded-pp-card p-6 shadow-sm space-y-6">
+      <h3 className="font-display font-black uppercase text-xs tracking-widest text-zinc-500">Compatible Parts (Cross Sell)</h3>
       <div className="space-y-4">
         {parts.map((part) => (
-          <div key={part.id} className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-zinc-200 rounded" />
-              <p className="text-sm font-bold">{part.title}</p>
+          <div key={part.id} className="flex items-center gap-3 pb-3 border-b border-zinc-50 last:border-0 last:pb-0">
+            <div className="w-12 h-12 bg-zinc-100 rounded border border-zinc-100 flex-shrink-0 overflow-hidden">
+               <img src={part.imageUrl} alt={part.title} className="w-full h-full object-cover" />
             </div>
-            <p className="text-sm font-bold">${part.price.toFixed(2)}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-black text-zinc-800 uppercase truncate tracking-tight">{part.title}</p>
+              <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-tighter">SKU: {part.id.slice(0, 8)}</p>
+              <p className="text-sm font-black text-pp-primary mt-0.5">${part.price.toFixed(2)}</p>
+            </div>
           </div>
         ))}
       </div>
-      <button className="text-[#B87333] text-xs font-bold uppercase w-full text-center">
+      <button className="text-pp-primary text-[10px] font-black uppercase tracking-[0.2em] w-full text-center hover:underline pt-2">
         View more compatible parts ({parts.length})
       </button>
     </div>

@@ -3,8 +3,6 @@ import { CompiledSemanticArtifact } from '../types';
 import { SemanticReplayTrace } from './types';
 import { SemanticReplayEngine } from './engine';
 import { deepEqual } from '../diff.engine';
-import { evaluatePTS } from '../pts.engine';
-import { diffGroups, diffFacets } from '../diff.engine';
 
 export class ReplayValidator {
   static validate(

@@ -5,7 +5,7 @@ import { SemanticCompilerGovernanceSystem } from '../../src/domain/specification
 
 // Mock dependencies
 const mockRepo: any = {};
-const compiler = new SpecificationCompilerImpl(mockRepo, mockRepo);
+const compiler = new SpecificationCompilerImpl(mockRepo, mockRepo, mockRepo);
 const store = new SnapshotStore('.scgs/snapshots');
 const scgs = new SemanticCompilerGovernanceSystem(compiler, store, DEFAULT_POLICY);
 

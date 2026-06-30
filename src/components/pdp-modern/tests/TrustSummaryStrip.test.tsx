@@ -7,7 +7,7 @@ describe('TrustSummaryStrip', () => {
     render(<TrustSummaryStrip />);
     expect(screen.getByText(/Seller Rating/i)).toBeDefined();
     expect(screen.getByText(/Ships From/i)).toBeDefined();
-    expect(screen.getByText(/Delivery ETA/i)).toBeDefined();
+    expect(screen.getByText(/Est. Delivery/i)).toBeDefined();
     expect(screen.getByText(/Returns/i)).toBeDefined();
   });
 });

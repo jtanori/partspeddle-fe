@@ -75,3 +75,35 @@ npm run test:load
 - [ ] Deployment executed
 - [ ] Smoke tests passed
 - [ ] Monitoring healthy
+
+---
+
+# 6. GitHub Environments & Secret Configuration
+
+To isolate secrets between environments, we use GitHub Environments. The workflows target `environment: staging` and `environment: production` dynamically.
+
+## Steps for Configuring Production Secrets
+
+When configuring the **Production** environment, execute the following commands using the GitHub CLI (`gh`):
+
+1. **Verify or Create the Production Environment**:
+   ```bash
+   gh api -X PUT /repos/jtanori/partspeddle-fe/environments/production
+   ```
+
+2. **Configure Production-Specific Secrets**:
+   Set each secret under the `production` environment scope using the `--env` flag:
+   ```bash
+   gh secret set SUPABASE_URL --env production --body "<prod-supabase-url>"
+   gh secret set SUPABASE_ANON_KEY --env production --body "<prod-anon-key>"
+   gh secret set SUPABASE_SERVICE_ROLE_KEY --env production --body "<prod-service-role-key>"
+   gh secret set ALGOLIA_APP_ID --env production --body "<prod-algolia-app-id>"
+   gh secret set ALGOLIA_ADMIN_KEY --env production --body "<prod-algolia-admin-key>"
+   ```
+
+3. **Verify Configuration**:
+   Verify that secrets are correctly listed for the environment:
+   ```bash
+   gh api /repos/jtanori/partspeddle-fe/environments/production/secrets
+   ```
+
