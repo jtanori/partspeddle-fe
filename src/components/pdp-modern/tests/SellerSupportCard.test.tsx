@@ -15,6 +15,7 @@ describe('SellerSupportCard', () => {
   it('renders seller info correctly', () => {
     render(<SellerSupportCard seller={mockSeller} />);
     expect(screen.getByText('Test Auto Parts')).toBeDefined();
-    expect(screen.getByText(/Ships from: NC, USA/i)).toBeDefined();
+    expect(screen.getByText(/Ships from/i)).toBeDefined();
+    expect(screen.getByText('NC, USA')).toBeDefined();
   });
 });
