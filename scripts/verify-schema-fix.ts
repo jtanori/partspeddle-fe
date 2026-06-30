@@ -4,7 +4,7 @@ async function verifySchema() {
   console.log('🔍 Verifying Schema for Runtime Framework...');
   
   // Verify table renaming
-  const { data: tables, error } = await supabaseAdmin
+  const { error } = await supabaseAdmin
     .from('listing_specifications')
     .select('count', { head: true, count: 'exact' });
     
@@ -15,7 +15,7 @@ async function verifySchema() {
   }
   
   // Verify new columns
-  const { data: cols, error: colError } = await supabaseAdmin
+  const { error: colError } = await supabaseAdmin
     .from('catalog_categories')
     .select('search_template, wizard_template, pdp_template')
     .limit(1);

@@ -1,5 +1,4 @@
 import { supabaseAdmin } from '../src/lib/supabase-admin';
-import { MarketplaceSearchDocument } from '../docs/certification/SEARCH_DOCUMENT_V1';
 
 /**
  * P1C: Search Projection Engine

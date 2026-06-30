@@ -8,7 +8,7 @@ const supabaseAdmin = createClient(
 );
 
 async function check() {
-  const { data, error } = await supabaseAdmin
+  const { data } = await supabaseAdmin
     .from("part_types")
     .select("name_es, name_en")
     .limit(5);

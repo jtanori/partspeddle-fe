@@ -53,7 +53,7 @@ async function seedExpansion() {
   const { data: parts } = await supabaseAdmin.from('parts').select('id, seller_id, price');
   
   for (const part of parts || []) {
-     const { data: listing, error: lErr } = await supabaseAdmin
+     const { data: listing } = await supabaseAdmin
        .from('listings')
        .insert([{ seller_id: part.seller_id, listing_type: 'PART', price: part.price || 0 }])
        .select()

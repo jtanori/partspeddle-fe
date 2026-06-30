@@ -1,4 +1,4 @@
-import { CompiledSpecificationSet } from '../services/specification.compiler';
+import { CompiledSpecificationSet } from '../../services/specification.compiler';
 import { GroupDiff, FacetDiff } from './types';
 
 // Simple deep equal for production use

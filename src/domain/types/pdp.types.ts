@@ -1,5 +1,5 @@
 // PDP Domain Types (P2)
-import { MarketplaceListing, PartListing, DonorVehicleListing } from './marketplace.types';
+import { PartListing, DonorVehicleListing } from './marketplace.types';
 import { TabViewModel, PartSummaryViewModel } from './pdp.shared';
 
 // PDP ViewModels are now derived from Listing specializations

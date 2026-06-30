@@ -1,4 +1,4 @@
-import { SpecificationCompiler } from '../services/specification.compiler';
+import { SpecificationCompiler } from '../../services/specification.compiler';
 import { 
   CompiledSemanticArtifact, 
   ConsistencyReport, 
@@ -12,7 +12,6 @@ import { diffGroups, diffFacets, scoreDiff } from './diff.engine';
 import { evaluateGovernance } from './governance';
 import { evaluatePTS } from './pts.engine';
 import { RankingEngine } from './ranking/ranking.engine';
-import { SemanticReplayTrace } from './replay/types';
 
 export class SemanticCompilerGovernanceSystem {
   constructor(
@@ -71,7 +70,8 @@ export class SemanticCompilerGovernanceSystem {
   }
   // ... rest of methods
 
-  private checkConsistency(artifact: CompiledSemanticArtifact): ConsistencyReport {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private checkConsistency(_: CompiledSemanticArtifact): ConsistencyReport {
     return { pass: true, diff: null };
   }
 

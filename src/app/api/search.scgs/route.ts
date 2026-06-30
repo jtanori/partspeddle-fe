@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { buildSearchProjection } from '@/projection/search';
 import { algoliaClient } from '@/backend/modules/search/infrastructure/algolia-client';
 import { RankingEngine } from '@/domain/specification/scgs/ranking/ranking.engine';
-import { CompiledSemanticArtifact } from '@/domain/specification/scgs/types';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -13,9 +12,8 @@ export async function GET(req: Request) {
   const { hits, page: p, nbPages, nbHits } = await algoliaClient.search(query, { page });
 
   // 2. Project via new SCGS projection layer, wrapped with RankingEngine integration
-  const ranked = RankingEngine.rank(hits.map(h => ({ 
-      listingId: h.objectID, 
-      categoryId: h.categorySlug,
+  const ranked = RankingEngine.rank(hits.map(h => ({
+      listingId: h.objectID,
       compiled: {
           rankingFactors: {
               listingQuality: h.listing_quality_score || 0.5,
@@ -23,7 +21,7 @@ export async function GET(req: Request) {
               recency: h.created_at ? 1.0 - (Date.now() - new Date(h.created_at).getTime()) / (30 * 86400000) : 0.5
           }
       }
-  } as unknown as CompiledSemanticArtifact)));
+  })));
   
   // Map ranked order back to original hits
   const rankedHits = ranked.map(r => hits.find(h => h.objectID === r.listingId)).filter(Boolean);

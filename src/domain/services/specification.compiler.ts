@@ -1,7 +1,3 @@
-import { 
-  SpecificationDefinition, 
-  CatalogCategorySpecification 
-} from '../types/catalog.types';
 import { SpecificationRepository } from '../../repositories/specification.repository';
 import { CatalogRepository } from '../../repositories/catalog.repository';
 import { ListingRepository } from '../../repositories/listing.repository';

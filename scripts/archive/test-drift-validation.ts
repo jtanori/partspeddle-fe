@@ -392,7 +392,7 @@ function audit(): Promise<any> {
         try {
           const result = JSON.parse(output);
           resolve(result);
-        } catch (error) {
+        } catch {
           reject(new Error("Failed to parse audit result"));
         }
       } else reject(new Error(`Audit process exited with code ${code}`));

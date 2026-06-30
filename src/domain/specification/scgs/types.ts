@@ -1,15 +1,11 @@
-import { CompiledSpecificationSet } from '../services/specification.compiler';
+import { CompiledSpecificationSet } from '../../services/specification.compiler';
+export { CompiledSpecificationSet };
 
 export interface CompiledSemanticArtifact {
   listingId: string;
   categoryId: string;
   version: string;
   compiled: CompiledSpecificationSet;
-  rankingFactors: {
-    listingQuality: number;
-    sellerTrust: number;
-    recency: number;
-  };
   checksum: string;
   metadata: {
     createdAt: string;

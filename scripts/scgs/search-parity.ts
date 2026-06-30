@@ -1,15 +1,7 @@
 import { SEARCH_PARITY_CORPUS } from './fixtures/search-corpus';
 import { supabaseDb } from "../../src/services/supabase-db";
-import { SpecificationCompilerImpl } from "../../src/domain/services/specification.compiler";
 import { RankingEngine } from "../../src/domain/specification/scgs/ranking/ranking.engine";
 import { CompiledSemanticArtifact } from "../../src/domain/specification/scgs/types";
-import { SpecificationRepository } from "../../src/repositories/specification.repository";
-import { CatalogRepository } from "../../src/repositories/catalog.repository";
-import { ListingRepository } from "../../src/repositories/listing.repository";
-
-// Mock repositories
-const mockRepo: any = {};
-const compiler = new SpecificationCompilerImpl(mockRepo, mockRepo, mockRepo);
 
 function computeOverlap(a: string[], b: string[], top: number) {
     const aTop = a.slice(0, top);
