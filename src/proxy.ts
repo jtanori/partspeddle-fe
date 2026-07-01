@@ -2,14 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { tracer } from "@/lib/observability";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const start = Date.now();
   if (request.nextUrl.pathname === "/") {
     console.log(`[PERF] Request started: ${request.nextUrl.pathname}`);
   }
 
   const responsePromise = tracer.startActiveSpan(
-    "middleware",
+    "proxy",
     async (span) => {
       let response = NextResponse.next({
         request: {
