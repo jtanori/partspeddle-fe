@@ -5,6 +5,7 @@ import { SpecificationCompilerImpl } from '@/domain/services/specification.compi
 import { buildPDPView } from '@/projection/pdp';
 import { SpecificationRepository } from '@/repositories/specification.repository';
 import { CatalogRepository } from '@/repositories/catalog.repository';
+import { ListingRepository } from '@/repositories/listing.repository';
 
 // Mock implementations for demo
 const specRepo: SpecificationRepository = {

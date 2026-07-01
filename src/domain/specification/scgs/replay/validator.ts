@@ -16,7 +16,7 @@ export class ReplayValidator {
     const lossless = deepEqual(trace.events, recomputed.events);
 
     // 2. PTS/CI Binding Checks
-    const hasPTS = trace.events.some(e => e.type === "PTS_VECTOR");
+    const hasPTS = trace.events.some(e => e.type === "PTS_SHIFT");
     const hasCI = trace.events.some(e => e.type === "CI_VERDICT");
 
     // 3. Snapshot Integrity

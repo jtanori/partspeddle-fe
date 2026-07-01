@@ -1,5 +1,5 @@
 import { CompiledSpecificationSet } from '../../services/specification.compiler';
-export { CompiledSpecificationSet };
+export type { CompiledSpecificationSet };
 
 export interface CompiledSemanticArtifact {
   listingId: string;
@@ -52,6 +52,17 @@ export interface GovernancePolicy {
 export interface GovernanceResult {
   status: "PASS" | "BLOCK" | "REVIEW";
   violations: string[];
+}
+
+export interface SCGSCIVerdict {
+  status: "PASS" | "WARN" | "BLOCK";
+  violations?: string[];
+  reasonCodes?: string[];
+}
+
+export interface PTSVector {
+  driftScore: number;
+  highDrift: boolean;
 }
 
 export type SystemState = 

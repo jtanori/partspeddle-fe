@@ -1,4 +1,4 @@
-import { MarketplaceListing } from '../domain/marketplace.types';
+import { MarketplaceListing } from '@/domain/types/marketplace.types';
 
 export interface ListingRepository {
   findById(id: string): Promise<MarketplaceListing | null>;
