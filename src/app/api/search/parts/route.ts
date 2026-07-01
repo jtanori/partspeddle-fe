@@ -64,11 +64,7 @@ export async function POST(req: NextRequest) {
         ? Array.isArray(category)
           ? category
           : [category]
-        : system
-          ? Array.isArray(system)
-            ? system
-            : [system]
-          : [],
+        : [],
       partTypeIds: Array.isArray(partTypes)
         ? partTypes
         : partTypes

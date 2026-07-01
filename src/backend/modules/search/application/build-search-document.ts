@@ -18,10 +18,12 @@ export class BuildSearchDocumentUseCase {
         seller_trust_score,
         part_types!parts_part_type_id_fkey (
           id,
-          name:name_es,
+          slug_en,
+          name_en,
           categories (
             id,
-            name:name_es
+            slug_en,
+            name_en
           )
         ),
         vehicle_variants!parts_donor_vehicle_variant_id_fkey (
@@ -122,8 +124,10 @@ export class BuildSearchDocumentUseCase {
       model: vehicleModel?.name || "N/A",
       year: vehicleVariant?.year || null,
 
-      category: category?.name || "Otros",
-      part_type: partType?.name || "General",
+      category: category?.slug_en || "other",
+      category_label: category?.name_en || category?.name || "Other",
+      part_type: partType?.slug_en || "general",
+      part_type_label: partType?.name_en || partType?.name || "General",
 
       condition: (part as any).condition || "USED_GOOD",
 

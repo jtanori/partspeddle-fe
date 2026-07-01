@@ -11,7 +11,9 @@ export interface SearchDocument {
   year: number | null;
 
   category: string;
+  category_label: string;
   part_type: string;
+  part_type_label: string;
 
   condition: string;
 
