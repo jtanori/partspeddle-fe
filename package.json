@@ -20,7 +20,7 @@
     "deploy:production:build-only": "flyctl deploy --config fly/fly.prod.toml --build-only",
     "deps:restore": "bash scripts/restore-deps.sh",
     "preinstall": "npx only-allow pnpm",
-    "test": "vitest run tests/c0_8 tests/certification",
+    "test": "vitest run tests/c0_8 tests/certification tests/branch",
     "db:seed": "tsx src/services/seed-runner.ts",
     "db:seed:users": "tsx scripts/seed-users.ts",
     "db:seed:listings": "tsx scripts/seed-listings.ts",
