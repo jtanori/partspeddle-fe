@@ -1,0 +1,16 @@
+.git
+.github
+.next
+node_modules
+.env
+.env.local
+.env.*
+*.log
+reports
+tests
+docs
+scripts/archive
+supabase/.temp
+.vscode
+.idea
+.DS_Store

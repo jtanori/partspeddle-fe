@@ -1,10 +1,32 @@
+# Production configuration for VinTrack (Next.js 16 + App Router)
+# Deployed from the `main` branch via CI, or locally with:
+#   pnpm deploy:production
+#   bash scripts/deploy.sh production
 app = "vintrack-prod"
 
 primary_region = "sjc"
 
+[env]
+  PORT = "3000"
+  NODE_ENV = "production"
+
 [http_service]
   internal_port = 3000
   force_https = true
+  # Keep production machines running for predictable latency and availability.
   auto_stop_machines = false
   auto_start_machines = true
   min_machines_running = 2
+  processes = ["app"]
+
+[[http_service.checks]]
+  interval = "15s"
+  timeout = "5s"
+  grace_period = "30s"
+  method = "GET"
+  path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
+  processes = ["app"]

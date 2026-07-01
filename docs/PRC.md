@@ -420,8 +420,8 @@ Verify:
 
 Verify:
 
-* [ ] fly.toml
-* [ ] Health checks
+* [ ] `fly/fly.stage.toml` and `fly/fly.prod.toml`
+* [ ] Health checks (`GET /api/health`)
 * [ ] Secrets documented
 
 ---
@@ -431,8 +431,7 @@ Verify:
 Verify:
 
 ```http
-GET /health
-GET /ready
+GET /api/health
 ```
 
 ---
@@ -442,7 +441,7 @@ GET /ready
 Execute:
 
 ```bash
-fly deploy --build-only
+flyctl deploy --config fly/fly.stage.toml --build-only
 ```
 
 ---

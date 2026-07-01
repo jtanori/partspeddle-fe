@@ -123,7 +123,7 @@ In a production environment (e.g., Fly.io), the outbox processor runs as a long-
 The outbox is managed by `scripts/process-search-outbox.ts`.
 
 1.  **Dockerization**: The application image includes the worker script.
-2.  **Fly.io Process Groups**: We define a `worker` process in `fly.toml`:
+2.  **Fly.io Process Groups** (future option): The worker can be added as a separate process group in `fly/fly.prod.toml`:
     ```toml
     [processes]
     app = "npm start"

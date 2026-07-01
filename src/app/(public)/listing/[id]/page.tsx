@@ -20,11 +20,14 @@ const listingRepo: ListingRepository = {
   findById: async (id) => null
 };
 
+import { unstable_noStore as noStore } from "next/cache";
+
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export default async function ListingDetailPage({ params }: Props) {
+  noStore();
   const { id } = await params;
 
   // Server-side fetch
