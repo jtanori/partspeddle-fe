@@ -1,5 +1,5 @@
 import { CompiledSemanticArtifact, SCGSCIVerdict, PTSVector } from './types';
-import { SemanticReplayTrace } from './replay/types';
+import { SemanticReplayTrace, SemanticReplayEvent } from './replay/types';
 
 export interface SCGSReadModel {
   category: string;
@@ -32,12 +32,14 @@ export const buildDashboardReadModel = (
       labels: artifacts.map(a => a.version),
       scores: ptsVectors.map(v => v.driftScore)
     },
-    recentViolations: traces.flatMap(t => 
+    recentViolations: traces.flatMap(t =>
       t.events
-        .filter(e => e.type === "CI_VERDICT" && e.detail.verdict === "BLOCK")
+        .filter((e): e is Extract<SemanticReplayEvent, { type: "CI_VERDICT" }> =>
+          e.type === "CI_VERDICT" && e.verdict === "BLOCK"
+        )
         .map(e => ({
           version: t.version,
-          violations: (e as any).detail.reasonCodes,
+          violations: e.reasonCodes,
           timestamp: t.metadata.createdAt
         }))
     )

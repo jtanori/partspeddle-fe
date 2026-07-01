@@ -13,22 +13,39 @@
 
 # 1. Environment Strategy
 
-- **Staging (`vintrack-search-staging`)**: Mirrors production schema; used for validation of migrations, operational suites, and load testing.
-- **Production (`vintrack-search-prod`)**: Customer-facing environment.
+- **Staging (`vintrack-stage`)**: `https://stage.partspeddle.com` — mirrors production schema; used for validation of migrations, operational suites, and load testing.
+- **Production (`vintrack-prod`)**: `https://partspeddle.com` — customer-facing environment.
 
 # 2. Deployment Pipeline
 
 ## Staging Deployment
 
-1. `git push` to `develop`/`stage`.
-2. CI `ci.yml` runs tests/lint/typecheck.
-3. Fly.io deployment triggered automatically.
+1. `git push` to `develop`.
+2. CI `ci.yml` runs tests/lint.
+3. Fly.io deployment is triggered automatically using `fly/fly.stage.toml`.
 4. **Post-Deployment**: Run validation suite (see Operational Validation below).
+
+### Local fallback
+
+```bash
+pnpm deploy:staging
+# or
+bash scripts/deploy.sh staging
+```
 
 ## Production Deployment
 
-1. `git merge` to `main`.
-2. Verified staging deployment triggers production deploy.
+1. Merge validated code to `main`.
+2. CI `ci.yml` runs tests/lint.
+3. Fly.io deployment is triggered automatically using `fly/fly.prod.toml`.
+
+### Local fallback
+
+```bash
+pnpm deploy:production
+# or
+bash scripts/deploy.sh production
+```
 
 # 3. Database Deployment Procedure
 
@@ -64,7 +81,7 @@ npm run test:load
 - [ ] Tests passing
 - [ ] Migrations verified
 - [ ] Secrets configured
-- [ ] Health checks passing
+- [ ] Health checks passing (`GET /api/health`)
 - [ ] Operational Validation (Outbox/Drift/Load) passing
 
 ## Production
@@ -106,4 +123,3 @@ When configuring the **Production** environment, execute the following commands 
    ```bash
    gh api /repos/jtanori/partspeddle-fe/environments/production/secrets
    ```
-

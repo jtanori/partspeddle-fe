@@ -5,6 +5,7 @@ import { SpecificationCompilerImpl } from '@/domain/services/specification.compi
 import { buildPDPView } from '@/projection/pdp';
 import { SpecificationRepository } from '@/repositories/specification.repository';
 import { CatalogRepository } from '@/repositories/catalog.repository';
+import { ListingRepository } from '@/repositories/listing.repository';
 
 // Mock implementations for demo
 const specRepo: SpecificationRepository = {
@@ -20,11 +21,14 @@ const listingRepo: ListingRepository = {
   findById: async (id) => null
 };
 
+import { unstable_noStore as noStore } from "next/cache";
+
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export default async function ListingDetailPage({ params }: Props) {
+  noStore();
   const { id } = await params;
 
   // Server-side fetch

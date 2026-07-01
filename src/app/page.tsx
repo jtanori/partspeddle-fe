@@ -7,6 +7,8 @@ import type { Metadata } from "next";
 import { Part, Seller } from "@/types";
 import { tracer } from "@/lib/observability";
 
+import { unstable_noStore as noStore } from "next/cache";
+
 export const metadata: Metadata = {
   title: "PartsPeddle | Peer to peer farm and auto parts marketplace",
   description:
@@ -54,6 +56,7 @@ const mapSeller = (row: any): Seller => ({
 });
 
 export default async function Homepage() {
+  noStore();
   return tracer.startActiveSpan("homepage-fetch-data", async (span) => {
     const [featuredRes, recentRes, sellersRes] = await Promise.all([
       supabaseAdmin

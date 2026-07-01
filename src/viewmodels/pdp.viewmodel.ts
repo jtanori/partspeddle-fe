@@ -1,6 +1,6 @@
 // PDP ViewModel Contract (P3.1)
 
-import { ListingType } from '../domain/marketplace.types';
+import type { ReactNode } from 'react';
 
 export interface SpecificationItemViewModel {
   key: string;
@@ -16,6 +16,74 @@ export interface SpecificationGroupViewModel {
   specifications: SpecificationItemViewModel[];
 }
 
+export interface HeaderViewModel {
+  title: string;
+  subtitle: string;
+  rating: number;
+  ratingCount: number;
+  sku: string;
+}
+
+export interface BadgeViewModel {
+  isOEM: boolean;
+  isTested: boolean;
+  warrantyIncluded: boolean;
+  isGoodFit: boolean;
+}
+
+export interface PricingViewModel {
+  partPrice: number;
+  coreCharge: number;
+  isCoreRefundable: boolean;
+  shippingEstimate: string;
+  totalEstimated: number;
+}
+
+export interface InventoryViewModel {
+  quantity: number;
+  status: string;
+  isInStock: boolean;
+}
+
+export interface SellerViewModel {
+  id: string;
+  displayName: string;
+  rating: number;
+  location: string;
+  responseTime: string;
+}
+
+export interface FitmentVehicleViewModel {
+  year: number;
+  make: string;
+  model: string;
+  engine?: string;
+}
+
+export interface FitmentViewModel {
+  confidence: string;
+  fitmentScore: number;
+  vehicles: FitmentVehicleViewModel[];
+}
+
+export interface ShippingViewModel {
+  isFree: boolean;
+  eta: string;
+}
+
+export interface PartSummaryViewModel {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+}
+
+export interface TabViewModel {
+  id: string;
+  label: string;
+  content: ReactNode;
+}
+
 export interface PartViewModel {
   id: string;
   title: string;
@@ -23,17 +91,17 @@ export interface PartViewModel {
   price: number;
   condition: string;
   specifications: SpecificationGroupViewModel[];
-  header: { title: string; subtitle: string; rating: number; ratingCount: number; sku: string };
+  header: HeaderViewModel;
   images: string[];
-  pricing: { partPrice: number; coreCharge: number; isCoreRefundable: boolean; shippingEstimate: string; totalEstimated: number };
-  inventory: { quantity: number; status: string; isInStock: boolean };
-  seller: { id: string; displayName: string; rating: number; location: string; responseTime: string };
-  fitment: { confidence: string; fitmentScore: number; vehicles: any[] };
-  badges: { isOEM: boolean; isTested: boolean; warrantyIncluded: boolean; isGoodFit: boolean };
-  shipping: { isFree: boolean; eta: string };
+  pricing: PricingViewModel;
+  inventory: InventoryViewModel;
+  seller: SellerViewModel;
+  fitment: FitmentViewModel;
+  badges: BadgeViewModel;
+  shipping: ShippingViewModel;
   description: string;
-  crossSell: any[];
-  tabs: { id: string; label: string; content: string }[];
+  crossSell: PartSummaryViewModel[];
+  tabs: TabViewModel[];
 }
 
 export interface DonorVehicleViewModel {

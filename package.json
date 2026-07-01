@@ -3,15 +3,24 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src/domain scripts",
     "clean": "rm -rf .next dist",
+    "deploy:staging": "flyctl deploy --config fly/fly.stage.toml",
+    "deploy:staging:build-only": "flyctl deploy --config fly/fly.stage.toml --build-only",
+    "deploy:production": "flyctl deploy --config fly/fly.prod.toml",
+    "deploy:production:build-only": "flyctl deploy --config fly/fly.prod.toml --build-only",
     "deps:restore": "bash scripts/restore-deps.sh",
     "preinstall": "npx only-allow pnpm",
-    "test": "vitest run tests/c0_8 tests/certification",
+    "test": "vitest run tests/c0_8 tests/certification tests/branch",
     "db:seed": "tsx src/services/seed-runner.ts",
     "db:seed:users": "tsx scripts/seed-users.ts",
     "db:seed:listings": "tsx scripts/seed-listings.ts",
@@ -33,7 +42,6 @@
     "scgs:replay:validate": "tsx ./scripts/scgs/replay-validate.ts",
     "scgs:search:parity": "tsx ./scripts/scgs/search-parity.ts",
     "scgs:ranking:audit": "tsx ./scripts/scgs/ranking-signal-audit.ts",
-    "scgs:search:investigate": "tsx ./scripts/scgs/search-ranking-investigate.ts",
     "scgs:prr": "tsx ./scripts/scgs/prr.ts",
     "verify:schema": "tsx scripts/verify-schema.ts",
     "prepare": "husky"
