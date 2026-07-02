@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/hooks';
+import type { SellerProfile } from '@/store/slices/authSlice';
 import { User, MapPin, Mail, Phone, Camera, ShieldCheck, Check, Upload, ImageIcon, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -96,7 +97,7 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
 
 export const SettingsForm: React.FC = () => {
   const { profile, setProfile } = useAuthStore();
-  const [localProfile, setLocalProfile] = useState(profile);
+  const [localProfile, setLocalProfile] = useState<SellerProfile | null>(profile);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   useEffect(() => {
@@ -151,13 +152,13 @@ export const SettingsForm: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center gap-10">
           <LogoUploadZone initialLogoUrl={localProfile.logoUrl} />
           <div className="space-y-2">
-            <h2 className="text-3xl font-heading font-black uppercase tracking-tight text-text-primary">{localProfile.name || 'Yard Profile'}</h2>
+            <h2 className="text-3xl font-heading font-black uppercase tracking-tight text-text-primary">{localProfile.name || localProfile.business_name || 'Yard Profile'}</h2>
             <div className="flex items-center gap-2.5">
-              <div className={`p-1 rounded-sm ${localProfile.verificationStatus === 'verified' ? 'bg-success/10' : 'bg-warning/10'}`}>
-                <ShieldCheck className={`w-4 h-4 ${localProfile.verificationStatus === 'verified' ? 'text-success' : 'text-warning'}`} />
+              <div className={`p-1 rounded-sm ${(localProfile.verificationStatus || localProfile.verification_status) === 'verified' ? 'bg-success/10' : 'bg-warning/10'}`}>
+                <ShieldCheck className={`w-4 h-4 ${(localProfile.verificationStatus || localProfile.verification_status) === 'verified' ? 'text-success' : 'text-warning'}`} />
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${localProfile.verificationStatus === 'verified' ? 'text-success' : 'text-warning'}`}>
-                {localProfile.verificationStatus || 'Unverified'} Registry Node
+              <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${(localProfile.verificationStatus || localProfile.verification_status) === 'verified' ? 'text-success' : 'text-warning'}`}>
+                {localProfile.verificationStatus || localProfile.verification_status || 'Unverified'} Registry Node
               </span>
             </div>
           </div>

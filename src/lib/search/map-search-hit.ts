@@ -22,7 +22,7 @@ export function mapAlgoliaHitToPart(hit: Record<string, unknown>): MappedSearchH
   const partTypeLabel =
     typeof hit.part_type_label === "string" ? hit.part_type_label : partTypeSlug;
 
-  const seller: Seller | undefined = hit.seller_name
+  const seller: Partial<Seller> | undefined = hit.seller_name
     ? {
         name: String(hit.seller_name),
         businessName: String(hit.seller_name),

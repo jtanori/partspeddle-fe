@@ -55,7 +55,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
           {parts.map((part) => (
             <ProductGridCard
               key={part.id}
-              card={buildSearchResultCard(part)}
+              card={buildSearchResultCard(part as unknown as Record<string, unknown>)}
               isFavorite={favorites.includes(part.id)}
               toggleFavorite={toggleFavorite}
               onSelectPart={(id) => router.push(`/listing/${id}`)}

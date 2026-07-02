@@ -1,12 +1,14 @@
 import { AlgoliaSearchRepository } from "@/backend/modules/search/infrastructure/algolia-search-repository";
-import { SearchFilters } from "@/backend/modules/search/domain/search-filters";
-import { Part } from "@/types";
-import { mapSearchHitToPart } from "@/lib/search-hit-mapper";
+import { SearchFilters as RepositorySearchFilters } from "@/backend/modules/search/domain/search-filters";
+import { Part, SearchFilters as UiSearchFilters } from "@/types";
+import { mapAlgoliaHitToPart } from "@/lib/search-hit-mapper";
 import { ParsedSearchRequest } from "./parse-search-params";
 
 const searchRepository = new AlgoliaSearchRepository();
 
-function toRepositoryFilters(filters: SearchFilters): SearchFilters {
+function toRepositoryFilters(
+  filters: UiSearchFilters,
+): RepositorySearchFilters {
   return {
     makeIds:
       filters.fitmentMake && filters.fitmentMake !== "All Makes"
@@ -25,9 +27,19 @@ function toRepositoryFilters(filters: SearchFilters): SearchFilters {
     condition: filters.conditions,
     verifiedOnly: filters.sellerType === "trusted",
     priceMin: filters.priceRange[0] > 0 ? filters.priceRange[0] : undefined,
-    priceMax: filters.priceRange[1] < 10000 ? filters.priceRange[1] : undefined,
+    priceMax:
+      filters.priceRange[1] < 10000 ? filters.priceRange[1] : undefined,
     sortBy: filters.sortBy,
   };
+}
+
+function toRepositorySortBy(
+  sortBy: string,
+): RepositorySearchFilters["sortBy"] | undefined {
+  if (sortBy === "price_asc" || sortBy === "price_desc" || sortBy === "newest") {
+    return sortBy;
+  }
+  return undefined;
 }
 
 export interface ServerSearchResult {
@@ -44,7 +56,7 @@ export async function fetchSearchResults(
   hitsPerPage = 20,
 ): Promise<ServerSearchResult> {
   const repositoryFilters = toRepositoryFilters(request.filters);
-  repositoryFilters.sortBy = request.sortBy as SearchFilters["sortBy"];
+  repositoryFilters.sortBy = toRepositorySortBy(request.sortBy);
 
   const result = await searchRepository.search(
     request.query,
@@ -53,10 +65,10 @@ export async function fetchSearchResults(
     hitsPerPage,
   );
 
-  const rawHits = result.hits as Record<string, unknown>[];
+  const rawHits = result.hits as unknown as Record<string, unknown>[];
 
   return {
-    hits: rawHits.map(mapSearchHitToPart),
+    hits: rawHits.map(mapAlgoliaHitToPart),
     rawHits,
     facets: result.facets || {},
     page: result.page,

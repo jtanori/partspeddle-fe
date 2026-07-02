@@ -119,13 +119,13 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
     if (newFilters.system) params.set("system", newFilters.system);
     if (newFilters.category) params.set("category", newFilters.category);
     newFilters.partTypes.forEach((t) => params.append("partType", t));
-    if (newFilters.fitmentMake !== "All Makes")
+    if (newFilters.fitmentMake && newFilters.fitmentMake !== "All Makes")
       params.set("fitmentMake", newFilters.fitmentMake);
-    if (newFilters.fitmentModel !== "All Models")
+    if (newFilters.fitmentModel && newFilters.fitmentModel !== "All Models")
       params.set("fitmentModel", newFilters.fitmentModel);
-    if (newFilters.fitmentYear !== "All Years")
+    if (newFilters.fitmentYear && newFilters.fitmentYear !== "All Years")
       params.set("fitmentYear", newFilters.fitmentYear);
-    if (newFilters.fitmentEngine !== "All Engines")
+    if (newFilters.fitmentEngine && newFilters.fitmentEngine !== "All Engines")
       params.set("fitmentEngine", newFilters.fitmentEngine);
     if (newFilters.featured) params.set("featured", "true");
     if (newFilters.priceRange[0] > 0)

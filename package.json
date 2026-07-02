@@ -13,6 +13,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src/domain scripts",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next dist",
     "deploy:staging": "flyctl deploy --config fly/fly.stage.toml",
     "deploy:staging:build-only": "flyctl deploy --config fly/fly.stage.toml --build-only",

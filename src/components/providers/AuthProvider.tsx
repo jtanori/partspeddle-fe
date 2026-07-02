@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             id: session.user.id,
             email: session.user.email || null,
             jwt: session.access_token,
-            aud: session.user.aud,
+            aud: session.user.aud ?? "authenticated",
             role: session.user.user_metadata.role || "buyer",
           });
         } else {
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               id: session.user.id,
               email: session.user.email || null,
               jwt: session.access_token,
-              aud: session.user.aud,
+              aud: session.user.aud ?? "authenticated",
               role: session.user.user_metadata.role || "buyer",
             }
           : null,
