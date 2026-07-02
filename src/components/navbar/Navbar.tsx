@@ -160,6 +160,7 @@ export default function Navbar({
           showToast={showToast}
           onSetSellerTab={onSetSellerTab}
           onOpenTour={onOpenTour}
+          onOpenSearchModal={onOpenSearchModal}
           isMobileDrawerOpen={isMobileDrawerOpen}
           setIsMobileDrawerOpen={setIsMobileDrawerOpen}
           isUserMenuDrawerOpen={isUserMenuDrawerOpen}
