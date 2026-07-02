@@ -18,7 +18,6 @@
     "deploy:staging:build-only": "flyctl deploy --config fly/fly.stage.toml --build-only",
     "deploy:production": "flyctl deploy --config fly/fly.prod.toml",
     "deploy:production:build-only": "flyctl deploy --config fly/fly.prod.toml --build-only",
-    "deps:restore": "bash scripts/restore-deps.sh",
     "preinstall": "npx only-allow pnpm",
     "test": "vitest run tests/c0_8 tests/certification tests/branch",
     "db:seed": "tsx src/services/seed-runner.ts",
@@ -30,8 +29,7 @@
     "search:reindex": "tsx scripts/algolia/reindex-algolia.ts",
     "search:process-outbox": "tsx scripts/process-search-outbox.ts",
     "audit:search-platform": "tsx scripts/audit-search-consistency.ts && tsx scripts/audit-worker-health.ts",
-    "test:outbox-recovery": "tsx scripts/test-outbox-recovery.ts",
-    "test:load": "k6 run --out json=reports/load-test-report.json",
+    "test:load": "k6 run --out json=reports/load-test-report.json tests/performance/search-api-baseline.js",
     "scgs:evaluate": "tsx ./scripts/scgs/evaluate.ts",
     "scgs:snapshot:load": "tsx ./scripts/scgs/snapshot-load.ts",
     "scgs:diff": "node ./scripts/scgs/diff.js",
@@ -41,7 +39,6 @@
     "scgs:replay:validate": "tsx ./scripts/scgs/replay-validate.ts",
     "scgs:ranking:audit": "tsx ./scripts/scgs/ranking-signal-audit.ts",
     "scgs:prr": "tsx ./scripts/scgs/prr.ts",
-    "verify:schema": "tsx scripts/verify-schema.ts",
     "prepare": "husky"
   },
   "dependencies": {

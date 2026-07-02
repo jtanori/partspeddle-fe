@@ -33,10 +33,10 @@ jobs:
         run: pnpm install
 
       - name: Run linter
-        run: npm run lint
+        run: pnpm lint
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
