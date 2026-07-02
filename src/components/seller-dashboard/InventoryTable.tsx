@@ -55,7 +55,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
 
   return (
     <div className="terminal-panel overflow-hidden">
-      <div className="p-8 border-b border-border-default flex items-center justify-between bg-shell-canvas/50">
+      <div className="p-4 sm:p-6 md:p-8 border-b border-border-default flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-shell-canvas/50">
         <div className="flex items-center gap-4">
           <div className="p-2.5 bg-accent-amber/10 rounded-sm border border-accent-amber/20">
             <Package className="w-5 h-5 text-accent-amber" />
