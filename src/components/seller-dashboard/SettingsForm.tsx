@@ -44,7 +44,7 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
   };
 
   return (
-    <div className="border border-border-strong bg-shell-canvas/30 rounded-sm p-5 flex items-center gap-6 max-w-2xl shadow-panel">
+    <div className="border border-border-strong bg-shell-canvas/30 rounded-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 max-w-2xl shadow-panel w-full">
       <div className="relative w-20 h-20 rounded-sm border border-border-strong bg-shell-sidebar flex items-center justify-center overflow-hidden shrink-0 group shadow-inner transition-colors hover:border-accent-amber/30">
         {logoUrl ? (
           <img src={logoUrl} alt="Yard Master Identity" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
@@ -147,7 +147,7 @@ export const SettingsForm: React.FC = () => {
 
   return (
     <div className="terminal-panel overflow-hidden">
-      <div className="bg-shell-canvas/50 p-10 border-b border-border-default">
+      <div className="bg-shell-canvas/50 p-4 sm:p-6 md:p-10 border-b border-border-default">
         <div className="flex flex-col md:flex-row md:items-center gap-10">
           <LogoUploadZone initialLogoUrl={localProfile.logoUrl} />
           <div className="space-y-2">
@@ -164,7 +164,7 @@ export const SettingsForm: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-12 bg-shell-workspace/30">
+      <div className="p-4 sm:p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 bg-shell-workspace/30">
         <div className="space-y-8">
           <div className="flex items-center gap-3 border-b border-border-subtle pb-2">
             <span className="w-1.5 h-1.5 rounded-full bg-accent-amber" />
