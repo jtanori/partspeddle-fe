@@ -20,9 +20,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ cate
   const data = await getDashboardData(category);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">SCGS Health Dashboard: {data.category}</h1>
-      <div className="grid grid-cols-2 gap-4">
+    <div className="p-4 md:p-8">
+      <h1 className="text-xl md:text-2xl font-bold mb-6">SCGS Health Dashboard: {data.category}</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <HealthOverview verdict={data.latestVerdict} stabilityIndex={data.stabilityIndex} />
         <DriftChart trend={data.driftTrend} />
       </div>
