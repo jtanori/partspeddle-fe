@@ -6,6 +6,8 @@ describe('DescriptionFitmentPanel', () => {
   const mockPart = {
     description: 'This is a long description'.repeat(20),
     fitment: {
+      confidence: 'high',
+      fitmentScore: 100,
       vehicles: [{ year: 2015, make: 'Honda', model: 'Civic', engine: '1.8L' }]
     }
   };

@@ -1,15 +1,20 @@
-// PDP Domain Types (P2)
-import { PartListing, DonorVehicleListing } from './marketplace.types';
-import { TabViewModel, PartSummaryViewModel } from './pdp.shared';
+// PDP type barrel (P0.6)
+// Domain-level PDP types are centralized in the viewmodel contract while the
+// taxonomy/SCGS work stabilizes the build. Re-export from here so existing
+// component imports continue to resolve.
 
-// PDP ViewModels are now derived from Listing specializations
-export interface PartViewModel extends PartListing {
-  // Adds PDP-specific presentation data
-  crossSell: PartSummaryViewModel[];
-  tabs: TabViewModel[];
-}
-
-export interface DonorVehicleViewModel extends DonorVehicleListing {
-  // Adds VDP-specific presentation data
-  availableParts: PartSummaryViewModel[];
-}
+export type {
+  BadgeViewModel,
+  DonorVehicleViewModel,
+  FitmentViewModel,
+  HeaderViewModel,
+  InventoryViewModel,
+  PartSummaryViewModel,
+  PartViewModel,
+  PricingViewModel,
+  SellerViewModel,
+  ShippingViewModel,
+  SpecificationGroupViewModel,
+  SpecificationItemViewModel,
+  TabViewModel,
+} from '@/viewmodels/pdp.viewmodel';

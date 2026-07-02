@@ -9,6 +9,7 @@ const ALGOLIA_INDEX_NAME = "parts";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const SUPABASE_WEBHOOK_SECRET = Deno.env.get("SUPABASE_WEBHOOK_SECRET") || "";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   global: { fetch: fetch.bind(globalThis) },
@@ -18,15 +19,66 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 const client = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY);
 const index = client.initIndex(ALGOLIA_INDEX_NAME);
 
+function unauthorized(message: string): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status: 401,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
+
+async function verifyWebhookSignature(req: Request): Promise<boolean> {
+  if (!SUPABASE_WEBHOOK_SECRET) {
+    console.error("SUPABASE_WEBHOOK_SECRET is not configured");
+    return false;
+  }
+
+  const signature = req.headers.get("x-webhook-signature");
+  if (!signature) return false;
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(SUPABASE_WEBHOOK_SECRET),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"],
+  );
+
+  const body = await req.clone().text();
+  const expected = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(body),
+  );
+  const expectedHex = Array.from(new Uint8Array(expected))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  if (signature.length !== expectedHex.length) return false;
+  let match = 0;
+  for (let i = 0; i < signature.length; i++) {
+    match |= signature.charCodeAt(i) ^ expectedHex.charCodeAt(i);
+  }
+  return match === 0;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers":
-          "authorization, x-client-info, apikey, content-type",
+          "authorization, x-client-info, apikey, content-type, x-webhook-signature",
       },
     });
+  }
+
+  const signatureOk = await verifyWebhookSignature(req);
+  if (!signatureOk) {
+    return unauthorized("Invalid or missing webhook signature");
   }
 
   try {
@@ -36,6 +88,7 @@ serve(async (req) => {
     if (table !== "parts") {
       return new Response(JSON.stringify({ message: "Table not supported" }), {
         status: 400,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -77,6 +130,21 @@ serve(async (req) => {
             makes (
               id,
               name
+            )
+          )
+        ),
+        part_fitment!part_fitment_part_id_fkey (
+          vehicle_variant_id,
+          vehicle_variants!part_fitment_vehicle_variant_id_fkey (
+            id,
+            year,
+            models!vehicle_variants_model_id_fkey (
+              id,
+              name,
+              makes!models_make_id_fkey (
+                id,
+                name
+              )
             )
           )
         ),
@@ -134,6 +202,32 @@ serve(async (req) => {
       (1000 * 60 * 60 * 24);
     if (daysOld < 30) listingQualityScore += 15;
 
+    const fitmentRows = Array.isArray(part.part_fitment)
+      ? part.part_fitment
+      : part.part_fitment
+        ? [part.part_fitment]
+        : [];
+    const fitmentSignatures = Array.from(
+      new Set(
+        fitmentRows
+          .map((row: any) => {
+            const variant = row.vehicle_variants;
+            if (!variant) return null;
+            const model = Array.isArray(variant.models)
+              ? variant.models[0]
+              : variant.models;
+            const make = Array.isArray(model?.makes)
+              ? model.makes[0]
+              : model?.makes;
+            if (!make?.id || !model?.id || typeof variant.year !== "number") {
+              return null;
+            }
+            return `${make.id}:${model.id}:${variant.year}`;
+          })
+          .filter((s: string | null): s is string => Boolean(s)),
+      ),
+    );
+
     const algoliaRecord = {
       objectID: part.id,
       title: part.title,
@@ -157,6 +251,7 @@ serve(async (req) => {
       make: vehicleMake?.name || "Universal",
       model: vehicleModel?.name || "N/A",
       year: vehicleVariant?.year || null,
+      fitment_signatures: fitmentSignatures,
 
       // Seller & Scores
       seller_name: sellerProfile?.business_name || "Particular",

@@ -30,7 +30,7 @@ export default function PDPRoot({ viewModel }: ProductDetailProps) {
     <div className="bg-[#F5F0EB] min-h-screen font-sans text-[#1E1E1E]">
       <div className="max-w-[1280px] mx-auto px-6 py-4">
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-xs text-zinc-500 mb-6">
+        <nav className="flex flex-wrap items-center gap-2 text-xs text-zinc-500 mb-6">
           <a href="/" className="hover:text-pp-primary">Home</a>
           <span>&rsaquo;</span>
           <a href="/search" className="hover:text-pp-primary">Search results</a>
@@ -60,8 +60,8 @@ export default function PDPRoot({ viewModel }: ProductDetailProps) {
           <div className="lg:col-span-8 space-y-8">
             
             {/* L-03: Hero Section (Gallery + Info/Price) */}
-            <div className="bg-white rounded-pp-card p-8 shadow-sm border border-zinc-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="bg-white rounded-pp-card p-4 sm:p-8 shadow-sm border border-zinc-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
                 <ProductGallery images={viewModel.images} />
                 <div className="flex flex-col">
                   <ProductHeader header={viewModel.header} badges={viewModel.badges} />

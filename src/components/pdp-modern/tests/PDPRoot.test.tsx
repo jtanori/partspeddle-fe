@@ -6,6 +6,11 @@ import { PartViewModel } from '@/domain/types/pdp.types';
 describe('PDPRoot', () => {
   const mockViewModel: PartViewModel = {
     id: 'p1',
+    title: '2015 Honda Civic Alternator',
+    subtitle: '1.8L, 4-Cylinder',
+    price: 89.99,
+    condition: 'Used',
+    specifications: [],
     header: { title: '2015 Honda Civic Alternator', subtitle: '1.8L, 4-Cylinder', rating: 5, ratingCount: 1, sku: 'ALT-11039' },
     images: ['img.jpg'],
     pricing: { partPrice: 89.99, coreCharge: 0, isCoreRefundable: false, shippingEstimate: 'Free shipping', totalEstimated: 89.99 },

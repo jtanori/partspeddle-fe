@@ -12,6 +12,7 @@ describe("Search Document Contract", () => {
       make: "Ford",
       model: "F150",
       year: 2020,
+      fitment_signatures: ["make-1:model-1:2020"],
       category: "Electrical",
       part_type: "Alternator",
       condition: "USED_GOOD",

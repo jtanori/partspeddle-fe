@@ -37,7 +37,12 @@ export default function LoginPage() {
       if (error) throw error;
 
       if (data.session) {
-        const userRole = data.session.user.user_metadata.role || "buyer";
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.session.user.id)
+          .single();
+        const userRole = (roleData?.role as "buyer" | "seller" | "admin") || "buyer";
         setUser({
           id: data.session.user.id,
           email: data.session.user.email || null,

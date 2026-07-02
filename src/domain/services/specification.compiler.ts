@@ -1,6 +1,13 @@
 import { SpecificationRepository } from '../../repositories/specification.repository';
 import { CatalogRepository } from '../../repositories/catalog.repository';
 import { ListingRepository } from '../../repositories/listing.repository';
+import { SpecificationValue } from '@/domain/types/marketplace.types';
+
+function coerceSpecificationValue(value: SpecificationValue): string | number | boolean {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  return JSON.stringify(value);
+}
 
 export interface ResolvedSpec {
   key: string;
@@ -68,7 +75,7 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
       const resolved: ResolvedSpec = {
         key: def.key,
         label: def.label,
-        value: spec.value,
+        value: coerceSpecificationValue(spec.value),
         unit: def.unit,
         group: groupName,
         groupOrder: catSpec.display_order || 0,
@@ -80,7 +87,7 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
       flat.push(resolved);
 
       if (def.facetable) {
-        facets[def.key] = spec.value;
+        facets[def.key] = coerceSpecificationValue(spec.value);
       }
 
       if (!groupedMap[groupName]) {

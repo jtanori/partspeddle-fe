@@ -65,10 +65,6 @@ export class AlgoliaSearchRepository implements SearchRepository {
       page: response.page || 0,
       totalPages: response.nbPages || 0,
       facets: response.facets,
-      debug: {
-        matchedOn: response.processingTimingsMS,
-        rankingFactors: ["seller_verified", "created_at"],
-      },
     };
   }
 
@@ -94,7 +90,8 @@ export class AlgoliaSearchRepository implements SearchRepository {
   }
 
   private escapeFilterValue(value: any): string {
-    return String(value).replace(/'/g, "\\'");
+    // Algolia filter syntax escapes single quotes by doubling them.
+    return String(value).replace(/'/g, "''");
   }
 
   private buildAlgoliaFilters(filters: SearchFilters): string {
@@ -120,6 +117,13 @@ export class AlgoliaSearchRepository implements SearchRepository {
 
     if (typeof filters.yearMax === "number" && !isNaN(filters.yearMax)) {
       parts.push(`year <= ${filters.yearMax}`);
+    }
+
+    if (filters.fitmentSignatures && filters.fitmentSignatures.length > 0) {
+      const signatures = filters.fitmentSignatures.map(
+        (s) => `fitment_signatures:'${this.escapeFilterValue(s)}'`
+      );
+      parts.push(`(${signatures.join(" OR ")})`);
     }
 
     addFilter("category", filters.categoryIds);

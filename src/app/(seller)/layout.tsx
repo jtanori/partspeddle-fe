@@ -16,6 +16,7 @@ export default function SellerLayout({
 }) {
   const { user, setProfile } = useAppStore();
   const [isYardControlOpen, setIsYardControlOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,6 +42,10 @@ export default function SellerLayout({
     fetchProfile();
   }, [user, setProfile]);
 
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
   if (isLoading) {
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-shell-canvas text-text-primary text-steel-black">
@@ -49,20 +54,37 @@ export default function SellerLayout({
     );
   }
 
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   return (
     <InventoryWizardProvider>
       <div className="flex h-screen w-screen overflow-hidden bg-shell-canvas text-text-primary dashboard-shell font-sans">
-        {/* Sidebar - Persistent technical panel */}
-        <SellerSidebar />
+        <SellerSidebar className="hidden md:flex" />
 
-        {/* Main Viewport Container */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden bg-shell-canvas">
-          {/* Persistent Telemetry Header */}
-          <DashboardHeader onToggleYardControl={() => setIsYardControlOpen(!isYardControlOpen)} />
+        {isMobileMenuOpen && (
+          <>
+            <div
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={closeMobileMenu}
+              aria-hidden="true"
+            />
+            <SellerSidebar
+              className="fixed inset-y-0 left-0 z-50 md:hidden"
+              onNavigate={closeMobileMenu}
+              showCloseButton
+              onClose={closeMobileMenu}
+            />
+          </>
+        )}
 
-          {/* Dynamic Context Workspace Panel - Route Driven */}
-          <main className="flex-1 overflow-y-auto p-6 bg-shell-workspace custom-scrollbar scroll-smooth text-steel-black">
-            <div className="max-w-7xl mx-auto">
+        <div className="flex-1 flex flex-col h-full overflow-hidden bg-shell-canvas min-w-0">
+          <DashboardHeader
+            onToggleYardControl={() => setIsYardControlOpen(!isYardControlOpen)}
+            onToggleMobileMenu={() => setIsMobileMenuOpen(true)}
+          />
+
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 bg-shell-workspace custom-scrollbar scroll-smooth text-steel-black">
+            <div className="max-w-7xl mx-auto w-full min-w-0">
               {children}
             </div>
           </main>

@@ -38,6 +38,21 @@ export class BuildSearchDocumentUseCase {
             )
           )
         ),
+        part_fitment!part_fitment_part_id_fkey (
+          vehicle_variant_id,
+          vehicle_variants!part_fitment_vehicle_variant_id_fkey (
+            id,
+            year,
+            models!vehicle_variants_model_id_fkey (
+              id,
+              name,
+              makes!models_make_id_fkey (
+                id,
+                name
+              )
+            )
+          )
+        ),
         users!parts_seller_id_fkey (
           id,
           seller_profiles (
@@ -82,6 +97,33 @@ export class BuildSearchDocumentUseCase {
       ? partData.users.seller_profiles[0]
       : partData.users?.seller_profiles;
 
+    // Fitment signatures for exact tuple filtering in Algolia.
+    const fitmentRows = Array.isArray(partData.part_fitment)
+      ? partData.part_fitment
+      : partData.part_fitment
+        ? [partData.part_fitment]
+        : [];
+    const fitmentSignatures: string[] = Array.from(
+      new Set(
+        fitmentRows
+          .map((row: any) => {
+            const variant = row.vehicle_variants;
+            if (!variant) return null;
+            const model = Array.isArray(variant.models)
+              ? variant.models[0]
+              : variant.models;
+            const make = Array.isArray(model?.makes)
+              ? model.makes[0]
+              : model?.makes;
+            if (!make?.id || !model?.id || typeof variant.year !== "number") {
+              return null;
+            }
+            return `${make.id}:${model.id}:${variant.year}`;
+          })
+          .filter((s: string | null): s is string => Boolean(s)),
+      ),
+    );
+
     // --- Scoring Mechanisms ---
 
     // 1. Seller Trust Score (0-100)
@@ -123,6 +165,7 @@ export class BuildSearchDocumentUseCase {
       make: vehicleMake?.name || "Universal",
       model: vehicleModel?.name || "N/A",
       year: vehicleVariant?.year || null,
+      fitment_signatures: fitmentSignatures,
 
       category: category?.slug_en || "other",
       category_label: category?.name_en || category?.name || "Other",

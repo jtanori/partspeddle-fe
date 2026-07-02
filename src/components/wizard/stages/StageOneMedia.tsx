@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Upload } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface StagedFile {
   id: string;
@@ -28,6 +27,24 @@ export default function StageOneMedia({
 }: StageOneMediaProps) {
   const [activeMode, setActiveMode] = useState<'VEHICLE' | 'COMPONENT'>(mode === 'vehicle' ? 'VEHICLE' : 'COMPONENT');
   const [activePopover, setActivePopover] = useState<string | null>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!activePopover) return;
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setActivePopover(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [activePopover]);
 
   // Sync mode with parent
   const handleModeChange = (newMode: 'VEHICLE' | 'COMPONENT') => {
@@ -39,8 +56,8 @@ export default function StageOneMedia({
     <div className="w-full flex flex-col min-h-0 overflow-hidden bg-zinc-900/20 border border-zinc-800 rounded-sm p-4 font-mono">
       
       {/* SECTION 1: TACTICAL CONTROL BAR */}
-      <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4 relative">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-zinc-800 pb-3 mb-4 relative">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-[10px] text-zinc-500 tracking-widest uppercase">{'>>'} INTAKE STREAM:</span>
           
           <div className="flex bg-black p-0.5 rounded border border-zinc-800 relative">
@@ -59,16 +76,18 @@ export default function StageOneMedia({
           </div>
           
           {/* HELP POPOVER ANCHOR */}
-          <div className="relative inline-block">
+          <div className="relative inline-block" ref={popoverRef}>
             <button 
-              onMouseEnter={() => setActivePopover('mode')}
-              onMouseLeave={() => setActivePopover(null)}
-              className="w-4 h-4 rounded-full bg-black border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500 hover:border-amber-500 hover:text-amber-500 transition-colors focus:outline-none"
+              type="button"
+              onClick={() => setActivePopover(activePopover === 'mode' ? null : 'mode')}
+              className="w-11 h-11 rounded-full bg-black border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500 hover:border-amber-500 hover:text-amber-500 transition-colors focus:outline-none focus:ring-1 focus:ring-amber-500/40"
+              aria-expanded={activePopover === 'mode'}
+              aria-label="Intake mode help"
             >
               ?
             </button>
             {activePopover === 'mode' && (
-              <div className="absolute left-6 top-0 w-80 bg-zinc-950 border border-amber-500/40 p-3 text-[10px] text-zinc-300 rounded-sm shadow-2xl z-50 leading-relaxed whitespace-pre-line">
+              <div className="absolute left-0 sm:left-6 top-full sm:top-0 mt-2 sm:mt-0 max-w-[calc(100vw-2rem)] sm:max-w-xs bg-zinc-950 border border-amber-500/40 p-3 text-[10px] text-zinc-300 rounded-sm shadow-2xl z-50 leading-relaxed whitespace-pre-line">
                 <span className="text-amber-500 font-bold">[ INTAKE MODE SELECTION ]</span>{"\n"}
                 • VEHICLE: Scans donor frames to pull raw VIN, title registries, and chassis specs.{"\n"}
                 • COMPONENT: Activates high-density computer vision to segment loose parts and auto-generate stock indexes.

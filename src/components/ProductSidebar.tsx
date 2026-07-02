@@ -75,7 +75,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
 
   return (
     <div
-      className={`border rounded-xl p-5 space-y-6 relative shadow-sm ${themeClasses}`}
+      className={`border rounded-xl p-4 sm:p-5 space-y-6 relative shadow-sm ${themeClasses}`}
       id="unified-filters-card"
     >
       {/* FILTER BY Header */}

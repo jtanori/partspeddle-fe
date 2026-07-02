@@ -33,6 +33,7 @@ async function configureIndex() {
           "seller_verified",
           "location",
           "year",
+          "filterOnly(fitment_signatures)",
         ],
         customRanking: [
           "desc(listing_quality_score)",

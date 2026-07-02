@@ -161,16 +161,18 @@ export function UIOverlays() {
         initialQuery={searchQueryText}
       />
 
-      {/* Global Help Button */}
-      <div className="fixed bottom-20 sm:bottom-8 right-8 z-[40]">
-        <button 
-          onClick={() => setTourActive(true)} 
-          className="w-14 h-14 bg-rust-copper hover:bg-rust-copper/90 text-white rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-95 group"
-          title="Operator Support & Tour"
-        >
-          <HelpCircle className="w-6 h-6 group-hover:animate-pulse" />
-        </button>
-      </div>
+      {/* Global Help Button - hidden while tour is active and raised above mobile bottom tab */}
+      {!isTourActive && (
+        <div className="fixed bottom-24 sm:bottom-8 right-4 sm:right-8 z-[39]">
+          <button
+            onClick={() => setTourActive(true)}
+            className="w-12 h-12 sm:w-14 sm:h-14 bg-rust-copper hover:bg-rust-copper/90 text-white rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-95 group"
+            title="Operator Support & Tour"
+          >
+            <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-pulse" />
+          </button>
+        </div>
+      )}
     </>
   );
 }
