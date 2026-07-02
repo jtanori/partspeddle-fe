@@ -9,6 +9,7 @@ const ALGOLIA_INDEX_NAME = "parts";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const SUPABASE_WEBHOOK_SECRET = Deno.env.get("SUPABASE_WEBHOOK_SECRET") || "";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   global: { fetch: fetch.bind(globalThis) },
@@ -18,15 +19,66 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 const client = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY);
 const index = client.initIndex(ALGOLIA_INDEX_NAME);
 
+function unauthorized(message: string): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status: 401,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
+
+async function verifyWebhookSignature(req: Request): Promise<boolean> {
+  if (!SUPABASE_WEBHOOK_SECRET) {
+    console.error("SUPABASE_WEBHOOK_SECRET is not configured");
+    return false;
+  }
+
+  const signature = req.headers.get("x-webhook-signature");
+  if (!signature) return false;
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(SUPABASE_WEBHOOK_SECRET),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"],
+  );
+
+  const body = await req.clone().text();
+  const expected = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(body),
+  );
+  const expectedHex = Array.from(new Uint8Array(expected))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  if (signature.length !== expectedHex.length) return false;
+  let match = 0;
+  for (let i = 0; i < signature.length; i++) {
+    match |= signature.charCodeAt(i) ^ expectedHex.charCodeAt(i);
+  }
+  return match === 0;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers":
-          "authorization, x-client-info, apikey, content-type",
+          "authorization, x-client-info, apikey, content-type, x-webhook-signature",
       },
     });
+  }
+
+  const signatureOk = await verifyWebhookSignature(req);
+  if (!signatureOk) {
+    return unauthorized("Invalid or missing webhook signature");
   }
 
   try {
@@ -36,6 +88,7 @@ serve(async (req) => {
     if (table !== "parts") {
       return new Response(JSON.stringify({ message: "Table not supported" }), {
         status: 400,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
