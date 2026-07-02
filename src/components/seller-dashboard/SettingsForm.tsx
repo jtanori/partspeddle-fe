@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuthStore } from '@/store/hooks';
 import type { SellerProfile } from '@/store/slices/authSlice';
 import { User, MapPin, Mail, Phone, Camera, ShieldCheck, Check, Upload, ImageIcon, Loader2 } from 'lucide-react';
@@ -99,10 +99,12 @@ export const SettingsForm: React.FC = () => {
   const { profile, setProfile } = useAuthStore();
   const [localProfile, setLocalProfile] = useState<SellerProfile | null>(profile);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [syncedProfile, setSyncedProfile] = useState(profile);
 
-  useEffect(() => {
+  if (profile !== syncedProfile) {
+    setSyncedProfile(profile);
     if (profile) setLocalProfile(profile);
-  }, [profile]);
+  }
 
   if (!localProfile) {
     return (

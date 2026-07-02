@@ -3,11 +3,26 @@ import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
+import globals from "globals";
+
+const tsRecommendedRules = ts.configs.recommended.rules;
+const reactRecommendedRules = react.configs.recommended.rules;
+const reactHooksRecommendedRules = reactHooks.configs.recommended.rules;
+
+const sharedTsRules = {
+  ...tsRecommendedRules,
+  "no-undef": "off",
+  "@typescript-eslint/no-explicit-any": "off",
+  "@typescript-eslint/no-unused-vars": "warn",
+};
 
 export default [
   js.configs.recommended,
   {
-    files: ["**/*.{ts,tsx}"],
+    ignores: ["node_modules/**", ".next/**", "dist/**"],
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -15,27 +30,47 @@ export default [
         sourceType: "module",
         ecmaFeatures: { jsx: true },
       },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
     plugins: {
       "@typescript-eslint": ts,
-      react: react,
+      react,
       "react-hooks": reactHooks,
     },
     rules: {
-      ...ts.configs.recommended.rules,
-      ...react.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
+      ...sharedTsRules,
+      ...reactRecommendedRules,
+      ...reactHooksRecommendedRules,
       "react/react-in-jsx-scope": "off",
-      
-      // TODO: TECH DEBT - These rules are temporarily disabled to unblock development.
-      // Environment is misconfigured for global objects (console, window, process, etc.).
-      // These should be re-enabled and fixed properly after search UI modernization.
-      "no-undef": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "warn",
     },
     settings: {
       react: { version: "detect" },
+    },
+  },
+  {
+    files: ["scripts/**/*.{ts,tsx,js}", "tests/**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+      globals: {
+        ...globals.node,
+      },
+    },
+    plugins: {
+      "@typescript-eslint": ts,
+    },
+    rules: {
+      ...sharedTsRules,
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-uses-react": "off",
+      "react-hooks/rules-of-hooks": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
 ];

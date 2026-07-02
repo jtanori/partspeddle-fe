@@ -5,6 +5,8 @@ export const useNavbarState = (initialSearchText: string = '') => {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isUserMenuDrawerOpen, setIsUserMenuDrawerOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState(initialSearchText);
+  const [syncedInitialSearchText, setSyncedInitialSearchText] =
+    useState(initialSearchText);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [placeholderText, setPlaceholderText] = useState("Search parts, VIN...");
@@ -29,12 +31,10 @@ export const useNavbarState = (initialSearchText: string = '') => {
     }
   }, []);
 
-  useEffect(() => {
-    // Only update if prop actually changes
-    if (initialSearchText !== navSearchText) {
-        setNavSearchText(initialSearchText);
-    }
-  }, [initialSearchText]);
+  if (initialSearchText !== syncedInitialSearchText) {
+    setSyncedInitialSearchText(initialSearchText);
+    setNavSearchText(initialSearchText);
+  }
 
   useEffect(() => {
     if (typeof document !== 'undefined') {

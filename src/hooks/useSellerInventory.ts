@@ -18,18 +18,22 @@ interface UseSellerInventoryOptions {
   filter?: "active" | "sold" | "archived";
 }
 
+const IDLE_STATE = {
+  parts: [] as InventoryItem[],
+  loading: false,
+  error: null as string | null,
+};
+
 export function useSellerInventory(options: UseSellerInventoryOptions = {}) {
   const { userId, filter } = options;
+  const isActive = Boolean(userId);
+
   const [parts, setParts] = useState<InventoryItem[]>([]);
-  const [loading, setLoading] = useState(!!userId);
+  const [loading, setLoading] = useState(isActive);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) {
-      setParts([]);
-      setLoading(false);
-      return;
-    }
+    if (!isActive) return;
 
     let cancelled = false;
 
@@ -72,7 +76,11 @@ export function useSellerInventory(options: UseSellerInventoryOptions = {}) {
     return () => {
       cancelled = true;
     };
-  }, [userId, filter]);
+  }, [userId, filter, isActive]);
+
+  if (!isActive) {
+    return IDLE_STATE;
+  }
 
   return { parts, loading, error };
 }

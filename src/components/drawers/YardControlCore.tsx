@@ -69,7 +69,7 @@ export const YardControlCore: React.FC<YardControlCoreProps> = ({ onClose, initi
             </div>
           </div>
           <p className="text-[9px] text-text-muted mt-3 leading-relaxed">
-            Set your yard's physical storage layout limits. Adjusting row limits automatically updates the available coordinate options when assigning storage locations to incoming parts.
+            Set your yard&apos;s physical storage layout limits. Adjusting row limits automatically updates the available coordinate options when assigning storage locations to incoming parts.
           </p>
         </div>
       </div>

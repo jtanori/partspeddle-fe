@@ -1,4 +1,5 @@
 import React from 'react';
+import { useIsClient } from '@/hooks/useIsClient';
 import { ChevronDown, ChevronRight, Check } from 'lucide-react';
 
 interface FacetFilterProps {
@@ -22,12 +23,7 @@ export const FacetFilter: React.FC<FacetFilterProps> = ({
   onToggle,
   isDisabled,
 }) => {
-  const [isMounted, setIsMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  const isMounted = useIsClient();
   const disabled = isDisabled && isMounted;
 
   return (

@@ -25,10 +25,6 @@ export default function SellerLayout({
     }
   }, [profile, setProfile]);
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, []);
-
   if (isLoading) {
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-shell-canvas text-text-primary text-steel-black">

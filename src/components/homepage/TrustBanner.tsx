@@ -11,7 +11,7 @@ export const TrustBanner: React.FC = () => {
           Vetted Builder Guarantee index
         </h3>
         <p className="font-sans text-sm text-zinc-350 max-w-xl">
-          We hold payments for 30 days. If the part doesn't fit standard vehicle parameters indicated inside our fitment catalog, get a full refund including shipping.
+          We hold payments for 30 days. If the part doesn&apos;t fit standard vehicle parameters indicated inside our fitment catalog, get a full refund including shipping.
         </p>
       </div>
       <button 

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useIsClient } from '@/hooks/useIsClient';
 import { X, CheckCircle2, ShoppingBag, Trash2, HelpCircle } from 'lucide-react';
 import { useCartStore, useSearchStore, useUiStore } from '@/store/hooks';
 import { useRouter } from 'next/navigation';
@@ -9,8 +10,8 @@ import SearchModal from './SearchModal';
 
 export function UIOverlays() {
   const router = useRouter();
-  const [isMounted, setIsMounted] = React.useState(false);
-  
+  const isMounted = useIsClient();
+
   const {
     cart,
     isCartOpen,
@@ -31,10 +32,6 @@ export function UIOverlays() {
   } = useUiStore();
   const { searchQueryText, setSearchQueryText, setSearchCategory } =
     useSearchStore();
-
-  React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   if (!isMounted) return null;
 

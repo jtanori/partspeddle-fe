@@ -7,18 +7,22 @@ interface UseSellerProfileOptions {
   userId?: string | null;
 }
 
+const IDLE_STATE = {
+  profile: null as Record<string, unknown> | null,
+  loading: false,
+  error: null as string | null,
+};
+
 export function useSellerProfile(options: UseSellerProfileOptions = {}) {
   const { userId } = options;
+  const isActive = Boolean(userId);
+
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
-  const [loading, setLoading] = useState(!!userId);
+  const [loading, setLoading] = useState(isActive);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) {
-      setProfile(null);
-      setLoading(false);
-      return;
-    }
+    if (!isActive) return;
 
     let cancelled = false;
 
@@ -55,7 +59,11 @@ export function useSellerProfile(options: UseSellerProfileOptions = {}) {
     return () => {
       cancelled = true;
     };
-  }, [userId]);
+  }, [userId, isActive]);
+
+  if (!isActive) {
+    return IDLE_STATE;
+  }
 
   return { profile, loading, error };
 }
