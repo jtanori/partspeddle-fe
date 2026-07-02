@@ -5,7 +5,7 @@ import { StageTwoTaxonomy } from '../wizard/stages/StageTwoTaxonomy';
 import { StageThreeLogistics } from '../wizard/stages/StageThreeLogistics';
 import { analyzeListingImage } from '../../services/ai-vision';
 import { authenticatedFetch } from '@/lib/authenticated-fetch';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import { useInventoryWizard } from '../../context/InventoryWizardContext';
 import { useIngestionSessionLock } from '../../hooks/useIngestionSessionLock';
 import { compressImage } from '../../lib/image-utils';
@@ -15,7 +15,7 @@ interface ListingWizardProps {
 }
 
 export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
-  const { user } = useAppStore();
+  const { user } = useAuthStore();
   const { setIsTerminalLocked } = useInventoryWizard();
   const [step, setStep] = useState(1);
   const [mode, setMode] = useState<'vehicle' | 'component'>('component');

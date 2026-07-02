@@ -14,14 +14,14 @@ import RecentlyViewed from './RecentlyViewed';
 import NeedHelp from './NeedHelp';
 import TrustBar from './TrustBar';
 
-import { useAppStore } from '@/store/useAppStore';
+import { useCartStore } from '@/store/hooks';
 
 interface ProductDetailProps {
   viewModel: PartViewModel;
 }
 
 export default function PDPRoot({ viewModel }: ProductDetailProps) {
-  const { addToCart } = useAppStore();
+  const { addToCart } = useCartStore();
 
   const isOutOfStock = viewModel.pricing.partPrice <= 0 || !viewModel.inventory.isInStock;
   const isLimitedData = viewModel.fitment.confidence === 'low' || viewModel.fitment.confidence === 'medium';

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { X, CheckCircle2, ShoppingBag, Trash2, HelpCircle } from 'lucide-react';
-import { useAppStore } from '@/store/useAppStore';
+import { useCartStore, useSearchStore, useUiStore } from '@/store/hooks';
 import { useRouter } from 'next/navigation';
 import GuidedTour from './GuidedTour';
 import SearchModal from './SearchModal';
@@ -19,6 +19,8 @@ export function UIOverlays() {
     setCheckoutSuccess,
     clearCart,
     removeFromCart,
+  } = useCartStore();
+  const {
     isTourActive,
     setTourActive,
     setHighlightedElement,
@@ -26,10 +28,9 @@ export function UIOverlays() {
     setInfoModalType,
     isSearchModalOpen,
     setSearchModalOpen,
-    searchQueryText,
-    setSearchQueryText,
-    setSearchCategory,
-  } = useAppStore();
+  } = useUiStore();
+  const { searchQueryText, setSearchQueryText, setSearchCategory } =
+    useSearchStore();
 
   React.useEffect(() => {
     setIsMounted(true);

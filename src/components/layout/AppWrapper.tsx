@@ -2,7 +2,13 @@
 
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useAppStore } from "@/store/useAppStore";
+import {
+  useAuthStore,
+  useCartStore,
+  useSearchStore,
+  useSellerNavStore,
+  useUiStore,
+} from "@/store/hooks";
 import Navbar from "../navbar/Navbar";
 import Footer from "../Footer";
 import SearchModal from "../SearchModal";
@@ -12,11 +18,8 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
 
+  const { user, userRole, setUserRole, logout, profile } = useAuthStore();
   const {
-    user,
-    userRole,
-    setUserRole,
-    logout,
     cart,
     isCartOpen,
     setIsCartOpen,
@@ -24,21 +27,19 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
     setCheckoutSuccess,
     clearCart,
     removeFromCart,
+  } = useCartStore();
+  const {
     isTourActive,
     setTourActive,
     infoModalType,
     setInfoModalType,
     isSearchModalOpen,
     setSearchModalOpen,
-    searchQueryText,
-    setSearchQueryText,
-    searchCategory,
-    setSearchCategory,
-    activeSellerTab,
-    setActiveSellerTab,
-    setPendingSnapImages,
-    profile,
-  } = useAppStore();
+  } = useUiStore();
+  const { searchQueryText, setSearchQueryText, searchCategory, setSearchCategory } =
+    useSearchStore();
+  const { activeSellerTab, setActiveSellerTab, setPendingSnapImages } =
+    useSellerNavStore();
 
   const isAuthPage =
     pathname === "/auth" || pathname === "/login" || pathname === "/register";

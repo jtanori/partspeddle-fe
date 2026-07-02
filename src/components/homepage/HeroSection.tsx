@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppStore } from '../../store/useAppStore';
+import { useSearchStore, useUiStore } from '@/store/hooks';
 import { Search } from 'lucide-react';
 import hero2 from '../../assets/images/hero_2.png';
 import hero3 from '../../assets/images/hero_3.png';
@@ -16,7 +16,9 @@ const HERO_BACKGROUNDS = [
 
 export const HeroSection: React.FC = () => {
   const router = useRouter();
-  const { searchQueryText, setSearchQueryText, setSearchCategory, setSearchModalOpen } = useAppStore();
+  const { searchQueryText, setSearchQueryText, setSearchCategory } =
+    useSearchStore();
+  const { setSearchModalOpen } = useUiStore();
   const [activeBgIndex, setActiveBgIndex] = useState(0);
 
   useEffect(() => {

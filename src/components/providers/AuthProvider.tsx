@@ -2,13 +2,13 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useAppStore } from "@/store/useAppStore";
+import { useAuthStore } from "@/store/hooks";
 
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isInitializing, setIsInitializing] = useState(true);
-  const { setUser } = useAppStore();
+  const { setUser } = useAuthStore();
 
   useEffect(() => {
     let isMounted = true;

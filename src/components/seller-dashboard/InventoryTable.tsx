@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import { useSellerInventory } from '@/hooks/useSellerInventory';
 import { Eye, Package, TrendingUp, AlertCircle } from 'lucide-react';
 
@@ -10,7 +10,7 @@ interface InventoryTableProps {
 
 export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
   const router = useRouter();
-  const { user } = useAppStore();
+  const { user } = useAuthStore();
   const { parts, loading } = useSellerInventory({ userId: user?.id, filter });
 
   if (loading) {

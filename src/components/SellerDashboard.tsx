@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAppStore } from "../store/useAppStore";
+import { useAuthStore, useSellerNavStore } from "@/store/hooks";
 import { InventoryTable } from "./seller-dashboard/InventoryTable";
 import { ListingWizard } from "./seller-dashboard/ListingWizard";
 import { SettingsForm } from "./seller-dashboard/SettingsForm";
@@ -11,8 +11,8 @@ import { useSellerProfile } from "@/hooks/useSellerProfile";
 import "../styles/dashboard.css";
 
 export default function SellerDashboard() {
-  const { setActiveSellerTab, user, setProfile, activeSellerTab } =
-    useAppStore();
+  const { user, setProfile } = useAuthStore();
+  const { setActiveSellerTab, activeSellerTab } = useSellerNavStore();
   const [isYardControlOpen, setIsYardControlOpen] = useState(false);
   const { profile, loading: isLoading } = useSellerProfile({ userId: user?.id });
 

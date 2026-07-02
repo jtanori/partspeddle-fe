@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useUiStore } from '@/store/hooks';
 
 export const TrustBanner: React.FC = () => {
-  const { setTourActive } = useAppStore();
+  const { setTourActive } = useUiStore();
 
   return (
     <section className="bg-gradient-to-r from-[#1E1E1E] via-[#2D2D2D] to-[#3D3632] text-white p-8 rounded border border-zinc-800 flex flex-col md:flex-row items-center justify-between gap-6 max-w-7xl mx-auto select-none mb-12" id="tour-cta">

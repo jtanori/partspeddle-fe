@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import { Search, Menu } from 'lucide-react';
 
 interface DashboardHeaderProps {
@@ -11,7 +11,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onToggleYardControl,
   onToggleMobileMenu,
 }) => {
-  const { profile } = useAppStore();
+  const { profile } = useAuthStore();
 
   return (
     <header className="h-16 w-full bg-shell-elevated border-b border-border-default px-4 md:px-6 flex justify-between items-center gap-3 z-40 shrink-0">
