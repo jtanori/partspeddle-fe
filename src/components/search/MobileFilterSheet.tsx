@@ -37,7 +37,7 @@ export const MobileFilterSheet: React.FC<MobileFilterSheetProps> = (props) => {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="bg-zinc-900 border-r border-zinc-800 p-0 w-[300px]"
+        className="bg-zinc-900 border-r border-zinc-800 p-0 w-[300px] sm:w-[360px]"
       >
         <SheetTitle className="sr-only">Filter Parts</SheetTitle>
         <ScrollArea className="h-full py-6">

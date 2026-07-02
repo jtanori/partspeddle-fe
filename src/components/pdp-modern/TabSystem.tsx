@@ -11,14 +11,14 @@ export default function TabSystem({ viewModel }: TabSystemProps) {
   return (
     <div className="w-full bg-white border border-zinc-200 rounded-pp-card shadow-sm overflow-hidden">
       {/* Tab Navigation */}
-      <div className="flex border-b border-zinc-100 bg-zinc-50/30">
+      <div className="flex overflow-x-auto border-b border-zinc-100 bg-zinc-50/30">
         {viewModel.tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-8 py-5 text-[10px] font-black uppercase tracking-[0.25em] transition-all relative ${
-              activeTab === tab.id 
-                ? 'text-pp-primary' 
+            className={`px-4 sm:px-8 py-5 text-[10px] font-black uppercase tracking-[0.25em] transition-all relative shrink-0 ${
+              activeTab === tab.id
+                ? 'text-pp-primary'
                 : 'text-zinc-400 hover:text-zinc-600'
             }`}
           >
@@ -29,13 +29,13 @@ export default function TabSystem({ viewModel }: TabSystemProps) {
           </button>
         ))}
       </div>
-      
+
       {/* Tab Content */}
-      <div className="p-10">
+      <div className="p-4 sm:p-10">
         {activeTab === 'spec' ? (
-           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
               {/* Left Side: Spec Data (span 7) */}
-              <div className="lg:col-span-7 grid grid-cols-2 gap-x-12 gap-y-6 text-[13px]">
+              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 text-[13px] min-w-0">
                  <div className="space-y-6">
                     <div className="pb-3 border-b border-zinc-50">
                        <p className="text-zinc-400 font-bold uppercase text-[9px] tracking-[0.2em] mb-1.5">Condition</p>
