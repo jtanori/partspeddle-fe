@@ -1,14 +1,14 @@
 import {
   algoliaClient,
   SEARCH_INDEX_NAME,
-} from "../src/backend/modules/search/infrastructure/algolia-client";
-import { logger } from "../src/lib/logger";
+} from "../../src/backend/modules/search/infrastructure/algolia-client";
+import { logger } from "../../src/lib/logger";
 import {
   computeFacetParityPercent,
   DEFAULT_FACET_PARITY_THRESHOLD_PERCENT,
   EXPECTED_FACET_ATTRIBUTES,
   passesFacetParityThreshold,
-} from "../src/lib/audit/search-audit";
+} from "../../src/lib/audit/search-audit";
 
 interface SearchParityResult {
   facetParityPercent: number;

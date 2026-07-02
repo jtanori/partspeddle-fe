@@ -6,14 +6,14 @@ set -euo pipefail
 # manually from a laptop.
 #
 # Usage:
-#   bash scripts/deploy.sh staging
-#   bash scripts/deploy.sh production
+#   bash scripts/ops/deploy.sh staging
+#   bash scripts/ops/deploy.sh production
 
 ENVIRONMENT="${1:-}"
 
 if [[ -z "$ENVIRONMENT" ]]; then
   echo "Error: environment argument required."
-  echo "Usage: bash scripts/deploy.sh {staging|production}"
+  echo "Usage: bash scripts/ops/deploy.sh {staging|production}"
   exit 1
 fi
 

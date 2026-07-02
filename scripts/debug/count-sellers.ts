@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../src/lib/supabase-admin';
+import { supabaseAdmin } from '../../src/lib/supabase-admin';
 
 async function test() {
   const { data, error } = await supabaseAdmin.from('seller_profiles').select('*');

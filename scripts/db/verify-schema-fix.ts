@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../src/lib/supabase-admin';
+import { supabaseAdmin } from '../../src/lib/supabase-admin';
 
 async function verifySchema() {
   console.log('🔍 Verifying Schema for Runtime Framework...');

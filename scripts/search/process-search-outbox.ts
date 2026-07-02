@@ -1,7 +1,7 @@
-import { supabaseAdmin } from '../src/lib/supabase-admin';
-import { SearchIndexWorker } from '../src/backend/modules/search/application/search-index-worker';
-import { outboxPendingEvents } from '../src/lib/observability';
-import { logger } from '../src/lib/logger';
+import { supabaseAdmin } from '../../src/lib/supabase-admin';
+import { SearchIndexWorker } from '../../src/backend/modules/search/application/search-index-worker';
+import { outboxPendingEvents } from '../../src/lib/observability';
+import { logger } from '../../src/lib/logger';
 
 // Register the callback for the observable gauge
 outboxPendingEvents.addCallback(async (result) => {
