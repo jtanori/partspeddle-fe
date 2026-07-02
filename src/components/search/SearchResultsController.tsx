@@ -3,10 +3,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { buildSearchResultCard } from "@/projection/search";
 import { SearchResultCardModel } from "@/domain/view-models/search";
+import { SearchFilters } from "@/types";
 
 export const SearchResultsController: React.FC<{
   query: string;
-  filters: Record<string, unknown>;
+  filters: SearchFilters;
   sortBy: string;
   currentPage: number;
   requestKey: string;

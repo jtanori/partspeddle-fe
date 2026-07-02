@@ -67,6 +67,7 @@ async function auditSearchConsistency(): Promise<AuditResult> {
   const indexPartsMap = new Map<string, Record<string, unknown>>();
   await algoliaClient.browseObjects<Record<string, unknown>>({
     indexName: SEARCH_INDEX_NAME,
+    // @ts-expect-error Algolia browse callback options are wider than the published typings.
     attributesToRetrieve: [
       "objectID",
       "title",

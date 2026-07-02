@@ -101,7 +101,8 @@ export function deriveExpectedIndexFields(dbPart: DbPartAuditRow) {
   const vehicleVariant = firstRelation(dbPart.vehicle_variants);
   const vehicleModel = firstRelation(vehicleVariant?.models);
   const vehicleMake = firstRelation(vehicleModel?.makes);
-  const sellerProfile = firstRelation(dbPart.users?.seller_profiles);
+  const user = firstRelation(dbPart.users);
+  const sellerProfile = firstRelation(user?.seller_profiles);
 
   let sellerTrustScore = 40;
   if (sellerProfile?.verification_status === "verified") sellerTrustScore += 40;

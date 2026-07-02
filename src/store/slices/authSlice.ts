@@ -13,7 +13,9 @@ export interface SellerProfile {
   whatsapp?: string;
   email?: string;
   status?: string;
-  [key: string]: unknown;
+  logoUrl?: string;
+  verificationStatus?: string;
+  verification_status?: string;
 }
 
 export interface AuthSlice {
