@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Search, ArrowRight, Zap, Car } from 'lucide-react';
-import { supabaseDb } from '../../services/supabase-db';
+import { Search, ArrowRight } from 'lucide-react';
 import { Part } from '../../types';
 import { getSystemIcon } from '../../lib/utils/taxonomy';
+import { useInstantSearch } from '@/hooks/useInstantSearch';
 
 interface LiveSearchDropdownProps {
   query: string;
@@ -20,11 +20,18 @@ export default function LiveSearchDropdown({
   className = ''
 }: LiveSearchDropdownProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { parts, loading } = useInstantSearch(query, { minLength: 2, limit: 8 });
 
-  // Close dropdown on click outside
+  const suggestions = parts.map((part: Part) => ({
+    id: `list-${part.id}`,
+    type: 'listing' as const,
+    partId: part.id,
+    part,
+    label: part.title,
+    desc: `OEM Part • ${part.compatibility?.[0]?.make || part.subtitle || 'N/A'} ${part.compatibility?.[0]?.model || ''}`.trim(),
+  }));
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -35,45 +42,10 @@ export default function LiveSearchDropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  // Async Fetcher
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (query.trim().length < 2) {
-        setSuggestions([]);
-        return;
-      }
-      setLoading(true);
-      try {
-        const results = await supabaseDb.searchParts({ query: query, partTypes: [], priceRange: [0, 999999] } as any);
-        
-        const listingSuggestions = results.hits.slice(0, 8).map((part: Part) => ({
-          id: `list-${part.id}`,
-          type: 'listing',
-          partId: part.id,
-          part: part,
-          label: part.title,
-          desc: `OEM Part • ${part.compatibility?.[0]?.make || 'N/A'} ${part.compatibility?.[0]?.model || ''}`
-        }));
-        
-        setSuggestions(listingSuggestions);
-      } catch (err) {
-        console.error('Search error:', err);
-        setSuggestions([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    const debounce = setTimeout(fetchSuggestions, 300);
-    return () => clearTimeout(debounce);
-  }, [query]);
-
-  // Reset index when suggestions list changes
   useEffect(() => {
     setSelectedIndex(0);
-  }, [suggestions]);
+  }, [suggestions.length, query]);
 
-  // Global Keydown interceptor
   useEffect(() => {
     if (suggestions.length === 0) return;
 
@@ -104,13 +76,11 @@ export default function LiveSearchDropdown({
       ref={containerRef}
       className={`absolute left-0 right-0 top-full mt-1.5 bg-steel-black border border-oil-dark rounded-sm shadow-xl overflow-hidden z-[9900] flex flex-col text-base-cream ${className}`}
     >
-      {/* Header index info */}
       <div className="px-3.5 py-2 bg-charcoal border-b border-oil-dark flex items-center justify-between text-[10px] uppercase font-mono text-warm-gray select-none">
         <span>{loading ? 'Searching...' : 'Suggested Autocomplete'}</span>
         <span>{suggestions.length} matches</span>
       </div>
 
-      {/* Suggested matches */}
       <div className="divide-y divide-oil-dark max-h-80 overflow-y-auto">
         {suggestions.map((s, idx) => {
           const isSelected = idx === selectedIndex;

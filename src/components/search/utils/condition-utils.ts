@@ -1,6 +1,5 @@
 import { PartCondition } from "@/types";
 
-// Human-readable mapping
 const conditionLabels: Record<PartCondition, string> = {
   NEW: "New",
   REMANUFACTURED: "Remanufactured",
@@ -10,12 +9,37 @@ const conditionLabels: Record<PartCondition, string> = {
   FOR_PARTS: "For Parts",
 };
 
-export const getConditionLabel = (cond: PartCondition): string => {
-  return conditionLabels[cond] || cond;
+export const getConditionLabel = (cond: PartCondition | string): string => {
+  const normalized = typeof cond === "string" ? normalizeCondition(cond) : cond;
+  return conditionLabels[normalized] || String(cond);
 };
 
-export const getConditionColor = (cond: PartCondition): string => {
-  switch (cond) {
+export function normalizeCondition(
+  condition?: string | PartCondition | null,
+): PartCondition {
+  if (!condition) return "USED_GOOD";
+
+  const raw = String(condition).trim();
+  const upper = raw.toUpperCase().replace(/[\s-]+/g, "_");
+
+  if (upper in conditionLabels) {
+    return upper as PartCondition;
+  }
+
+  const lowered = raw.toLowerCase();
+  if (lowered.includes("new") || lowered.includes("original")) return "NEW";
+  if (lowered.includes("reman")) return "REMANUFACTURED";
+  if (lowered.includes("excellent")) return "USED_EXCELLENT";
+  if (lowered.includes("fair")) return "USED_FAIR";
+  if (lowered.includes("parts")) return "FOR_PARTS";
+
+  return "USED_GOOD";
+}
+
+export const getConditionColor = (cond: PartCondition | string): string => {
+  const normalized = typeof cond === "string" ? normalizeCondition(cond) : cond;
+
+  switch (normalized) {
     case "NEW":
       return "bg-emerald-600 text-white";
     case "REMANUFACTURED":
