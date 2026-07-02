@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAppStore } from "@/store/useAppStore";
 import Navbar from "../navbar/Navbar";
 import Footer from "../Footer";
-import GuidedTour from "../GuidedTour";
 import SearchModal from "../SearchModal";
 import { X, CheckCircle2, ShoppingBag, Trash2 } from "lucide-react";
 
@@ -27,7 +26,6 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
     removeFromCart,
     isTourActive,
     setTourActive,
-    setHighlightedElement,
     infoModalType,
     setInfoModalType,
     isSearchModalOpen,
@@ -100,13 +98,6 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
             router.push("/dashboard/snap");
           }}
           activeSellerTab={activeSellerTab}
-        />
-      )}
-
-      {isTourActive && (
-        <GuidedTour
-          onClose={() => setTourActive(false)}
-          onHighlightElement={setHighlightedElement}
         />
       )}
 
