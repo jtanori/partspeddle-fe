@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { tracer } from "@/lib/observability";
+import { getUserRole, type UserRole } from "@/lib/user-roles";
 
 export async function proxy(request: NextRequest) {
   const start = Date.now();
@@ -62,8 +63,7 @@ export async function proxy(request: NextRequest) {
       }
 
       if (session) {
-        // TODO(P1.1): migrate role source from user_metadata to server-side table
-        const role = (session.user.user_metadata?.role as string) || "buyer";
+        const role: UserRole = await getUserRole(supabase, session.user.id);
 
         if (url.pathname.startsWith("/seller") && role !== "seller") {
           url.pathname = "/dashboard";
