@@ -12,7 +12,7 @@ export default function NeedHelp() {
           </div>
           <div className="text-left">
              <p className="text-[11px] font-black uppercase tracking-tight text-zinc-800">Live Chat</p>
-             <p className="text-[10px] font-bold text-emerald-600 uppercase">We're online now</p>
+             <p className="text-[10px] font-bold text-emerald-600 uppercase">We&apos;re online now</p>
           </div>
         </button>
 

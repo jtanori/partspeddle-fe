@@ -13,11 +13,10 @@ interface PartCardProps {
 }
 
 export const PartCard: React.FC<PartCardProps> = ({ part }) => {
-  // Defensive check for Part object integrity
-  if (!part) return null;
-
   const [imageError, setImageError] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  if (!part) return null;
 
   const primaryImage = part.images?.find(Boolean) ?? null;
   const hasImage = !!primaryImage && !imageError;

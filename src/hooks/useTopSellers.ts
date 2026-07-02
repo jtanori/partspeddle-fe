@@ -9,19 +9,24 @@ interface UseTopSellersOptions {
   enabled?: boolean;
 }
 
+const IDLE_STATE = {
+  sellers: [] as Seller[],
+  loading: false,
+  error: null as string | null,
+};
+
 export function useTopSellers(
   options: UseTopSellersOptions = {},
 ): { sellers: Seller[]; loading: boolean; error: string | null } {
   const { limit = 4, enabled = true } = options;
+  const isActive = enabled;
+
   const [sellers, setSellers] = useState<Seller[]>([]);
-  const [loading, setLoading] = useState(enabled);
+  const [loading, setLoading] = useState(isActive);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!enabled) {
-      setLoading(false);
-      return;
-    }
+    if (!isActive) return;
 
     let cancelled = false;
 
@@ -53,7 +58,11 @@ export function useTopSellers(
     return () => {
       cancelled = true;
     };
-  }, [limit, enabled]);
+  }, [limit, isActive]);
+
+  if (!isActive) {
+    return IDLE_STATE;
+  }
 
   return { sellers, loading, error };
 }

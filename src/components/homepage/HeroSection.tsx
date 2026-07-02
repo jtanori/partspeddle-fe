@@ -53,7 +53,7 @@ export const HeroSection: React.FC = () => {
             Real Parts. <span className="text-[#B87333]">Real Savings.</span>
           </h1>
           <p className="text-zinc-300 text-lg md:text-xl font-sans max-w-2xl mx-auto">
-            Direct access to vetted salvage yard inventory. Sourced from North America's most trusted dismantlers.
+            Direct access to vetted salvage yard inventory. Sourced from North America&apos;s most trusted dismantlers.
           </p>
         </div>
 

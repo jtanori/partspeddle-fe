@@ -20,7 +20,6 @@ export default function LiveSearchDropdown({
   className = ''
 }: LiveSearchDropdownProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const { parts, loading } = useInstantSearch(query, { minLength: 2, limit: 8 });
 
   const suggestions = parts.map((part: Part) => ({
@@ -32,6 +31,14 @@ export default function LiveSearchDropdown({
     desc: `OEM Part • ${part.compatibility?.[0]?.make || part.subtitle || 'N/A'} ${part.compatibility?.[0]?.model || ''}`.trim(),
   }));
 
+  const selectionKey = `${query}:${suggestions.length}`;
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [prevSelectionKey, setPrevSelectionKey] = useState(selectionKey);
+  if (prevSelectionKey !== selectionKey) {
+    setPrevSelectionKey(selectionKey);
+    setSelectedIndex(0);
+  }
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -41,10 +48,6 @@ export default function LiveSearchDropdown({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
-
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [suggestions.length, query]);
 
   useEffect(() => {
     if (suggestions.length === 0) return;
@@ -126,7 +129,7 @@ export default function LiveSearchDropdown({
       >
         <span className="flex items-center gap-1.5 font-semibold">
           <Search className="w-3.5 h-3.5 text-rust-copper" />
-          <span>See all matches for "{query}"</span>
+          <span>See all matches for &quot;{query}&quot;</span>
         </span>
         <ArrowRight className="w-3.5 h-3.5" />
       </button>

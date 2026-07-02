@@ -75,7 +75,7 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
                 </span>
               </div>
               <p className="text-base-cream leading-relaxed text-sm p-3.5 bg-charcoal rounded border border-oil-dark font-mono">
-                "{activeOffer.replyMessage}"
+                &quot;{activeOffer.replyMessage}&quot;
               </p>
               {activeOffer.status === 'Counter-Offer' && activeOffer.counterPrice && (
                 <div className="pt-3 border-t border-oil-dark flex justify-end gap-3">

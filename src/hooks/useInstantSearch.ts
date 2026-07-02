@@ -18,6 +18,12 @@ interface InstantSearchState {
   error: string | null;
 }
 
+const IDLE_STATE: InstantSearchState = {
+  parts: [],
+  loading: false,
+  error: null,
+};
+
 export function useInstantSearch(
   query: string,
   options: UseInstantSearchOptions = {},
@@ -30,25 +36,16 @@ export function useInstantSearch(
     debounceMs = 300,
   } = options;
 
+  const trimmed = query.trim();
+  const isActive =
+    enabled && (trimmed.length >= minLength || Boolean(system));
+
   const [parts, setParts] = useState<Part[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!enabled) {
-      setParts([]);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    const trimmed = query.trim();
-    if (trimmed.length < minLength && !system) {
-      setParts([]);
-      setLoading(false);
-      setError(null);
-      return;
-    }
+    if (!isActive) return;
 
     const controller = new AbortController();
 
@@ -102,7 +99,11 @@ export function useInstantSearch(
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [query, minLength, limit, system, enabled, debounceMs]);
+  }, [trimmed, minLength, limit, system, enabled, debounceMs, isActive]);
+
+  if (!isActive) {
+    return IDLE_STATE;
+  }
 
   return { parts, loading, error };
 }
