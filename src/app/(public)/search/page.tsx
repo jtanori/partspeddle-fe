@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { unstable_noStore as noStore } from "next/cache";
 import { SearchPageClient } from "@/components/search/SearchPageClient";
-import { buildSearchResultCard } from "@/projection/search";
+import { buildSearchProjection } from "@/projection/search";
 import {
   parseSearchParams,
   serializeSearchRequest,
@@ -20,8 +20,17 @@ async function SearchPageLoader({
   const parsedRequest = parseSearchParams(params);
   const result = await fetchSearchResults(parsedRequest);
 
+  const projection = buildSearchProjection(
+    result.rawHits,
+    result.page,
+    20,
+    result.totalHits,
+    result.facets as Record<string, Record<string, number>>,
+    parsedRequest.filters,
+  );
+
   const initialData = {
-    cards: result.hits.map(buildSearchResultCard),
+    cards: projection.results,
     facets: result.facets,
     pagination: {
       totalPages: result.totalPages,
