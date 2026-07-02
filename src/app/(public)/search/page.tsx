@@ -4,6 +4,7 @@ import React, { useState, Suspense, useMemo } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SearchResultsController } from "@/components/search/SearchResultsController";
 import { ProductSidebar } from "@/components/ProductSidebar";
+import { MobileFilterSheet } from "@/components/search/MobileFilterSheet";
 import { SearchResultsHeader } from "@/components/search/SearchResultsHeader";
 import { ViewToggle } from "@/components/search/ViewToggle";
 import SortDropdown from "@/components/search/SortDropdown";
@@ -163,36 +164,40 @@ function SearchPageContent() {
     syncFiltersToUrl(newFilters);
   };
 
+  const sidebarProps = {
+    filters,
+    facets,
+    clearAllFilters,
+    toggleSection,
+    collapsedSections,
+    sortBy,
+    setSortBy: (val: string) => {
+      const params = new globalThis.URLSearchParams(searchParams.toString());
+      params.set("sort", val);
+      router.replace(`${pathname}?${params.toString()}`);
+    },
+    getSystemPartCount: () => "0" as string,
+    getConditionCount: () => 0,
+    getSellerTypeCount: () => 0,
+    togglePartType,
+    toggleCondition,
+    handlePriceChange,
+    setAndSyncFilters,
+    isDisabled: cards.length === 0 && query !== "",
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 flex gap-8">
       <aside className="w-[280px] hidden md:block">
-        <ProductSidebar
-          filters={filters}
-          facets={facets}
-          clearAllFilters={clearAllFilters}
-          toggleSection={toggleSection}
-          collapsedSections={collapsedSections}
-          sortBy={sortBy}
-          setSortBy={(val) => {
-            const params = new globalThis.URLSearchParams(
-              searchParams.toString(),
-            );
-            params.set("sort", val);
-            router.replace(`${pathname}?${params.toString()}`);
-          }}
-          getSystemPartCount={() => "0"}
-          getConditionCount={() => 0}
-          getSellerTypeCount={() => 0}
-          togglePartType={togglePartType}
-          toggleCondition={toggleCondition}
-          handlePriceChange={handlePriceChange}
-          setAndSyncFilters={setAndSyncFilters}
-          isDisabled={cards.length === 0 && query !== ""}
-        />
+        <ProductSidebar {...sidebarProps} />
       </aside>
 
-      <main className="flex-1">
-        <div className="flex justify-between items-center mb-6">
+      <main className="flex-1 min-w-0">
+        <div className="md:hidden mb-4">
+          <MobileFilterSheet {...sidebarProps} />
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <SearchResultsHeader
             filters={filters}
             totalCount={pagination.totalHits}

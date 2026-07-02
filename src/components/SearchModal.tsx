@@ -253,16 +253,12 @@ export default function SearchModal({
       {/* Main container: Fullscreen on mobile (< 768px), beautiful centered dialogue on desktop */}
       <div
         className="bg-[#1A1A1A] md:bg-white text-white md:text-zinc-900 w-full md:w-[75%] md:min-w-[700px] md:max-w-[75%] h-full md:h-[85vh] md:max-h-[85vh] rounded-none md:rounded-2xl z-20 flex flex-col shadow-[0_-15px_45px_rgba(0,0,0,0.5)] md:shadow-[0_20px_60px_rgba(0,0,0,0.2)] md:border md:border-zinc-200 overflow-hidden select-none"
-        style={
-          typeof window !== "undefined" && window.innerWidth >= 768
-            ? {}
-            : {
-                transform: `translateY(${translateY}px)`,
-                transition: isDragging
-                  ? "none"
-                  : "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)",
-              }
-        }
+        style={{
+          transform: `translateY(${translateY}px)`,
+          transition: isDragging
+            ? "none"
+            : "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
         id="search-overlay-container"
       >
         {/* Mobile-only draggable handlebar */}

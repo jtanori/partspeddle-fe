@@ -39,7 +39,7 @@ export const ProductListCard: React.FC<ProductListCardProps> = ({
   return (
     <div
       onClick={() => onSelectPart(card.id)}
-      className="bg-white border border-zinc-200 rounded-lg shadow-sm p-4 flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow"
+      className="bg-white border border-zinc-200 rounded-lg shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="w-24 h-24 bg-zinc-100 rounded-md overflow-hidden flex-shrink-0">
         {card.imageUrl ? (
@@ -78,7 +78,7 @@ export const ProductListCard: React.FC<ProductListCardProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-col items-end gap-2 shrink-0">
+      <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto sm:shrink-0 mt-2 sm:mt-0">
         <span className="font-bold text-lg text-zinc-900">
           {card.price}
         </span>
@@ -93,7 +93,7 @@ export const ProductListCard: React.FC<ProductListCardProps> = ({
             className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-zinc-500"}`}
           />
         </button>
-        <button className="px-4 py-2 bg-zinc-900 text-white text-xs font-bold rounded-sm uppercase">
+        <button className="px-4 py-2 bg-zinc-900 text-white text-xs font-bold rounded-sm uppercase ml-auto sm:ml-0">
           View Details
         </button>
       </div>

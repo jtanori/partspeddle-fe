@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Search } from "lucide-react";
 import { UserSession } from "../../../types";
 import { Logo } from "./Logo";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 import { BottomSheet } from "../../common/BottomSheet";
 import { UserMenuContent } from "./UserMenuContent";
-import { MobileSearchSheet } from "./MobileSearchSheet";
 import { UserActions } from "./UserActions";
 
 interface MobileNavbarProps {
@@ -21,6 +20,7 @@ interface MobileNavbarProps {
   showToast: (msg: string) => void;
   onSetSellerTab?: (tab: "listings" | "settings" | "snap") => void;
   onOpenTour: () => void;
+  onOpenSearchModal?: (initialQuery?: string) => void;
   isMobileDrawerOpen: boolean;
   setIsMobileDrawerOpen: (isOpen: boolean) => void;
   isUserMenuDrawerOpen: boolean;
@@ -30,7 +30,6 @@ interface MobileNavbarProps {
 
 export const MobileNavbar: React.FC<MobileNavbarProps> = ({
   onChangeView,
-  onSelectPart,
   cartCount,
   user,
   userRole,
@@ -41,13 +40,13 @@ export const MobileNavbar: React.FC<MobileNavbarProps> = ({
   showToast,
   onSetSellerTab,
   onOpenTour,
+  onOpenSearchModal,
   isMobileDrawerOpen,
   setIsMobileDrawerOpen,
   isUserMenuDrawerOpen,
   setIsUserMenuDrawerOpen,
   currentView,
 }) => {
-  const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
   const userMenuRef = React.useRef<HTMLDivElement>(null);
 
   return (
@@ -80,7 +79,7 @@ export const MobileNavbar: React.FC<MobileNavbarProps> = ({
       <div className="flex items-center gap-2 font-sans">
         {/* Search Icon button */}
         <button
-          onClick={() => setIsSearchSheetOpen(true)}
+          onClick={() => onOpenSearchModal?.()}
           className="bg-charcoal border border-oil-dark rounded-lg w-10 h-10 text-base-cream hover:bg-oil-dark hover:text-rust-copper flex items-center justify-center cursor-pointer transition-colors duration-150"
           title="Global search overlay"
         >
@@ -125,12 +124,6 @@ export const MobileNavbar: React.FC<MobileNavbarProps> = ({
           />
         </BottomSheet>
       </div>
-
-      {/* Mobile Search Sheet */}
-      <MobileSearchSheet
-        isOpen={isSearchSheetOpen}
-        onClose={() => setIsSearchSheetOpen(false)}
-      />
 
       {/* Mobile Navigation Drawer Component */}
       <MobileNavDrawer

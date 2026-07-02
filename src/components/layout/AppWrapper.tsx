@@ -101,7 +101,7 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => {
         />
       )}
 
-      <main className="flex-grow transition-opacity duration-300">
+      <main className="flex-grow transition-opacity duration-300 pb-16 md:pb-0">
         {children}
       </main>
 
