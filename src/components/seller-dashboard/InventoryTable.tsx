@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '../../store/useAppStore';
-import { supabase } from '../../lib/supabase';
+import { useSellerInventory } from '@/hooks/useSellerInventory';
 import { Eye, Package, TrendingUp, AlertCircle } from 'lucide-react';
 
 interface InventoryTableProps {
@@ -11,35 +11,7 @@ interface InventoryTableProps {
 export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
   const router = useRouter();
   const { user } = useAppStore();
-  const [parts, setParts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadInventory = async () => {
-      if (!user || !user.id) return;
-      setLoading(true);
-      try {
-        let query = supabase
-          .from('parts')
-          .select('id, title, price_mxn, stock_number, images, status, offers(count)')
-          .eq('seller_id', user.id);
-
-        
-        if (filter) {
-            query = query.eq('status', filter);
-        }
-        
-        const { data, error } = await query;
-        if (error) throw error;
-        setParts(data || []);
-      } catch (err: any) {
-        console.error('Failed to load inventory:', err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadInventory();
-  }, [user, filter]);
+  const { parts, loading } = useSellerInventory({ userId: user?.id, filter });
 
   if (loading) {
     return (

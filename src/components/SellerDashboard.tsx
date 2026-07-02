@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { InventoryTable } from "./seller-dashboard/InventoryTable";
 import { ListingWizard } from "./seller-dashboard/ListingWizard";
@@ -7,37 +7,20 @@ import { SellerSidebar } from "./seller-dashboard/Sidebar";
 import { DashboardHeader } from "./seller-dashboard/DashboardHeader";
 import { YardControlCore } from "./drawers/YardControlCore";
 import { InventoryWizardProvider } from "../context/InventoryWizardContext";
-import { supabase } from "../lib/supabase";
+import { useSellerProfile } from "@/hooks/useSellerProfile";
 import "../styles/dashboard.css";
 
 export default function SellerDashboard() {
   const { setActiveSellerTab, user, setProfile, activeSellerTab } =
     useAppStore();
   const [isYardControlOpen, setIsYardControlOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { profile, loading: isLoading } = useSellerProfile({ userId: user?.id });
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
-      try {
-        const { data, error } = await supabase
-          .from("seller_profiles")
-          .select("*")
-          .eq("user_id", user.id)
-          .single();
-        if (error) throw error;
-        setProfile(data);
-      } catch (err) {
-        console.error("Failed to hydrate profile:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProfile();
-  }, [user, setProfile]);
+  React.useEffect(() => {
+    if (profile) {
+      setProfile(profile);
+    }
+  }, [profile, setProfile]);
 
   if (isLoading) {
     return (

@@ -4,7 +4,7 @@ import StageOneMedia from '../wizard/stages/StageOneMedia';
 import { StageTwoTaxonomy } from '../wizard/stages/StageTwoTaxonomy';
 import { StageThreeLogistics } from '../wizard/stages/StageThreeLogistics';
 import { analyzeListingImage } from '../../services/ai-vision';
-import { supabase } from '../../lib/supabase';
+import { authenticatedFetch } from '@/lib/authenticated-fetch';
 import { useAppStore } from '../../store/useAppStore';
 import { useInventoryWizard } from '../../context/InventoryWizardContext';
 import { useIngestionSessionLock } from '../../hooks/useIngestionSessionLock';
@@ -39,11 +39,21 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
   const handleUpload = async (file: File) => {
     if (!user) return;
     const compressedBlob = await compressImage(file);
-    const fileName = `${user.id}/${Math.random()}.jpg`;
-    await supabase.storage.from('yard-assets').upload(fileName, compressedBlob);
-    const { data: publicUrlData } = supabase.storage.from('yard-assets').getPublicUrl(fileName);
-    
-    setUploadedFiles(prev => [...prev, { id: fileName, file, previewUrl: publicUrlData.publicUrl }]);
+    const uploadPayload = new FormData();
+    uploadPayload.append('file', compressedBlob, 'listing.jpg');
+
+    const response = await authenticatedFetch('/api/seller/assets/upload', {
+      method: 'POST',
+      body: uploadPayload,
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body.error || 'Upload failed');
+    }
+
+    const { fileName, publicUrl } = await response.json();
+    setUploadedFiles(prev => [...prev, { id: fileName, file, previewUrl: publicUrl }]);
   };
 
   const handleScan = async () => {
@@ -64,9 +74,15 @@ export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
           fitment: fitmentArray.map(id => ({ vehicle_variant_id: id }))
         };
 
-        const { error } = await supabase.rpc('commit_inventory_package', payload);
+        const response = await authenticatedFetch('/api/seller/inventory/commit', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
 
-        if (error) throw error;
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          throw new Error(body.error || 'Commit failed');
+        }
 
         onClose();
       } catch (error) {
