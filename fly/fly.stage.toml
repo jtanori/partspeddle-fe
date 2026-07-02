@@ -1,7 +1,7 @@
 # Staging configuration for VinTrack (Next.js 16 + App Router)
 # Deployed from the `develop` branch via CI, or locally with:
 #   pnpm deploy:staging
-#   bash scripts/deploy.sh staging
+#   bash scripts/ops/deploy.sh staging
 app = "vintrack-stage"
 
 primary_region = "sjc"

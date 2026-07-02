@@ -1,7 +1,7 @@
 # Production configuration for VinTrack (Next.js 16 + App Router)
 # Deployed from the `main` branch via CI, or locally with:
 #   pnpm deploy:production
-#   bash scripts/deploy.sh production
+#   bash scripts/ops/deploy.sh production
 app = "vintrack-prod"
 
 primary_region = "sjc"

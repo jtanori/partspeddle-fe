@@ -1,4 +1,4 @@
-import { AlgoliaSearchRepository } from "../src/backend/modules/search/infrastructure/algolia-search-repository";
+import { AlgoliaSearchRepository } from "../../src/backend/modules/search/infrastructure/algolia-search-repository";
 import * as dotenv from "dotenv";
 import * as path from "path";
 

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../src/lib/supabase-admin';
+import { supabaseAdmin } from '../../src/lib/supabase-admin';
 
 async function seedPilotCatalog() {
   console.log('🌱 Seeding P1B: Four Category Pilot Framework...');

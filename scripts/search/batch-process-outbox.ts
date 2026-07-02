@@ -1,5 +1,5 @@
-import { supabaseAdmin } from "../src/lib/supabase-admin";
-import { SearchIndexWorker } from "../src/backend/modules/search/application/search-index-worker";
+import { supabaseAdmin } from "../../src/lib/supabase-admin";
+import { SearchIndexWorker } from "../../src/backend/modules/search/application/search-index-worker";
 
 async function batchProcessOutbox() {
   const worker = new SearchIndexWorker();
