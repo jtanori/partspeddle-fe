@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
+import { securityHeaderEntries } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaderEntries().map(({ key, value }) => ({
+          key,
+          value,
+        })),
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
