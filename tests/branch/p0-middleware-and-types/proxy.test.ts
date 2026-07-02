@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { NextRequest } from 'next/server';
+import { getUserRole } from '@/lib/user-roles';
 
 vi.mock('@/lib/observability', () => ({
   tracer: {
@@ -13,6 +14,12 @@ const createServerClientMock = vi.fn();
 vi.mock('@supabase/ssr', () => ({
   createServerClient: createServerClientMock,
 }));
+
+vi.mock('@/lib/user-roles', () => ({
+  getUserRole: vi.fn(),
+}));
+
+const getUserRoleMock = vi.mocked(getUserRole);
 
 async function loadProxy() {
   const mod = await import('../../../src/proxy');
@@ -48,9 +55,7 @@ function mockSession(role: string | null) {
           data: {
             session: role
               ? {
-                  user: {
-                    user_metadata: { role },
-                  },
+                  user: { id: 'user-1' },
                 }
               : null,
           },
@@ -58,11 +63,13 @@ function mockSession(role: string | null) {
         }),
     },
   });
+  getUserRoleMock.mockResolvedValue(role as any);
 }
 
 describe('src/proxy (Next.js 16 proxy convention)', () => {
   beforeEach(() => {
     createServerClientMock.mockReset();
+    getUserRoleMock.mockReset();
   });
 
   it('lets health checks pass through without a session', async () => {

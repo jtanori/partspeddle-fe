@@ -1,9 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest } from "next/server";
+import { getUserRole, type UserRole } from "./user-roles";
 
 export interface AdminAuthResult {
   session: any;
-  role: string;
+  role: UserRole;
   isAdmin: boolean;
   response: { error: string; status: number } | null;
 }
@@ -30,14 +31,13 @@ export async function requireAdmin(
   if (sessionError || !session) {
     return {
       session: null,
-      role: "",
+      role: "buyer",
       isAdmin: false,
       response: { error: "Unauthorized", status: 401 },
     };
   }
 
-  // TODO(P1.1): migrate role source from user_metadata to server-side table
-  const role = (session.user.user_metadata?.role as string) || "buyer";
+  const role = await getUserRole(supabase, session.user.id);
 
   if (role !== "admin") {
     return {
