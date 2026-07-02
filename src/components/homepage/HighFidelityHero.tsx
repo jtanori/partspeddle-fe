@@ -3,13 +3,14 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore, useSellerNavStore } from '@/store/hooks';
 import Image from 'next/image';
 import heroImage from '../../assets/images/heor_1_b.png';
 
 export const HighFidelityHero: React.FC = () => {
   const router = useRouter();
-  const { user, setUserRole, setActiveSellerTab } = useAppStore();
+  const { user, setUserRole } = useAuthStore();
+  const { setActiveSellerTab } = useSellerNavStore();
 
   return (
     <section className="relative bg-[#0E0E0E] text-white -mt-16 pt-24 pb-6 md:pt-32 md:pb-8 overflow-hidden" id="hero-banner">

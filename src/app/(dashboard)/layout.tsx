@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useAppStore } from '@/store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -21,7 +21,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, logout } = useAppStore();
+  const { user, logout } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const menuItems = [

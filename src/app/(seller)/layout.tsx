@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAppStore } from '@/store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import { SellerSidebar } from '@/components/seller-dashboard/Sidebar';
 import { DashboardHeader } from '@/components/seller-dashboard/DashboardHeader';
 import { YardControlCore } from '@/components/drawers/YardControlCore';
@@ -14,7 +14,7 @@ export default function SellerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, setProfile } = useAppStore();
+  const { user, setProfile } = useAuthStore();
   const [isYardControlOpen, setIsYardControlOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { profile, loading: isLoading } = useSellerProfile({ userId: user?.id });

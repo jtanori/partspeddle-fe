@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import { User, MapPin, Mail, Phone, Camera, ShieldCheck, Check, Upload, ImageIcon, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -95,7 +95,7 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
 };
 
 export const SettingsForm: React.FC = () => {
-  const { profile, setProfile } = useAppStore();
+  const { profile, setProfile } = useAuthStore();
   const [localProfile, setLocalProfile] = useState(profile);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 

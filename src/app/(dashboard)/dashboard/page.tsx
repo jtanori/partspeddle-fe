@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useAppStore } from '@/store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import { ShieldCheck, Package, Clock, Zap } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user } = useAppStore();
+  const { user } = useAuthStore();
 
   const stats = [
     { name: 'Active Orders', value: '0', icon: Package, color: 'text-blue-600' },

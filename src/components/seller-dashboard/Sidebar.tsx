@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '@/store/hooks';
 import { LayoutDashboard, Package, ShoppingBag, LogOut, ArrowLeftRight, ChevronDown, ChevronRight, Plus, GitBranch, X } from 'lucide-react';
 import { SidebarLink } from '../layout/SidebarLink';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ export const SellerSidebar: React.FC<SellerSidebarProps> = ({
   showCloseButton = false,
   onClose,
 }) => {
-  const { logout } = useAppStore();
+  const { logout } = useAuthStore();
   const [expandedItems, setExpandedItems] = useState<string[]>(['/seller/inventory']);
 
   const toggleExpand = (href: string) => {

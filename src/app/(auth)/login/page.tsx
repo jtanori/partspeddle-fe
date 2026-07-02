@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { useAppStore } from "@/store/useAppStore";
+import { useAuthStore } from "@/store/hooks";
 import {
   AlertTriangle,
   Eye,
@@ -16,7 +16,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser } = useAppStore();
+  const { setUser } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
