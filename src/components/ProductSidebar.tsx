@@ -1,9 +1,7 @@
 import React from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { SearchFilters, PartCondition } from "../types";
-import { SYSTEMS_TAXONOMY } from "../services/taxonomy";
-
-const SYSTEMS_LIST = Object.keys(SYSTEMS_TAXONOMY);
+import { useTaxonomy } from "../hooks/useTaxonomy";
 
 interface ProductSidebarProps {
   filters: SearchFilters;
@@ -40,13 +38,22 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
   setAndSyncFilters,
   isDisabled = false,
 }) => {
-  const categories = filters.system
-    ? Object.keys(SYSTEMS_TAXONOMY[filters.system]?.assemblies || {})
+  const { taxonomy, loading } = useTaxonomy();
+
+  const selectedSystem = filters.system || "";
+  const selectedCategorySlug = filters.category || "";
+
+  const categories = selectedSystem
+    ? taxonomy?.categoriesBySystem[selectedSystem] || []
     : [];
-  const partTypes =
-    filters.category && filters.system
-      ? SYSTEMS_TAXONOMY[filters.system].assemblies[filters.category]
-      : [];
+
+  const selectedCategory = selectedCategorySlug
+    ? taxonomy?.categoryBySlug[selectedCategorySlug]
+    : undefined;
+
+  const partTypes = selectedCategory
+    ? taxonomy?.partTypesByCategory[selectedCategory.id] || []
+    : [];
 
   const themeClasses = isDisabled
     ? "bg-zinc-50 border-zinc-200 text-zinc-900"
@@ -54,6 +61,17 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
 
   const headerTextClasses = isDisabled ? "text-zinc-500" : "text-rust-copper";
   const sectionTextClasses = isDisabled ? "text-zinc-900" : "text-warm-gray";
+
+  if (loading) {
+    return (
+      <div
+        className={`border rounded-xl p-5 space-y-6 relative shadow-sm ${themeClasses}`}
+        id="unified-filters-card"
+      >
+        <div className="text-xs text-zinc-500">Loading taxonomy...</div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -191,7 +209,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                 className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
               >
                 <option value="">All Systems</option>
-                {SYSTEMS_LIST.map((sys) => (
+                {taxonomy?.systems.map((sys) => (
                   <option key={sys} value={sys}>
                     {sys}
                   </option>
@@ -211,8 +229,8 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                 >
                   <option value="">All Assemblies</option>
                   {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
+                    <option key={cat.slug_en} value={cat.slug_en}>
+                      {cat.name_en || cat.name}
                     </option>
                   ))}
                 </select>
@@ -227,14 +245,14 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
             <div className="space-y-1 max-h-40 overflow-y-auto">
               {partTypes.map((type) => (
                 <div
-                  key={type}
+                  key={type.slug_en}
                   className="flex items-center gap-2 text-sm cursor-pointer"
-                  onClick={() => togglePartType(type)}
+                  onClick={() => togglePartType(type.slug_en)}
                 >
                   <div
-                    className={`w-4 h-4 rounded border ${filters.partTypes.includes(type) ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
+                    className={`w-4 h-4 rounded border ${filters.partTypes.includes(type.slug_en) ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
                   ></div>
-                  {type}
+                  {type.name_en || type.name}
                 </div>
               ))}
             </div>

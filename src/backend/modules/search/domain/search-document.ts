@@ -14,7 +14,9 @@ export interface SearchDocument {
   fitment_signatures: string[];
 
   category: string;
+  category_label: string;
   part_type: string;
+  part_type_label: string;
 
   condition: string;
 

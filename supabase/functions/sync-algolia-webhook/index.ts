@@ -113,10 +113,12 @@ serve(async (req) => {
         created_at,
         part_types!parts_part_type_id_fkey (
           id,
-          name:name_es,
+          slug_en,
+          name_en,
           categories (
             id,
-            name:name_es
+            slug_en,
+            name_en
           )
         ),
         vehicle_variants!parts_donor_vehicle_variant_id_fkey (
@@ -175,6 +177,30 @@ serve(async (req) => {
     const vehicleModel = vehicleVariant?.models;
     const vehicleMake = vehicleModel?.makes;
     const sellerProfile = part.users?.seller_profiles;
+    const partImages = part.part_images || [];
+
+    // Compute scores identically to BuildSearchDocumentUseCase
+    let sellerTrustScore = 40;
+    if (sellerProfile?.verification_status === "verified") sellerTrustScore += 40;
+    if (sellerProfile?.whatsapp) sellerTrustScore += 20;
+
+    let listingQualityScore = 0;
+    const imageCount = partImages.length;
+    if (imageCount > 0) listingQualityScore += 20;
+    if (imageCount >= 3) listingQualityScore += 15;
+
+    if (part.description && part.description.length > 100)
+      listingQualityScore += 15;
+    if (part.description && part.description.length > 300)
+      listingQualityScore += 10;
+
+    if (sellerProfile?.verification_status === "verified")
+      listingQualityScore += 25;
+
+    const daysOld =
+      (Date.now() - new Date(part.created_at).getTime()) /
+      (1000 * 60 * 60 * 24);
+    if (daysOld < 30) listingQualityScore += 15;
 
     const fitmentRows = Array.isArray(part.part_fitment)
       ? part.part_fitment
@@ -216,8 +242,10 @@ serve(async (req) => {
         null,
 
       // Taxonomy
-      category: category?.name || "Otros",
-      part_type: partType?.name || "General",
+      category: category?.slug_en || "other",
+      category_label: category?.name_en || category?.name || "Other",
+      part_type: partType?.slug_en || "general",
+      part_type_label: partType?.name_en || partType?.name || "General",
 
       // Fitment
       make: vehicleMake?.name || "Universal",
@@ -228,8 +256,8 @@ serve(async (req) => {
       // Seller & Scores
       seller_name: sellerProfile?.business_name || "Particular",
       seller_verified: sellerProfile?.verification_status === "verified",
-      seller_trust_score: sellerProfile?.seller_trust_score || 40,
-      listing_quality_score: part.listing_quality_score || 0,
+      seller_trust_score: sellerProfile?.seller_trust_score ?? sellerTrustScore,
+      listing_quality_score: part.listing_quality_score ?? listingQualityScore,
       location: sellerProfile?.location || "N/A",
     };
 
