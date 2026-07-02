@@ -78,6 +78,21 @@ serve(async (req) => {
             )
           )
         ),
+        part_fitment!part_fitment_part_id_fkey (
+          vehicle_variant_id,
+          vehicle_variants!part_fitment_vehicle_variant_id_fkey (
+            id,
+            year,
+            models!vehicle_variants_model_id_fkey (
+              id,
+              name,
+              makes!models_make_id_fkey (
+                id,
+                name
+              )
+            )
+          )
+        ),
         users!parts_seller_id_fkey (
           id,
           seller_profiles (
@@ -108,6 +123,32 @@ serve(async (req) => {
     const vehicleMake = vehicleModel?.makes;
     const sellerProfile = part.users?.seller_profiles;
 
+    const fitmentRows = Array.isArray(part.part_fitment)
+      ? part.part_fitment
+      : part.part_fitment
+        ? [part.part_fitment]
+        : [];
+    const fitmentSignatures = Array.from(
+      new Set(
+        fitmentRows
+          .map((row: any) => {
+            const variant = row.vehicle_variants;
+            if (!variant) return null;
+            const model = Array.isArray(variant.models)
+              ? variant.models[0]
+              : variant.models;
+            const make = Array.isArray(model?.makes)
+              ? model.makes[0]
+              : model?.makes;
+            if (!make?.id || !model?.id || typeof variant.year !== "number") {
+              return null;
+            }
+            return `${make.id}:${model.id}:${variant.year}`;
+          })
+          .filter((s: string | null): s is string => Boolean(s)),
+      ),
+    );
+
     const algoliaRecord = {
       objectID: part.id,
       title: part.title,
@@ -129,6 +170,7 @@ serve(async (req) => {
       make: vehicleMake?.name || "Universal",
       model: vehicleModel?.name || "N/A",
       year: vehicleVariant?.year || null,
+      fitment_signatures: fitmentSignatures,
 
       // Seller & Scores
       seller_name: sellerProfile?.business_name || "Particular",

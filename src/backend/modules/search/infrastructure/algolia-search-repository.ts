@@ -122,6 +122,13 @@ export class AlgoliaSearchRepository implements SearchRepository {
       parts.push(`year <= ${filters.yearMax}`);
     }
 
+    if (filters.fitmentSignatures && filters.fitmentSignatures.length > 0) {
+      const signatures = filters.fitmentSignatures.map(
+        (s) => `fitment_signatures:'${this.escapeFilterValue(s)}'`
+      );
+      parts.push(`(${signatures.join(" OR ")})`);
+    }
+
     addFilter("category", filters.categoryIds);
     addFilter("part_type", filters.partTypeIds);
     addFilter("condition", filters.condition);

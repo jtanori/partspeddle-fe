@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AlgoliaSearchRepository } from "@/backend/modules/search/infrastructure/algolia-search-repository";
-import { VehicleFitmentSearchService } from "@/backend/modules/search/application/vehicle-fitment-search-service";
+import { SearchFilters } from "@/backend/modules/search/domain/search-filters";
 import {
   searchRequestsTotal,
   searchSuccessTotal,
@@ -11,7 +11,6 @@ import {
 import { logger } from "@/lib/logger";
 
 const searchRepository = new AlgoliaSearchRepository();
-const fitmentService = new VehicleFitmentSearchService();
 
 export async function POST(req: NextRequest) {
   searchRequestsTotal.add(1);
@@ -41,7 +40,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Query too long" }, { status: 400 });
     }
 
-    const filters = {
+    const filters: SearchFilters = {
       makeIds:
         fitmentMake && fitmentMake !== "All Makes"
           ? Array.isArray(fitmentMake)
@@ -92,9 +91,10 @@ export async function POST(req: NextRequest) {
       sortBy,
     };
 
-    let fitmentFilterIds: string[] | null = null;
     if (fitment?.makeId && fitment?.modelId && fitment?.year) {
-      fitmentFilterIds = await fitmentService.getCompatiblePartIds(fitment);
+      filters.fitmentSignatures = [
+        `${fitment.makeId}:${fitment.modelId}:${fitment.year}`,
+      ];
     }
 
     const result = await tracer.startActiveSpan(
@@ -112,15 +112,11 @@ export async function POST(req: NextRequest) {
       },
     );
 
-    const filteredHits = fitmentFilterIds
-      ? result.hits.filter((hit) => fitmentFilterIds!.includes(hit.objectID))
-      : result.hits;
-
     searchSuccessTotal.add(1);
     searchLatencyMs.record(performance.now() - startTime);
 
     return NextResponse.json({
-      hits: filteredHits,
+      hits: result.hits,
       facets: result.facets || {},
       totalHits: result.totalHits,
       page: result.page,
