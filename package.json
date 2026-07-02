@@ -28,7 +28,7 @@
     "algolia:config": "tsx scripts/algolia/configure-algolia-index.ts",
     "search:reindex": "tsx scripts/algolia/reindex-algolia.ts",
     "search:process-outbox": "tsx scripts/process-search-outbox.ts",
-    "audit:search-platform": "tsx scripts/audit-search-consistency.ts && tsx scripts/audit-worker-health.ts",
+    "audit:search-platform": "tsx scripts/audit-search-consistency.ts && tsx scripts/search-parity.ts && tsx scripts/audit-worker-health.ts",
     "test:load": "k6 run --out json=reports/load-test-report.json tests/performance/search-api-baseline.js",
     "scgs:evaluate": "tsx ./scripts/scgs/evaluate.ts",
     "scgs:snapshot:load": "tsx ./scripts/scgs/snapshot-load.ts",

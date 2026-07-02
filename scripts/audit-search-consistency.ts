@@ -1,76 +1,110 @@
-
-import { supabaseAdmin } from '../src/lib/supabase-admin';
-import { algoliaClient, SEARCH_INDEX_NAME } from '../src/backend/modules/search/infrastructure/algolia-client';
-import { logger } from '../src/lib/logger';
+import { supabaseAdmin } from "../src/lib/supabase-admin";
+import {
+  algoliaClient,
+  SEARCH_INDEX_NAME,
+} from "../src/backend/modules/search/infrastructure/algolia-client";
+import { logger } from "../src/lib/logger";
+import {
+  AUDIT_FIELD_NAMES,
+  AttributeMismatch,
+  compareIndexFields,
+  DEFAULT_DRIFT_THRESHOLD_PERCENT,
+  deriveExpectedIndexFields,
+  DbPartAuditRow,
+} from "../src/lib/audit/search-audit";
 
 interface AuditResult {
   partsInDb: number;
   partsInIndex: number;
   missingFromIndex: string[];
   staleInIndex: string[];
-  attributeMismatches: { id: string; field: string; db: any; algolia: any }[];
+  attributeMismatches: AttributeMismatch[];
+  comparedFields: string[];
   driftPercent: number;
+  passed: boolean;
 }
 
-async function auditSearchConsistency(): Promise<AuditResult> {
-  logger.info('Starting search consistency audit...');
+const DB_SELECT = `
+  id,
+  title,
+  price_mxn,
+  condition,
+  status,
+  description,
+  created_at,
+  listing_quality_score,
+  seller_trust_score,
+  part_images (id),
+  part_types!parts_part_type_id_fkey (
+    slug_en,
+    categories (slug_en)
+  ),
+  vehicle_variants!parts_donor_vehicle_variant_id_fkey (
+    models (name, makes (name))
+  ),
+  users!parts_seller_id_fkey (
+    seller_profiles (verification_status, seller_trust_score, whatsapp)
+  )
+`;
 
-  // 1. Get all active part IDs and critical attributes from Supabase
+async function auditSearchConsistency(): Promise<AuditResult> {
+  logger.info("Starting search consistency audit...");
+
   const { data: dbParts, error: dbError } = await supabaseAdmin
-    .from('parts')
-    .select('id, status, title, price_mxn, condition');
+    .from("parts")
+    .select(DB_SELECT);
 
   if (dbError) {
-    logger.error('Failed to fetch parts from database', { error: dbError });
+    logger.error("Failed to fetch parts from database", { error: dbError });
     throw dbError;
   }
-  
-  const dbPartsMap = new Map(dbParts.map(p => [p.id, p]));
+
+  const dbPartsMap = new Map(
+    (dbParts as DbPartAuditRow[]).map((part) => [part.id, part]),
+  );
   const dbPartIds = new Set(dbPartsMap.keys());
 
-  // 2. Get all objects from Algolia
-  const indexPartsMap = new Map<string, any>();
-  await algoliaClient.browseObjects<any>({
+  const indexPartsMap = new Map<string, Record<string, unknown>>();
+  await algoliaClient.browseObjects<Record<string, unknown>>({
     indexName: SEARCH_INDEX_NAME,
-    // @ts-expect-error - Algolia client type mismatch in script context
-    attributesToRetrieve: ['objectID', 'status', 'title', 'price', 'condition'],
+    attributesToRetrieve: [
+      "objectID",
+      "title",
+      "price",
+      "condition",
+      "category",
+      "part_type",
+      "make",
+      "model",
+      "seller_verified",
+      "listing_quality_score",
+      "seller_trust_score",
+    ],
     batch: (hits) => {
-      hits.forEach(hit => indexPartsMap.set(hit.objectID, hit));
+      hits.forEach((hit) => indexPartsMap.set(String(hit.objectID), hit));
     },
   });
+
   const indexPartIds = new Set(indexPartsMap.keys());
-  
-  // 3. Compare and find discrepancies
-  const missingFromIndex = [...dbPartIds].filter(id => !indexPartIds.has(id));
-  const staleInIndex = [...indexPartIds].filter(id => !dbPartIds.has(id));
-  
-  const attributeMismatches: { id: string; field: string; db: any; algolia: any }[] = [];
-  const commonIds = [...dbPartIds].filter(id => indexPartIds.has(id));
+  const missingFromIndex = [...dbPartIds].filter((id) => !indexPartIds.has(id));
+  const staleInIndex = [...indexPartIds].filter((id) => !dbPartIds.has(id));
+
+  const attributeMismatches: AttributeMismatch[] = [];
+  const commonIds = [...dbPartIds].filter((id) => indexPartIds.has(id));
 
   for (const id of commonIds) {
     const dbPart = dbPartsMap.get(id)!;
     const indexPart = indexPartsMap.get(id)!;
-
-    const fieldsToCompare = ['title', 'price_mxn', 'condition'];
-    for (const field of fieldsToCompare) {
-        const dbField = field === 'price_mxn' ? 'price_mxn' : field;
-        const algoliaField = field === 'price_mxn' ? 'price' : field;
-        
-        if (dbPart[dbField as keyof typeof dbPart] !== indexPart[algoliaField]) {
-            attributeMismatches.push({
-            id,
-            field,
-            db: dbPart[dbField as keyof typeof dbPart],
-            algolia: indexPart[algoliaField]
-            });
-        }
-    }
+    const expected = deriveExpectedIndexFields(dbPart);
+    attributeMismatches.push(...compareIndexFields(id, expected, indexPart));
   }
 
-  const totalDrift = missingFromIndex.length + staleInIndex.length + attributeMismatches.length;
-  const driftPercent = dbPartIds.size > 0 
-    ? (totalDrift / dbPartIds.size) * 100
-    : 0;
+  const totalDrift =
+    missingFromIndex.length + staleInIndex.length + attributeMismatches.length;
+  const driftPercent =
+    dbPartIds.size > 0
+      ? Number(((totalDrift / dbPartIds.size) * 100).toFixed(2))
+      : 0;
 
   const result: AuditResult = {
     partsInDb: dbPartIds.size,
@@ -78,11 +112,17 @@ async function auditSearchConsistency(): Promise<AuditResult> {
     missingFromIndex,
     staleInIndex,
     attributeMismatches,
-    driftPercent: parseFloat(driftPercent.toFixed(2)),
+    comparedFields: [...AUDIT_FIELD_NAMES],
+    driftPercent,
+    passed: driftPercent <= DEFAULT_DRIFT_THRESHOLD_PERCENT,
   };
 
-  logger.info('Search consistency audit complete', result);
+  logger.info("Search consistency audit complete", result);
   console.log(JSON.stringify(result, null, 2));
+
+  if (!result.passed) {
+    process.exitCode = 1;
+  }
 
   return result;
 }
