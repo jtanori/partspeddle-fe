@@ -34,7 +34,7 @@ describe('P1.8 mobile search and homepage layout overflows', () => {
   });
 
   it('wires MobileFilterSheet into the search page for mobile breakpoints', () => {
-    const searchPage = read('src/app/(public)/search/page.tsx');
+    const searchPage = read('src/components/search/SearchPageClient.tsx');
     expect(searchPage).toContain('MobileFilterSheet');
     expect(searchPage).toContain('md:hidden');
   });
