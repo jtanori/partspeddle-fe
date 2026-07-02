@@ -65,10 +65,6 @@ export class AlgoliaSearchRepository implements SearchRepository {
       page: response.page || 0,
       totalPages: response.nbPages || 0,
       facets: response.facets,
-      debug: {
-        matchedOn: response.processingTimingsMS,
-        rankingFactors: ["seller_verified", "created_at"],
-      },
     };
   }
 
