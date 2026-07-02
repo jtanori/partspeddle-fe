@@ -1,4 +1,6 @@
-import type { Metadata } from "next";
+
+
+import type { Metadata, Viewport } from "next";
 import {
   Inter,
   Rajdhani,
@@ -42,6 +44,12 @@ export const metadata: Metadata = {
   title: "PartsPeddle | Used OEM Auto Parts Marketplace",
   description:
     "Algolia-powered Search, Supabase Auth, and AI-driven parts identification.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
