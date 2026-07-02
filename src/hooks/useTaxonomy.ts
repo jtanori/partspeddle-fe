@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { buildTaxonomy, Taxonomy } from "@/lib/taxonomy";
+import { Taxonomy } from "@/lib/taxonomy";
 
 interface UseTaxonomyResult {
   taxonomy: Taxonomy | null;
@@ -20,17 +19,14 @@ export function useTaxonomy(): UseTaxonomyResult {
 
     async function fetchTaxonomy() {
       try {
-        const [{ data: categories, error: categoriesError }, { data: partTypes, error: partTypesError }] =
-          await Promise.all([
-            supabase.from("categories").select("id, slug, slug_en, name, name_en, name_es, icon"),
-            supabase.from("part_types").select("id, category_id, slug, slug_en, name, name_en, name_es"),
-          ]);
+        const response = await fetch("/api/taxonomy");
+        if (!response.ok) {
+          throw new Error("Failed to fetch taxonomy");
+        }
 
-        if (categoriesError) throw categoriesError;
-        if (partTypesError) throw partTypesError;
-
+        const data = await response.json();
         if (!cancelled) {
-          setTaxonomy(buildTaxonomy(categories || [], partTypes || []));
+          setTaxonomy(data);
         }
       } catch (err) {
         if (!cancelled) {

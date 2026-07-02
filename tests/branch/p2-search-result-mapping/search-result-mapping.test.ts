@@ -106,8 +106,8 @@ describe('P2.4 search result mapping and display', () => {
     expect(projection.facets[0].values[0].selected).toBe(true);
   });
 
-  it('maps supabase-db hits using display labels instead of raw slugs', () => {
-    const mapper = read('src/services/supabase-db.ts');
+  it('maps API hits using display labels instead of raw slugs', () => {
+    const mapper = read('src/lib/api-mappers.ts');
     expect(mapper).toContain('category_label || row.category');
     expect(mapper).toContain('part_type_label || row.part_type');
   });

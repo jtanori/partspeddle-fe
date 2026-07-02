@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Star, MapPin, Award } from 'lucide-react';
-import { supabaseDb } from '../../services/supabase-db';
 import { Seller } from '../../types';
 import { SectionHeader } from '../common/SectionHeader';
 import { EmptyState } from '../common/EmptyState';
 import { ViewAllButton } from '../common/ViewAllButton';
+import { useTopSellers } from '@/hooks/useTopSellers';
 
 interface FeaturedSellersProps {
   sellers?: Seller[];
@@ -16,23 +16,11 @@ interface FeaturedSellersProps {
 
 export const FeaturedSellers: React.FC<FeaturedSellersProps> = ({ sellers: propsSellers, onViewAll }) => {
   const router = useRouter();
-  const [sellers, setSellers] = useState<Seller[]>(propsSellers || []);
-
-  useEffect(() => {
-    if (!propsSellers) {
-        const fetchSellers = async () => {
-            try {
-                const data = await supabaseDb.getTopSellers();
-                setSellers(data || []);
-            } catch (err) {
-                console.error('Error fetching featured sellers:', err);
-            }
-        };
-        fetchSellers();
-    } else {
-        setSellers(propsSellers);
-    }
-  }, [propsSellers]);
+  const { sellers: fetchedSellers } = useTopSellers({
+    limit: 4,
+    enabled: !propsSellers,
+  });
+  const sellers = propsSellers ?? fetchedSellers;
   
   return (
     <section className="bg-zinc-100 py-20 px-4">

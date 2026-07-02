@@ -4,7 +4,6 @@ import {
   SearchInputState,
 } from "./hooks/useSearchStateMachine";
 import { projectSearchResults } from "./utils/ProjectionEngine";
-import { supabaseDb } from "@/services/supabase-db";
 import { LiveSearchResults, SearchSuggestion } from "./types/search-types";
 import { getRecentSearches } from "./utils/recent-searches";
 import { POPULAR_SEARCHES } from "./constants/popular-searches";
@@ -75,15 +74,23 @@ export const SearchDropdownController: React.FC<
 
     const debounce = globalThis.setTimeout(async () => {
       try {
-        const { hits, rawHits, totalHits } = await supabaseDb.searchParts({
-          query,
-          sortBy: "relevance",
-        } as any);
+        const response = await fetch("/api/search/parts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, sortBy: "relevance" }),
+          signal,
+        });
+
+        if (!response.ok) {
+          throw new Error("Search request failed");
+        }
+
+        const data = await response.json();
 
         if (version === getCurrentVersion() && !signal.aborted) {
           const projectedResults = projectSearchResults(
-            (rawHits || hits) as Record<string, unknown>[],
-            totalHits,
+            (data.hits || []) as Record<string, unknown>[],
+            data.totalHits || 0,
           );
           projectedResults.metadata.query = query;
 

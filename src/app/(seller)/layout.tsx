@@ -6,7 +6,7 @@ import { SellerSidebar } from '@/components/seller-dashboard/Sidebar';
 import { DashboardHeader } from '@/components/seller-dashboard/DashboardHeader';
 import { YardControlCore } from '@/components/drawers/YardControlCore';
 import { InventoryWizardProvider } from '@/context/InventoryWizardContext';
-import { supabase } from '@/lib/supabase';
+import { useSellerProfile } from '@/hooks/useSellerProfile';
 import '@/styles/dashboard.css';
 
 export default function SellerLayout({
@@ -17,30 +17,13 @@ export default function SellerLayout({
   const { user, setProfile } = useAppStore();
   const [isYardControlOpen, setIsYardControlOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { profile, loading: isLoading } = useSellerProfile({ userId: user?.id });
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
-      try {
-        const { data, error } = await supabase
-          .from('seller_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-        if (error) throw error;
-        setProfile(data);
-      } catch (err) {
-        console.error('Failed to hydrate profile:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProfile();
-  }, [user, setProfile]);
+    if (profile) {
+      setProfile(profile);
+    }
+  }, [profile, setProfile]);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
