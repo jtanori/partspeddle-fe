@@ -25,6 +25,6 @@ describe('AlgoliaSearchRepository fitment filter generation', () => {
     const filters = (repo as any).buildAlgoliaFilters({
       fitmentSignatures: ["make-1:model-1:2015'"],
     });
-    expect(filters).toContain("fitment_signatures:'make-1:model-1:2015\\''");
+    expect(filters).toContain("fitment_signatures:'make-1:model-1:2015'''");
   });
 });
