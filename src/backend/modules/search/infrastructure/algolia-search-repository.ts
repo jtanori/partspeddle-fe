@@ -90,7 +90,8 @@ export class AlgoliaSearchRepository implements SearchRepository {
   }
 
   private escapeFilterValue(value: any): string {
-    return String(value).replace(/'/g, "\\'");
+    // Algolia filter syntax escapes single quotes by doubling them.
+    return String(value).replace(/'/g, "''");
   }
 
   private buildAlgoliaFilters(filters: SearchFilters): string {
