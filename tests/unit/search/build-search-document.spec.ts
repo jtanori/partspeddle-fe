@@ -29,6 +29,20 @@ describe("BuildSearchDocumentUseCase", () => {
         year: 2015,
         models: { name: "Civic", makes: { name: "Honda" } },
       },
+      part_fitment: [
+        {
+          vehicle_variant_id: "vv-1",
+          vehicle_variants: {
+            id: "vv-1",
+            year: 2015,
+            models: {
+              id: "model-1",
+              name: "Civic",
+              makes: { id: "make-1", name: "Honda" },
+            },
+          },
+        },
+      ],
       users: {
         seller_profiles: {
           business_name: "Yonke",
@@ -54,6 +68,7 @@ describe("BuildSearchDocumentUseCase", () => {
     expect(doc.category).toBe("Electrical");
     expect(doc.seller_verified).toBe(true);
     expect(doc.listing_quality_score).toBeGreaterThan(0);
+    expect(doc.fitment_signatures).toEqual(["make-1:model-1:2015"]);
   });
 
   it("throws an error if part is not found", async () => {
