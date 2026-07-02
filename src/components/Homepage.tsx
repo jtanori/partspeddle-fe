@@ -10,7 +10,7 @@ import { Part, Seller } from "../types";
 
 export default function Homepage() {
   const router = useRouter();
-  const [featuredParts, setFeaturedParts] = useState<Part[]>([]);
+  const [featuredListings, setFeaturedListings] = useState<Part[]>([]);
   const [recentParts, setRecentParts] = useState<Part[]>([]);
   const [sellers, setSellers] = useState<Seller[]>([]);
 
@@ -22,7 +22,7 @@ export default function Homepage() {
           supabaseDb.getFeaturedParts(4),
           supabaseDb.getTopSellers(4),
         ]);
-        setFeaturedParts(featured || []);
+        setFeaturedListings(featured || []);
         setRecentParts(recent || []);
         setSellers(topSellers || []);
       } catch (err) {
@@ -50,7 +50,7 @@ export default function Homepage() {
       <ListingsGrid
         title="Featured Parts Index"
         subtitle="Inspected listings from our highest rated sellers"
-        parts={featuredParts}
+        parts={featuredListings}
         onViewAll={handleViewAllParts}
       />
 
