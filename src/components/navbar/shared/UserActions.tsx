@@ -19,7 +19,7 @@ interface UserActionsProps {
   onOpenTour: () => void;
   onLogout: () => void;
   showToast: (msg: string) => void;
-  userMenuRef: React.RefObject<HTMLDivElement>;
+  userMenuRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export const UserActions: React.FC<UserActionsProps> = ({

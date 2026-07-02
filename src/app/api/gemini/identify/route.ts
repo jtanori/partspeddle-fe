@@ -106,7 +106,15 @@ export async function POST(req: NextRequest) {
       }
     });
     
-    return NextResponse.json(JSON.parse(result.text));
+    const responseText = result.text;
+    if (!responseText) {
+      return NextResponse.json(
+        { error: "Gemini returned an empty response." },
+        { status: 502 },
+      );
+    }
+
+    return NextResponse.json(JSON.parse(responseText));
   } catch (error: any) {
     console.error("Gemini Scan Error:", error);
     return NextResponse.json({ error: error?.message || "Failed to identify auto part." }, { status: 500 });
