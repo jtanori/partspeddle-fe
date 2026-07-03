@@ -31,11 +31,10 @@ describe('P2.1 UI/UX standardization', () => {
   });
 
   it('routes navbar and modal instant search through the shared hook', () => {
-    const dropdown = read('src/components/navbar/LiveSearchDropdown.tsx');
+    const navbar = read('src/components/navbar/Navbar.tsx');
     const modal = read('src/components/SearchModal.tsx');
-    expect(dropdown).toContain('useInstantSearch');
+    expect(navbar).toContain('onOpenSearchModal');
     expect(modal).toContain('useInstantSearch');
-    expect(dropdown).not.toContain('supabaseDb');
     expect(modal).not.toContain('supabase.from');
   });
 
