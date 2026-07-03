@@ -19,6 +19,8 @@ Welcome to the PartsPeddle FE documentation.
 - [Next App Router Architecture](NEXT_APP_ROUTER_ARCHITECTURE.md)
 
 ## Process & Compliance
+- [Remediation Plan](REMEDIATION_PLAN.md)
+  - _Master backlog: P0–P5 priorities, dependencies, and execution order._
 - [PPSC Certification](PPSC-PRE-PROMOTION-SANITIZATION-CERTIFICATION.md)
 - [Certified Systems Impact](CERTIFIED_SYSTEMS_IMPACT.md)
 - [Certified System Changelog](CERTIFIED_SYSTEM_CHANGELOG.md)
