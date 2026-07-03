@@ -167,9 +167,10 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
   };
 
   const setAndSyncFilters = (
-    updateFn: (prev: SearchFilters) => SearchFilters,
+    updateFn: SearchFilters | ((prev: SearchFilters) => SearchFilters),
   ) => {
-    const newFilters = updateFn(filters);
+    const newFilters =
+      typeof updateFn === "function" ? updateFn(filters) : updateFn;
     syncFiltersToUrl(newFilters);
   };
 

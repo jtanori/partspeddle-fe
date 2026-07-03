@@ -1,5 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import type { RealtimeChannel } from "@supabase/supabase-js";
+import type {
+  RealtimeChannel,
+  RealtimePostgresInsertPayload,
+  REALTIME_SUBSCRIBE_STATES,
+} from "@supabase/supabase-js";
 
 export function subscribeToConversation(
   conversationId: string,
@@ -15,11 +19,11 @@ export function subscribeToConversation(
         table: "messages",
         filter: `conversation_id=eq.${conversationId}`,
       },
-      (payload) => {
-        onMessageReceived(payload.new as Record<string, unknown>);
+      (payload: RealtimePostgresInsertPayload<Record<string, unknown>>) => {
+        onMessageReceived(payload.new);
       },
     )
-    .subscribe((status) => {
+    .subscribe((status: `${REALTIME_SUBSCRIBE_STATES}`) => {
       if (status === "SUBSCRIBED") {
         console.log(`Subscribed to conversation: ${conversationId}`);
       }

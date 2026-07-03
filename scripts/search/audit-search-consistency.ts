@@ -81,8 +81,10 @@ async function auditSearchConsistency(): Promise<AuditResult> {
       "listing_quality_score",
       "seller_trust_score",
     ],
-    batch: (hits) => {
-      hits.forEach((hit) => indexPartsMap.set(String(hit.objectID), hit));
+    batch: (hits: Record<string, unknown>[]) => {
+      hits.forEach((hit: Record<string, unknown>) =>
+        indexPartsMap.set(String(hit.objectID), hit),
+      );
     },
   });
 
