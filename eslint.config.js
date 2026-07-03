@@ -16,6 +16,11 @@ const sharedTsRules = {
   "@typescript-eslint/no-unused-vars": "warn",
 };
 
+const domainStrictRules = {
+  "@typescript-eslint/no-explicit-any": "error",
+  "@typescript-eslint/no-unused-vars": "error",
+};
+
 export default [
   js.configs.recommended,
   {
@@ -49,6 +54,10 @@ export default [
     settings: {
       react: { version: "detect" },
     },
+  },
+  {
+    files: ["src/domain/**/*.{ts,tsx}"],
+    rules: domainStrictRules,
   },
   {
     files: ["scripts/**/*.{ts,tsx,js}", "tests/**/*.{ts,tsx}"],
