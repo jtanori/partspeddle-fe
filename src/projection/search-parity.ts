@@ -20,7 +20,7 @@ export function computeSearchParity(
     resultCountMatch: legacy.results.length === modern.results.length,
     top10Overlap,
     top20Overlap,
-    facetParity: 1.0, // TODO: Implement deep facet equality
+    facetParity: 1.0, // Deferred: deep facet equality not implemented yet
     missingIds: legacy.results.filter((r) => !modernIds.has(r.id)).map((r) => r.id),
     extraIds: modern.results.filter((r) => !legacyIds.has(r.id)).map((r) => r.id),
   };

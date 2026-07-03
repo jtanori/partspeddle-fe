@@ -399,60 +399,6 @@ export default function GuidedTour({ onClose, onHighlightElement }: GuidedTourPr
 
           </div>
 
-          {/* 
-            ==================================================================
-            COMMENTED COPYS & SIDEBARS CODE FOR POTENTIAL FUTURE COMPONENT REUSE 
-            ==================================================================
-
-            {/* 
-            <div className="md:w-1/2 flex flex-col justify-between p-6">
-              <label className="flex items-center gap-2 text-zinc-405 hover:text-zinc-300 text-xs mt-4 cursor-pointer select-none group">
-                <input 
-                  type="checkbox" 
-                  checked={dontShowAgain}
-                  onChange={(e) => setDontShowAgain(e.target.checked)}
-                  className="sr-only"
-                />
-                <div className={`w-4 h-4 rounded-sm flex items-center justify-center border transition-all ${
-                  dontShowAgain ? 'bg-[#d48c43] border-[#d48c43] text-white' : 'border-zinc-750 bg-zinc-900 group-hover:border-zinc-550'
-                }`}>
-                  <svg className="w-2.5 h-2.5 stroke-[3]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Don't show this tour again</span>
-              </label>
-            </div>
-            
-            <div className="md:w-1/2 flex flex-col justify-between p-6">
-              <div className="flex flex-col">
-                <div className="flex flex-col mb-3">
-                  <span className="text-[13px] text-zinc-401 font-medium">Welcome to PartsPeddle</span>
-                  <span className="text-xs text-zinc-501 mt-0.5 font-mono">{currentStep} of 5</span>
-                </div>
-                <h1 className="text-[26px] font-bold text-white tracking-tight leading-none mb-2">
-                  Hey, I’m <span className="text-[#d48c43]">Jess</span>.
-                </h1>
-                <p className="text-sm text-zinc-401 leading-normal mb-5 font-sans">
-                  I'll show you around and help you find the parts you need faster and easier.
-                </p>
-                <div className="border border-[#d48c43]/40 bg-[#d48c43]/[0.03] rounded-lg p-4 flex gap-3.5 items-start">
-                  <div className="w-8 h-8 rounded-full border border-[#d48c43] bg-zinc-950 flex items-center justify-center shrink-0">
-                    <Search className="w-4 h-4 text-[#d48c43]" />
-                  </div>
-                  <div>
-                    <h3 className="text-white text-sm font-semibold mb-1 leading-snug">
-                      {StepGuide.title}
-                    </h3>
-                    <p className="text-zinc-401 text-xs leading-normal">
-                      {StepGuide.text}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            */}
-
         </div>
 
       </div>
