@@ -51,4 +51,10 @@ describe('P3.1 dead code and stale comment cleanup', () => {
     expect(parity).not.toMatch(/\bTODO\b/i);
     expect(parity).toContain('facetParity');
   });
+
+  it('removes the stale footer link to the deleted component showroom', () => {
+    const footer = read('src/components/Footer.tsx');
+    expect(footer).not.toContain('component-library');
+    expect(footer).not.toContain('Showroom components');
+  });
 });

@@ -90,11 +90,6 @@ export default function Footer({ onChangeView, onOpenModal }: FooterProps) {
               </button>
             </li>
             <li>
-              <button onClick={() => onChangeView('component-library')} className="hover:text-white transition-colors text-left cursor-pointer">
-                Showroom components
-              </button>
-            </li>
-            <li>
               <button onClick={() => handleModalClick('about')} className="hover:text-white transition-colors text-left cursor-pointer">
                 Salvage Network
               </button>
