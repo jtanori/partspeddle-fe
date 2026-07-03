@@ -12,6 +12,7 @@ import { GridResultsView } from "@/components/search/GridResultsView";
 import { ListResultsView } from "@/components/search/ListResultsView";
 import { SearchNoResults } from "@/components/search/SearchNoResults";
 import { Pagination } from "@/components/search/Pagination";
+import { InlineLoadingIndicator } from "@/components/common/InlineLoadingIndicator";
 import { PartCondition, SearchFilters } from "@/types";
 import { SearchResultCardModel } from "@/domain/view-models/search";
 import {
@@ -65,6 +66,7 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
   const [pagination, setPagination] = useState(initialData.pagination);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(!isInitialRequest);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const [collapsedSections, setCollapsedSections] = useState<
     Record<string, boolean>
@@ -197,12 +199,16 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 flex gap-8">
-      <aside className="w-[280px] hidden md:block">
-        <ProductSidebar {...sidebarProps} />
-      </aside>
+    <div className="mx-auto max-w-7xl w-full px-4 py-8">
+      <div className="flex gap-8">
+        <aside
+          className="w-[280px] shrink-0 hidden md:block"
+          aria-label="Search filters"
+        >
+          <ProductSidebar {...sidebarProps} />
+        </aside>
 
-      <main className="flex-1 min-w-0">
+        <section className="flex-1 min-w-0" aria-label="Search results">
         <div className="md:hidden mb-4">
           <MobileFilterSheet {...sidebarProps} />
         </div>
@@ -228,8 +234,12 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="p-8 text-center text-zinc-500">Searching...</div>
+        {searchError ? (
+          <div className="py-8 text-center text-red-600" role="alert">
+            Error: {searchError}
+          </div>
+        ) : isLoading ? (
+          <InlineLoadingIndicator />
         ) : cards.length === 0 ? (
           <SearchNoResults onClearSearch={() => router.replace(pathname)} />
         ) : (
@@ -273,9 +283,11 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
           requestKey={requestKey}
           skipInitialFetch={isInitialRequest}
           onLoading={setIsLoading}
+          onError={setSearchError}
           onResults={handleResults}
         />
-      </main>
+        </section>
+      </div>
     </div>
   );
 }
