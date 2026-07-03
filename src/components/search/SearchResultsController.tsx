@@ -13,6 +13,7 @@ export const SearchResultsController: React.FC<{
   requestKey: string;
   skipInitialFetch?: boolean;
   onLoading?: (loading: boolean) => void;
+  onError?: (error: string | null) => void;
   onResults: (
     cards: SearchResultCardModel[],
     facets: Record<string, unknown>,
@@ -26,15 +27,19 @@ export const SearchResultsController: React.FC<{
   requestKey,
   skipInitialFetch = false,
   onLoading,
+  onError,
   onResults,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const skippedInitialRef = useRef(skipInitialFetch);
 
   useEffect(() => {
-    if (onLoading) onLoading(loading);
+    onLoading?.(loading);
   }, [loading, onLoading]);
+
+  useEffect(() => {
+    onError?.(null);
+  }, [requestKey, onError]);
 
   useEffect(() => {
     if (skippedInitialRef.current) {
@@ -46,7 +51,7 @@ export const SearchResultsController: React.FC<{
 
     const fetchResults = async () => {
       setLoading(true);
-      setError(null);
+      onError?.(null);
       try {
         const apiFilters = {
           ...filters,
@@ -80,7 +85,7 @@ export const SearchResultsController: React.FC<{
         if (err instanceof DOMException && err.name === "AbortError") {
           return;
         }
-        setError(err instanceof Error ? err.message : "Search failed");
+        onError?.(err instanceof Error ? err.message : "Search failed");
       } finally {
         if (!controller.signal.aborted) {
           setLoading(false);
@@ -92,10 +97,6 @@ export const SearchResultsController: React.FC<{
 
     return () => controller.abort();
   }, [requestKey]);
-
-  if (loading) return <div className="p-8 text-center">Buscando partes...</div>;
-  if (error)
-    return <div className="p-8 text-center text-red-500">Error: {error}</div>;
 
   return null;
 };

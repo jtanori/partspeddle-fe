@@ -9,7 +9,7 @@ export default function PublicLayout({
 }) {
   return (
     <div className="flex flex-col min-h-screen bg-base-cream text-steel-black">
-      <main className="flex-grow">{children}</main>
+      {children}
     </div>
   );
 }

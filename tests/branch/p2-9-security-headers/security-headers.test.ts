@@ -35,6 +35,7 @@ describe('P2.9 security headers', () => {
     expect(csp).toContain('wss://*.supabase.co');
     expect(csp).toContain('https://*.algolia.net');
     expect(csp).toContain('https://images.unsplash.com');
+    expect(csp).toContain('https://picsum.photos');
     expect(csp).toContain("frame-ancestors 'none'");
   });
 
