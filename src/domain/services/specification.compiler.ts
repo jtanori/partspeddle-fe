@@ -98,17 +98,23 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
 const grouped = Object.values(groupedMap).sort((a, b) => a.order - b.order);
 grouped.forEach(g => g.items.sort((a, b) => a.displayOrder - b.displayOrder));
 
-console.log(`[SCGS DEBUG] Listing ${listingId} structure:`, Object.keys(listing || {}), (listing as any)?.listingQualityScore, (listing as any)?.listing_quality_score);
+console.log(
+  `[SCGS DEBUG] Listing ${listingId} structure:`,
+  Object.keys(listing || {}),
+  listing?.listingQualityScore,
+);
 
-return { 
-  flat, 
-  grouped, 
+return {
+  flat,
+  grouped,
   facets,
   rankingFactors: {
-    listingQuality: (listing as any)?.listingQualityScore ?? 0.5,
-    sellerTrust: (listing as any)?.sellerTrustScore ?? 0.5,
-    recency: listing ? 1.0 - (Date.now() - new Date(listing.createdAt).getTime()) / (30 * 86400000) : 0.5 
-  }
+    listingQuality: listing?.listingQualityScore ?? 0.5,
+    sellerTrust: listing?.sellerTrustScore ?? 0.5,
+    recency: listing
+      ? 1.0 - (Date.now() - new Date(listing.createdAt).getTime()) / (30 * 86400000)
+      : 0.5,
+  },
 };
 
 }

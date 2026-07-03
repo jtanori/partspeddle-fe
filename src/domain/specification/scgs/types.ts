@@ -1,3 +1,4 @@
+import type { SpecGroup } from '../../services/specification.compiler';
 import { CompiledSpecificationSet } from '../../services/specification.compiler';
 export type { CompiledSpecificationSet };
 
@@ -16,15 +17,15 @@ export interface CompiledSemanticArtifact {
 export interface GroupDiff {
   groupName: string;
   changeType: "ADDED" | "REMOVED" | "ORDER_CHANGED" | "MODIFIED";
-  before?: any;
-  after?: any;
+  before?: SpecGroup;
+  after?: SpecGroup;
 }
 
 export interface FacetDiff {
   key: string;
   type: "ADDED" | "REMOVED" | "MODIFIED";
-  before?: any;
-  after?: any;
+  before?: string | number | boolean;
+  after?: string | number | boolean;
 }
 
 export interface ConsistencyReport {
