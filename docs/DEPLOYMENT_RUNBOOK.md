@@ -30,7 +30,7 @@
 ```bash
 pnpm deploy:staging
 # or
-bash scripts/deploy.sh staging
+bash scripts/ops/deploy.sh staging
 ```
 
 ## Production Deployment
@@ -44,7 +44,7 @@ bash scripts/deploy.sh staging
 ```bash
 pnpm deploy:production
 # or
-bash scripts/deploy.sh production
+bash scripts/ops/deploy.sh production
 ```
 
 # 3. Database Deployment Procedure

@@ -4,6 +4,7 @@ dist/
 coverage/
 .next/
 .DS_Store
+.cursor/
 *.log
 *.out
 .env*

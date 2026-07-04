@@ -46,12 +46,12 @@ Local fallback commands:
 # Staging
 pnpm deploy:staging
 # or
-bash scripts/deploy.sh staging
+bash scripts/ops/deploy.sh staging
 
 # Production
 pnpm deploy:production
 # or
-bash scripts/deploy.sh production
+bash scripts/ops/deploy.sh production
 ```
 
 _(Always deploy production from the `main` branch and staging from the `develop` branch.)_
