@@ -38,7 +38,7 @@ export interface SearchViewModel {
     totalPages: number;
   };
   meta: {
-    source: "ALGOLIA";
+    source: "ALGOLIA" | "SCGS";
     queryMs?: number;
   };
 }
