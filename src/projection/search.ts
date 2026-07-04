@@ -108,6 +108,7 @@ export function buildSearchProjection(
   total: number,
   facetCounts?: Record<string, Record<string, number>>,
   filters?: SearchFilters,
+  source: SearchViewModel['meta']['source'] = 'ALGOLIA',
 ): SearchViewModel {
   return {
     results: docs.map(buildSearchResultCard),
@@ -132,7 +133,7 @@ export function buildSearchProjection(
       totalPages: Math.ceil(total / pageSize),
     },
     meta: {
-      source: 'ALGOLIA',
+      source,
     },
   };
 }

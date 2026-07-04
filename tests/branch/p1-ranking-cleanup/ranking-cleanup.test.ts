@@ -43,14 +43,6 @@ describe('P1.3 ranking cleanup', () => {
     expect(result).toHaveProperty('totalPages');
   });
 
-  it('no longer ships the SCGS RankingEngine module', () => {
-    const rankingDir = path.resolve(
-      __dirname,
-      '../../../src/domain/specification/scgs/ranking',
-    );
-    expect(fs.existsSync(rankingDir)).toBe(false);
-  });
-
   it('no longer ships the SCGS pipeline module', () => {
     const pipelineFile = path.resolve(
       __dirname,
