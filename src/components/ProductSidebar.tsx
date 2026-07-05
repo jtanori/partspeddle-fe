@@ -1,7 +1,8 @@
-import React from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { SearchFilters, PartCondition } from "../types";
-import { useTaxonomy } from "../hooks/useTaxonomy";
+import React from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { SearchFilters, PartCondition } from '../types';
+import { useTaxonomy } from '../hooks/useTaxonomy';
+import { InlineLoadingIndicator } from './common/InlineLoadingIndicator';
 
 interface ProductSidebarProps {
   filters: SearchFilters;
@@ -13,7 +14,7 @@ interface ProductSidebarProps {
   setSortBy: (sort: string) => void;
   getSystemPartCount: (sys: string) => string;
   getConditionCount: (cond: PartCondition) => number;
-  getSellerTypeCount: (type: "all" | "trusted") => number;
+  getSellerTypeCount: (type: 'all' | 'trusted') => number;
   togglePartType: (type: string) => void;
   toggleCondition: (cond: PartCondition) => void;
   handlePriceChange: (index: number, val: number) => void;
@@ -40,12 +41,10 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
 }) => {
   const { taxonomy, loading } = useTaxonomy();
 
-  const selectedSystem = filters.system || "";
-  const selectedCategorySlug = filters.category || "";
+  const selectedSystem = filters.system || '';
+  const selectedCategorySlug = filters.category || '';
 
-  const categories = selectedSystem
-    ? taxonomy?.categoriesBySystem[selectedSystem] || []
-    : [];
+  const categories = selectedSystem ? taxonomy?.categoriesBySystem[selectedSystem] || [] : [];
 
   const selectedCategory = selectedCategorySlug
     ? taxonomy?.categoryBySlug[selectedCategorySlug]
@@ -56,19 +55,19 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
     : [];
 
   const themeClasses = isDisabled
-    ? "bg-zinc-50 border-zinc-200 text-zinc-900"
-    : "bg-[#1A1A1A] border-stone-800 text-zinc-300";
+    ? 'bg-zinc-50 border-zinc-200 text-zinc-900'
+    : 'bg-[#1A1A1A] border-stone-800 text-zinc-300';
 
-  const headerTextClasses = isDisabled ? "text-zinc-500" : "text-rust-copper";
-  const sectionTextClasses = isDisabled ? "text-zinc-900" : "text-warm-gray";
+  const headerTextClasses = isDisabled ? 'text-zinc-500' : 'text-rust-copper';
+  const sectionTextClasses = isDisabled ? 'text-zinc-900' : 'text-warm-gray';
 
   if (loading) {
     return (
       <div
-        className={`border rounded-xl p-5 space-y-6 relative shadow-sm ${themeClasses}`}
+        className={`border rounded-xl p-5 relative shadow-sm ${themeClasses}`}
         id="unified-filters-card"
       >
-        <div className="text-xs text-zinc-500">Loading taxonomy...</div>
+        <InlineLoadingIndicator label="Loading taxonomy..." />
       </div>
     );
   }
@@ -99,8 +98,8 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
       {/* Filter Sections */}
       {[
         {
-          id: "fitment",
-          title: "Fitment",
+          id: 'fitment',
+          title: 'Fitment',
           content: (
             <div className="space-y-2">
               <select
@@ -109,7 +108,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                   setAndSyncFilters((p) => ({
                     ...p,
                     fitmentMake: e.target.value,
-                    fitmentModel: "All Models",
+                    fitmentModel: 'All Models',
                   }))
                 }
                 className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
@@ -131,7 +130,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                   }))
                 }
                 className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
-                disabled={filters.fitmentMake === "All Makes"}
+                disabled={filters.fitmentMake === 'All Makes'}
               >
                 <option value="All Models">All Models</option>
                 {facets.model &&
@@ -165,8 +164,8 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           ),
         },
         {
-          id: "manufacturer",
-          title: "Manufacturer",
+          id: 'manufacturer',
+          title: 'Manufacturer',
           content: (
             <div className="space-y-1 max-h-40 overflow-y-auto">
               {facets.make &&
@@ -177,13 +176,12 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                     onClick={() =>
                       setAndSyncFilters((p) => ({
                         ...p,
-                        fitmentMake:
-                          p.fitmentMake === make ? "All Makes" : make,
+                        fitmentMake: p.fitmentMake === make ? 'All Makes' : make,
                       }))
                     }
                   >
                     <div
-                      className={`w-4 h-4 rounded border ${filters.fitmentMake === make ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
+                      className={`w-4 h-4 rounded border ${filters.fitmentMake === make ? 'bg-rust-copper border-rust-copper' : 'border-zinc-300'}`}
                     ></div>
                     {make} ({facets.make[make]})
                   </div>
@@ -192,8 +190,8 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           ),
         },
         {
-          id: "category",
-          title: "Category",
+          id: 'category',
+          title: 'Category',
           content: (
             <div className="space-y-2">
               <select
@@ -202,7 +200,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                   setAndSyncFilters((p) => ({
                     ...p,
                     system: e.target.value,
-                    category: "",
+                    category: '',
                     partTypes: [],
                   }))
                 }
@@ -239,8 +237,8 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           ),
         },
         {
-          id: "partType",
-          title: "Part Type",
+          id: 'partType',
+          title: 'Part Type',
           content: (
             <div className="space-y-1 max-h-40 overflow-y-auto">
               {partTypes.map((type) => (
@@ -250,7 +248,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                   onClick={() => togglePartType(type.slug_en)}
                 >
                   <div
-                    className={`w-4 h-4 rounded border ${filters.partTypes.includes(type.slug_en) ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
+                    className={`w-4 h-4 rounded border ${filters.partTypes.includes(type.slug_en) ? 'bg-rust-copper border-rust-copper' : 'border-zinc-300'}`}
                   ></div>
                   {type.name_en || type.name}
                 </div>
@@ -259,36 +257,30 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           ),
         },
         {
-          id: "condition",
-          title: "Condition",
+          id: 'condition',
+          title: 'Condition',
           content: (
             <div className="space-y-1">
-              {(
-                [
-                  "Used OEM",
-                  "OEM Original",
-                  "Excellent",
-                  "Good",
-                  "For Parts",
-                ] as any[]
-              ).map((cond) => (
-                <div
-                  key={cond}
-                  className="flex items-center gap-2 text-sm cursor-pointer"
-                  onClick={() => toggleCondition(cond)}
-                >
+              {(['Used OEM', 'OEM Original', 'Excellent', 'Good', 'For Parts'] as any[]).map(
+                (cond) => (
                   <div
-                    className={`w-4 h-4 rounded border ${filters.conditions.includes(cond) ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
-                  ></div>
-                  {cond} ({getConditionCount(cond)})
-                </div>
-              ))}
+                    key={cond}
+                    className="flex items-center gap-2 text-sm cursor-pointer"
+                    onClick={() => toggleCondition(cond)}
+                  >
+                    <div
+                      className={`w-4 h-4 rounded border ${filters.conditions.includes(cond) ? 'bg-rust-copper border-rust-copper' : 'border-zinc-300'}`}
+                    ></div>
+                    {cond} ({getConditionCount(cond)})
+                  </div>
+                ),
+              )}
             </div>
           ),
         },
         {
-          id: "price",
-          title: "Price Range",
+          id: 'price',
+          title: 'Price Range',
           content: (
             <div className="flex items-center gap-2">
               <input
@@ -315,9 +307,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
             onClick={() => toggleSection(section.id)}
             className="flex items-center justify-between cursor-pointer pb-2 border-b border-zinc-200"
           >
-            <span
-              className={`font-display text-sm uppercase tracking-wider ${sectionTextClasses}`}
-            >
+            <span className={`font-display text-sm uppercase tracking-wider ${sectionTextClasses}`}>
               {section.title}
             </span>
             {collapsedSections[section.id] ? (

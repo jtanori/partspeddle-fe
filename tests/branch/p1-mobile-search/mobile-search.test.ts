@@ -40,7 +40,7 @@ describe('P1.8 mobile search and homepage layout overflows', () => {
   });
 
   it('adds bottom padding to main content to clear the mobile tab bar', () => {
-    const appWrapper = read('src/components/layout/AppWrapper.tsx');
-    expect(appWrapper).toContain('pb-16 md:pb-0');
+    const publicShell = read('src/components/layout/PublicShell.tsx');
+    expect(publicShell).toContain('pb-16 md:pb-0');
   });
 });

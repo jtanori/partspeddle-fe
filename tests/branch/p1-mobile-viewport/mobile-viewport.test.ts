@@ -14,16 +14,16 @@ describe('P1.7 mobile viewport, video tutorial, and focus artifacts', () => {
   it('exports an explicit viewport from layout.tsx', () => {
     const layout = read('src/app/layout.tsx');
     expect(layout).toContain('export const viewport');
-    expect(layout).toContain('width: "device-width"');
+    expect(layout).toContain("width: 'device-width'");
     expect(layout).toContain('initialScale: 1');
     expect(layout).toContain('maximumScale: 5');
   });
 
-  it('mounts GuidedTour only in UIOverlays, not AppWrapper', () => {
-    const appWrapper = read('src/components/layout/AppWrapper.tsx');
+  it('mounts GuidedTour only in UIOverlays, not PublicShell', () => {
+    const publicShell = read('src/components/layout/PublicShell.tsx');
     const uiOverlays = read('src/components/UIOverlays.tsx');
     expect(uiOverlays).toContain('<GuidedTour');
-    expect(appWrapper).not.toContain('<GuidedTour');
+    expect(publicShell).not.toContain('<GuidedTour');
   });
 
   it('uses a CSS class for tour highlight cleanup instead of inline styles', () => {
