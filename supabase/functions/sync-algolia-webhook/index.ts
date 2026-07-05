@@ -257,7 +257,10 @@ serve(async (req) => {
       seller_name: sellerProfile?.business_name || "Particular",
       seller_verified: sellerProfile?.verification_status === "verified",
       seller_trust_score: sellerProfile?.seller_trust_score ?? sellerTrustScore,
-      listing_quality_score: part.listing_quality_score ?? listingQualityScore,
+      listing_quality_score:
+        part.listing_quality_score && part.listing_quality_score > 0
+          ? part.listing_quality_score
+          : listingQualityScore,
       location: sellerProfile?.location || "N/A",
     };
 

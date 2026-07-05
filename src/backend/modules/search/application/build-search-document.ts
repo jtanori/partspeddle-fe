@@ -15,7 +15,6 @@ export class BuildSearchDocumentUseCase {
         condition,
         created_at,
         listing_quality_score,
-        seller_trust_score,
         part_types!parts_part_type_id_fkey (
           id,
           slug_en,
@@ -152,8 +151,6 @@ export class BuildSearchDocumentUseCase {
       (1000 * 60 * 60 * 24);
     if (daysOld < 30) listingQualityScore += 15;
 
-    console.log(`[SCGS DEBUG] Part ${part.id} - Quality: ${listingQualityScore}, Trust: ${sellerTrustScore}, Created: ${part.created_at}`);
-
     return {
       objectID: part.id,
       title: part.title || "",
@@ -176,7 +173,7 @@ export class BuildSearchDocumentUseCase {
 
       seller_name: sellerProfile?.business_name || "Particular",
       seller_verified: sellerProfile?.verification_status === "verified",
-      seller_trust_score: partData.seller_trust_score ?? sellerTrustScore,
+      seller_trust_score: sellerProfile?.seller_trust_score ?? sellerTrustScore,
 
       location: sellerProfile?.location || "N/A",
 
@@ -184,7 +181,10 @@ export class BuildSearchDocumentUseCase {
         (part.part_images as any)?.find((img: any) => img.is_primary)?.url ||
         (part.part_images as any)?.[0]?.url ||
         null,
-      listing_quality_score: partData.listing_quality_score ?? listingQualityScore,
+      listing_quality_score:
+        partData.listing_quality_score && partData.listing_quality_score > 0
+          ? partData.listing_quality_score
+          : listingQualityScore,
       created_at: Math.floor(new Date(part.created_at).getTime() / 1000),
     };
   }
