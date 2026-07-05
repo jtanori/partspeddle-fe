@@ -1,10 +1,87 @@
-import { supabaseAdmin } from "@/lib/supabase-admin";
-import { SearchDocument } from "../domain/search-document";
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { SearchDocument } from '../domain/search-document';
+
+interface CategoryRow {
+  id: string;
+  slug_en: string;
+  name_en: string;
+}
+
+interface PartTypeRow {
+  id: string;
+  slug_en: string;
+  name_en: string;
+  categories: CategoryRow | CategoryRow[] | null;
+}
+
+interface MakeRow {
+  id: string;
+  name: string;
+}
+
+interface ModelRow {
+  id: string;
+  name: string;
+  makes: MakeRow | MakeRow[] | null;
+}
+
+interface VehicleVariantRow {
+  id: string;
+  year: number;
+  models: ModelRow | ModelRow[] | null;
+}
+
+interface PartImageRow {
+  id: string;
+  url: string;
+  is_primary: boolean | null;
+}
+
+interface SellerProfileRow {
+  business_name: string | null;
+  location: string | null;
+  verification_status: string | null;
+  whatsapp: string | null;
+  seller_trust_score: number | null;
+}
+
+interface UserRow {
+  id: string;
+  seller_profiles: SellerProfileRow | SellerProfileRow[] | null;
+}
+
+interface FitmentRow {
+  vehicle_variant_id: string;
+  vehicle_variants: VehicleVariantRow | VehicleVariantRow[] | null;
+}
+
+interface PartRow {
+  id: string;
+  title: string | null;
+  description: string | null;
+  price_mxn: number | null;
+  status: string | null;
+  condition: string | null;
+  created_at: string;
+  listing_quality_score: number | null;
+  part_types: PartTypeRow | PartTypeRow[] | null;
+  vehicle_variants: VehicleVariantRow | VehicleVariantRow[] | null;
+  part_fitment: FitmentRow[] | null;
+  users: UserRow | UserRow[] | null;
+  part_images: PartImageRow[] | null;
+}
+
+function single<T>(value: T | T[] | null | undefined): T | null | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value ?? null;
+}
 
 export class BuildSearchDocumentUseCase {
   async execute(partId: string): Promise<SearchDocument> {
     const { data: part, error: partError } = await supabaseAdmin
-      .from("parts")
+      .from('parts')
       .select(
         `
         id,
@@ -69,57 +146,38 @@ export class BuildSearchDocumentUseCase {
         )
       `,
       )
-      .eq("id", partId)
+      .eq('id', partId)
       .single();
 
     if (partError || !part) {
       throw new Error(`Part not found: ${partId}`);
     }
 
-    const partData = part as any;
-    const partType = Array.isArray(partData.part_types)
-      ? partData.part_types[0]
-      : partData.part_types;
-    const category = Array.isArray(partType?.categories)
-      ? partType?.categories[0]
-      : partType?.categories;
-    const vehicleVariant = Array.isArray(partData.vehicle_variants)
-      ? partData.vehicle_variants[0]
-      : partData.vehicle_variants;
-    const vehicleModel = Array.isArray(vehicleVariant?.models)
-      ? vehicleVariant.models[0]
-      : vehicleVariant?.models;
-    const vehicleMake = Array.isArray(vehicleModel?.makes)
-      ? vehicleModel.makes[0]
-      : vehicleModel?.makes;
-    const sellerProfile = Array.isArray(partData.users?.seller_profiles)
-      ? partData.users.seller_profiles[0]
-      : partData.users?.seller_profiles;
+    const partData = part as PartRow;
+    const partType = single(partData.part_types);
+    const category = single(partType?.categories);
+    const vehicleVariant = single(partData.vehicle_variants);
+    const vehicleModel = single(vehicleVariant?.models);
+    const vehicleMake = single(vehicleModel?.makes);
+    const sellerUser = single(partData.users);
+    const sellerProfile = single(sellerUser?.seller_profiles);
 
     // Fitment signatures for exact tuple filtering in Algolia.
-    const fitmentRows = Array.isArray(partData.part_fitment)
-      ? partData.part_fitment
-      : partData.part_fitment
-        ? [partData.part_fitment]
-        : [];
+    const fitmentRows = partData.part_fitment ?? [];
     const fitmentSignatures: string[] = Array.from(
       new Set(
         fitmentRows
-          .map((row: any) => {
-            const variant = row.vehicle_variants;
+          .map((row) => {
+            const variant = single(row.vehicle_variants);
             if (!variant) return null;
-            const model = Array.isArray(variant.models)
-              ? variant.models[0]
-              : variant.models;
-            const make = Array.isArray(model?.makes)
-              ? model.makes[0]
-              : model?.makes;
-            if (!make?.id || !model?.id || typeof variant.year !== "number") {
+            const model = single(variant.models);
+            const make = single(model?.makes);
+            if (!make?.id || !model?.id || typeof variant.year !== 'number') {
               return null;
             }
             return `${make.id}:${model.id}:${variant.year}`;
           })
-          .filter((s: string | null): s is string => Boolean(s)),
+          .filter((s): s is string => typeof s === 'string'),
       ),
     );
 
@@ -127,68 +185,62 @@ export class BuildSearchDocumentUseCase {
 
     // 1. Seller Trust Score (0-100)
     let sellerTrustScore = 40; // Base score
-    if (sellerProfile?.verification_status === "verified")
-      sellerTrustScore += 40;
+    if (sellerProfile?.verification_status === 'verified') sellerTrustScore += 40;
     if (sellerProfile?.whatsapp) sellerTrustScore += 20;
 
     // 2. Listing Quality Score (0-100)
     let listingQualityScore = 0;
-    const imageCount = part.part_images?.length || 0;
+    const imageCount = partData.part_images?.length || 0;
     if (imageCount > 0) listingQualityScore += 20;
     if (imageCount >= 3) listingQualityScore += 15;
 
-    if (part.description && part.description.length > 100)
-      listingQualityScore += 15;
-    if (part.description && part.description.length > 300)
-      listingQualityScore += 10;
+    if (partData.description && partData.description.length > 100) listingQualityScore += 15;
+    if (partData.description && partData.description.length > 300) listingQualityScore += 10;
 
-    if (sellerProfile?.verification_status === "verified")
-      listingQualityScore += 25;
+    if (sellerProfile?.verification_status === 'verified') listingQualityScore += 25;
 
     // Recency bonus (last 30 days)
-    const daysOld =
-      (Date.now() - new Date(part.created_at).getTime()) /
-      (1000 * 60 * 60 * 24);
+    const daysOld = (Date.now() - new Date(partData.created_at).getTime()) / (1000 * 60 * 60 * 24);
     if (daysOld < 30) listingQualityScore += 15;
 
     return {
-      objectID: part.id,
-      title: part.title || "",
-      description: part.description || "",
-      price: part.price_mxn || 0,
-      status: part.status || "AVAILABLE",
+      objectID: partData.id,
+      title: partData.title || '',
+      description: partData.description || '',
+      price: partData.price_mxn || 0,
+      status: partData.status || 'AVAILABLE',
 
       // Facetable Attributes
-      make: vehicleMake?.name || "Universal",
-      model: vehicleModel?.name || "N/A",
+      make: vehicleMake?.name || 'Universal',
+      model: vehicleModel?.name || 'N/A',
       year: vehicleVariant?.year || null,
       fitment_signatures: fitmentSignatures,
 
-      category: category?.slug_en || "other",
-      category_label: category?.name_en || category?.name || "Other",
-      part_type: partType?.slug_en || "general",
-      part_type_label: partType?.name_en || partType?.name || "General",
+      category: category?.slug_en || 'other',
+      category_label: category?.name_en || 'Other',
+      part_type: partType?.slug_en || 'general',
+      part_type_label: partType?.name_en || 'General',
 
-      condition: (part as any).condition || "USED_GOOD",
+      condition: partData.condition || 'USED_GOOD',
 
-      seller_name: sellerProfile?.business_name || "Particular",
-      seller_verified: sellerProfile?.verification_status === "verified",
+      seller_name: sellerProfile?.business_name || 'Particular',
+      seller_verified: sellerProfile?.verification_status === 'verified',
       seller_trust_score:
         sellerProfile?.seller_trust_score && sellerProfile.seller_trust_score > 0
           ? sellerProfile.seller_trust_score
           : sellerTrustScore,
 
-      location: sellerProfile?.location || "N/A",
+      location: sellerProfile?.location || 'N/A',
 
       image_url:
-        (part.part_images as any)?.find((img: any) => img.is_primary)?.url ||
-        (part.part_images as any)?.[0]?.url ||
+        partData.part_images?.find((img) => img.is_primary)?.url ||
+        partData.part_images?.[0]?.url ||
         null,
       listing_quality_score:
         partData.listing_quality_score && partData.listing_quality_score > 0
           ? partData.listing_quality_score
           : listingQualityScore,
-      created_at: Math.floor(new Date(part.created_at).getTime() / 1000),
+      created_at: Math.floor(new Date(partData.created_at).getTime() / 1000),
     };
   }
 }

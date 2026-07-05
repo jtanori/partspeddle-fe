@@ -68,16 +68,18 @@ describe('P2.4 search result mapping and display', () => {
 
   it('populates facet view models for the search projection', () => {
     const projection = buildSearchProjection(
-      [{
-        objectID: 'part-1',
-        title: 'Alternator',
-        category: 'electrical',
-        category_label: 'Electrical System',
-        part_type: 'alternator',
-        part_type_label: 'Alternator',
-        price: 1200,
-        condition: 'USED_GOOD',
-      }],
+      [
+        {
+          objectID: 'part-1',
+          title: 'Alternator',
+          category: 'electrical',
+          category_label: 'Electrical System',
+          part_type: 'alternator',
+          part_type_label: 'Alternator',
+          price: 1200,
+          condition: 'USED_GOOD',
+        },
+      ],
       0,
       20,
       1,
@@ -113,10 +115,12 @@ describe('P2.4 search result mapping and display', () => {
   });
 
   it('requests Algolia facet counts and display fields in the repository', () => {
-    const repository = read('src/backend/modules/search/infrastructure/algolia-search-repository.ts');
+    const repository = read(
+      'src/backend/modules/search/infrastructure/algolia-search-repository.ts',
+    );
     expect(repository).toContain('category_label');
     expect(repository).toContain('part_type_label');
     expect(repository).toContain('facets:');
-    expect(repository).toContain('"seller_verified"');
+    expect(repository).toContain("'seller_verified'");
   });
 });
