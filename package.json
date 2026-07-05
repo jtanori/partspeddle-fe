@@ -43,6 +43,12 @@
     "scgs:replay:validate": "tsx ./scripts/scgs/replay-validate.ts",
     "scgs:ranking:audit": "tsx ./scripts/scgs/ranking-signal-audit.ts",
     "scgs:prr": "tsx ./scripts/scgs/prr.ts",
+    "db:local:up": "supabase start -x vector,logflare,supavisor",
+    "db:local:up:full": "supabase start",
+    "db:local:down": "supabase stop",
+    "db:local:status": "supabase status",
+    "db:local:reset": "supabase db reset",
+    "db:local:seed": "pnpm db:seed",
     "prepare": "husky"
   },
   "dependencies": {

@@ -47,7 +47,71 @@ pnpm deploy:production
 bash scripts/ops/deploy.sh production
 ```
 
-# 3. Database Deployment Procedure
+---
+
+# 3. Local Supabase development
+
+Prerequisites:
+
+- Docker Desktop (or any `docker` daemon) is running.
+- The Supabase CLI is installed (`supabase --version`).
+
+## Start the local stack
+
+`pnpm db:local:up` starts the minimal service set the VinTrack app needs and
+excludes observability/pooling containers that are not required locally:
+
+- Required runtime services: `postgres`, `gotrue`, `postgrest`, `realtime`, `storage-api`, `edge-runtime`, `kong`.
+- Included for developer experience: `studio`, `postgres-meta`, `mailpit`, `imgproxy`.
+- Excluded: `vector`, `logflare`, `supavisor`.
+
+If you prefer the full default Supabase stack, run `pnpm db:local:up:full`.
+
+```bash
+pnpm db:local:up
+pnpm db:local:status
+```
+
+`supabase status` prints the local `anon` and `service_role` keys. Copy them
+into the root `.env.local`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key from status>
+SUPABASE_URL=http://localhost:54321
+SUPABASE_SERVICE_ROLE_KEY=<service_role key from status>
+```
+
+Edge Function secrets are loaded from `supabase/.env.local`:
+
+```bash
+cp supabase/.env.example supabase/.env.local
+# Fill in real values for ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY,
+# SUPABASE_WEBHOOK_SECRET, and GEMINI_API_KEY.
+```
+
+## Serve functions locally
+
+```bash
+supabase functions serve
+```
+
+## Reset and seed the local database
+
+```bash
+pnpm db:local:reset
+pnpm db:local:seed
+```
+
+## Stop the local stack
+
+```bash
+pnpm db:local:down
+```
+
+---
+
+# 4. Database Deployment Procedure
 
 1. **Schema Change**: Perform via Supabase Dashboard SQL Editor.
 2. **Sync**: Create new migration file: `supabase/migrations/<timestamp>_description.sql`.
@@ -104,12 +168,14 @@ To isolate secrets between environments, we use GitHub Environments. The workflo
 When configuring the **Production** environment, execute the following commands using the GitHub CLI (`gh`):
 
 1. **Verify or Create the Production Environment**:
+
    ```bash
    gh api -X PUT /repos/jtanori/partspeddle-fe/environments/production
    ```
 
 2. **Configure Production-Specific Secrets**:
    Set each secret under the `production` environment scope using the `--env` flag:
+
    ```bash
    gh secret set SUPABASE_URL --env production --body "<prod-supabase-url>"
    gh secret set SUPABASE_ANON_KEY --env production --body "<prod-anon-key>"
