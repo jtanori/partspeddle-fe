@@ -1,5 +1,6 @@
 import React from 'react';
 import { Send, X, DollarSign } from 'lucide-react';
+import { InlineLoadingIndicator } from '@/components/common/InlineLoadingIndicator';
 import { Part, Offer } from '../../../types';
 
 interface NegotiationModalProps {
@@ -29,14 +30,13 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
   onSubmitOffer,
   onAcceptCounter,
   negotiationState,
-  sellerName
+  sellerName,
 }) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-steel-black/80 backdrop-blur-xs">
       <div className="w-full max-w-md bg-charcoal border border-oil-dark rounded-xl p-6 shadow-2xl space-y-4 text-base-cream">
-        
         <div className="flex justify-between items-center border-b border-oil-dark pb-3 mr-4">
           <div className="space-y-0.5">
             <h3 className="font-display text-base font-black uppercase tracking-wider text-rust-copper">
@@ -46,23 +46,16 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
               DIRECT CHANNEL TO: {sellerName}
             </p>
           </div>
-          <button onClick={onClose} className="text-warm-gray hover:text-base-cream transition-colors">
+          <button
+            onClick={onClose}
+            className="text-warm-gray hover:text-base-cream transition-colors"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {negotiationState === 'sending' ? (
-          <div className="py-12 text-center space-y-4">
-            <div className="w-10 h-10 border-2 border-t-rust-copper border-oil-dark rounded-full animate-spin mx-auto"></div>
-            <div className="space-y-1">
-              <h4 className="font-display text-sm font-semibold uppercase tracking-widest text-rust-copper">
-                Transmitting Specs to Yard
-              </h4>
-              <p className="text-[10px] text-warm-gray font-sans">
-                Inspecting current yard floor registers...
-              </p>
-            </div>
-          </div>
+          <InlineLoadingIndicator label="Transmitting specs to yard..." className="py-12" />
         ) : negotiationState === 'replied' && activeOffer ? (
           <div className="space-y-5">
             <div className="p-4 rounded border font-sans text-xs flex flex-col space-y-3 bg-steel-black border-oil-dark">
@@ -70,7 +63,9 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
                 <span className="font-display font-bold uppercase tracking-wider text-rust-copper text-xs">
                   {sellerName} Representative
                 </span>
-                <span className={`px-2 py-0.5 rounded font-display font-bold text-[9px] uppercase ${activeOffer.status === 'Accepted' ? 'bg-sage-green text-steel-black' : activeOffer.status === 'Counter-Offer' ? 'bg-rust-copper text-steel-black' : 'bg-rose-800 text-white'}`}>
+                <span
+                  className={`px-2 py-0.5 rounded font-display font-bold text-[9px] uppercase ${activeOffer.status === 'Accepted' ? 'bg-sage-green text-steel-black' : activeOffer.status === 'Counter-Offer' ? 'bg-rust-copper text-steel-black' : 'bg-rose-800 text-white'}`}
+                >
                   {activeOffer.status}
                 </span>
               </div>
@@ -79,7 +74,7 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
               </p>
               {activeOffer.status === 'Counter-Offer' && activeOffer.counterPrice && (
                 <div className="pt-3 border-t border-oil-dark flex justify-end gap-3">
-                  <button 
+                  <button
                     onClick={() => onAcceptCounter(activeOffer.counterPrice!)}
                     className="bg-sage-green hover:bg-sage-green/90 text-steel-black font-display text-xs font-bold uppercase tracking-widest py-2 px-4 rounded-sm"
                   >
@@ -93,7 +88,9 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
           <form onSubmit={onSubmitOffer} className="space-y-4 font-sans">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <label className="text-xs uppercase font-display font-bold text-warm-gray">Your Offer (USD)</label>
+                <label className="text-xs uppercase font-display font-bold text-warm-gray">
+                  Your Offer (USD)
+                </label>
                 <span className="font-mono text-lg font-black text-rust-copper">${offerPrice}</span>
               </div>
               <input
@@ -106,7 +103,9 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
               />
             </div>
             <div>
-              <label className="block text-xs uppercase font-display font-bold text-warm-gray mb-1.5">Notes</label>
+              <label className="block text-xs uppercase font-display font-bold text-warm-gray mb-1.5">
+                Notes
+              </label>
               <textarea
                 value={offerMessage}
                 onChange={(e) => setOfferMessage(e.target.value)}
@@ -114,7 +113,10 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
                 className="w-full bg-steel-black border border-oil-dark rounded-lg p-3 text-sm text-base-cream focus:outline-none focus:border-rust-copper"
               />
             </div>
-            <button type="submit" className="w-full bg-rust-copper hover:bg-bronze text-steel-black font-display font-bold uppercase tracking-widest py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+            <button
+              type="submit"
+              className="w-full bg-rust-copper hover:bg-bronze text-steel-black font-display font-bold uppercase tracking-widest py-3 rounded-lg transition-all flex items-center justify-center gap-2"
+            >
               <Send className="w-4 h-4" />
               <span>SEND OFFER</span>
             </button>

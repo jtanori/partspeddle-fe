@@ -60,6 +60,13 @@ export default [
     rules: domainStrictRules,
   },
   {
+    files: [
+      "src/backend/modules/search/application/build-search-document.ts",
+      "src/backend/modules/search/infrastructure/algolia-search-repository.ts",
+    ],
+    rules: domainStrictRules,
+  },
+  {
     files: ["scripts/**/*.{ts,tsx,js}", "tests/**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,

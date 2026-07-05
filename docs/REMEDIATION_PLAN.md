@@ -428,6 +428,7 @@ Dependencies are called out explicitly so work is not duplicated.
 
 ### P3.5 Expand ESLint strict typing outside `src/domain`
 
+
 **Why:** P2.8d enforced `no-explicit-any` and `no-unused-vars` as errors only in `src/domain`. The rest of `src/` still has ~115 `no-explicit-any` violations and ~105 `no-unused-vars` warnings (non-blocking). `eslint --fix` does not auto-resolve these rules.  
 **Files:** `eslint.config.js`, primarily `src/backend/modules/search/**`, `src/app/api/search/**`, `src/lib/search/**`, `scripts/search/**`, then remaining `src/**` incrementally.  
 **Action:** Fix in layers; add ESLint overrides mirroring P2.8d (`no-explicit-any` + `no-unused-vars` as errors) per layer before moving to the next.
@@ -438,6 +439,21 @@ Dependencies are called out explicitly so work is not duplicated.
 - **Layer D (last):** `scripts/search/**` — not in CI lint path today; align with production types after `src/` layers are clean.
 
 - **Depends on:** P2.8d (domain strict rules landed).
+
+### P3.6 Standardize layout architecture across pages
+
+**Why:** The current UI uses inconsistent layout strategies per page: `src/app/layout.tsx` and `AppWrapper` contain conditional logic to hide the navigation bar on auth pages, while public pages, search, listing/PDP, and dashboard all re-implement wrappers or import nav components directly. This scatters layout concerns, complicates route-group auth boundaries, and duplicates global chrome (nav bars, footers, overlays). Next.js App Router conventions favor colocated layouts in route groups that compose with `children`, so each page provides only its unique content.  
+**References:** [Next.js project structure](https://nextjs.org/docs/app/getting-started/project-structure), [Layouts and pages](https://nextjs.org/docs/app/getting-started/layouts-and-pages), [Linking and navigating](https://nextjs.org/docs/app/getting-started/linking-and-navigating).  
+**Files:** `src/app/layout.tsx`, `src/app/(public)/layout.tsx`, `src/app/(auth)/layout.tsx`, `src/app/(dashboard)/layout.tsx`, `src/app/(seller)/layout.tsx`, `src/app/(admin)/layout.tsx`, `src/components/layout/AppWrapper.tsx`, `src/components/UIOverlays.tsx`, `src/components/navbar/*`, `src/app/page.tsx`, `src/app/(public)/page.tsx`, `src/app/(public)/search/page.tsx`, `src/app/(public)/listing/[id]/page.tsx`.  
+**Action:**
+
+- Adopt Next.js route-group layouts: one root `layout.tsx` with global providers/styles, then group-level layouts for `(auth)` (no global nav), `(public)` (home/search/listing with nav + footer), `(dashboard)`/`(seller)`/`(admin)` (authenticated nav + sidebar).
+- Remove auth-page conditional checks from `AppWrapper`/global nav components; let route groups own the chrome.
+- Move `UIOverlays`/`GuidedTour`/`HelpButton` into the root or public layout once, instead of being mounted in individual pages.
+- Ensure each `page.tsx` only renders content, not the layout shell.
+- Document the layout convention in `docs/NEXT_APP_ROUTER_ARCHITECTURE.md`.
+- Add branch tests asserting that auth pages do not render the public navbar and that public pages share a common layout wrapper.
+- **Depends on:** P5.1 (App Router route groups) — can be done together or immediately after P5.1.
 
 ---
 
@@ -643,7 +659,7 @@ Dependencies are called out explicitly so work is not duplicated.
 1. **P0 foundation:** taxonomy source of truth (P0.2) → taxonomy indexing (P0.1) → unified indexing logic (P0.3) → middleware + admin protection (P0.4) → remove `ignoreBuildErrors` and fix imports/types (P0.5) → fix remaining TypeScript errors from PR #3 (P0.6).
 2. **P1 hardening:** server-side roles (P1.1) → fitment in Algolia (P1.2) → ranking cleanup (P1.3) → Edge Function security (P1.4) → filter escaping (P1.5) → CI/Docker fixes (P1.6) → mobile viewport / video tutorial / focus cleanup (P1.7) → mobile search and homepage overflow fixes (P1.8) → modern PDP responsive layout (P1.9) → seller dashboard mobile adaptation (P1.10).
 3. **P2 quality:** UI/UX card/search standardization (P2.1) → server-side search fetch (P2.2) → health check (P2.3) → result mapping (P2.4) → drift/parity audits (P2.5) → Supabase decoupling (P2.6) → store refactor (P2.7) → strict mode + ESLint (P2.8) → security headers (P2.9) → DB trigger cleanup (P2.10).
-4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → expand ESLint strict typing outside domain (P3.5).
+4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → expand ESLint strict typing outside domain (P3.5) → standardize layout architecture across pages (P3.6).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
 6. **P5 routing & web security:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6) → production security certification (P5.8) → update production Fly.io secrets (P5.9).
 

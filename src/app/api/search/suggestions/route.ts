@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { algoliaClient, SEARCH_INDEX_NAME } from '@/backend/modules/search/infrastructure/algolia-client';
+import {
+  algoliaClient,
+  SEARCH_INDEX_NAME,
+} from '@/backend/modules/search/infrastructure/algolia-client';
 import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
@@ -21,12 +24,20 @@ export async function GET(req: NextRequest) {
       ],
     });
 
-    const hits = (result.results[0] as any).hits;
-    const suggestions = Array.from(new Set(hits.map((hit: any) => hit.title))).slice(0, 5);
+    const firstResult = result.results[0];
+    const hits = (firstResult && 'hits' in firstResult ? firstResult.hits : []) as Array<{
+      title?: string;
+    }>;
+    const suggestions = Array.from(
+      new Set(
+        hits.map((hit) => hit.title).filter((title): title is string => typeof title === 'string'),
+      ),
+    ).slice(0, 5);
 
     return NextResponse.json({ suggestions });
-  } catch (error: any) {
-    logger.error('Failed to fetch search suggestions', { error });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Failed to fetch search suggestions', { error: message });
     return NextResponse.json({ error: 'Failed to fetch suggestions' }, { status: 500 });
   }
 }
