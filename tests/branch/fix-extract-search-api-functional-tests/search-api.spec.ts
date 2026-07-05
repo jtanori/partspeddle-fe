@@ -114,16 +114,14 @@ describe('Search API POST /api/search/parts', () => {
     expect(data.error).toBe('Query too long');
   });
 
-  it('currently masks infrastructure failures as 200 with empty results', async () => {
-    // NOTE: This documents the current behavior. P3.4 will change it to 500.
+  it('returns 500 for infrastructure failures without leaking details', async () => {
     searchMock.mockRejectedValue(new Error('Algolia timeout'));
 
     const response = await POST(createRequest({ query: 'Alternator' }));
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(500);
 
     const data = await response.json();
-    expect(data.hits).toEqual([]);
-    expect(data.totalHits).toBe(0);
-    expect(data.warning).toContain('Search currently unavailable');
+    expect(data.error).toBe('Search temporarily unavailable');
+    expect(data).not.toHaveProperty('hits');
   });
 });

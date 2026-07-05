@@ -1,30 +1,66 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+  <h1>PartsPeddle Frontend</h1>
+  <p>Next.js marketplace for used auto parts.</p>
 </div>
 
-# Run and deploy your AI Studio app
+## Prerequisites
 
-This contains everything you need to run your app locally.
+- [Node.js](https://nodejs.org/) >= 22
+- [pnpm](https://pnpm.io/) >= 9
+- [flyctl](https://fly.io/docs/flyctl/install/) (for deployments)
 
-View your app in AI Studio: https://ai.studio/apps/40c0ce99-de13-4aaf-8f47-cfe9dabf9c22
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+## Local Setup
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
 
-## Performance Testing
+   ```bash
+   pnpm install
+   ```
 
-To run load tests against a staging/production environment, use the [k6](https://k6.io/) CLI:
+2. Copy environment variables:
 
-1. Run baseline load test:
-   `API_URL=https://staging-api.vintrack.com k6 run tests/performance/search-api-load.js`
+   ```bash
+   cp .env.example .env.local
+   ```
 
-2. Run burst test:
-   `API_URL=https://staging-api.vintrack.com k6 run tests/performance/search-api-burst.js`
+3. Fill in `.env.local` with your Supabase, Algolia, and Gemini credentials.
+
+4. Run the dev server:
+
+   ```bash
+   pnpm dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000).
+
+## Scripts
+
+| Command                     | Description                                  |
+| --------------------------- | -------------------------------------------- |
+| `pnpm dev`                  | Start Next.js dev server                     |
+| `pnpm build`                | Build for production                         |
+| `pnpm start`                | Start production server                      |
+| `pnpm lint`                 | Run ESLint on `src` and `scripts`            |
+| `pnpm typecheck`            | Run TypeScript without emit                  |
+| `pnpm test`                 | Run branch/certification tests               |
+| `pnpm test:e2e:smoke:local` | Run Playwright smoke tests against localhost |
+| `pnpm search:reindex`       | Rebuild the Algolia search index             |
+| `pnpm algolia:config`       | Configure Algolia index settings             |
+| `pnpm deploy:staging`       | Deploy to Fly.io staging                     |
+| `pnpm deploy:production`    | Deploy to Fly.io production                  |
+
+## Deployment
+
+Deployments run against Fly.io. Always deploy **staging** from `develop` and **production** from `main`:
+
+```bash
+# Staging
+git checkout develop
+pnpm deploy:staging
+
+# Production
+git checkout main
+pnpm deploy:production
+```
+
+See `docs/DEPLOYMENT_RUNBOOK.md` for the full procedure.
