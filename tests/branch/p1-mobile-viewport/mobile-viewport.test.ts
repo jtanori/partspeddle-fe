@@ -14,7 +14,7 @@ describe('P1.7 mobile viewport, video tutorial, and focus artifacts', () => {
   it('exports an explicit viewport from layout.tsx', () => {
     const layout = read('src/app/layout.tsx');
     expect(layout).toContain('export const viewport');
-    expect(layout).toContain('width: "device-width"');
+    expect(layout).toContain("width: 'device-width'");
     expect(layout).toContain('initialScale: 1');
     expect(layout).toContain('maximumScale: 5');
   });
