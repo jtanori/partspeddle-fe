@@ -117,7 +117,7 @@ export class AlgoliaSearchRepository implements SearchRepository {
     return String(value).replace(/'/g, "''");
   }
 
-  private buildAlgoliaFilters(filters: SearchFilters): string {
+  buildAlgoliaFilters(filters: SearchFilters): string {
     const parts: string[] = [];
 
     const addFilter = (field: string, values: any[] | undefined) => {
