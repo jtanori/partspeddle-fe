@@ -173,7 +173,10 @@ export class BuildSearchDocumentUseCase {
 
       seller_name: sellerProfile?.business_name || "Particular",
       seller_verified: sellerProfile?.verification_status === "verified",
-      seller_trust_score: sellerProfile?.seller_trust_score ?? sellerTrustScore,
+      seller_trust_score:
+        sellerProfile?.seller_trust_score && sellerProfile.seller_trust_score > 0
+          ? sellerProfile.seller_trust_score
+          : sellerTrustScore,
 
       location: sellerProfile?.location || "N/A",
 
