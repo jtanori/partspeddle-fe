@@ -6,7 +6,7 @@ async function reindexAll() {
   console.log('🔄 Starting full reindex...');
   const builder = new BuildSearchDocumentUseCase();
 
-  const { data: parts, error } = await supabaseAdmin.from('parts').select('id').eq('status', 'available');
+  const { data: parts, error } = await supabaseAdmin.from('parts').select('id').eq('status', 'AVAILABLE');
   if (error) throw error;
 
   const partIds = parts?.map(p => p.id) || [];
