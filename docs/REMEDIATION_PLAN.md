@@ -426,17 +426,8 @@ Dependencies are called out explicitly so work is not duplicated.
 - Return `5xx` for infrastructure failures and `4xx` for client errors.
 - Log full errors server-side but return generic messages to the client.
 
-### P3.5 Update production Fly.io secrets
+### P3.5 Expand ESLint strict typing outside `src/domain`
 
-**Why:** `vintrack-prod` is currently using the same Supabase/Algolia/Gemini secrets as staging. Production needs its own project/credentials before it handles real traffic.  
-**Files/scope:** `docs/DEPLOYMENT_RUNBOOK.md`, Fly.io app `vintrack-prod`.  
-**Action:**
-
-- Obtain production values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY`.
-- Run `flyctl secrets set ... --app vintrack-prod` for each production secret.
-- Redeploy `vintrack-prod` and verify `/api/health` and a smoke search request.
-
-### P3.6 Expand ESLint strict typing outside `src/domain`
 
 **Why:** P2.8d enforced `no-explicit-any` and `no-unused-vars` as errors only in `src/domain`. The rest of `src/` still has ~115 `no-explicit-any` violations and ~105 `no-unused-vars` warnings (non-blocking). `eslint --fix` does not auto-resolve these rules.  
 **Files:** `eslint.config.js`, primarily `src/backend/modules/search/**`, `src/app/api/search/**`, `src/lib/search/**`, `scripts/search/**`, then remaining `src/**` incrementally.  
@@ -449,7 +440,7 @@ Dependencies are called out explicitly so work is not duplicated.
 
 - **Depends on:** P2.8d (domain strict rules landed).
 
-### P3.7 Standardize layout architecture across pages
+### P3.6 Standardize layout architecture across pages
 
 **Why:** The current UI uses inconsistent layout strategies per page: `src/app/layout.tsx` and `AppWrapper` contain conditional logic to hide the navigation bar on auth pages, while public pages, search, listing/PDP, and dashboard all re-implement wrappers or import nav components directly. This scatters layout concerns, complicates route-group auth boundaries, and duplicates global chrome (nav bars, footers, overlays). Next.js App Router conventions favor colocated layouts in route groups that compose with `children`, so each page provides only its unique content.  
 **References:** [Next.js project structure](https://nextjs.org/docs/app/getting-started/project-structure), [Layouts and pages](https://nextjs.org/docs/app/getting-started/layouts-and-pages), [Linking and navigating](https://nextjs.org/docs/app/getting-started/linking-and-navigating).  
@@ -609,7 +600,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Audit client bundle for server secrets (`ALGOLIA_ADMIN_KEY`, `SERVICE_ROLE`, `GEMINI_API_KEY` must never ship).
 - Redact tokens/PII in logs and OpenTelemetry spans; scrub error responses (generic client message, detailed server log).
 - GitGuardian + `pnpm audit` gates in CI; document secret rotation in `docs/DEPLOYMENT_RUNBOOK.md`.
-- Align with P3.5 (production Fly secrets separation).
+- Align with P5.9 (production Fly secrets separation).
 - **Depends on:** P5.4 (data-access paths known).
 
 ### P5.6 Frontend and client-side security
@@ -649,6 +640,17 @@ Dependencies are called out explicitly so work is not duplicated.
 - Sign-off artifact linked in PRC certification.
 - **Depends on:** P5.1–P5.7.
 
+### P5.9 Update production Fly.io secrets
+
+**Why:** `vintrack-prod` is currently using the same Supabase/Algolia/Gemini secrets as staging. Production needs its own project/credentials before it handles real traffic.  
+**Files/scope:** `docs/DEPLOYMENT_RUNBOOK.md`, Fly.io app `vintrack-prod`.  
+**Action:**
+
+- Obtain production values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY`.
+- Run `flyctl secrets set ... --app vintrack-prod` for each production secret.
+- Redeploy `vintrack-prod` and verify `/api/health` and a smoke search request.
+- **Depends on:** P5.8.
+
 ---
 
 ## Execution order
@@ -657,9 +659,9 @@ Dependencies are called out explicitly so work is not duplicated.
 1. **P0 foundation:** taxonomy source of truth (P0.2) → taxonomy indexing (P0.1) → unified indexing logic (P0.3) → middleware + admin protection (P0.4) → remove `ignoreBuildErrors` and fix imports/types (P0.5) → fix remaining TypeScript errors from PR #3 (P0.6).
 2. **P1 hardening:** server-side roles (P1.1) → fitment in Algolia (P1.2) → ranking cleanup (P1.3) → Edge Function security (P1.4) → filter escaping (P1.5) → CI/Docker fixes (P1.6) → mobile viewport / video tutorial / focus cleanup (P1.7) → mobile search and homepage overflow fixes (P1.8) → modern PDP responsive layout (P1.9) → seller dashboard mobile adaptation (P1.10).
 3. **P2 quality:** UI/UX card/search standardization (P2.1) → server-side search fetch (P2.2) → health check (P2.3) → result mapping (P2.4) → drift/parity audits (P2.5) → Supabase decoupling (P2.6) → store refactor (P2.7) → strict mode + ESLint (P2.8) → security headers (P2.9) → DB trigger cleanup (P2.10).
-4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → expand ESLint strict typing outside domain (P3.6) → standardize layout architecture across pages (P3.7) → update production Fly.io secrets (P3.5).
+4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → expand ESLint strict typing outside domain (P3.5) → standardize layout architecture across pages (P3.6).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
-6. **P5 routing & web security:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6) → production security certification (P5.8).
+6. **P5 routing & web security:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6) → production security certification (P5.8) → update production Fly.io secrets (P5.9).
 
 Items marked **Depends on** should not start until their dependency is complete.
 
