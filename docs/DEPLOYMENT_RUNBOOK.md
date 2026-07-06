@@ -109,12 +109,63 @@ pnpm db:local:down
 
 ---
 
-# 4. Database Deployment Procedure
+# 4. Supabase CI/CD
 
-1. **Schema Change**: Perform via Supabase Dashboard SQL Editor.
-2. **Sync**: Create new migration file: `supabase/migrations/<timestamp>_description.sql`.
+Migrations and Edge Functions are deployed automatically by `.github/workflows/ci.yml`.
+
+## Triggers
+
+- **Push to `develop`**: deploys to the staging Supabase project.
+- **Push to `main`**: deploys to the production Supabase project.
+- **Manual dispatch**: from the GitHub Actions tab, choose a branch and set `dry-run`.
+
+## Required secrets
+
+Configure these in the GitHub repository settings (and the `staging` / `production` environments if you prefer environment-scoped secrets):
+
+- `SUPABASE_ACCESS_TOKEN` — personal access token (`sbp_...`) for the Supabase CLI.
+- `STAGING_SUPABASE_PROJECT_ID` — staging project reference (`zvv...`).
+- `PRODUCTION_SUPABASE_PROJECT_ID` — production project reference (`zvv...`).
+
+## What the workflow does
+
+For each environment:
+
+1. Installs the Supabase CLI (`supabase/setup-cli`).
+2. Logs in with `SUPABASE_ACCESS_TOKEN`.
+3. Links the target project.
+4. Runs `supabase db push` to apply pending migrations.
+5. Runs `supabase functions deploy --use-api` to deploy Edge Functions.
+
+The Supabase deploy jobs depend on the `test` job, so they only run if tests, lint, and typecheck pass.
+
+## Dry-run
+
+To preview what would be deployed without applying changes:
+
+```bash
+# Local
+pnpm db:deploy:dry-run
+
+# CI (manual)
+# Go to Actions → VinTrack CI → Run workflow → select branch → check "dry-run"
+```
+
+In dry-run mode the workflow runs `supabase db push --dry-run` and skips Edge Function deployment.
+
+## Rollback
+
+- **Migrations**: create a compensating migration in `supabase/migrations/` that reverts the change, or restore from a Supabase backup and redeploy the previous commit.
+- **Edge Functions**: revert the function code in git and push the previous commit, or redeploy manually with `supabase functions deploy <name>`.
+
+---
+
+# 5. Database Deployment Procedure
+
+1. **Schema Change**: write a new migration file in `supabase/migrations/<timestamp>_description.sql`.
+2. **Local verification**: `pnpm db:local:reset` and `pnpm db:validate:replay`.
 3. **Commit**: `git add supabase/migrations/ && git commit`.
-4. **Verification**: CI job `npm run verify:schema` ensures DB parity with migration files.
+4. **Deploy**: merge to `develop` (staging) or `main` (production); the CI workflow runs `supabase db push`.
 
 # 4. Operational Validation
 
