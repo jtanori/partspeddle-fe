@@ -49,6 +49,7 @@
     "db:local:reset": "supabase db reset --yes",
     "db:local:seed": "pnpm db:seed",
     "db:baseline:dump": "supabase db dump --linked --yes --keep-comments -f supabase/baseline/remote_$(date +%Y%m%d)_public.sql",
+    "db:validate:replay": "tsx scripts/db/compare-schema.ts",
     "prepare": "husky"
   },
   "dependencies": {

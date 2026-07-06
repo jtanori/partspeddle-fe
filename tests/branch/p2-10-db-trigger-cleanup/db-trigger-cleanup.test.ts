@@ -25,17 +25,6 @@ describe('P2.10 database trigger cleanup', () => {
     expect(listMigrations()).toContain('20260704000000_rebaseline_public_schema.sql');
   });
 
-  it('archives the old trigger-hardening migration', () => {
-    expect(
-      fs.existsSync(
-        path.join(
-          root,
-          'supabase/migrations/archive/20260703000000_harden_security_definer_triggers.sql',
-        ),
-      ),
-    ).toBe(true);
-  });
-
   it('removes synchronous Algolia HTTP trigger coupling', () => {
     expect(migration).not.toContain('tr_sync_part_to_algolia');
     expect(migration).not.toContain('fn_sync_part_to_algolia');

@@ -28,25 +28,23 @@ describe('P4.3 rebaseline migrations from remote schema', () => {
   describe('supabase/migrations/', () => {
     const migrationsDir = path.join(repoRoot, 'supabase', 'migrations');
 
-    it('contains the rebaseline migration set (≤ 4 top-level files)', () => {
+    it('contains exactly the three rebaseline migrations', () => {
       const topLevel = fs.existsSync(migrationsDir)
         ? fs
             .readdirSync(migrationsDir)
             .filter((f) => f.endsWith('.sql'))
             .sort()
         : [];
-      expect(topLevel.length).toBeGreaterThanOrEqual(1);
-      expect(topLevel.length).toBeLessThanOrEqual(4);
-      expect(topLevel[0]).toMatch(/^\d{14}_rebaseline_public_schema\.sql$/);
+      expect(topLevel).toEqual([
+        '20260704000000_rebaseline_public_schema.sql',
+        '20260704000001_rebaseline_storage_assets.sql',
+        '20260704000002_rebaseline_auth_role_sync.sql',
+      ]);
     });
 
-    it('archives superseded historical migrations', () => {
+    it('no longer keeps historical migrations in the active path', () => {
       const archiveDir = path.join(migrationsDir, 'archive');
-      expect(fs.existsSync(archiveDir)).toBe(true);
-      const archived = fs.existsSync(archiveDir)
-        ? fs.readdirSync(archiveDir).filter((f) => f.endsWith('.sql'))
-        : [];
-      expect(archived.length).toBeGreaterThanOrEqual(1);
+      expect(fs.existsSync(archiveDir)).toBe(false);
     });
   });
 
