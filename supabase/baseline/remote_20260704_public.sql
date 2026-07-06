@@ -1,9 +1,3 @@
--- P4.3 rebaseline snapshot
--- Generated from the remote `vintrack` Supabase project on 2026-07-04.
--- This file is the source-of-truth reference for the public schema.
--- Application-specific storage bucket/RLS and auth role-sync trigger are
--- appended at the end because the standard dump excludes internal schemas.
-
 --
 -- PostgreSQL database dump
 --
@@ -1998,13 +1992,17 @@ ALTER INDEX "public"."audit_log_pkey" ATTACH PARTITION "public"."audit_log_2026_
 
 
 --
+-- Name: messages notify-new-message; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
+CREATE OR REPLACE TRIGGER "notify-new-message" AFTER INSERT ON "public"."messages" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://zvvwkzvjfkclmvgbbbnu.supabase.co/functions/v1/send-message-notification', 'POST', '{"Content-type":"application/json","Authorization":"Bearer <REDACTED>"}', '{}', '5000');
 
 
 --
+-- Name: parts sync-algolia-webhook; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
+CREATE OR REPLACE TRIGGER "sync-algolia-webhook" AFTER INSERT OR DELETE OR UPDATE ON "public"."parts" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://zvvwkzvjfkclmvgbbbnu.supabase.co/functions/v1/sync-algolia-webhook', 'POST', '{"Content-type":"application/json","Authorization":"Bearer <REDACTED>"}', '{}', '5000');
 
 
 --
@@ -3971,72 +3969,3 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 -- \unrestrict bePAbS2OBNsAyX7n1lN23yP9femAqEZeTxeAuuLJsVkDkY6OTJFGJkIf2wzc7Wj
 
-
--- Rebaseline storage bucket and RLS policies for yard assets.
--- The default `supabase db dump` excludes the internal `storage` schema, so
--- the application-specific bucket and policies are recreated here.
-
--- 1. Create the yard-assets bucket if it does not exist.
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('yard-assets', 'yard-assets', true)
-ON CONFLICT (id) DO NOTHING;
-
--- 2. Allow public read access to yard-assets objects.
-DROP POLICY IF EXISTS "Public Access for Yard Assets" ON storage.objects;
-CREATE POLICY "Public Access for Yard Assets"
-  ON storage.objects
-  FOR SELECT
-  USING (bucket_id = 'yard-assets');
-
--- 4. Allow authenticated sellers to upload assets into their own folder.
-DROP POLICY IF EXISTS "Sellers Can Upload Own Assets" ON storage.objects;
-CREATE POLICY "Sellers Can Upload Own Assets"
-  ON storage.objects
-  FOR INSERT
-  WITH CHECK (
-    bucket_id = 'yard-assets'
-    AND auth.role() = 'authenticated'
-    AND (storage.foldername(name))[1] = auth.uid()::text
-  );
-
--- 5. Allow authenticated sellers to modify/delete their own assets.
-DROP POLICY IF EXISTS "Sellers Can Modify Own Assets" ON storage.objects;
-CREATE POLICY "Sellers Can Modify Own Assets"
-  ON storage.objects
-  FOR ALL
-  USING (
-    bucket_id = 'yard-assets'
-    AND auth.role() = 'authenticated'
-    AND (storage.foldername(name))[1] = auth.uid()::text
-  );
-
--- Rebaseline the auth-user role-sync trigger.
--- The default `supabase db dump` excludes the internal `auth` schema, so the
--- trigger that keeps `public.user_roles` in sync on new sign-ups is recreated
--- here. The `public.user_roles` table, policies, and `handle_new_user_role`
--- function are part of the public schema dump and are assumed to exist.
-
-CREATE OR REPLACE FUNCTION public.handle_new_user_role()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, pg_temp
-AS $$
-BEGIN
-  INSERT INTO public.user_roles (user_id, role)
-  VALUES (
-    NEW.id,
-    COALESCE(NEW.raw_user_meta_data ->> 'role', 'buyer')
-  )
-  ON CONFLICT (user_id) DO UPDATE
-    SET role = EXCLUDED.role,
-        updated_at = now();
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS on_auth_user_created_role ON auth.users;
-CREATE TRIGGER on_auth_user_created_role
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.handle_new_user_role();
