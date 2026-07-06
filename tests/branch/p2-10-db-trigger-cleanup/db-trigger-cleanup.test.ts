@@ -19,33 +19,40 @@ function listMigrations(): string[] {
 }
 
 describe('P2.10 database trigger cleanup', () => {
-  const migration = read('supabase/migrations/20260703000000_harden_security_definer_triggers.sql');
+  const migration = read('supabase/migrations/20260704000000_rebaseline_public_schema.sql');
 
-  it('adds a follow-up migration for trigger hardening', () => {
-    expect(listMigrations()).toContain('20260703000000_harden_security_definer_triggers.sql');
+  it('uses the rebaseline migration as the active migration', () => {
+    expect(listMigrations()).toContain('20260704000000_rebaseline_public_schema.sql');
+  });
+
+  it('archives the old trigger-hardening migration', () => {
+    expect(
+      fs.existsSync(
+        path.join(
+          root,
+          'supabase/migrations/archive/20260703000000_harden_security_definer_triggers.sql',
+        ),
+      ),
+    ).toBe(true);
   });
 
   it('removes synchronous Algolia HTTP trigger coupling', () => {
-    expect(migration).toContain('DROP TRIGGER IF EXISTS tr_sync_part_to_algolia ON public.parts');
-    expect(migration).toContain('DROP FUNCTION IF EXISTS public.fn_sync_part_to_algolia()');
+    expect(migration).not.toContain('tr_sync_part_to_algolia');
+    expect(migration).not.toContain('fn_sync_part_to_algolia');
     expect(migration).not.toContain('net.http_post');
   });
 
   it('keeps async search_outbox enqueue path on parts', () => {
-    expect(migration).toContain('CREATE OR REPLACE FUNCTION public.fn_enqueue_search_event()');
+    expect(migration).toContain('CREATE OR REPLACE FUNCTION "public"."fn_enqueue_search_event"()');
     expect(migration).toContain('INSERT INTO public.search_outbox');
   });
 
-  it('sets search_path on SECURITY DEFINER trigger functions', () => {
-    for (const fn of [
-      'fn_enqueue_search_event',
-      'fn_audit_log_changes',
-      'handle_part_sale_lock',
-    ]) {
-      const pattern = new RegExp(
-        `CREATE OR REPLACE FUNCTION public\\.${fn}[\\s\\S]*?SET search_path = public, pg_temp`,
+  it('keeps SECURITY DEFINER trigger functions', () => {
+    for (const fn of ['fn_enqueue_search_event', 'fn_audit_log_changes', 'handle_part_sale_lock']) {
+      expect(migration).toContain(
+        `CREATE OR REPLACE FUNCTION "public"."${fn}"() RETURNS "trigger"`,
       );
-      expect(migration).toMatch(pattern);
+      expect(migration).toContain('SECURITY DEFINER');
     }
   });
 });

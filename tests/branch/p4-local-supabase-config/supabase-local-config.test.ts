@@ -60,9 +60,11 @@ describe('P4.2 local Supabase environment', () => {
       expect(scripts['db:local:reset']).toBeDefined();
     });
 
-    it('starts only the required local services', () => {
+    it('starts only db, postgrest, edge-runtime and kong locally', () => {
       const scripts = pkg.scripts as Record<string, string>;
-      expect(scripts['db:local:up']).toContain('-x vector,logflare,supavisor');
+      expect(scripts['db:local:up']).toContain(
+        '-x gotrue,realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,logflare,vector,supavisor',
+      );
     });
   });
 

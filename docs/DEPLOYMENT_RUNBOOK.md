@@ -58,14 +58,12 @@ Prerequisites:
 
 ## Start the local stack
 
-`pnpm db:local:up` starts the minimal service set the VinTrack app needs and
-excludes observability/pooling containers that are not required locally:
+`pnpm db:local:up` starts only the services needed to run the local Postgres
+and Edge Functions. Auth is handled by the remote Supabase project, so the local
+`gotrue` container is intentionally omitted:
 
-- Required runtime services: `postgres`, `gotrue`, `postgrest`, `realtime`, `storage-api`, `edge-runtime`, `kong`.
-- Included for developer experience: `studio`, `postgres-meta`, `mailpit`, `imgproxy`.
-- Excluded: `vector`, `logflare`, `supavisor`.
-
-If you prefer the full default Supabase stack, run `pnpm db:local:up:full`.
+- Started: `postgres`, `postgrest`, `edge-runtime`, `kong`.
+- Excluded: `gotrue`, `realtime`, `storage-api`, `imgproxy`, `mailpit`, `postgres-meta`, `studio`, `logflare`, `vector`, `supavisor`.
 
 ```bash
 pnpm db:local:up
