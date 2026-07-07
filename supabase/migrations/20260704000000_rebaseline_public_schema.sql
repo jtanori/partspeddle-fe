@@ -42,6 +42,7 @@ END;
 $$;
 CREATE OR REPLACE FUNCTION "public"."fn_audit_log_changes"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'pg_temp'
     AS $$
 DECLARE
     v_actor_id UUID;
@@ -74,6 +75,7 @@ END;
 $$;
 CREATE OR REPLACE FUNCTION "public"."fn_enqueue_search_event"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'pg_temp'
     AS $$
 BEGIN
   INSERT INTO public.search_outbox (aggregate_type, aggregate_id, event_type, payload)
@@ -83,7 +85,7 @@ END;
 $$;
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
-    SET "search_path" TO 'public'
+    SET "search_path" TO 'public', 'pg_temp'
     AS $$
 BEGIN
   INSERT INTO public.users (id, email)
@@ -94,6 +96,7 @@ END;
 $$;
 CREATE OR REPLACE FUNCTION "public"."handle_part_sale_lock"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'pg_temp'
     AS $$
 BEGIN
     -- Si la transacción fue exitosa o capturada en bóveda
@@ -756,6 +759,10 @@ CREATE INDEX "idx_vehicle_variants_model_id" ON "public"."vehicle_variants" USIN
 CREATE UNIQUE INDEX "unique_active_part" ON "public"."transactions" USING "btree" ("part_id") WHERE ("status" = ANY (ARRAY['pending_payment'::"text", 'held_in_vault'::"text", 'shipped'::"text"]));
 ALTER INDEX "public"."audit_log_pkey" ATTACH PARTITION "public"."audit_log_2026_06_pkey";
 ALTER INDEX "public"."audit_log_pkey" ATTACH PARTITION "public"."audit_log_2026_07_pkey";
+-- Remove legacy synchronous webhook triggers that shipped with hard-coded service-role JWTs.
+DROP TRIGGER IF EXISTS "sync-algolia-webhook" ON "public"."parts";
+DROP TRIGGER IF EXISTS "notify-new-message" ON "public"."messages";
+
 CREATE OR REPLACE TRIGGER "tr_parts_search_outbox" AFTER INSERT OR DELETE OR UPDATE ON "public"."parts" FOR EACH ROW EXECUTE FUNCTION "public"."fn_enqueue_search_event"();
 CREATE OR REPLACE TRIGGER "trg_audit_offers" AFTER INSERT OR DELETE OR UPDATE ON "public"."offers" FOR EACH ROW EXECUTE FUNCTION "public"."fn_audit_log_changes"();
 CREATE OR REPLACE TRIGGER "trg_audit_parts" AFTER INSERT OR DELETE OR UPDATE ON "public"."parts" FOR EACH ROW EXECUTE FUNCTION "public"."fn_audit_log_changes"();

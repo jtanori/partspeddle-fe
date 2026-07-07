@@ -1,14 +1,8 @@
--- P4.3 rebaseline snapshot
--- Generated from the remote `vintrack` Supabase project on 2026-07-04.
--- This file is the source-of-truth reference for the public schema.
--- Application-specific storage bucket/RLS and auth role-sync trigger are
--- appended at the end because the standard dump excludes internal schemas.
-
 --
 -- PostgreSQL database dump
 --
 
--- \restrict bePAbS2OBNsAyX7n1lN23yP9femAqEZeTxeAuuLJsVkDkY6OTJFGJkIf2wzc7Wj
+-- \restrict uhpTeNxte69RBxl5HB4z0PitotijTY21PVpGj3Dz1Nkh4yqrjtdg1rOMj1cHqDO
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -26,94 +20,19 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+--
+
+CREATE SCHEMA IF NOT EXISTS "public";
+
+
+ALTER SCHEMA "public" OWNER TO "pg_database_owner";
+
+--
 -- Name: SCHEMA "public"; Type: COMMENT; Schema: -; Owner: pg_database_owner
 --
 
 COMMENT ON SCHEMA "public" IS 'standard public schema';
-
-
---
--- Name: pg_net; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "public";
-
-
---
--- Name: EXTENSION "pg_net"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "pg_net" IS 'Async HTTP';
-
-
---
--- Name: pg_graphql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "pg_graphql" WITH SCHEMA "graphql";
-
-
---
--- Name: EXTENSION "pg_graphql"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "pg_graphql" IS 'pg_graphql: GraphQL support';
-
-
---
--- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
-
-
---
--- Name: EXTENSION "pg_stat_statements"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "pg_stat_statements" IS 'track planning and execution statistics of all SQL statements executed';
-
-
---
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
-
-
---
--- Name: EXTENSION "pgcrypto"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "pgcrypto" IS 'cryptographic functions';
-
-
---
--- Name: supabase_vault; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
-
-
---
--- Name: EXTENSION "supabase_vault"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "supabase_vault" IS 'Supabase Vault Extension';
-
-
---
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
-
-
---
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
 --
@@ -171,7 +90,6 @@ ALTER FUNCTION "public"."cleanup_old_notifications"() OWNER TO "postgres";
 
 CREATE OR REPLACE FUNCTION "public"."fn_audit_log_changes"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
-    SET "search_path" TO 'public', 'pg_temp'
     AS $$
 DECLARE
     v_actor_id UUID;
@@ -213,7 +131,6 @@ ALTER FUNCTION "public"."fn_audit_log_changes"() OWNER TO "postgres";
 
 CREATE OR REPLACE FUNCTION "public"."fn_enqueue_search_event"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
-    SET "search_path" TO 'public', 'pg_temp'
     AS $$
 BEGIN
   INSERT INTO public.search_outbox (aggregate_type, aggregate_id, event_type, payload)
@@ -231,7 +148,7 @@ ALTER FUNCTION "public"."fn_enqueue_search_event"() OWNER TO "postgres";
 
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
-    SET "search_path" TO 'public', 'pg_temp'
+    SET "search_path" TO 'public'
     AS $$
 BEGIN
   INSERT INTO public.users (id, email)
@@ -250,7 +167,6 @@ ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
 
 CREATE OR REPLACE FUNCTION "public"."handle_part_sale_lock"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
-    SET "search_path" TO 'public', 'pg_temp'
     AS $$
 BEGIN
     -- Si la transacción fue exitosa o capturada en bóveda
@@ -2001,22 +1917,22 @@ ALTER INDEX "public"."audit_log_pkey" ATTACH PARTITION "public"."audit_log_2026_
 
 
 --
+-- Name: messages notify-new-message; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
+CREATE OR REPLACE TRIGGER "notify-new-message" AFTER INSERT ON "public"."messages" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://zvvwkzvjfkclmvgbbbnu.supabase.co/functions/v1/send-message-notification', 'POST', '{"Content-type":"application/json","Authorization":"Bearer [REDACTED_JWT]"}', '{}', '5000');
 
 
 --
+-- Name: parts sync-algolia-webhook; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
+CREATE OR REPLACE TRIGGER "sync-algolia-webhook" AFTER INSERT OR DELETE OR UPDATE ON "public"."parts" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://zvvwkzvjfkclmvgbbbnu.supabase.co/functions/v1/sync-algolia-webhook', 'POST', '{"Content-type":"application/json","Authorization":"Bearer [REDACTED_JWT]"}', '{}', '5000');
 
 
 --
 -- Name: parts tr_parts_search_outbox; Type: TRIGGER; Schema: public; Owner: postgres
 --
-
--- Remove legacy synchronous webhook triggers that shipped with hard-coded service-role JWTs.
-DROP TRIGGER IF EXISTS "sync-algolia-webhook" ON "public"."parts";
-DROP TRIGGER IF EXISTS "notify-new-message" ON "public"."messages";
 
 CREATE OR REPLACE TRIGGER "tr_parts_search_outbox" AFTER INSERT OR DELETE OR UPDATE ON "public"."parts" FOR EACH ROW EXECUTE FUNCTION "public"."fn_enqueue_search_event"();
 
@@ -2869,15 +2785,6 @@ CREATE POLICY "users_update_own" ON "public"."users" FOR UPDATE USING (("auth"."
 ALTER TABLE "public"."vehicle_variants" ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: supabase_realtime; Type: PUBLICATION; Schema: -; Owner: postgres
---
-
--- CREATE PUBLICATION "supabase_realtime" WITH (publish = 'insert, update, delete, truncate');
-
-
-ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
-
---
 -- Name: SCHEMA "public"; Type: ACL; Schema: -; Owner: pg_database_owner
 --
 
@@ -2885,468 +2792,6 @@ GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
-
-
---
--- Name: SCHEMA "net"; Type: ACL; Schema: -; Owner: supabase_admin
---
-
--- GRANT USAGE ON SCHEMA "net" TO "supabase_functions_admin";
--- GRANT USAGE ON SCHEMA "net" TO "postgres";
--- GRANT USAGE ON SCHEMA "net" TO "anon";
--- GRANT USAGE ON SCHEMA "net" TO "authenticated";
--- GRANT USAGE ON SCHEMA "net" TO "service_role";
-
-
---
--- Name: FUNCTION "armor"("bytea"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."armor"("bytea") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."armor"("bytea") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."armor"("bytea") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "armor"("bytea", "text"[], "text"[]); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."armor"("bytea", "text"[], "text"[]) FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."armor"("bytea", "text"[], "text"[]) TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."armor"("bytea", "text"[], "text"[]) TO "dashboard_user";
-
-
---
--- Name: FUNCTION "crypt"("text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."crypt"("text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."crypt"("text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."crypt"("text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "dearmor"("text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."dearmor"("text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."dearmor"("text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."dearmor"("text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "decrypt"("bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."decrypt"("bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."decrypt"("bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."decrypt"("bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "decrypt_iv"("bytea", "bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."decrypt_iv"("bytea", "bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."decrypt_iv"("bytea", "bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."decrypt_iv"("bytea", "bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "digest"("bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."digest"("bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."digest"("bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."digest"("bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "digest"("text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."digest"("text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."digest"("text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."digest"("text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "encrypt"("bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."encrypt"("bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."encrypt"("bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."encrypt"("bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "encrypt_iv"("bytea", "bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."encrypt_iv"("bytea", "bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."encrypt_iv"("bytea", "bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."encrypt_iv"("bytea", "bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "gen_random_bytes"(integer); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."gen_random_bytes"(integer) FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."gen_random_bytes"(integer) TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."gen_random_bytes"(integer) TO "dashboard_user";
-
-
---
--- Name: FUNCTION "gen_random_uuid"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."gen_random_uuid"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."gen_random_uuid"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."gen_random_uuid"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "gen_salt"("text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."gen_salt"("text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."gen_salt"("text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."gen_salt"("text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "gen_salt"("text", integer); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."gen_salt"("text", integer) FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."gen_salt"("text", integer) TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."gen_salt"("text", integer) TO "dashboard_user";
-
-
---
--- Name: FUNCTION "hmac"("bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."hmac"("bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."hmac"("bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."hmac"("bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "hmac"("text", "text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."hmac"("text", "text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."hmac"("text", "text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."hmac"("text", "text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pg_stat_statements"("showtext" boolean, OUT "userid" "oid", OUT "dbid" "oid", OUT "toplevel" boolean, OUT "queryid" bigint, OUT "query" "text", OUT "plans" bigint, OUT "total_plan_time" double precision, OUT "min_plan_time" double precision, OUT "max_plan_time" double precision, OUT "mean_plan_time" double precision, OUT "stddev_plan_time" double precision, OUT "calls" bigint, OUT "total_exec_time" double precision, OUT "min_exec_time" double precision, OUT "max_exec_time" double precision, OUT "mean_exec_time" double precision, OUT "stddev_exec_time" double precision, OUT "rows" bigint, OUT "shared_blks_hit" bigint, OUT "shared_blks_read" bigint, OUT "shared_blks_dirtied" bigint, OUT "shared_blks_written" bigint, OUT "local_blks_hit" bigint, OUT "local_blks_read" bigint, OUT "local_blks_dirtied" bigint, OUT "local_blks_written" bigint, OUT "temp_blks_read" bigint, OUT "temp_blks_written" bigint, OUT "shared_blk_read_time" double precision, OUT "shared_blk_write_time" double precision, OUT "local_blk_read_time" double precision, OUT "local_blk_write_time" double precision, OUT "temp_blk_read_time" double precision, OUT "temp_blk_write_time" double precision, OUT "wal_records" bigint, OUT "wal_fpi" bigint, OUT "wal_bytes" numeric, OUT "jit_functions" bigint, OUT "jit_generation_time" double precision, OUT "jit_inlining_count" bigint, OUT "jit_inlining_time" double precision, OUT "jit_optimization_count" bigint, OUT "jit_optimization_time" double precision, OUT "jit_emission_count" bigint, OUT "jit_emission_time" double precision, OUT "jit_deform_count" bigint, OUT "jit_deform_time" double precision, OUT "stats_since" timestamp with time zone, OUT "minmax_stats_since" timestamp with time zone); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pg_stat_statements"("showtext" boolean, OUT "userid" "oid", OUT "dbid" "oid", OUT "toplevel" boolean, OUT "queryid" bigint, OUT "query" "text", OUT "plans" bigint, OUT "total_plan_time" double precision, OUT "min_plan_time" double precision, OUT "max_plan_time" double precision, OUT "mean_plan_time" double precision, OUT "stddev_plan_time" double precision, OUT "calls" bigint, OUT "total_exec_time" double precision, OUT "min_exec_time" double precision, OUT "max_exec_time" double precision, OUT "mean_exec_time" double precision, OUT "stddev_exec_time" double precision, OUT "rows" bigint, OUT "shared_blks_hit" bigint, OUT "shared_blks_read" bigint, OUT "shared_blks_dirtied" bigint, OUT "shared_blks_written" bigint, OUT "local_blks_hit" bigint, OUT "local_blks_read" bigint, OUT "local_blks_dirtied" bigint, OUT "local_blks_written" bigint, OUT "temp_blks_read" bigint, OUT "temp_blks_written" bigint, OUT "shared_blk_read_time" double precision, OUT "shared_blk_write_time" double precision, OUT "local_blk_read_time" double precision, OUT "local_blk_write_time" double precision, OUT "temp_blk_read_time" double precision, OUT "temp_blk_write_time" double precision, OUT "wal_records" bigint, OUT "wal_fpi" bigint, OUT "wal_bytes" numeric, OUT "jit_functions" bigint, OUT "jit_generation_time" double precision, OUT "jit_inlining_count" bigint, OUT "jit_inlining_time" double precision, OUT "jit_optimization_count" bigint, OUT "jit_optimization_time" double precision, OUT "jit_emission_count" bigint, OUT "jit_emission_time" double precision, OUT "jit_deform_count" bigint, OUT "jit_deform_time" double precision, OUT "stats_since" timestamp with time zone, OUT "minmax_stats_since" timestamp with time zone) FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pg_stat_statements"("showtext" boolean, OUT "userid" "oid", OUT "dbid" "oid", OUT "toplevel" boolean, OUT "queryid" bigint, OUT "query" "text", OUT "plans" bigint, OUT "total_plan_time" double precision, OUT "min_plan_time" double precision, OUT "max_plan_time" double precision, OUT "mean_plan_time" double precision, OUT "stddev_plan_time" double precision, OUT "calls" bigint, OUT "total_exec_time" double precision, OUT "min_exec_time" double precision, OUT "max_exec_time" double precision, OUT "mean_exec_time" double precision, OUT "stddev_exec_time" double precision, OUT "rows" bigint, OUT "shared_blks_hit" bigint, OUT "shared_blks_read" bigint, OUT "shared_blks_dirtied" bigint, OUT "shared_blks_written" bigint, OUT "local_blks_hit" bigint, OUT "local_blks_read" bigint, OUT "local_blks_dirtied" bigint, OUT "local_blks_written" bigint, OUT "temp_blks_read" bigint, OUT "temp_blks_written" bigint, OUT "shared_blk_read_time" double precision, OUT "shared_blk_write_time" double precision, OUT "local_blk_read_time" double precision, OUT "local_blk_write_time" double precision, OUT "temp_blk_read_time" double precision, OUT "temp_blk_write_time" double precision, OUT "wal_records" bigint, OUT "wal_fpi" bigint, OUT "wal_bytes" numeric, OUT "jit_functions" bigint, OUT "jit_generation_time" double precision, OUT "jit_inlining_count" bigint, OUT "jit_inlining_time" double precision, OUT "jit_optimization_count" bigint, OUT "jit_optimization_time" double precision, OUT "jit_emission_count" bigint, OUT "jit_emission_time" double precision, OUT "jit_deform_count" bigint, OUT "jit_deform_time" double precision, OUT "stats_since" timestamp with time zone, OUT "minmax_stats_since" timestamp with time zone) TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pg_stat_statements"("showtext" boolean, OUT "userid" "oid", OUT "dbid" "oid", OUT "toplevel" boolean, OUT "queryid" bigint, OUT "query" "text", OUT "plans" bigint, OUT "total_plan_time" double precision, OUT "min_plan_time" double precision, OUT "max_plan_time" double precision, OUT "mean_plan_time" double precision, OUT "stddev_plan_time" double precision, OUT "calls" bigint, OUT "total_exec_time" double precision, OUT "min_exec_time" double precision, OUT "max_exec_time" double precision, OUT "mean_exec_time" double precision, OUT "stddev_exec_time" double precision, OUT "rows" bigint, OUT "shared_blks_hit" bigint, OUT "shared_blks_read" bigint, OUT "shared_blks_dirtied" bigint, OUT "shared_blks_written" bigint, OUT "local_blks_hit" bigint, OUT "local_blks_read" bigint, OUT "local_blks_dirtied" bigint, OUT "local_blks_written" bigint, OUT "temp_blks_read" bigint, OUT "temp_blks_written" bigint, OUT "shared_blk_read_time" double precision, OUT "shared_blk_write_time" double precision, OUT "local_blk_read_time" double precision, OUT "local_blk_write_time" double precision, OUT "temp_blk_read_time" double precision, OUT "temp_blk_write_time" double precision, OUT "wal_records" bigint, OUT "wal_fpi" bigint, OUT "wal_bytes" numeric, OUT "jit_functions" bigint, OUT "jit_generation_time" double precision, OUT "jit_inlining_count" bigint, OUT "jit_inlining_time" double precision, OUT "jit_optimization_count" bigint, OUT "jit_optimization_time" double precision, OUT "jit_emission_count" bigint, OUT "jit_emission_time" double precision, OUT "jit_deform_count" bigint, OUT "jit_deform_time" double precision, OUT "stats_since" timestamp with time zone, OUT "minmax_stats_since" timestamp with time zone) TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pg_stat_statements_info"(OUT "dealloc" bigint, OUT "stats_reset" timestamp with time zone); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pg_stat_statements_info"(OUT "dealloc" bigint, OUT "stats_reset" timestamp with time zone) FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pg_stat_statements_info"(OUT "dealloc" bigint, OUT "stats_reset" timestamp with time zone) TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pg_stat_statements_info"(OUT "dealloc" bigint, OUT "stats_reset" timestamp with time zone) TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pg_stat_statements_reset"("userid" "oid", "dbid" "oid", "queryid" bigint, "minmax_only" boolean); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pg_stat_statements_reset"("userid" "oid", "dbid" "oid", "queryid" bigint, "minmax_only" boolean) FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pg_stat_statements_reset"("userid" "oid", "dbid" "oid", "queryid" bigint, "minmax_only" boolean) TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pg_stat_statements_reset"("userid" "oid", "dbid" "oid", "queryid" bigint, "minmax_only" boolean) TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_armor_headers"("text", OUT "key" "text", OUT "value" "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_armor_headers"("text", OUT "key" "text", OUT "value" "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_armor_headers"("text", OUT "key" "text", OUT "value" "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_armor_headers"("text", OUT "key" "text", OUT "value" "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_key_id"("bytea"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_key_id"("bytea") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_key_id"("bytea") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_key_id"("bytea") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_decrypt"("bytea", "bytea"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_decrypt"("bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_decrypt"("bytea", "bytea", "text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea", "text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea", "text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt"("bytea", "bytea", "text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_decrypt_bytea"("bytea", "bytea"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_decrypt_bytea"("bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_decrypt_bytea"("bytea", "bytea", "text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea", "text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea", "text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_decrypt_bytea"("bytea", "bytea", "text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_encrypt"("text", "bytea"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_encrypt"("text", "bytea") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt"("text", "bytea") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt"("text", "bytea") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_encrypt"("text", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_encrypt"("text", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt"("text", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt"("text", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_encrypt_bytea"("bytea", "bytea"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_encrypt_bytea"("bytea", "bytea") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt_bytea"("bytea", "bytea") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt_bytea"("bytea", "bytea") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_pub_encrypt_bytea"("bytea", "bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_pub_encrypt_bytea"("bytea", "bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt_bytea"("bytea", "bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_pub_encrypt_bytea"("bytea", "bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_decrypt"("bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_decrypt"("bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt"("bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt"("bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_decrypt"("bytea", "text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_decrypt"("bytea", "text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt"("bytea", "text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt"("bytea", "text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_decrypt_bytea"("bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_decrypt_bytea"("bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt_bytea"("bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt_bytea"("bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_decrypt_bytea"("bytea", "text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_decrypt_bytea"("bytea", "text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt_bytea"("bytea", "text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_decrypt_bytea"("bytea", "text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_encrypt"("text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_encrypt"("text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt"("text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt"("text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_encrypt"("text", "text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_encrypt"("text", "text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt"("text", "text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt"("text", "text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_encrypt_bytea"("bytea", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_encrypt_bytea"("bytea", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt_bytea"("bytea", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt_bytea"("bytea", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "pgp_sym_encrypt_bytea"("bytea", "text", "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."pgp_sym_encrypt_bytea"("bytea", "text", "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt_bytea"("bytea", "text", "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."pgp_sym_encrypt_bytea"("bytea", "text", "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_generate_v1"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_generate_v1"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v1"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v1"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_generate_v1mc"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_generate_v1mc"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v1mc"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v1mc"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_generate_v3"("namespace" "uuid", "name" "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_generate_v3"("namespace" "uuid", "name" "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v3"("namespace" "uuid", "name" "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v3"("namespace" "uuid", "name" "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_generate_v4"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_generate_v4"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v4"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v4"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_generate_v5"("namespace" "uuid", "name" "text"); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_generate_v5"("namespace" "uuid", "name" "text") FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v5"("namespace" "uuid", "name" "text") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_generate_v5"("namespace" "uuid", "name" "text") TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_nil"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_nil"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_nil"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_nil"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_ns_dns"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_ns_dns"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_dns"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_dns"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_ns_oid"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_ns_oid"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_oid"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_oid"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_ns_url"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_ns_url"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_url"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_url"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "uuid_ns_x500"(); Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON FUNCTION "extensions"."uuid_ns_x500"() FROM "postgres";
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_x500"() TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "extensions"."uuid_ns_x500"() TO "dashboard_user";
-
-
---
--- Name: FUNCTION "graphql"("operationName" "text", "query" "text", "variables" "jsonb", "extensions" "jsonb"); Type: ACL; Schema: graphql_public; Owner: supabase_admin
---
-
--- GRANT ALL ON FUNCTION "graphql_public"."graphql"("operationName" "text", "query" "text", "variables" "jsonb", "extensions" "jsonb") TO "postgres";
--- GRANT ALL ON FUNCTION "graphql_public"."graphql"("operationName" "text", "query" "text", "variables" "jsonb", "extensions" "jsonb") TO "anon";
--- GRANT ALL ON FUNCTION "graphql_public"."graphql"("operationName" "text", "query" "text", "variables" "jsonb", "extensions" "jsonb") TO "authenticated";
--- GRANT ALL ON FUNCTION "graphql_public"."graphql"("operationName" "text", "query" "text", "variables" "jsonb", "extensions" "jsonb") TO "service_role";
 
 
 --
@@ -3410,48 +2855,6 @@ GRANT ALL ON FUNCTION "public"."refresh_seller_search_signals"() TO "service_rol
 GRANT ALL ON FUNCTION "public"."validate_transaction_seller"() TO "anon";
 GRANT ALL ON FUNCTION "public"."validate_transaction_seller"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."validate_transaction_seller"() TO "service_role";
-
-
---
--- Name: FUNCTION "_crypto_aead_det_decrypt"("message" "bytea", "additional" "bytea", "key_id" bigint, "context" "bytea", "nonce" "bytea"); Type: ACL; Schema: vault; Owner: supabase_admin
---
-
--- GRANT ALL ON FUNCTION "vault"."_crypto_aead_det_decrypt"("message" "bytea", "additional" "bytea", "key_id" bigint, "context" "bytea", "nonce" "bytea") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "vault"."_crypto_aead_det_decrypt"("message" "bytea", "additional" "bytea", "key_id" bigint, "context" "bytea", "nonce" "bytea") TO "service_role";
-
-
---
--- Name: FUNCTION "create_secret"("new_secret" "text", "new_name" "text", "new_description" "text", "new_key_id" "uuid"); Type: ACL; Schema: vault; Owner: supabase_admin
---
-
--- GRANT ALL ON FUNCTION "vault"."create_secret"("new_secret" "text", "new_name" "text", "new_description" "text", "new_key_id" "uuid") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "vault"."create_secret"("new_secret" "text", "new_name" "text", "new_description" "text", "new_key_id" "uuid") TO "service_role";
-
-
---
--- Name: FUNCTION "update_secret"("secret_id" "uuid", "new_secret" "text", "new_name" "text", "new_description" "text", "new_key_id" "uuid"); Type: ACL; Schema: vault; Owner: supabase_admin
---
-
--- GRANT ALL ON FUNCTION "vault"."update_secret"("secret_id" "uuid", "new_secret" "text", "new_name" "text", "new_description" "text", "new_key_id" "uuid") TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON FUNCTION "vault"."update_secret"("secret_id" "uuid", "new_secret" "text", "new_name" "text", "new_description" "text", "new_key_id" "uuid") TO "service_role";
-
-
---
--- Name: TABLE "pg_stat_statements"; Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON TABLE "extensions"."pg_stat_statements" FROM "postgres";
--- GRANT ALL ON TABLE "extensions"."pg_stat_statements" TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON TABLE "extensions"."pg_stat_statements" TO "dashboard_user";
-
-
---
--- Name: TABLE "pg_stat_statements_info"; Type: ACL; Schema: extensions; Owner: postgres
---
-
--- REVOKE ALL ON TABLE "extensions"."pg_stat_statements_info" FROM "postgres";
--- GRANT ALL ON TABLE "extensions"."pg_stat_statements_info" TO "postgres" WITH GRANT OPTION;
--- GRANT ALL ON TABLE "extensions"."pg_stat_statements_info" TO "dashboard_user";
 
 
 --
@@ -3833,22 +3236,6 @@ GRANT ALL ON TABLE "public"."vehicle_variants" TO "service_role";
 
 
 --
--- Name: TABLE "secrets"; Type: ACL; Schema: vault; Owner: supabase_admin
---
-
--- GRANT SELECT,REFERENCES,DELETE,TRUNCATE ON TABLE "vault"."secrets" TO "postgres" WITH GRANT OPTION;
--- GRANT SELECT,DELETE ON TABLE "vault"."secrets" TO "service_role";
-
-
---
--- Name: TABLE "decrypted_secrets"; Type: ACL; Schema: vault; Owner: supabase_admin
---
-
--- GRANT SELECT,REFERENCES,DELETE,TRUNCATE ON TABLE "vault"."decrypted_secrets" TO "postgres" WITH GRANT OPTION;
--- GRANT SELECT,DELETE ON TABLE "vault"."decrypted_secrets" TO "service_role";
-
-
---
 -- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: postgres
 --
 
@@ -3909,157 +3296,8 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 
 --
--- Name: issue_graphql_placeholder; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
---
-
--- CREATE EVENT TRIGGER "issue_graphql_placeholder" ON "sql_drop"
---          WHEN TAG IN ('DROP EXTENSION')
---    EXECUTE FUNCTION "extensions"."set_graphql_placeholder"();
-
-
--- ALTER EVENT TRIGGER "issue_graphql_placeholder" OWNER TO "supabase_admin";
-
---
--- Name: issue_pg_cron_access; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
---
-
--- CREATE EVENT TRIGGER "issue_pg_cron_access" ON "ddl_command_end"
---          WHEN TAG IN ('CREATE EXTENSION')
---    EXECUTE FUNCTION "extensions"."grant_pg_cron_access"();
-
-
--- ALTER EVENT TRIGGER "issue_pg_cron_access" OWNER TO "supabase_admin";
-
---
--- Name: issue_pg_graphql_access; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
---
-
--- CREATE EVENT TRIGGER "issue_pg_graphql_access" ON "ddl_command_end"
---          WHEN TAG IN ('CREATE FUNCTION')
---    EXECUTE FUNCTION "extensions"."grant_pg_graphql_access"();
-
-
--- ALTER EVENT TRIGGER "issue_pg_graphql_access" OWNER TO "supabase_admin";
-
---
--- Name: issue_pg_net_access; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
---
-
--- CREATE EVENT TRIGGER "issue_pg_net_access" ON "ddl_command_end"
---          WHEN TAG IN ('CREATE EXTENSION')
---    EXECUTE FUNCTION "extensions"."grant_pg_net_access"();
-
-
--- ALTER EVENT TRIGGER "issue_pg_net_access" OWNER TO "supabase_admin";
-
---
--- Name: pgrst_ddl_watch; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
---
-
--- CREATE EVENT TRIGGER "pgrst_ddl_watch" ON "ddl_command_end"
---    EXECUTE FUNCTION "extensions"."pgrst_ddl_watch"();
-
-
--- ALTER EVENT TRIGGER "pgrst_ddl_watch" OWNER TO "supabase_admin";
-
---
--- Name: pgrst_drop_watch; Type: EVENT TRIGGER; Schema: -; Owner: supabase_admin
---
-
--- CREATE EVENT TRIGGER "pgrst_drop_watch" ON "sql_drop"
---    EXECUTE FUNCTION "extensions"."pgrst_drop_watch"();
-
-
--- ALTER EVENT TRIGGER "pgrst_drop_watch" OWNER TO "supabase_admin";
-
---
 -- PostgreSQL database dump complete
 --
 
--- \unrestrict bePAbS2OBNsAyX7n1lN23yP9femAqEZeTxeAuuLJsVkDkY6OTJFGJkIf2wzc7Wj
+-- \unrestrict uhpTeNxte69RBxl5HB4z0PitotijTY21PVpGj3Dz1Nkh4yqrjtdg1rOMj1cHqDO
 
-
--- Rebaseline storage bucket and RLS policies for yard assets.
--- The default `supabase db dump` excludes the internal `storage` schema, so
--- the application-specific bucket and policies are recreated here.
-
--- 1. Create the yard-assets bucket if it does not exist.
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('yard-assets', 'yard-assets', true)
-ON CONFLICT (id) DO NOTHING;
-
--- 2. Allow public read access to yard-assets objects.
-DROP POLICY IF EXISTS "Public Access for Yard Assets" ON storage.objects;
-CREATE POLICY "Public Access for Yard Assets"
-  ON storage.objects
-  FOR SELECT
-  USING (bucket_id = 'yard-assets');
-
--- 4. Allow authenticated sellers to upload assets into their own folder.
-DROP POLICY IF EXISTS "Sellers Can Upload Own Assets" ON storage.objects;
-CREATE POLICY "Sellers Can Upload Own Assets"
-  ON storage.objects
-  FOR INSERT
-  WITH CHECK (
-    bucket_id = 'yard-assets'
-    AND auth.role() = 'authenticated'
-    AND (storage.foldername(name))[1] = auth.uid()::text
-  );
-
--- 5. Allow authenticated sellers to modify/delete their own assets.
-DROP POLICY IF EXISTS "Sellers Can Modify Own Assets" ON storage.objects;
-CREATE POLICY "Sellers Can Modify Own Assets"
-  ON storage.objects
-  FOR ALL
-  USING (
-    bucket_id = 'yard-assets'
-    AND auth.role() = 'authenticated'
-    AND (storage.foldername(name))[1] = auth.uid()::text
-  );
-
--- Rebaseline the auth-user role-sync trigger.
--- The default `supabase db dump` excludes the internal `auth` schema, so the
--- trigger that keeps `public.user_roles` in sync on new sign-ups is recreated
--- here.
-
--- 1. Ensure the user_roles table exists. It is referenced by the role-sync
---    trigger and was missing from the original rebaseline dump.
-CREATE TABLE IF NOT EXISTS public.user_roles (
-  user_id uuid PRIMARY KEY REFERENCES auth.users (id) ON DELETE CASCADE,
-  role text NOT NULL DEFAULT 'buyer' CHECK (role IN ('buyer', 'seller', 'admin')),
-  created_at timestamp with time zone DEFAULT now() NOT NULL,
-  updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Users can view their own role" ON public.user_roles;
-CREATE POLICY "Users can view their own role"
-  ON public.user_roles
-  FOR SELECT
-  USING (auth.uid() = user_id);
-
--- 2. Role-sync function. New sign-ups are always assigned the 'buyer' role.
---    Role elevation to seller or admin must be performed by an admin process
---    and must never be derived from client-controllable metadata.
-CREATE OR REPLACE FUNCTION public.handle_new_user_role()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, pg_temp
-AS $$
-BEGIN
-  INSERT INTO public.user_roles (user_id, role)
-  VALUES (NEW.id, 'buyer')
-  ON CONFLICT (user_id) DO UPDATE
-    SET role = EXCLUDED.role,
-        updated_at = now();
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS on_auth_user_created_role ON auth.users;
-CREATE TRIGGER on_auth_user_created_role
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.handle_new_user_role();

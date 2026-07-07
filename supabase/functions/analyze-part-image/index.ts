@@ -1,14 +1,17 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "";
-const TARGET_MODEL = "gemini-1.5-flash"; // Fallback to stable high-throughput model
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
+const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') || '';
+const TARGET_MODEL = 'gemini-1.5-flash'; // Fallback to stable high-throughput model
 
 const ALLOWED_MIME_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/heic",
-  "image/heif",
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/heic',
+  'image/heif',
 ]);
 
 const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20 MiB
@@ -17,46 +20,73 @@ const MAX_FILES = 5;
 function badRequest(message: string): Response {
   return new Response(JSON.stringify({ error: message }), {
     status: 400,
-    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
   });
+}
+
+function unauthorized(message: string): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status: 401,
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  });
+}
+
+async function verifyUserJwt(req: Request): Promise<string | null> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader) return null;
+
+  const [scheme, token] = authHeader.split(' ');
+  if (scheme?.toLowerCase() !== 'bearer' || !token) return null;
+
+  const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { fetch: fetch.bind(globalThis) },
+    auth: { persistSession: false },
+  });
+
+  const { data, error } = await client.auth.getUser(token);
+  if (error || !data.user) return null;
+  return data.user.id;
 }
 
 serve(async (req) => {
   // Manejo de Preflight para políticas CORS
-  if (req.method === "OPTIONS") {
-    return new Response("ok", {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', {
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers":
-          "authorization, x-client-info, apikey, content-type",
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
       },
     });
+  }
+
+  const callerId = await verifyUserJwt(req);
+  if (!callerId) {
+    return unauthorized('Missing or invalid authorization token');
   }
 
   try {
     if (!GEMINI_API_KEY) {
       return new Response(
         JSON.stringify({
-          error:
-            "SYS_ERR: GEMINI_API_KEY no configurada en el entorno de Supabase.",
+          error: 'SYS_ERR: GEMINI_API_KEY no configurada en el entorno de Supabase.',
         }),
         {
           status: 500,
           headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
           },
         },
       );
     }
 
     const formData = await req.formData();
-    const imageFiles = formData.getAll("image") as File[];
-    const mode = (formData.get("mode") as string) || "component";
+    const imageFiles = formData.getAll('image') as File[];
+    const mode = (formData.get('mode') as string) || 'component';
     void mode;
 
     if (imageFiles.length === 0) {
-      return badRequest("No se recibieron imágenes en el nodo Edge.");
+      return badRequest('No se recibieron imágenes en el nodo Edge.');
     }
 
     if (imageFiles.length > MAX_FILES) {
@@ -78,9 +108,7 @@ serve(async (req) => {
       }
 
       const arrayBuffer = await file.arrayBuffer();
-      const base64Data = btoa(
-        String.fromCharCode(...new Uint8Array(arrayBuffer)),
-      );
+      const base64Data = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
       promptsAndImages.push({
         inlineData: {
@@ -110,19 +138,18 @@ serve(async (req) => {
 
     promptsAndImages.push({ text: systemPrompt });
 
-    const geminiUrl =
-      `https://generativelanguage.googleapis.com/v1beta/models/${TARGET_MODEL}:generateContent`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${TARGET_MODEL}:generateContent`;
 
     const geminiResponse = await fetch(geminiUrl, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_API_KEY,
+        'Content-Type': 'application/json',
+        'x-goog-api-key': GEMINI_API_KEY,
       },
       body: JSON.stringify({
         contents: [{ parts: promptsAndImages }],
         generationConfig: {
-          responseMimeType: "application/json",
+          responseMimeType: 'application/json',
           temperature: 0.1,
         },
       }),
@@ -130,9 +157,7 @@ serve(async (req) => {
 
     if (!geminiResponse.ok) {
       const errorPayload = await geminiResponse.json();
-      throw new Error(
-        `Google API Fault: ${errorPayload.error?.message || "Fallo de integración"}`,
-      );
+      throw new Error(`Google API Fault: ${errorPayload.error?.message || 'Fallo de integración'}`);
     }
 
     const geminiResult = await geminiResponse.json();
@@ -148,16 +173,16 @@ serve(async (req) => {
     return new Response(JSON.stringify(structuredData), {
       status: 200,
       headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       },
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       },
     });
   }
