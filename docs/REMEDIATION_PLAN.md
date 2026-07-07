@@ -547,107 +547,158 @@ Status markers:
 - Legacy deps remain (`express`, `vite`) though runtime is Next-only.
 - UI/UX inconsistency: pages use different card styles, spacing scales, border radii, and typography, so the product does not yet feel like one coherent design system.
 
-### P5.0 Design system convergence (highest priority in P5)
+### P5.0 PartsPeddle Product Design System (PPDS) — highest priority in P5
 
-**Why:** A recent UI/UX review concluded that the product is already production-capable (~8.8/10) and should not be redesigned. Instead, the proposed part-page design should become the canonical reference for a unified design system, and every page should be converged to use the same tokens, components, spacing, and information hierarchy. This is a prerequisite for the P5 routing/security work because it establishes the component contracts and page templates that the refactored routes will consume.  
-**Files/scope:** `tailwind.config.ts`, `src/components/ui/**`, `src/app/(public)/**`, `src/app/(auth)/**`, `src/components/homepage/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/navbar/**`, `src/components/footer/**`, `src/app/layout.tsx`, `src/app/globals.css`.  
-**Design system primitives to define:**
+**Why:** The product is no longer a collection of pages. It is an ecosystem — Marketplace, Seller Workspace, Buyer Workspace, Admin, Support, and eventually Mobile — that must share one visual and interaction language. The public marketplace design already established the canonical tokens and components; now we formalize it into the **PartsPeddle Product Design System (PPDS)** and use it as the operating system for every surface. The dashboard and the new AI-assisted listing workflow are the first internal consumers.  
+**Files/scope:** `docs/design-system/**`, `tailwind.config.ts`, `src/index.css`, `src/components/ui/**`, `src/components/design-system/**`, `src/app/(public)/**`, `src/app/(auth)/**`, `src/app/(dashboard)/**`, `src/app/(seller)/**`, `src/components/homepage/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/navbar/**`, `src/components/footer/**`, `src/components/seller-dashboard/**`, `src/app/layout.tsx`.
 
-| Token                | Value                                                                                          |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| Container max width  | 1440px                                                                                         |
-| Content max width    | 1280px                                                                                         |
-| Grid                 | 12 columns, 24px gutters                                                                       |
-| Vertical rhythm      | 8px scale                                                                                      |
-| Card primary         | white, 16px radius, 1px border, small shadow, 24px padding                                     |
-| Card secondary       | very light gray, no shadow, 16px padding                                                       |
-| Floating action card | sticky, used for buy/seller/checkout/filters                                                   |
-| Typography           | Display 48 / Hero 36 / Section 28 / Card title 22 / Body 16 / Caption 14 / Meta 12             |
-| Spacing              | 4, 8, 12, 16, 24, 32, 48, 64, 96                                                               |
-| Border radius        | 4, 8, 12, 16, 24, 999                                                                          |
-| Buttons              | Primary, Secondary, Ghost, Icon, Danger, Loading, Disabled                                     |
-| Status colors        | Orange (action), Green (success), Blue (info), Yellow (warning), Red (danger), Gray (disabled) |
+**PPDS consumers:**
 
-**Core component library to build once:**
+```text
+PartsPeddle
+├── Marketplace      (public pages)
+├── Seller Workspace (inventory, listings, orders, analytics)
+├── Buyer Workspace  (watchlist, messages, purchases)
+├── Admin            (SCGS, moderation, system)
+├── Support          (help, disputes)
+└── Mobile           (future)
+```
 
-`Button`, `Card`, `Badge`, `Chip`, `Price`, `Rating`, `InventoryCount`, `SellerSummary`, `ImageGallery`, `VehicleLineage`, `Breadcrumb`, `Tabs`, `Accordion`, `SpecificationTable`, `SearchInput`, `FilterGroup`, `Skeleton`, `Pagination`, `Toast`, `Modal`, `Drawer`, `Tooltip`.
+**Layer 1 — Foundations (shared everywhere):**
 
-**Visual reference:** `/Users/dev/Documents/PartsPeddle/design-proposal.png`
+| Token      | Value / notes                                                      |
+| ---------- | ------------------------------------------------------------------ |
+| Primary    | Industrial Orange (`--color-brand-primary`)                        |
+| Secondary  | Steel                                                              |
+| Neutral    | Warm Gray                                                          |
+| Semantic   | Success, Warning, Danger, Information                              |
+| Typography | Display XL/L/M, Heading XL/L/M/S, Body L/M/S, Caption, Label, Mono |
+| Radius     | XS, SM, MD, LG, XL, Full                                           |
+| Shadows    | Surface, Floating, Popover, Modal, Hero                            |
+| Motion     | Fast, Normal, Slow durations with shared easing                    |
+| Spacing    | 4, 8, 12, 16, 24, 32, 48, 64, 96                                   |
 
-Key elements to preserve from the reference:
+Foundations are **never** redefined inside dashboard or marketplace pages.
 
-- Dark top navigation with logo, persistent search bar, "Sell parts" CTA, and auth actions.
-- Breadcrumb trail under the nav.
-- Two-column part-detail layout: left image gallery with thumbnail rail and zoom affordance; right product summary with badges, title, metadata, price, shipping, and stacked primary/secondary CTAs.
-- Inline seller summary card (avatar, name, rating, location) plus a richer "Seller & Support" sidebar card.
-- "Vehicle Fitment" callout with compatibility list and "View all N compatible vehicles" link.
-- "Compatible Parts" cross-sell strip with small part cards.
-- Tabbed content area (Specifications, Fitment, Description, Shipping & Returns, Warranty, Q&A).
-- Right sidebar with buyer-confidence guarantees and "Recently Viewed" list.
-- Clean specification table with two-column label/value layout.
+**Layer 2 — Layout systems:**
 
-**Deprecation tracking:**
+- **Marketplace layout**: centered, wide margins, hero sections, editorial spacing.
+- **Workspace layout**: sidebar, top navigation, page header, toolbar, content grid, optional right inspector panel.
 
-As pages converge to the new system, the following categories should be tracked for removal in a final cleanup round (maintain the running list in `docs/notes/p5-deprecated-components.md`):
+Both layouts use the exact same spacing tokens; only composition changes.
 
-| Category            | Likely deprecated items                                                                                                                  | Replacement                                                                 |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Ad-hoc cards        | `FeaturedParts`, `ProductGridCard`, `ProductListCard`, `SearchResultsDropdown`, `LiveSearchDropdown`, `SearchListItem`, `SellerGridCard` | `Card`, `PartCard`, `SellerCard` variants                                   |
-| Old PDP chrome      | Legacy `ProductDetail.tsx`, older PDP sub-components that do not match the canonical two-column layout                                   | `pdp-modern/*` aligned to the reference                                     |
-| Old search chrome   | `SearchModal`, `MobileSearchSheet`, `SearchSidebarDisabled`, `SearchResultsController` direct-Algolia UI                                 | Command-palette live search, persistent filter panel, `SearchPageClient` v2 |
-| Old layout wrappers | `AppWrapper`, `PublicShell`, one-off page wrappers                                                                                       | Route-group layouts + `Container`/`Content`/`MainGrid`                      |
-| Old loading states  | `MainLoadingIndicator`, `InlineLoadingIndicator`, spinner-heavy pages                                                                    | `Skeleton` variants                                                         |
-| Old buttons/badges  | One-off button styles outside `ui/button.tsx`, custom badge implementations                                                              | `Button`, `Badge`, `Chip` from the design system                            |
-| Old icon mix        | Mixed icon libraries or inline SVGs                                                                                                      | Single icon family (e.g., Lucide)                                           |
-| Hardcoded values    | Arbitrary Tailwind values (`max-w-[720px]`, `h-[480px]`, `text-6xl` without token)                                                       | Tokens from `tailwind.config.ts`                                            |
+**Layer 3 — Component hierarchy:**
+
+```text
+Primitive  → Button, Input, Badge, Chip, Avatar, Icon, Divider
+Composite  → Search Bar, Price Tag, Seller Card, Vehicle Card, Image Gallery, Progress Bar
+Section    → Listing Summary, Vehicle Compatibility, Media Manager, Pricing, Shipping, SEO
+Page       → Inventory, Wizard, Orders, Analytics
+```
 
 **Execution phases:**
 
-1. **Tokens and primitives** (~1 sprint) ✅
-   - Move hardcoded colors/spacing/radii/shadows into `tailwind.config.ts` theme tokens and CSS variables.
-   - Lock the layout grid (`Container`, `Content`, `MainGrid`, `Footer`).
-   - Standardize one icon family and one font scale.
+1. **Foundations — tokens and primitives** (~1 sprint) ✅
+   - Move hardcoded colors/spacing/radii/shadows into `src/index.css` `@theme` tokens and keep legacy aliases in `tailwind.config.ts` during transition.
+   - Lock the public-page layout grid (`Container`, `Content`, `MainGrid`).
+   - Standardize one icon family (Lucide) and one font scale.
    - Add branch tests asserting token usage and forbidding new hardcoded values.
 
-2. **Component library** (~1–1.5 sprints) ✅
-   - Build or harden the canonical components listed above using the tokens.
-   - Create new canonical components in `src/components/ui` or `src/components/design-system` rather than refactoring old ad-hoc components in place; old components remain during the transition and are tracked in `docs/notes/p5-deprecated-components.md` for removal in the cleanup round.
-   - Leave page-level card replacement on home/search/listing to **Phase 3 (page convergence)**; Phase 2 only delivers the component contracts and reference usages (e.g., on the canonical part page).
-   - Add `Skeleton` variants for listing, image, seller, search, and review loading states.
-   - Add branch tests per component.
+2. **Core component library** (~1–1.5 sprints) ✅
+   - Build canonical components in `src/components/ui` and `src/components/design-system`.
+   - Deliver primitives: `Button`, `Card`, `Badge`, `Chip`, `Tabs`, `Accordion`, `Breadcrumb`, `Skeleton`, `Pagination`, `SearchInput`, `FilterGroup`, `Modal`, `Drawer`, `Toast`, `Tooltip`.
+   - Deliver domain components: `Price`, `Rating`, `InventoryCount`, `SellerSummary`, `ImageGallery`, `SpecificationTable`, `VehicleLineage`, `PartCard`, `SellerCard`.
+   - Add branch tests per component; old ad-hoc components remain and are tracked for removal.
 
-3. **Page convergence** (~1.5 sprints)
+3. **Marketplace page convergence** (~1.5 sprints)
    - Use the existing **part page** as the canonical template.
-   - Converge **home**, **search**, **live search**, **authentication**, and **footer** to the same card system, spacing, and typography.
+   - Converge **home**, **search**, **live search**, **authentication**, and **footer** to PPDS cards, spacing, and typography.
    - Specific targets:
      - Home: more whitespace, single card system, larger category cards, modernized trust section.
      - Search: persistent left filter panel, top toolbar (results/sort/view/filters/inventory count), unified result cards.
      - Live search: command-palette-style dropdown with sections (Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending).
-     - Authentication: reduce empty space, apply token typography/buttons/cards, optional parallax on illustration.
+     - Authentication: reduce empty space, apply token typography/buttons/cards.
      - Footer: align spacing, contrast, column widths, newsletter placement.
 
-4. **UX polish** (~0.5–1 sprint)
-   - Replace spinners with skeletons everywhere.
+4. **PPDS documentation & Storybook** (~0.5–1 sprint)
+   - Create `docs/design-system/` with the proposed structure: philosophy, tokens, layout, typography, color, elevation/motion, component library, patterns, marketplace spec, seller-workspace spec, admin spec, responsive, accessibility, animation, content guidelines, Figma mapping.
+   - Install Storybook and add stories for primitives, composites, and the canonical part page.
+   - Add branch tests asserting documentation files exist and Storybook builds.
+
+5. **Workspace layout system** (~1 sprint)
+   - Build the workspace shell components:
+     - `WorkspaceLayout` (sidebar + top nav + content + optional inspector).
+     - `Sidebar` task-oriented navigation.
+     - `TopNavigation` global search + notifications + messages + tasks + profile.
+     - `PageHeader` (title + subtitle + primary/secondary actions).
+     - `Toolbar` page-specific actions/filters.
+     - `InspectorPanel` contextual right panel.
+   - Add density modes (`comfortable`, `compact`, `dense`) via a context + CSS data attribute.
+   - Add branch tests for workspace shell and density modes.
+
+6. **Seller workspace shell** (~1 sprint)
+   - Create or converge seller pages under `(seller)/` using the workspace layout:
+     - Dashboard
+     - Inventory
+     - Listings
+     - Orders
+     - Customers
+     - Messages
+     - Analytics
+     - Financial
+     - Settings
+   - Wire sidebar navigation to existing routes.
+   - Replace spinner loading with skeletons.
+
+7. **Listing Draft / AI-assisted wizard** (~1.5–2 sprints)
+   - Replace the rigid step wizard with a persistent **Listing Draft** model.
+   - Draft always exists; shows completion percentage.
+   - Modules: Identification, Fitment, Pricing, Media, Shipping, SEO.
+   - AI identifies from image → enriches → user approves.
+   - Right inspector panel shows completion, publishing status, market value, suggested price, inventory, shipping estimate, compatibility, SEO score.
+   - Autosave: local state → optimistic update → server sync → success indicator.
+
+8. **UX polish** (~0.5–1 sprint)
+   - Replace all spinners with skeletons.
    - Add sticky action/filter panels.
    - Improve empty/error/responsive states.
+   - Implement unified notification center.
 
-5. **SEO & accessibility hardening** (~0.5–1 sprint)
+9. **SEO & accessibility hardening** (~0.5–1 sprint)
    - Fix heading hierarchy (one H1 per page, logical H2s).
    - Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
    - Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
    - WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
 
+**Mapping from public pages to seller workspace:**
+
+| Public experience    | Seller workspace        |
+| -------------------- | ----------------------- |
+| Header               | Top Navigation          |
+| Search Bar           | Global Workspace Search |
+| Product Card         | Inventory Card          |
+| Product Gallery      | Media Manager           |
+| Seller Info          | Customer / Seller Panel |
+| Specifications       | Property Editor         |
+| Filters              | Workspace Filters       |
+| Sticky Purchase Card | Context Inspector       |
+| Related Listings     | Recommendations         |
+| Loading Skeletons    | Same Skeleton System    |
+| Buttons              | Same Button System      |
+| Typography           | Same Typography System  |
+| Design Tokens        | Same Design Tokens      |
+
 **Optimal implementation approach:**
 
-- Treat this as **convergence, not redesign**: keep the existing brand, colors, and industrial aesthetic; only enforce discipline through tokens and components.
-- Build components in `src/components/ui` (or `src/components/design-system`) with Tailwind + CSS variables; avoid one-off styled wrappers.
-- Migrate pages incrementally, starting with the part page as the reference, then search, home, auth, and footer. Do not rewrite all pages at once.
-- Use **Storybook-style branch tests** (`tests/branch/p5-design-system/`) to assert token compliance, component contracts, and page-level regressions.
-- Run the design-system work in a long-lived feature branch or series of stacked PRs to `develop`; merge each phase only after tests pass.
-- Coordinate with P5.1 (App Router normalization) so that route-group refactors consume the new components instead of duplicating them.
+- Treat PPDS as the **product operating system**, not a page redesign.
+- Build components in `src/components/ui` and `src/components/design-system` with Tailwind + CSS variables; avoid one-off styled wrappers.
+- Migrate surfaces incrementally: marketplace first (it defines the canon), then seller workspace, then admin.
+- Use **Storybook-style branch tests** (`tests/branch/p5-design-system/`) to assert token compliance, component contracts, workspace layouts, and page-level regressions.
+- Run PPDS work in a long-lived feature branch or series of stacked PRs to `develop`; merge each phase only after tests pass.
+- Coordinate with P5.1 (App Router normalization) so route-group refactors consume PPDS components instead of duplicating them.
 
-**Depends on:** P2.1 (card/search standardization reduces duplicate card work), P3.6 (layout standardization), P4.6 (DB audit complete so security work can resume).  
-**Unblocks:** P5.1–P5.9 by providing the component layer those refactored routes will use.
+**Depends on:** P2.1 (card/search standardization), P3.6 (layout standardization), P4.6 (DB audit complete).  
+**Unblocks:** P5.1–P5.9 by providing the component layer and workspace architecture those refactored routes will use.
 
 ### P5.1 Normalize Next.js App Router structure
 
