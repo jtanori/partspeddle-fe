@@ -609,9 +609,10 @@ As pages converge to the new system, the following categories should be tracked 
    - Standardize one icon family and one font scale.
    - Add branch tests asserting token usage and forbidding new hardcoded values.
 
-2. **Component library** (~1–1.5 sprints)
-   - Build or harden the components listed above using the tokens.
-   - Replace ad-hoc cards on the homepage, search, and listing pages with the new `Card` variants.
+2. **Component library** (~1–1.5 sprints) ✅
+   - Build or harden the canonical components listed above using the tokens.
+   - Create new canonical components in `src/components/ui` or `src/components/design-system` rather than refactoring old ad-hoc components in place; old components remain during the transition and are tracked in `docs/notes/p5-deprecated-components.md` for removal in the cleanup round.
+   - Leave page-level card replacement on home/search/listing to **Phase 3 (page convergence)**; Phase 2 only delivers the component contracts and reference usages (e.g., on the canonical part page).
    - Add `Skeleton` variants for listing, image, seller, search, and review loading states.
    - Add branch tests per component.
 
@@ -757,6 +758,19 @@ As pages converge to the new system, the following categories should be tracked 
 - Run `flyctl secrets set ... --app vintrack-prod` for each production secret.
 - Redeploy `vintrack-prod` and verify `/api/health` and a smoke search request.
 - **Depends on:** P5.8.
+
+### P5.10 Add Storybook for design-system documentation
+
+**Why:** Branch tests assert token compliance and component contracts, but they are a poor way for designers and engineers to browse states, variants, and the canonical part page in isolation. Storybook provides a stable visual reference and future visual-regression target for the design system.  
+**Files/scope:** `.storybook/**`, `src/components/ui/**/*.stories.tsx`, `src/components/layout/design-system/**/*.stories.tsx`, `src/components/pdp-modern/**/*.stories.tsx`.  
+**Action:**
+
+- Install Storybook for Next.js 16 + React 19 + Tailwind CSS v4 and verify it starts alongside the dev server.
+- Write stories for the core tokens/primitives (`Button`, `Badge`, `Card` variants, `Container`, `Content`, `MainGrid`, `Section`, `Stack`).
+- Write stories for the canonical part page (`PDPRoot`) with representative mock data.
+- Configure a11y and viewport addons; run Storybook as part of CI smoke checks.
+- Keep component branch tests as the primary regression harness; Storybook is visual/reference documentation, not a replacement for tests.
+- **Depends on:** P5.0 Phase 2 (component library).
 
 ---
 
