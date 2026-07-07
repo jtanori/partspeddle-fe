@@ -545,6 +545,108 @@ Status markers:
 - Parallel backend layers: thin `app/api/*/route.ts` handlers coexist with `src/backend/modules/*/contracts/*` Express-style handlers — not idiomatic Next.js Route Handlers + colocated server modules.
 - Widespread `supabaseAdmin` in Route Handlers bypasses RLS; seller auth uses Bearer tokens + service role instead of cookie session helpers everywhere.
 - Legacy deps remain (`express`, `vite`) though runtime is Next-only.
+- UI/UX inconsistency: pages use different card styles, spacing scales, border radii, and typography, so the product does not yet feel like one coherent design system.
+
+### P5.0 Design system convergence (highest priority in P5)
+
+**Why:** A recent UI/UX review concluded that the product is already production-capable (~8.8/10) and should not be redesigned. Instead, the proposed part-page design should become the canonical reference for a unified design system, and every page should be converged to use the same tokens, components, spacing, and information hierarchy. This is a prerequisite for the P5 routing/security work because it establishes the component contracts and page templates that the refactored routes will consume.  
+**Files/scope:** `tailwind.config.ts`, `src/components/ui/**`, `src/app/(public)/**`, `src/app/(auth)/**`, `src/components/homepage/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/navbar/**`, `src/components/footer/**`, `src/app/layout.tsx`, `src/app/globals.css`.  
+**Design system primitives to define:**
+
+| Token                | Value                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| Container max width  | 1440px                                                                                         |
+| Content max width    | 1280px                                                                                         |
+| Grid                 | 12 columns, 24px gutters                                                                       |
+| Vertical rhythm      | 8px scale                                                                                      |
+| Card primary         | white, 16px radius, 1px border, small shadow, 24px padding                                     |
+| Card secondary       | very light gray, no shadow, 16px padding                                                       |
+| Floating action card | sticky, used for buy/seller/checkout/filters                                                   |
+| Typography           | Display 48 / Hero 36 / Section 28 / Card title 22 / Body 16 / Caption 14 / Meta 12             |
+| Spacing              | 4, 8, 12, 16, 24, 32, 48, 64, 96                                                               |
+| Border radius        | 4, 8, 12, 16, 24, 999                                                                          |
+| Buttons              | Primary, Secondary, Ghost, Icon, Danger, Loading, Disabled                                     |
+| Status colors        | Orange (action), Green (success), Blue (info), Yellow (warning), Red (danger), Gray (disabled) |
+
+**Core component library to build once:**
+
+`Button`, `Card`, `Badge`, `Chip`, `Price`, `Rating`, `InventoryCount`, `SellerSummary`, `ImageGallery`, `VehicleLineage`, `Breadcrumb`, `Tabs`, `Accordion`, `SpecificationTable`, `SearchInput`, `FilterGroup`, `Skeleton`, `Pagination`, `Toast`, `Modal`, `Drawer`, `Tooltip`.
+
+**Visual reference:** `/Users/dev/Documents/PartsPeddle/design-proposal.png`
+
+Key elements to preserve from the reference:
+
+- Dark top navigation with logo, persistent search bar, "Sell parts" CTA, and auth actions.
+- Breadcrumb trail under the nav.
+- Two-column part-detail layout: left image gallery with thumbnail rail and zoom affordance; right product summary with badges, title, metadata, price, shipping, and stacked primary/secondary CTAs.
+- Inline seller summary card (avatar, name, rating, location) plus a richer "Seller & Support" sidebar card.
+- "Vehicle Fitment" callout with compatibility list and "View all N compatible vehicles" link.
+- "Compatible Parts" cross-sell strip with small part cards.
+- Tabbed content area (Specifications, Fitment, Description, Shipping & Returns, Warranty, Q&A).
+- Right sidebar with buyer-confidence guarantees and "Recently Viewed" list.
+- Clean specification table with two-column label/value layout.
+
+**Deprecation tracking:**
+
+As pages converge to the new system, the following categories should be tracked for removal in a final cleanup round (maintain the running list in `docs/notes/p5-deprecated-components.md`):
+
+| Category            | Likely deprecated items                                                                                                                  | Replacement                                                                 |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Ad-hoc cards        | `FeaturedParts`, `ProductGridCard`, `ProductListCard`, `SearchResultsDropdown`, `LiveSearchDropdown`, `SearchListItem`, `SellerGridCard` | `Card`, `PartCard`, `SellerCard` variants                                   |
+| Old PDP chrome      | Legacy `ProductDetail.tsx`, older PDP sub-components that do not match the canonical two-column layout                                   | `pdp-modern/*` aligned to the reference                                     |
+| Old search chrome   | `SearchModal`, `MobileSearchSheet`, `SearchSidebarDisabled`, `SearchResultsController` direct-Algolia UI                                 | Command-palette live search, persistent filter panel, `SearchPageClient` v2 |
+| Old layout wrappers | `AppWrapper`, `PublicShell`, one-off page wrappers                                                                                       | Route-group layouts + `Container`/`Content`/`MainGrid`                      |
+| Old loading states  | `MainLoadingIndicator`, `InlineLoadingIndicator`, spinner-heavy pages                                                                    | `Skeleton` variants                                                         |
+| Old buttons/badges  | One-off button styles outside `ui/button.tsx`, custom badge implementations                                                              | `Button`, `Badge`, `Chip` from the design system                            |
+| Old icon mix        | Mixed icon libraries or inline SVGs                                                                                                      | Single icon family (e.g., Lucide)                                           |
+| Hardcoded values    | Arbitrary Tailwind values (`max-w-[720px]`, `h-[480px]`, `text-6xl` without token)                                                       | Tokens from `tailwind.config.ts`                                            |
+
+**Execution phases:**
+
+1. **Tokens and primitives** (~1 sprint) ✅
+   - Move hardcoded colors/spacing/radii/shadows into `tailwind.config.ts` theme tokens and CSS variables.
+   - Lock the layout grid (`Container`, `Content`, `MainGrid`, `Footer`).
+   - Standardize one icon family and one font scale.
+   - Add branch tests asserting token usage and forbidding new hardcoded values.
+
+2. **Component library** (~1–1.5 sprints)
+   - Build or harden the components listed above using the tokens.
+   - Replace ad-hoc cards on the homepage, search, and listing pages with the new `Card` variants.
+   - Add `Skeleton` variants for listing, image, seller, search, and review loading states.
+   - Add branch tests per component.
+
+3. **Page convergence** (~1.5 sprints)
+   - Use the existing **part page** as the canonical template.
+   - Converge **home**, **search**, **live search**, **authentication**, and **footer** to the same card system, spacing, and typography.
+   - Specific targets:
+     - Home: more whitespace, single card system, larger category cards, modernized trust section.
+     - Search: persistent left filter panel, top toolbar (results/sort/view/filters/inventory count), unified result cards.
+     - Live search: command-palette-style dropdown with sections (Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending).
+     - Authentication: reduce empty space, apply token typography/buttons/cards, optional parallax on illustration.
+     - Footer: align spacing, contrast, column widths, newsletter placement.
+
+4. **UX polish** (~0.5–1 sprint)
+   - Replace spinners with skeletons everywhere.
+   - Add sticky action/filter panels.
+   - Improve empty/error/responsive states.
+
+5. **SEO & accessibility hardening** (~0.5–1 sprint)
+   - Fix heading hierarchy (one H1 per page, logical H2s).
+   - Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
+   - Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
+   - WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
+
+**Optimal implementation approach:**
+
+- Treat this as **convergence, not redesign**: keep the existing brand, colors, and industrial aesthetic; only enforce discipline through tokens and components.
+- Build components in `src/components/ui` (or `src/components/design-system`) with Tailwind + CSS variables; avoid one-off styled wrappers.
+- Migrate pages incrementally, starting with the part page as the reference, then search, home, auth, and footer. Do not rewrite all pages at once.
+- Use **Storybook-style branch tests** (`tests/branch/p5-design-system/`) to assert token compliance, component contracts, and page-level regressions.
+- Run the design-system work in a long-lived feature branch or series of stacked PRs to `develop`; merge each phase only after tests pass.
+- Coordinate with P5.1 (App Router normalization) so that route-group refactors consume the new components instead of duplicating them.
+
+**Depends on:** P2.1 (card/search standardization reduces duplicate card work), P3.6 (layout standardization), P4.6 (DB audit complete so security work can resume).  
+**Unblocks:** P5.1–P5.9 by providing the component layer those refactored routes will use.
 
 ### P5.1 Normalize Next.js App Router structure
 
@@ -759,7 +861,7 @@ production certification (P5.8).
 4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → expand ESLint strict typing outside domain (P3.5) → standardize layout architecture across pages (P3.6).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
 6. **P6 security hardening:** address non-critical gaps from P4.6 (P6.1–P6.6) before production certification; apply the remote-first migration checklist (P6.7) once the migration strategy is chosen.
-7. **P5 routing & web security:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → update production Fly.io secrets (P5.9).
+7. **P5 routing & web security:** design system convergence (P5.0) → App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → update production Fly.io secrets (P5.9).
 
 Items marked **Depends on** should not start until their dependency is complete.
 
