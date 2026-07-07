@@ -160,7 +160,52 @@ In dry-run mode the workflow runs `supabase db push --dry-run` and skips Edge Fu
 
 ---
 
-# 5. Database Deployment Procedure
+# 5. End-to-end deploy verification
+
+After a change lands on `develop`, the `smoke-staging` CI job runs automatically once both the Fly.io and Supabase staging deploys finish.
+
+## What the smoke job checks
+
+1. `GET https://stage.partspeddle.com/api/health` returns HTTP 200.
+2. `scripts/search/process-search-outbox.ts` runs against staging and completes without errors.
+3. `POST /functions/v1/send-message-notification` returns a non-5xx response (401 is expected for an unauthenticated request; any 5xx means the function is not deployed or unhealthy).
+
+## Required staging secrets
+
+- `STAGING_SUPABASE_URL`
+- `STAGING_SUPABASE_ANON_KEY`
+- `STAGING_SUPABASE_SERVICE_ROLE_KEY`
+
+## Evidence template
+
+When exercising the deploy path (e.g. for P4.5 certification), record:
+
+```markdown
+- Date: YYYY-MM-DD HH:MM UTC
+- Commit/branch: `develop` @ <sha>
+- CI run URL: <link to GitHub Actions run>
+- Supabase deploy result: PASS / FAIL
+- Fly.io deploy result: PASS / FAIL
+- Smoke test result: PASS / FAIL
+- Schema version (from `supabase migration list`): <version>
+- Edge Function versions: <output of `supabase functions list`>
+- Notes:
+  - Any deviations, rollbacks, or follow-ups.
+```
+
+To run the smoke script locally against staging:
+
+```bash
+STAGING_URL=https://stage.partspeddle.com \
+STAGING_SUPABASE_URL=<url> \
+STAGING_SUPABASE_ANON_KEY=<anon> \
+STAGING_SUPABASE_SERVICE_ROLE_KEY=<service-role> \
+pnpm ci:smoke:staging
+```
+
+---
+
+# 6. Database Deployment Procedure
 
 1. **Schema Change**: write a new migration file in `supabase/migrations/<timestamp>_description.sql`.
 2. **Local verification**: `pnpm db:local:reset` and `pnpm db:validate:replay`.

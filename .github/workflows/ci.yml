@@ -48,11 +48,9 @@ jobs:
       - name: Run tests
         run: pnpm test
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
+          ALGOLIA_SEARCH_INDEX_NAME: ${{ secrets.ALGOLIA_SEARCH_INDEX_NAME }}
 
   deploy-staging:
     name: Deploy Staging to Fly.io
@@ -171,3 +169,32 @@ jobs:
       - name: Deploy Edge Functions
         if: ${{ github.event.inputs.dry-run != 'true' }}
         run: supabase functions deploy --use-api --project-ref ${{ secrets.PRODUCTION_SUPABASE_PROJECT_ID }}
+
+  smoke-staging:
+    name: Staging Smoke Tests
+    needs: [deploy-staging, deploy-supabase-staging]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run staging smoke tests
+        run: pnpm ci:smoke:staging
+        env:
+          STAGING_URL: https://stage.partspeddle.com
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
