@@ -1,17 +1,19 @@
-import { algoliasearch } from "algoliasearch";
-import * as dotenv from "dotenv";
-import * as path from "path";
+import { algoliasearch } from 'algoliasearch';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+import {
+  INDEX_NEWEST,
+  INDEX_PRICE_ASC,
+  INDEX_PRICE_DESC,
+  SEARCH_INDEX_NAME,
+} from '../../src/backend/modules/search/infrastructure/algolia-client';
 
 // Forzar la carga de .env desde la raíz del proyecto
-dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-const client = algoliasearch(
-  process.env.ALGOLIA_APP_ID!,
-  process.env.ALGOLIA_ADMIN_KEY!,
-);
+const client = algoliasearch(process.env.ALGOLIA_APP_ID!, process.env.ALGOLIA_ADMIN_KEY!);
 
-// IMPORTANTE: Asegurar que coincida con el ALGOLIA_INDEX_NAME de tu Edge Function
-const INDEX_NAME = "parts";
+const INDEX_NAME = SEARCH_INDEX_NAME;
 
 async function configureIndex() {
   console.log(
@@ -22,60 +24,53 @@ async function configureIndex() {
     await client.setSettings({
       indexName: INDEX_NAME,
       indexSettings: {
-        searchableAttributes: [
-          "title",
-          "make",
-          "model",
-          "part_type",
-          "category",
-          "description",
-        ],
+        searchableAttributes: ['title', 'make', 'model', 'part_type', 'category', 'description'],
         attributesForFaceting: [
-          "filterOnly(status)",
-          "category",
-          "part_type",
-          "make",
-          "model",
-          "year",
-          "condition",
-          "seller_verified",
-          "price",
+          'filterOnly(status)',
+          'category',
+          'part_type',
+          'make',
+          'model',
+          'year',
+          'condition',
+          'seller_verified',
+          'price',
         ],
-        customRanking: ["desc(created_at)"],
-        queryLanguages: ["es", "en"],
-        indexLanguages: ["es", "en"],
-        removeWordsIfNoResults: "allOptional",
+        customRanking: ['desc(created_at)'],
+        queryLanguages: ['es', 'en'],
+        indexLanguages: ['es', 'en'],
+        removeWordsIfNoResults: 'allOptional',
         allowTyposOnNumericTokens: false,
         // Define replicas
-        replicas: ["parts_price_asc", "parts_price_desc", "parts_newest"],
+        replicas: [INDEX_PRICE_ASC, INDEX_PRICE_DESC, INDEX_NEWEST],
       },
     });
 
     // Configure each replica
     await client.setSettings({
-      indexName: "parts_price_asc",
+      indexName: INDEX_PRICE_ASC,
       indexSettings: {
-        customRanking: ["asc(price)"],
+        customRanking: ['asc(price)'],
       },
     });
 
     await client.setSettings({
-      indexName: "parts_price_desc",
+      indexName: INDEX_PRICE_DESC,
       indexSettings: {
-        customRanking: ["desc(price)"],
+        customRanking: ['desc(price)'],
       },
     });
 
     await client.setSettings({
-      indexName: "parts_newest",
+      indexName: INDEX_NEWEST,
       indexSettings: {
-        customRanking: ["desc(created_at)"],
+        customRanking: ['desc(created_at)'],
       },
     });
 
     console.log(`✅ Índice "${INDEX_NAME}" configurado con éxito en Algolia.`);
   } catch (error) {
-    console.error("❌ Error configurando Algolia:", error);
+    console.error('❌ Error configurando Algolia:', error);
   }
 }
 
