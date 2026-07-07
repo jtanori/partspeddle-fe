@@ -11,17 +11,18 @@ describe('P5.0 design tokens', () => {
   const pdprRoot = read('src', 'components', 'pdp-modern', 'PDPRoot.tsx');
 
   it('exposes the new systematic token set in src/index.css', () => {
-    expect(css).toContain('--container-max: 1440px');
-    expect(css).toContain('--content-max: 1280px');
-    expect(css).toContain('--grid-gutter: 24px');
-    expect(css).toContain('--spacing-5: 24px');
-    expect(css).toContain('--radius-xl: 16px');
-    expect(css).toContain('--text-hero: 36px');
-    expect(css).toContain('--color-brand-primary: #B87333');
-    expect(css).toContain('--color-surface-secondary: #F5F0EB');
-    expect(css).toContain('--color-foreground-primary: #1E1E1E');
-    expect(css).toContain('--color-stroke-subtle: #E5E0DA');
-    expect(css).toContain('--shadow-card:');
+    const lowerCss = css.toLowerCase();
+    expect(lowerCss).toContain('--container-max: 1440px');
+    expect(lowerCss).toContain('--content-max: 1280px');
+    expect(lowerCss).toContain('--grid-gutter: 24px');
+    expect(lowerCss).toContain('--spacing-5: 24px');
+    expect(lowerCss).toContain('--radius-xl: 16px');
+    expect(lowerCss).toContain('--text-hero: 36px');
+    expect(lowerCss).toContain('--color-brand-primary: #b87333');
+    expect(lowerCss).toContain('--color-surface-secondary: #f5f0eb');
+    expect(lowerCss).toContain('--color-foreground-primary: #1e1e1e');
+    expect(lowerCss).toContain('--color-stroke-subtle: #e5e0da');
+    expect(lowerCss).toContain('--shadow-card:');
   });
 
   it('keeps legacy pp-* aliases during the transition', () => {
@@ -42,5 +43,23 @@ describe('P5.0 design tokens', () => {
 
   it('does not regress the pp-container component class', () => {
     expect(css).toContain('.pp-container');
+  });
+
+  it('new Phase 2 components avoid hardcoded hex values', () => {
+    const dirs = [
+      path.join(repoRoot, 'src', 'components', 'ui'),
+      path.join(repoRoot, 'src', 'components', 'design-system'),
+    ];
+    const hexPattern = /#(?:[0-9a-fA-F]{3}){1,2}/;
+    const legacyPattern = /(?:bg|text|border|rounded)-pp-/;
+
+    for (const dir of dirs) {
+      const files = fs.readdirSync(dir).filter((f) => f.endsWith('.tsx'));
+      for (const file of files) {
+        const source = fs.readFileSync(path.join(dir, file), 'utf-8');
+        expect(source).not.toMatch(hexPattern);
+        expect(source).not.toMatch(legacyPattern);
+      }
+    }
   });
 });

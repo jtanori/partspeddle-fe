@@ -42,21 +42,29 @@ Canonical part-page design: `/Users/dev/Documents/PartsPeddle/design-proposal.pn
 
 ## Components to replace/remove
 
-| Component                                      | Reason                                 | Replacement                         | Status  |
-| ---------------------------------------------- | -------------------------------------- | ----------------------------------- | ------- |
-| `src/components/homepage/FeaturedParts`        | Custom card not matching design system | `Card` + `PartCard`                 | Pending |
-| `src/components/search/cards/ProductGridCard`  | Custom card styling                    | `Card` + `PartCard`                 | Pending |
-| `src/components/search/cards/ProductListCard`  | Custom card styling                    | `Card` + `PartCard`                 | Pending |
-| `src/components/search/SearchModal`            | Command-palette will replace modal     | New `CommandPalette`                | Pending |
-| `src/components/search/MobileSearchSheet`      | Will be merged into command palette    | New `CommandPalette`                | Pending |
-| `src/components/search/SearchResultsDropdown`  | Custom dropdown styling                | `CommandPalette` / `SearchInput`    | Pending |
-| `src/components/search/LiveSearchDropdown`     | Custom dropdown styling                | `CommandPalette` / `SearchInput`    | Pending |
-| `src/components/search/SearchListItem`         | Custom list item styling               | `PartCard` list variant             | Pending |
-| `src/components/search/cards/SellerGridCard`   | Custom card styling                    | `Card` + `SellerCard`               | Pending |
-| `src/components/layout/AppWrapper`             | Conditional nav logic                  | Route-group layouts                 | Pending |
-| `src/components/layout/PublicShell`            | One-off wrapper                        | `Container` / `Content` / `Section` | Pending |
-| `src/components/common/MainLoadingIndicator`   | Spinner loading                        | `Skeleton`                          | Pending |
-| `src/components/common/InlineLoadingIndicator` | Spinner loading                        | `Skeleton`                          | Pending |
+| Component                                      | Reason                                 | Replacement                               | Status               |
+| ---------------------------------------------- | -------------------------------------- | ----------------------------------------- | -------------------- |
+| `src/components/homepage/FeaturedParts`        | Custom card not matching design system | `Card` + `PartCard`                       | Pending              |
+| `src/components/search/cards/ProductGridCard`  | Custom card styling                    | `Card` + `PartCard`                       | Pending              |
+| `src/components/search/cards/ProductListCard`  | Custom card styling                    | `Card` + `PartCard`                       | Pending              |
+| `src/components/search/SearchModal`            | Command-palette will replace modal     | New `CommandPalette`                      | Pending              |
+| `src/components/search/MobileSearchSheet`      | Will be merged into command palette    | New `CommandPalette`                      | Pending              |
+| `src/components/search/SearchResultsDropdown`  | Custom dropdown styling                | `CommandPalette` / `SearchInput`          | Pending              |
+| `src/components/search/LiveSearchDropdown`     | Custom dropdown styling                | `CommandPalette` / `SearchInput`          | Pending              |
+| `src/components/search/SearchListItem`         | Custom list item styling               | `PartCard` list variant                   | Pending              |
+| `src/components/search/cards/SellerGridCard`   | Custom card styling                    | `Card` + `SellerCard`                     | Pending              |
+| `src/components/layout/AppWrapper`             | Conditional nav logic                  | Route-group layouts                       | Pending              |
+| `src/components/layout/PublicShell`            | One-off wrapper                        | `Container` / `Content` / `Section`       | Pending              |
+| `src/components/common/MainLoadingIndicator`   | Spinner loading                        | `Skeleton`                                | Pending              |
+| `src/components/common/InlineLoadingIndicator` | Spinner loading                        | `Skeleton`                                | Pending              |
+| `src/components/shared/GridSkeleton`           | Ad-hoc skeleton                        | `Skeleton` variants                       | Pending              |
+| `src/components/shared/PartCard`               | Pre-token card                         | `src/components/design-system/PartCard`   | Deprecated (Phase 2) |
+| `src/components/shared/SellerCard`             | Pre-token card                         | `src/components/design-system/SellerCard` | Deprecated (Phase 2) |
+| `src/components/search/FilterChips`            | Custom chip styling                    | `Chip` / `FilterChip`                     | Deprecated (Phase 2) |
+| `src/components/search/Pagination`             | Custom pagination                      | `Pagination` from `src/components/ui`     | Deprecated (Phase 2) |
+| `src/components/pdp-modern/ProductGallery`     | Pre-token gallery                      | `ImageGallery`                            | Deprecated (Phase 2) |
+| `src/components/pdp-modern/PriceBlock`         | Pre-token price block                  | `Price` + `InventoryCount`                | Deprecated (Phase 2) |
+| `src/components/pdp-modern/SellerSupportCard`  | Pre-token seller card                  | `SellerSummary` + `Card`                  | Deprecated (Phase 2) |
 
 ## Hardcoded values to eliminate
 

@@ -1,20 +1,39 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  MessageSquare,
+  BarChart3,
+  Settings,
+  HelpCircle,
+  ArrowLeftRight,
+  LogOut,
+  Wrench,
+  Upload,
+  Download,
+  Tag,
+} from 'lucide-react';
 import { useAuthStore } from '@/store/hooks';
-import { SellerSidebar } from '@/components/seller-dashboard/Sidebar';
-import { DashboardHeader } from '@/components/seller-dashboard/DashboardHeader';
-import { YardControlCore } from '@/components/drawers/YardControlCore';
-import { InventoryWizardProvider } from '@/context/InventoryWizardContext';
 import { useSellerProfile } from '@/hooks/useSellerProfile';
-import { PublicShell } from '@/components/layout/PublicShell';
-import { MainLoadingIndicator } from '@/components/common/MainLoadingIndicator';
-import '@/styles/dashboard.css';
+import { InventoryWizardProvider } from '@/context/InventoryWizardContext';
+import { YardControlCore } from '@/components/drawers/YardControlCore';
+import {
+  WorkspaceLayout,
+  Sidebar,
+  TopNavigation,
+  type SidebarSection,
+} from '@/components/workspace';
+import logoImg from '@/assets/images/logo_solid.png';
 
 export default function SellerLayout({ children }: { children: React.ReactNode }) {
-  const { user, setProfile } = useAuthStore();
+  const { user, setProfile, logout } = useAuthStore();
   const [isYardControlOpen, setIsYardControlOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const { profile, loading: isLoading } = useSellerProfile({ userId: user?.id });
 
   useEffect(() => {
@@ -23,57 +42,104 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
     }
   }, [profile, setProfile]);
 
-  if (isLoading) {
-    return <MainLoadingIndicator label="Loading seller workspace..." />;
-  }
+  const sidebarSections: SidebarSection[] = [
+    {
+      items: [
+        { id: 'overview', href: '/seller', label: 'Overview', icon: LayoutDashboard },
+        { id: 'inventory', href: '/seller/inventory', label: 'Inventory', icon: Package },
+        { id: 'listings', href: '/seller/create', label: 'New Listing', icon: Tag },
+        { id: 'orders', href: '/seller/orders', label: 'Orders', icon: ShoppingBag },
+        { id: 'messages', href: '#', label: 'Messages', icon: MessageSquare },
+        { id: 'analytics', href: '/seller', label: 'Analytics', icon: BarChart3 },
+      ],
+    },
+    {
+      title: 'Tools',
+      items: [
+        { id: 'imports', href: '#', label: 'Imports', icon: Upload },
+        { id: 'exports', href: '#', label: 'Exports', icon: Download },
+        { id: 'pricing', href: '#', label: 'Pricing', icon: Tag },
+        {
+          id: 'yard',
+          label: 'Yard Control',
+          icon: Wrench,
+          onClick: () => setIsYardControlOpen(true),
+        },
+      ],
+    },
+    {
+      title: 'Account',
+      items: [
+        { id: 'settings', href: '/seller/settings', label: 'Settings', icon: Settings },
+        { id: 'help', href: '#', label: 'Help', icon: HelpCircle },
+      ],
+    },
+  ];
 
-  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+  const sidebar = (
+    <Sidebar
+      logo={
+        <Link href="/seller" className="flex items-center gap-2">
+          <Image src={logoImg} alt="PartsPeddle" className="h-8 w-auto object-contain" />
+          <span className="font-display text-lg font-black uppercase tracking-tight text-foreground-primary">
+            PartsPeddle
+          </span>
+        </Link>
+      }
+      sections={sidebarSections}
+      mobileOpen={isMobileSidebarOpen}
+      onMobileClose={() => setIsMobileSidebarOpen(false)}
+      footer={
+        <div className="space-y-1">
+          <Link
+            href="/search"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-caption font-bold uppercase tracking-wider text-foreground-secondary transition-colors hover:bg-surface-secondary hover:text-foreground-primary"
+          >
+            <ArrowLeftRight className="h-4 w-4" />
+            Marketplace
+          </Link>
+          <button
+            type="button"
+            onClick={logout}
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-caption font-bold uppercase tracking-wider text-status-danger transition-colors hover:bg-status-danger-soft"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </button>
+        </div>
+      }
+    />
+  );
+
+  const topNav = (
+    <TopNavigation
+      onMenuToggle={() => setIsMobileSidebarOpen(true)}
+      onSearch={(value) => console.log('Workspace search:', value)}
+      notifications={2}
+      messages={1}
+      tasks={0}
+      profile={{
+        name: String(profile?.name ?? user?.email ?? 'Seller'),
+      }}
+    />
+  );
 
   return (
-    <PublicShell showFooter={false}>
-      <InventoryWizardProvider>
-        <div className="flex-1 flex overflow-hidden bg-shell-canvas text-text-primary dashboard-shell font-sans">
-          <SellerSidebar className="hidden md:flex" />
+    <InventoryWizardProvider>
+      <WorkspaceLayout sidebar={sidebar} topNav={topNav} loading={isLoading} density="compact">
+        {children}
+      </WorkspaceLayout>
 
-          {isMobileMenuOpen && (
-            <>
-              <div
-                className="fixed inset-0 bg-black/50 z-40 md:hidden"
-                onClick={closeMobileMenu}
-                aria-hidden="true"
-              />
-              <SellerSidebar
-                className="fixed inset-y-0 left-0 z-50 md:hidden"
-                onNavigate={closeMobileMenu}
-                showCloseButton
-                onClose={closeMobileMenu}
-              />
-            </>
-          )}
-
-          <div className="flex-1 flex flex-col h-full overflow-hidden bg-shell-canvas min-w-0">
-            <DashboardHeader
-              onToggleYardControl={() => setIsYardControlOpen(!isYardControlOpen)}
-              onToggleMobileMenu={() => setIsMobileMenuOpen(true)}
-            />
-
-            <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 bg-shell-workspace custom-scrollbar scroll-smooth text-steel-black">
-              <div className="max-w-7xl mx-auto w-full min-w-0">{children}</div>
-            </main>
-          </div>
-
-          {isYardControlOpen && (
-            <YardControlCore
-              onClose={() => setIsYardControlOpen(false)}
-              initialData={{ max_row_slots: 120, max_rack_tiers: 4 }}
-              onSave={(data) => {
-                console.log('Saving yard profile:', data);
-                setIsYardControlOpen(false);
-              }}
-            />
-          )}
-        </div>
-      </InventoryWizardProvider>
-    </PublicShell>
+      {isYardControlOpen && (
+        <YardControlCore
+          onClose={() => setIsYardControlOpen(false)}
+          initialData={{ max_row_slots: 120, max_rack_tiers: 4 }}
+          onSave={(data) => {
+            console.log('Saving yard profile:', data);
+            setIsYardControlOpen(false);
+          }}
+        />
+      )}
+    </InventoryWizardProvider>
   );
 }
