@@ -9,6 +9,12 @@ Each item is tagged with a priority:
 
 Dependencies are called out explicitly so work is not duplicated.
 
+Status markers:
+
+- **✅ Done** — merged into `develop` (and usually `origin/develop`).
+- **🔄 In progress** — branch open and being worked.
+- _(no marker)_ — not started.
+
 > **Branch test-suite rule:** every remediation branch must include a focused regression suite under `tests/branch/<branch-name>/` and update `package.json` so `pnpm test` runs it. The first suite was added for `fix/p0-middleware-and-types`.
 
 ---
@@ -26,8 +32,8 @@ Dependencies are called out explicitly so work is not duplicated.
 - ✅ Reverted `010daee` on `develop` (buildpack builder) in favor of the Dockerfile-based strategy (`3cd0e34`).
 - ✅ Deleted `search/scgs-projection-foundation` and `origin/search/scgs-projection-foundation` (commits covered by `search/ranking-migration-prep`).
 - ✅ Deleted `feat/next-app-routing` and `origin/feat/next-app-routing` (stash index, work already in `main`).
-- ⏳ Decide on `feat/search-refinement`: extract any useful test fixtures, then delete.
-- ⏳ Decide on `search/ranking-migration-prep`: its unique commit `870a74b` is already reflected in `develop`; delete after confirming no other useful commits remain.
+- ✅ Decided on `feat/search-refinement`: branch was deleted; no fixtures needed.
+- ✅ Decided on `search/ranking-migration-prep`: unique work already in `develop`; branch deleted.
 - After cleanup, merge `develop` to `main`.
 
 **Branch cleanup report (generated 2026-06-30):**
@@ -89,7 +95,7 @@ Dependencies are called out explicitly so work is not duplicated.
 
 ## P0 — Critical
 
-### P0.1 Fix taxonomy indexing so search filters work
+### P0.1 Fix taxonomy indexing so search filters work ✅
 
 **Why:** Search currently indexes `category` and `part_type` as Spanish display names (`name_es`) while the UI taxonomy sends English names. Category/partType filters return empty results, and search cards show mismatched labels.  
 **Files:** `src/backend/modules/search/application/build-search-document.ts`, `supabase/functions/sync-algolia-webhook/index.ts`, `src/app/api/search/parts/route.ts`, `src/services/supabase-db.ts`.  
@@ -101,7 +107,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Keep a display-name field (`category_label`, `part_type_label`) if the UI needs human-readable text.
 - **Depends on:** P0.2 (taxonomy source of truth).
 
-### P0.2 Establish a single source of truth for taxonomy
+### P0.2 Establish a single source of truth for taxonomy ✅
 
 **Why:** `src/services/taxonomy.ts` hardcodes English systems/categories/partTypes that diverge from the database. The UI and search cannot stay in sync.  
 **Files:** `src/services/taxonomy.ts`, `src/components/ProductSidebar.tsx`, `src/lib/utils/taxonomy.ts`.  
@@ -111,7 +117,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Replace `SYSTEMS_TAXONOMY` and `SYSTEM_CATEGORIES` with dynamic lookups keyed by `slug_en`.
 - Update `ProductSidebar` to render options from this source and derive counts from Algolia facets.
 
-### P0.3 Unify indexing logic between webhook and batch reindex
+### P0.3 Unify indexing logic between webhook and batch reindex ✅
 
 **Why:** The webhook writes raw DB scores; `BuildSearchDocumentUseCase` recomputes scores. Identical parts have different Algolia records depending on update path.  
 **Files:** `supabase/functions/sync-algolia-webhook/index.ts`, `src/backend/modules/search/application/build-search-document.ts`, `src/backend/modules/search/application/search-index-worker.ts`.  
@@ -199,7 +205,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Removed broken SCGS scripts and the obsolete ranking-engine certification test.
 - Added branch tests under `tests/branch/p1-ranking-cleanup/`.
 
-### P1.4 Harden Supabase Edge Functions
+### P1.4 Harden Supabase Edge Functions ✅
 
 **Why:** Webhooks accept unsigned cross-origin requests; image analysis leaks the Gemini key in the URL; notifications log PII.  
 **Files:** `supabase/functions/sync-algolia-webhook/index.ts`, `supabase/functions/analyze-part-image/index.ts`, `supabase/functions/send-message-notification/index.ts`.  
@@ -209,7 +215,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Move `GEMINI_API_KEY` to an `Authorization` header and add file-size/type validation in `analyze-part-image`.
 - Verify JWT and remove email logging in `send-message-notification`.
 
-### P1.5 Fix Algolia filter escaping
+### P1.5 Fix Algolia filter escaping ✅
 
 **Why:** `escapeFilterValue` uses backslash escaping instead of Algolia's doubled-single-quote rule.  
 **Files:** `src/backend/modules/search/infrastructure/algolia-search-repository.ts`.  
@@ -218,7 +224,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Replace custom escaping with the official helper or the correct doubling rule.
 - Add unit tests for injection payloads.
 
-### P1.6 Harden Docker and CI/Ops
+### P1.6 Harden Docker and CI/Ops ✅
 
 **Why:** Docker runs as root, CI uses npm instead of pnpm, several scripts reference missing files, and the nightly workflow uses Node 20.  
 **Files:** `Dockerfile`, `.github/workflows/ci.yml`, `.github/workflows/nightly-operational-validation.yml`, `package.json`, `.env.example`.  
@@ -230,7 +236,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Update nightly workflow to Node 22 and fix k6 installation source.
 - Complete `.env.example` with all required variables.
 
-### P1.7 Fix mobile viewport, video tutorial layout, and post-dismiss focus artifacts
+### P1.7 Fix mobile viewport, video tutorial layout, and post-dismiss focus artifacts ✅
 
 **Why:** The onboarding video tutorial (`GuidedTour`) is unusable on phones: the dialog is fixed at `max-w-[720px]` with a `16/10` aspect video, it does not adapt to portrait or landscape orientation, and after the user dismisses it the gold focus outline on highlighted elements is sometimes not removed. The root layout also lacks an explicit viewport meta tag, and the floating help button overlaps the mobile bottom tab bar.  
 **Files:** `src/app/layout.tsx`, `src/components/GuidedTour.tsx`, `src/components/layout/AppWrapper.tsx`, `src/components/UIOverlays.tsx`, `src/services/data/tour.ts`.  
@@ -243,7 +249,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Verify every `TOUR_STEPS` `elementId` exists in the DOM; guard highlight logic so missing targets do not throw.
 - Move the global help button above the mobile bottom tab (`bottom-24` on small screens) or hide it while the tour is active.
 
-### P1.8 Fix mobile search and homepage layout overflows
+### P1.8 Fix mobile search and homepage layout overflows ✅
 
 **Why:** Several public-page components assume desktop widths and break on small viewports. `SearchModal` reads `window.innerWidth` during render, which can cause hydration mismatches and SSR errors. The hero search input uses an absolute-positioned submit button that collides with the input on narrow screens. The mobile navigation has both a local `MobileSearchSheet` and the global `SearchModal`, creating two search entry points. The search results page hides the sidebar on mobile (`hidden md:block`) but never wires up the existing `MobileFilterSheet`, leaving users with no filters on phones.  
 **Files:** `src/components/SearchModal.tsx`, `src/components/homepage/HeroSection.tsx`, `src/components/navbar/MobileNavbar.tsx`, `src/components/navbar/MobileSearchSheet.tsx`, `src/components/navbar/BottomTabBar.tsx`, `src/app/(public)/search/page.tsx`, `src/components/search/MobileFilterSheet.tsx`.  
@@ -256,7 +262,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Audit `ProductGridCard`, `ProductListCard`, `ListingsGrid`, and `SearchResultsController` for horizontal overflow, truncated prices, and touch targets smaller than 44×44 px.
 - Ensure the mobile bottom tab bar does not obscure page content by adding safe-area/padding-bottom utilities to main page wrappers.
 
-### P1.9 Make the modern PDP responsive
+### P1.9 Make the modern PDP responsive ✅
 
 **Why:** The new PDP components merged in PR #3 are desktop-first and overflow or become unreadable on phones. `ProductGallery` is locked at `h-[480px]` with a left thumbnail rail, `PriceBlock` renders the price at `text-6xl`, `ProductHeader` uses `text-4xl` titles, `TabSystem` tabs are a non-wrapping horizontal flex, and `TrustSummaryStrip` squishes four columns into a narrow viewport.  
 **Files:** `src/components/pdp-modern/ProductGallery.tsx`, `src/components/pdp-modern/PriceBlock.tsx`, `src/components/pdp-modern/ProductHeader.tsx`, `src/components/pdp-modern/TabSystem.tsx`, `src/components/pdp-modern/TrustSummaryStrip.tsx`, `src/components/pdp-modern/PDPRoot.tsx`.  
@@ -269,7 +275,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Convert `TrustSummaryStrip` to a 2×2 grid on small screens and a single row on desktop.
 - Add `overflow-x-hidden` to `PDPRoot` and verify no long breadcrumb titles cause horizontal scroll.
 
-### P1.10 Make the seller dashboard usable on mobile and tablets
+### P1.10 Make the seller dashboard usable on mobile and tablets ✅
 
 **Why:** `SellerSidebar` is a fixed `260px` width with no responsive behavior, so the entire seller dashboard layout overflows on phones and tablets. The listing intake wizard (`StageOneMedia`) relies on hover for its help popover, which does not work on touch devices, and its `w-80` tooltip can overflow the viewport.  
 **Files:** `src/components/seller-dashboard/Sidebar.tsx`, `src/app/(seller)/layout.tsx`, `src/components/wizard/stages/StageOneMedia.tsx`, `src/components/seller-dashboard/DashboardHeader.tsx`.  
@@ -284,7 +290,7 @@ Dependencies are called out explicitly so work is not duplicated.
 
 ## P2 — Medium
 
-### P2.1 UI/UX standardization: cards, search, and homepage
+### P2.1 UI/UX standardization: cards, search, and homepage ✅
 
 **Why:** Multiple card components (`FeaturedParts`, `ProductGridCard`, `SearchModal` results) have inconsistent styling, hardcoded data, and duplicate logic.  
 **Files:** `src/components/homepage/FeaturedParts.tsx`, `src/components/search/cards/ProductGridCard.tsx`, `src/components/search/SearchModal.tsx`, `src/components/search/SearchResultsDropdown.tsx`, `src/components/navbar/LiveSearchDropdown.tsx`, `src/components/homepage/ListingsGrid.tsx`, `src/components/ProductSidebar.tsx`.  
@@ -298,7 +304,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Use `next/image` for all product/hero images and add `images.remotePatterns`.
 - Replace the inline SVG fallback with a small optimized placeholder file.
 
-### P2.2 Move search data fetching to the server
+### P2.2 Move search data fetching to the server ✅
 
 **Why:** Search page renders an empty shell and fetches client-side, hurting SEO, FCP, and LCP.  
 **Files:** `src/app/(public)/search/page.tsx`, `src/components/search/SearchResultsController.tsx`, `src/services/supabase-db.ts`.  
@@ -308,7 +314,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Use React Suspense and `loading.tsx` for transitions.
 - Keep client-side filtering for subsequent interactions but push sort/filter changes through URL state.
 
-### P2.3 Make health check verify dependencies
+### P2.3 Make health check verify dependencies ✅
 
 **Why:** `/api/health` returns static `200` even when Supabase or Algolia is down.  
 **Files:** `src/app/api/health/route.ts`, `fly/fly.stage.toml`, `fly/fly.prod.toml`.  
@@ -317,7 +323,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Add lightweight Supabase and Algolia checks to `/api/health`.
 - Return `503` when a critical dependency is unreachable.
 
-### P2.4 Improve search result mapping and display
+### P2.4 Improve search result mapping and display ✅
 
 **Why:** `supabase-db.ts` maps `category`/`part_type` directly from hits, and `buildSearchResultCard` hardcodes badges.  
 **Files:** `src/services/supabase-db.ts`, `src/projection/search.ts`, `src/domain/view-models/search.ts`.  
@@ -328,7 +334,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Remove hardcoded `isTested`/`isGoodFit`/`isOEM` badges or compute them from real data.
 - Populate `facets` in `buildSearchProjection` for the sidebar.
 
-### P2.5 Expand drift and parity audits
+### P2.5 Expand drift and parity audits ✅
 
 **Why:** `audit-search-consistency.ts` only checks title/price/condition; `search-parity.ts` hardcodes facet parity.  
 **Files:** `scripts/audit-search-consistency.ts`, `scripts/scgs/search-parity.ts`.  
@@ -338,7 +344,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Implement real facet parity in `search-parity.ts` and fail below a threshold.
 - Schedule the audit in the nightly workflow.
 
-### P2.6 Decouple presentation from direct Supabase calls
+### P2.6 Decouple presentation from direct Supabase calls ✅
 
 **Why:** Components bypass repositories/API routes and depend on `supabaseDb`/`supabaseAdmin`.  
 **Files:** `src/components/SearchModal.tsx`, `src/components/homepage/PopularSellersSection.tsx`, `src/components/seller-dashboard/*`, `src/hooks/useMessaging.ts`.  
@@ -347,7 +353,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Move data access into API routes or server actions.
 - Components should receive data via props or use domain hooks.
 
-### P2.7 Refactor the global store
+### P2.7 Refactor the global store ✅
 
 **Why:** `useAppStore` mixes auth, profile, cart, search, tour, and modal state; components subscribe to everything.  
 **Files:** `src/store/useAppStore.ts`, `src/components/layout/AppWrapper.tsx`, `src/components/UIOverlays.tsx`.  
@@ -356,7 +362,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Split into focused stores with selectors.
 - Remove duplicate overlay mounting between `AppWrapper` and `UIOverlays`.
 
-### P2.8 Re-enable TypeScript strict mode and tighten ESLint
+### P2.8 Re-enable TypeScript strict mode and tighten ESLint ✅
 
 **Why:** `"strict": false` and disabled lint rules allow `any`, undefined globals, and unused variables.  
 **Files:** `tsconfig.json`, `eslint.config.js`, `package.json`.  
@@ -367,7 +373,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Expand the lint script to cover all of `src`.
 - **Depends on:** P0.5 (build must pass first).
 
-### P2.9 Add security headers
+### P2.9 Add security headers ✅
 
 **Why:** No CSP, HSTS, X-Frame-Options, or Referrer-Policy.  
 **Files:** `next.config.ts`.  
@@ -376,7 +382,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Add a `headers()` export with baseline security headers.
 - Review inline scripts/styles for CSP compatibility.
 
-### P2.10 Fix database trigger coupling and search-path injection defense
+### P2.10 Fix database trigger coupling and search-path injection defense ✅
 
 **Why:** The Algolia sync trigger performs synchronous HTTP inside the transaction, and `SECURITY DEFINER` functions lack `SET search_path`.  
 **Files:** `supabase/migrations/20260603030000_setup_algolia_sync_webhook.sql`, other trigger migrations.  
@@ -389,7 +395,7 @@ Dependencies are called out explicitly so work is not duplicated.
 
 ## P3 — Low
 
-### P3.1 Remove dead code and stale comments
+### P3.1 Remove dead code and stale comments ✅
 
 **Why:** Dead PDP backend module, commented JSX, unused Express handlers, and TODO/FIXME comments clutter the codebase.  
 **Files:** `src/backend/modules/pdp`, `src/backend/modules/search/contracts/search-api-handler.ts`, `src/backend/modules/search/contracts/search-suggestions-handler.ts`, `src/components/GuidedTour.tsx`, various TODOs.  
@@ -398,7 +404,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Delete dead modules/files.
 - Remove commented code or convert TODOs into tracked issues.
 
-### P3.2 Clean up project metadata and dependencies
+### P3.2 Clean up project metadata and dependencies ✅
 
 **Why:** Package name is `react-example`, README is outdated, and build tooling is misplaced.  
 **Files:** `package.json`, `README.md`.  
@@ -408,7 +414,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Move `vite`, `express`, `@faker-js/faker`, `@types/next`, `@eslint/js`, `dotenv` to `devDependencies` or remove them.
 - Update README with pnpm/Fly.io setup instructions.
 
-### P3.3 Add Prettier config and verify Husky hooks
+### P3.3 Add Prettier config and verify Husky hooks ✅
 
 **Why:** No Prettier config exists, and Husky hooks are generic shells that may not run lint-staged.  
 **Files:** `prettier.config.js` or `.prettierrc`, `.husky/_/pre-commit`, `.husky/_/commit-msg`.  
@@ -417,7 +423,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Add a Prettier configuration file.
 - Verify hooks invoke `lint-staged` and `commitlint` directly.
 
-### P3.4 Standardize error responses
+### P3.4 Standardize error responses ✅
 
 **Why:** Search API returns `200` with empty hits on failure, masking outages.  
 **Files:** `src/app/api/search/parts/route.ts`.  
@@ -426,8 +432,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Return `5xx` for infrastructure failures and `4xx` for client errors.
 - Log full errors server-side but return generic messages to the client.
 
-### P3.5 Expand ESLint strict typing outside `src/domain`
-
+### P3.5 Expand ESLint strict typing outside `src/domain` ✅
 
 **Why:** P2.8d enforced `no-explicit-any` and `no-unused-vars` as errors only in `src/domain`. The rest of `src/` still has ~115 `no-explicit-any` violations and ~105 `no-unused-vars` warnings (non-blocking). `eslint --fix` does not auto-resolve these rules.  
 **Files:** `eslint.config.js`, primarily `src/backend/modules/search/**`, `src/app/api/search/**`, `src/lib/search/**`, `scripts/search/**`, then remaining `src/**` incrementally.  
@@ -440,7 +445,7 @@ Dependencies are called out explicitly so work is not duplicated.
 
 - **Depends on:** P2.8d (domain strict rules landed).
 
-### P3.6 Standardize layout architecture across pages
+### P3.6 Standardize layout architecture across pages ✅
 
 **Why:** The current UI uses inconsistent layout strategies per page: `src/app/layout.tsx` and `AppWrapper` contain conditional logic to hide the navigation bar on auth pages, while public pages, search, listing/PDP, and dashboard all re-implement wrappers or import nav components directly. This scatters layout concerns, complicates route-group auth boundaries, and duplicates global chrome (nav bars, footers, overlays). Next.js App Router conventions favor colocated layouts in route groups that compose with `children`, so each page provides only its unique content.  
 **References:** [Next.js project structure](https://nextjs.org/docs/app/getting-started/project-structure), [Layouts and pages](https://nextjs.org/docs/app/getting-started/layouts-and-pages), [Linking and navigating](https://nextjs.org/docs/app/getting-started/linking-and-navigating).  
@@ -459,7 +464,7 @@ Dependencies are called out explicitly so work is not duplicated.
 
 ## P4 — Supabase platform & schema governance
 
-### P4.1 Configure CI/CD for Supabase functions and DB migrations
+### P4.1 Configure CI/CD for Supabase functions and DB migrations ✅
 
 **Why:** Migrations and Edge Functions are applied manually today; drift between repo, staging, and production is easy to miss.  
 **Files:** `.github/workflows/ci.yml` (or new `supabase-deploy.yml`), `supabase/config.toml`, `supabase/functions/**`, `docs/DEPLOYMENT_RUNBOOK.md`.  
@@ -470,7 +475,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Document rollback and dry-run steps in the deployment runbook.
 - **Depends on:** P4.2 (local Supabase works), P4.4 (migration baseline verified).
 
-### P4.2 Configure local Supabase environment
+### P4.2 Configure local Supabase environment ✅
 
 **Why:** Developers cannot reliably reproduce schema, RLS, triggers, or Edge Functions without a working local stack.  
 **Files:** `supabase/config.toml`, `supabase/.env.example` (or documented env vars), `package.json` scripts, `docs/DEPLOYMENT_RUNBOOK.md`.  
@@ -481,7 +486,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Register all functions in `config.toml` (`sync-algolia-webhook`, `analyze-part-image`, `send-message-notification`).
 - Verify app + `process-search-outbox` can run against local Postgres.
 
-### P4.3 Rebaseline migrations from remote schema snapshot
+### P4.3 Rebaseline migrations from remote schema snapshot ✅
 
 **Why:** ~40 incremental migrations are hard to audit, reorder, and replay; remote DB is the source of truth at task start.  
 **Files:** `supabase/migrations/**`, `supabase/SCHEMA.sql` (reference dump), `scripts/db/` helpers.  
@@ -494,7 +499,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Remove superseded historical migration files from `supabase/migrations/` once the rebaseline is validated (do not delete until P4.4 passes).
 - **Depends on:** P4.2.
 
-### P4.4 Validate local migration replay against remote schema
+### P4.4 Validate local migration replay against remote schema ✅
 
 **Why:** A rebaselined migration set is only trustworthy if replay produces the same schema as production/staging.  
 **Files:** `supabase/migrations/**`, `scripts/db/verify-schema-fix.ts`, new `scripts/db/compare-schema.ts` (if needed).  
@@ -505,7 +510,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Fix migration SQL until diff is empty or documented intentional deviations are approved.
 - **Depends on:** P4.3.
 
-### P4.5 Exercise Supabase CI/CD integrations end-to-end
+### P4.5 Exercise Supabase CI/CD integrations end-to-end ✅
 
 **Why:** Workflow YAML alone is insufficient — deploy paths, secrets, and function bundles must be proven in staging.  
 **Files:** `.github/workflows/**`, Supabase staging project, Fly.io staging (if app depends on new schema/functions).  
@@ -516,7 +521,7 @@ Dependencies are called out explicitly so work is not duplicated.
 - Record evidence (CI run URLs, schema version, function versions) in runbook or certification note.
 - **Depends on:** P4.1, P4.4.
 
-### P4.6 Perform full database security audit
+### P4.6 Perform full database security audit ✅
 
 **Why:** RLS, `SECURITY DEFINER` functions, grants, vault secrets, and service-role exposure need a systematic review after schema rebaseline and deploy automation.  
 **Files:** `supabase/migrations/**`, `supabase/SCHEMA.sql`, `docs/PRC.md` Section 11, `scripts/db/list-triggers.ts`, `scripts/db/verify-db.ts`.  
@@ -653,6 +658,98 @@ Dependencies are called out explicitly so work is not duplicated.
 
 ---
 
+## P6 — Security hardening follow-ups
+
+These gaps were identified during the P4.6 database security audit. They are
+not blockers for the current remediation sprint but must be addressed before
+production certification (P5.8).
+
+### P6.1 Tighten overly permissive RLS policies
+
+**Why:** `part_images` public read leaks images linked to draft/removed/sold parts; `fraud_events`/`risk_scores` expose internal signals to the subject user; `offers`/`conversations` insert policies lack part/seller validation; `seller_owns_profile` is an implicit `FOR ALL` policy allowing profile deletion.  
+**Files:** `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (policy section).  
+**Action:** Add status/part-availability checks to public reads; validate `seller_id`/`part_id` on insert policies; restrict `seller_owns_profile` to SELECT/UPDATE.
+
+### P6.2 Restrict grants and default privileges
+
+**Why:** `GRANT ALL` is given to `anon` and `authenticated` on every table and function, including sensitive ones (`audit_log`, `fraud_events`, `risk_scores`, `users`, `transactions`). Default privileges propagate this pattern to future objects.  
+**Files:** `supabase/SCHEMA.sql`, `supabase/migrations/20260704000000_rebaseline_public_schema.sql`.  
+**Action:** Replace table grants with least-privilege grants; remove function grants on trigger/INTERNAL functions; remove `anon`/`authenticated` from default table/function privileges where not required.
+
+### P6.3 Remove unused Postgres extensions
+
+**Why:** `pg_net`, `pg_graphql`, `supabase_vault`, and `uuid-ossp` are installed but not used by the marketplace core, increasing attack surface.  
+**Files:** `supabase/SCHEMA.sql`.  
+**Action:** Confirm no dependencies, then `DROP EXTENSION IF EXISTS ...` for each unused extension.
+
+### P6.4 Replace service-role usage in public/analytics routes
+
+**Why:** `supabaseAdmin` is used in public read routes (`/api/sellers/top`, `/api/parts/featured`, `/api/taxonomy`, home/listing pages) and in analytics writes (`/api/search/clicks`, `/api/search/events`) that accept client-controlled IDs.  
+**Files:** `src/app/api/**`, `src/app/(public)/**`, `src/app/(seller)/**`.  
+**Action:** Use anon/SSR clients for public reads; write analytics through RLS-permitted inserts or validate/authenticate IDs server-side.
+
+### P6.5 Add replay protection to webhook signatures
+
+**Why:** `sync-algolia-webhook` verifies HMAC but has no timestamp/nonce, so a captured valid payload can be replayed.  
+**Files:** `supabase/functions/sync-algolia-webhook/index.ts`.  
+**Action:** Include a timestamp in the signed payload and reject requests older than a short tolerance window.
+
+### P6.6 Rotate exposed staging service-role JWT ✅
+
+**Why:** The 2026-07-07 schema dump confirmed that staging still contains legacy `sync-algolia-webhook` and `notify-new-message` database triggers that call Edge Functions with a hard-coded service-role JWT. That token must be considered exposed.  
+**Files/scope:** Supabase staging project, `docs/DEPLOYMENT_RUNBOOK.md`.  
+**Action:**
+
+- Migration fix is in place in `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (lines 763–764):
+  ```sql
+  DROP TRIGGER IF EXISTS "sync-algolia-webhook" ON "public"."parts";
+  DROP TRIGGER IF EXISTS "notify-new-message" ON "public"."messages";
+  ```
+- Edge Functions have been hardened (P1.4) so the legacy bearer-token path is no longer trusted.
+- The concrete rotation/deployment steps are captured in the derived checklist **P6.7**, because the project is transitioning from a remote-first (no migrations) workflow to a migration-driven workflow.
+
+### P6.7 Apply remediation migrations to remote-first databases
+
+**Why:** Before the local Supabase initiative the team followed a remote-first strategy: schema changes were applied directly on the Supabase dashboard or via ad-hoc scripts, and the repo did not have a migration history. The rebaseline migration and trigger-cleanup fixes now exist in `supabase/migrations/`, but they have not yet been applied to the live staging/production projects. We need a one-time checklist to safely introduce migration-driven deployments and apply the P6.6 remediation.  
+**Files/scope:** Supabase staging/production projects, `supabase/migrations/20260704000000_rebaseline_public_schema.sql`, `docs/DEPLOYMENT_RUNBOOK.md`, `.github/workflows/ci.yml`.  
+**Action:**
+
+1. **Choose the migration strategy** and document it in `docs/DEPLOYMENT_RUNBOOK.md`:
+   - Option A — `supabase db push`: let Supabase CLI diff/apply migrations (requires the remote project to be in a clean state or for the rebaseline to be accepted as the new baseline).
+   - Option B — Manual ordered apply: run the migration SQL files via `psql`/Supabase SQL Editor in a controlled order, then mark them as applied in `supabase_migrations.schema_migrations`.
+   - Option C — `supabase db reset` on staging only (accepts data loss in staging), then restore seed data.
+2. **Back up each environment** before applying anything:
+   - `supabase db dump --db-name postgres --schema-only` and `--data-only` for staging.
+   - Snapshot the production project from Supabase Dashboard if available.
+3. **Validate remote vs. migration parity**:
+   - Dump the remote schema after any pre-migration manual fixes.
+   - Diff against `supabase/baseline/remote_20260707_public.sql` plus the repo migrations.
+   - Resolve any drift caused by ad-hoc remote changes (e.g., extra indexes, columns, or triggers not in migrations).
+4. **Apply the migration stack** that contains the trigger cleanup:
+   - At minimum `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (drops legacy triggers, creates `search_outbox`, hardens `SECURITY DEFINER` functions).
+   - Apply first to staging, run smoke tests, then to production.
+5. **Rotate the Supabase service-role JWT** immediately after the migration is applied:
+   - Dashboard → Project Settings → API → Rotate JWT secret.
+   - Update `SUPABASE_SERVICE_ROLE_KEY` in Fly.io staging/production secrets.
+   - Update GitHub Actions secrets used by CI deploy jobs.
+6. **Verify the legacy triggers are gone**:
+   ```sql
+   SELECT trigger_name, event_object_table
+   FROM information_schema.triggers
+   WHERE trigger_name IN ('sync-algolia-webhook', 'notify-new-message');
+   ```
+   Expected: zero rows.
+7. **Smoke-test the replacement paths**:
+   - Algolia sync: insert/update a part, confirm a `search_outbox` row is created and `scripts/search/process-search-outbox.ts` (or the scheduled worker) syncs it to Algolia.
+   - Message notifications: confirm the `notify-new-message` trigger is no longer firing and that the application invokes `send-message-notification` explicitly (or document that notifications are currently a logging stub).
+8. **Lock in the migration workflow**:
+   - Enforce that all future DB changes come through `supabase/migrations/` and the CI `supabase db push` job.
+   - Add a pre-deploy check that fails if remote drift is detected.
+
+**Depends on:** P4.4 (migration replay parity validated locally), P4.5 (CI/CD deploy path proven).
+
+---
+
 ## Execution order
 
 0. **Pre-P0 cleanup:** audit and clean up stale branches (Pre-P0.1) before any code changes.
@@ -661,7 +758,8 @@ Dependencies are called out explicitly so work is not duplicated.
 3. **P2 quality:** UI/UX card/search standardization (P2.1) → server-side search fetch (P2.2) → health check (P2.3) → result mapping (P2.4) → drift/parity audits (P2.5) → Supabase decoupling (P2.6) → store refactor (P2.7) → strict mode + ESLint (P2.8) → security headers (P2.9) → DB trigger cleanup (P2.10).
 4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → expand ESLint strict typing outside domain (P3.5) → standardize layout architecture across pages (P3.6).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
-6. **P5 routing & web security:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6) → production security certification (P5.8) → update production Fly.io secrets (P5.9).
+6. **P6 security hardening:** address non-critical gaps from P4.6 (P6.1–P6.6) before production certification; apply the remote-first migration checklist (P6.7) once the migration strategy is chosen.
+7. **P5 routing & web security:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → update production Fly.io secrets (P5.9).
 
 Items marked **Depends on** should not start until their dependency is complete.
 

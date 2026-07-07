@@ -29,6 +29,7 @@
     "db:seed": "tsx src/services/seed-runner.ts",
     "db:seed:users": "tsx scripts/seed/seed-users.ts",
     "db:verify": "tsx scripts/db/verify-db.ts",
+    "db:security-audit": "tsx scripts/db/security-audit.ts",
     "db:seed:production": "tsx scripts/seed/seed-production.ts",
     "algolia:config": "tsx scripts/algolia/configure-algolia-index.ts",
     "search:reindex": "tsx scripts/algolia/reindex-algolia.ts",
