@@ -2,82 +2,82 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Star, MapPin, Award } from 'lucide-react';
 import { Seller } from '../../types';
+import { Section } from '../layout/design-system/Section';
+import { Content } from '../layout/design-system/Content';
 import { SectionHeader } from '../common/SectionHeader';
+import { SellerCard, SellerCardSeller } from '../design-system/seller-card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '../common/EmptyState';
 import { ViewAllButton } from '../common/ViewAllButton';
 import { useTopSellers } from '@/hooks/useTopSellers';
 
+function toSellerCardSeller(seller: Seller): SellerCardSeller {
+  return {
+    id: seller.id,
+    name: seller.name,
+    businessName: seller.businessName,
+    rating: seller.rating,
+    reviewCount: seller.reviewCount,
+    location: seller.location,
+    specialty: seller.specialty,
+    logoUrl: seller.logoUrl,
+  };
+}
+
 interface FeaturedSellersProps {
   sellers?: Seller[];
+  loading?: boolean;
   onViewAll?: () => void;
 }
 
-export const FeaturedSellers: React.FC<FeaturedSellersProps> = ({ sellers: propsSellers, onViewAll }) => {
+export const FeaturedSellers: React.FC<FeaturedSellersProps> = ({
+  sellers: propsSellers,
+  loading = false,
+  onViewAll,
+}) => {
   const router = useRouter();
-  const { sellers: fetchedSellers } = useTopSellers({
+  const { sellers: fetchedSellers, loading: sellersLoading } = useTopSellers({
     limit: 4,
     enabled: !propsSellers,
   });
   const sellers = propsSellers ?? fetchedSellers;
-  
+  const showLoading = loading || sellersLoading;
+
   return (
-    <section className="bg-zinc-100 py-20 px-4">
-      <div className="max-w-7xl mx-auto space-y-12">
-        <SectionHeader 
+    <Section className="bg-surface-secondary">
+      <Content>
+        <SectionHeader
           title="Featured Recycling Yards"
           subtitle="Verified Network • Inspected and certified salvage facilities"
           actions={<ViewAllButton onClick={onViewAll || (() => router.push('/search'))} />}
         />
 
-        {sellers.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {showLoading ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton.SellerCard key={`seller-skeleton-${i}`} />
+            ))}
+          </div>
+        ) : sellers.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {sellers.map((seller) => (
-              <div key={seller.id} className="bg-white rounded-sm overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-zinc-200 group">
-                <div className="h-40 relative">
-                  <img src={seller.logoUrl || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300'} alt={seller.businessName} className="w-full h-full object-cover group-hover:scale-105 transition-duration-500" />
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-sm flex items-center gap-1">
-                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                    <span className="text-sm font-bold">{seller.rating || '5.0'}</span>
-                  </div>
-                </div>
-                <div className="p-6 space-y-4">
-                <div className="space-y-1">
-                  <h3 className="font-display font-bold text-lg uppercase text-zinc-900 line-clamp-1">{seller.businessName || seller.name}</h3>
-                  <div className="flex items-center gap-1.5 text-zinc-500 text-sm">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>{seller.location || 'Local Yard'}</span>
-                  </div>
-                </div>
-
-                  <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <span className="block text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Specialty</span>
-                      <span className="text-xs font-semibold text-zinc-700">{seller.specialty || 'General Parts'}</span>
-                    </div>
-                    <Award className="w-6 h-6 text-[#B87333]/20" />
-                  </div>
-
-                  <button 
-                    onClick={() => router.push('/search')}
-                    className="w-full py-2.5 rounded-sm border-2 border-zinc-900 text-zinc-900 font-display font-bold uppercase text-xs hover:bg-zinc-900 hover:text-white transition-all"
-                  >
-                    View Inventory
-                  </button>
-                </div>
-              </div>
+              <SellerCard
+                key={seller.id}
+                seller={toSellerCardSeller(seller)}
+                onViewInventory={() => router.push('/search')}
+              />
             ))}
           </div>
         ) : (
-          <EmptyState 
+          <EmptyState
             title="No Verified Yards Currently Active"
             description="Be the first to bring your inventory to the PartsPeddle network. Start listing your salvage units today."
             actionText="Start Selling Now"
             onAction={() => router.push('/register?role=seller')}
           />
         )}
-      </div>
-    </section>
+      </Content>
+    </Section>
   );
 };

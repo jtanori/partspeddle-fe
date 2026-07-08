@@ -17,18 +17,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const initializeAuth = async () => {
       try {
+        // Validate the session by contacting the Supabase Auth server.
+        // The user object from getSession() comes from storage and may not be authentic.
         const {
-          data: { session },
-        } = await supabase.auth.getSession();
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
         if (!isMounted) return;
 
-        if (session) {
+        if (user && !userError) {
           setUser({
-            id: session.user.id,
-            email: session.user.email || null,
-            jwt: session.access_token,
-            aud: session.user.aud ?? 'authenticated',
-            role: session.user.user_metadata.role || 'buyer',
+            id: user.id,
+            email: user.email || null,
+            jwt: null, // Client-side UI state does not need the JWT; fetch wrappers retrieve it separately.
+            aud: user.aud ?? 'authenticated',
+            role: user.user_metadata.role || 'buyer',
           });
         } else {
           setUser(null);
@@ -49,12 +52,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       if (!isMounted) return;
 
+      // onAuthStateChange is only used for reactive UI updates (sign-in/out).
+      // The initial user is validated via getUser() above.
       setUser(
         session?.user
           ? {
               id: session.user.id,
               email: session.user.email || null,
-              jwt: session.access_token,
+              jwt: null,
               aud: session.user.aud ?? 'authenticated',
               role: session.user.user_metadata.role || 'buyer',
             }

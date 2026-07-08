@@ -1,6 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextRequest } from "next/server";
-import { getUserRole, type UserRole } from "./user-roles";
+import { createServerClient } from '@supabase/ssr';
+import { NextRequest } from 'next/server';
+import { getUserRole, type UserRole } from './user-roles';
 
 export interface AdminAuthResult {
   session: any;
@@ -9,12 +9,10 @@ export interface AdminAuthResult {
   response: { error: string; status: number } | null;
 }
 
-export async function requireAdmin(
-  request: NextRequest,
-): Promise<AdminAuthResult> {
+export async function requireAdmin(request: NextRequest): Promise<AdminAuthResult> {
   const supabase = createServerClient(
-    process.env.SUPABASE_URL || "",
-    process.env.SUPABASE_ANON_KEY || "",
+    process.env.SUPABASE_URL || '',
+    process.env.SUPABASE_ANON_KEY || '',
     {
       cookies: {
         getAll: () => request.cookies.getAll(),
@@ -24,29 +22,29 @@ export async function requireAdmin(
   );
 
   const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-  if (sessionError || !session) {
+  if (userError || !user) {
     return {
       session: null,
-      role: "buyer",
+      role: 'buyer',
       isAdmin: false,
-      response: { error: "Unauthorized", status: 401 },
+      response: { error: 'Unauthorized', status: 401 },
     };
   }
 
-  const role = await getUserRole(supabase, session.user.id);
+  const role = await getUserRole(supabase, user.id);
 
-  if (role !== "admin") {
+  if (role !== 'admin') {
     return {
-      session,
+      session: null,
       role,
       isAdmin: false,
-      response: { error: "Forbidden", status: 403 },
+      response: { error: 'Forbidden', status: 403 },
     };
   }
 
-  return { session, role, isAdmin: true, response: null };
+  return { session: null, role, isAdmin: true, response: null };
 }

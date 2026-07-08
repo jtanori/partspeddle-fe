@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ViewAllButtonProps {
   onClick: () => void;
@@ -7,18 +8,21 @@ interface ViewAllButtonProps {
   text?: string;
 }
 
-export const ViewAllButton: React.FC<ViewAllButtonProps> = ({ 
-  onClick, 
-  className = '', 
-  text = 'View All' 
+export const ViewAllButton: React.FC<ViewAllButtonProps> = ({
+  onClick,
+  className = '',
+  text = 'View All',
 }) => {
   return (
-    <button 
-      onClick={onClick} 
-      className={`text-sm uppercase tracking-wider font-display font-bold text-[#B87333] hover:text-[#C4A882] transition-colors flex items-center gap-1 ${className}`}
+    <button
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-1 font-display text-sm font-bold uppercase tracking-wider text-brand-primary transition-colors hover:text-brand-primary-hover',
+        className,
+      )}
     >
       {text}
-      <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+      <ChevronRight className="h-4 w-4 stroke-[2.5]" />
     </button>
   );
 };

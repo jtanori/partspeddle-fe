@@ -1,22 +1,20 @@
-import React from "react";
-import { AlertTriangle } from "lucide-react";
+import React from 'react';
+import { AlertTriangle } from 'lucide-react';
 
 interface SearchNoResultsProps {
   onClearSearch: () => void;
 }
 
-export const SearchNoResults: React.FC<SearchNoResultsProps> = ({
-  onClearSearch,
-}) => {
+export const SearchNoResults: React.FC<SearchNoResultsProps> = ({ onClearSearch }) => {
   return (
-    <div className="flex flex-col items-center justify-center p-12 bg-transparent space-y-4">
-      <AlertTriangle className="w-16 h-16 text-rust-copper/70" />
-      <h3 className="font-display text-2xl font-black uppercase text-zinc-800 tracking-wider">
+    <div className="flex flex-col items-center justify-center space-y-4 bg-transparent p-12">
+      <AlertTriangle className="h-16 w-16 text-brand-primary/70" />
+      <h3 className="font-display text-2xl font-black uppercase tracking-wider text-foreground-primary">
         PART NOT FOUND
       </h3>
       <button
         onClick={onClearSearch}
-        className="font-display text-sm font-bold uppercase text-rust-copper hover:text-[#8B6239] transition-all"
+        className="font-display text-sm font-bold uppercase text-brand-primary transition-colors hover:text-brand-primary-hover"
       >
         BACK TO MARKETPLACE
       </button>

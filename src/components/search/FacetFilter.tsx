@@ -1,6 +1,7 @@
 import React from 'react';
 import { useIsClient } from '@/hooks/useIsClient';
 import { ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface FacetFilterProps {
   title: string;
@@ -28,28 +29,52 @@ export const FacetFilter: React.FC<FacetFilterProps> = ({
 
   return (
     <div className="space-y-2">
-      <div 
-        onClick={disabled ? undefined : onToggle} 
-        className={`flex items-center justify-between pb-2 border-b border-stone-800 ${disabled ? 'text-zinc-600 cursor-not-allowed' : 'text-warm-gray cursor-pointer'}`}
+      <div
+        onClick={disabled ? undefined : onToggle}
+        className={cn(
+          'flex items-center justify-between border-b border-stroke-subtle pb-2',
+          disabled
+            ? 'cursor-not-allowed text-foreground-muted'
+            : 'cursor-pointer text-foreground-primary',
+        )}
       >
         <span className="font-display text-sm uppercase tracking-wider">{title}</span>
-        {isOpen && !disabled ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        {isOpen && !disabled ? (
+          <ChevronDown className="h-4 w-4 text-foreground-muted" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-foreground-muted" />
+        )}
       </div>
-      
+
       {isOpen && !disabled && type === 'checkbox' && (
         <div className="space-y-1 pl-2">
-          {options.map((option) => (
-            <div 
-              key={option.value} 
-              className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer hover:text-white" 
-              onClick={() => onChange(option.value)}
-            >
-              <div className={`w-4 h-4 rounded border ${selectedValues.includes(option.value) ? 'bg-rust-copper border-rust-copper' : 'border-stone-700'}`}>
-                {selectedValues.includes(option.value) && <Check className="w-3 h-3 text-white" />}
-              </div>
-              {option.label} ({option.count})
-            </div>
-          ))}
+          {options.map((option) => {
+            const selected = selectedValues.includes(option.value);
+            return (
+              <label
+                key={option.value}
+                className="flex cursor-pointer items-center gap-2 text-sm text-foreground-secondary hover:text-foreground-primary"
+              >
+                <div
+                  className={cn(
+                    'flex h-4 w-4 items-center justify-center rounded border',
+                    selected
+                      ? 'border-brand-primary bg-brand-primary'
+                      : 'border-stroke-subtle bg-surface-primary',
+                  )}
+                >
+                  {selected && <Check className="h-3 w-3 text-foreground-inverse" />}
+                </div>
+                <input
+                  type="checkbox"
+                  checked={selected}
+                  onChange={() => onChange(option.value)}
+                  className="sr-only"
+                />
+                {option.label} ({option.count})
+              </label>
+            );
+          })}
         </div>
       )}
     </div>

@@ -1,62 +1,62 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { BrandStoryColumn } from "./BrandStoryColumn";
-import { AuthFooter } from "./AuthFooter";
-import logoImg from "../../assets/images/logo_solid.png";
+import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
+import { BrandStoryColumn } from './BrandStoryColumn';
+import { AuthFooter } from './AuthFooter';
+import logoImg from '../../assets/images/logo_solid.png';
 
 export function AuthPageShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isSignUp = pathname === "/register";
+  const isSignUp = pathname === '/register';
   const [bottomNotice, setBottomNotice] = useState<string | null>(null);
 
   return (
     <div
-      className="w-full flex bg-[#F5F0EB] md:h-screen md:flex-row md:overflow-hidden flex-col"
+      className="flex w-full flex-col bg-surface-secondary md:h-screen md:flex-row md:overflow-hidden"
       id="id-auth-page-root"
     >
       <BrandStoryColumn
         isSignUp={isSignUp}
         role="buyer"
-        onCancel={() => (window.location.href = "/")}
+        onCancel={() => (window.location.href = '/')}
       />
 
-      <div className="w-full md:w-[65%] lg:w-[60%] xl:w-1/2 flex flex-col justify-between items-center bg-white md:bg-[#F5F0EB] min-h-screen md:h-full md:overflow-y-auto">
+      <div className="flex min-h-screen w-full flex-col items-center justify-between bg-surface-primary md:h-full md:w-[65%] md:overflow-y-auto lg:w-[60%] xl:w-1/2">
         {/* Mobile Header */}
-        <div className="md:hidden w-full h-[56px] min-h-[56px] bg-[#1A1A1A] flex items-center justify-center border-b border-zinc-800/80 flex-shrink-0">
+        <div className="flex h-14 min-h-14 w-full shrink-0 items-center justify-center border-b border-stroke-default bg-foreground-primary md:hidden">
           <Link href="/" className="cursor-pointer">
             <img src={logoImg.src} alt="PartsPeddle Logo" className="h-6" />
           </Link>
         </div>
 
-        <div className="flex-grow w-full flex flex-col justify-center items-center py-10 px-4">
-          <div className="w-full max-w-[485px] bg-white border border-zinc-200 shadow-xl p-8 rounded-xl">
+        <div className="flex w-full flex-grow flex-col items-center justify-center px-4 py-10">
+          <div className="w-full max-w-[485px] rounded-xl border border-stroke-subtle bg-surface-primary p-8 shadow-floating">
             <Link
               href="/"
-              className="flex items-center gap-1 font-display text-xs font-black text-rust-copper hover:text-bronze transition-colors uppercase tracking-wider mb-6"
+              className="mb-6 flex items-center gap-1 font-display text-xs font-black uppercase tracking-wider text-brand-primary transition-colors hover:text-brand-primary-hover"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="h-4 w-4" />
               RETURN TO HOME
             </Link>
             {children}
           </div>
         </div>
 
-        <AuthFooter onCancel={() => (window.location.href = "/")} />
+        <AuthFooter onCancel={() => (window.location.href = '/')} />
 
         {bottomNotice && (
-          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-amber-50 px-4 py-3 rounded-lg border border-[#B87333]/20 shadow-xl flex items-center gap-3 animate-fade-in z-50 max-w-sm">
-            <span className="text-[10px] text-zinc-600 font-medium leading-relaxed">
+          <div className="animate-fade-in fixed bottom-24 left-1/2 z-50 flex max-w-sm -translate-x-1/2 items-center gap-3 rounded-lg border border-brand-primary/20 bg-surface-secondary px-4 py-3 shadow-floating">
+            <span className="text-[10px] font-medium leading-relaxed text-foreground-secondary">
               {bottomNotice}
             </span>
             <button
               onClick={() => setBottomNotice(null)}
-              className="p-1 hover:bg-amber-100 rounded"
+              className="rounded p-1 hover:bg-surface-muted"
             >
-              <span className="text-zinc-400 text-xs">✕</span>
+              <span className="text-xs text-foreground-muted">✕</span>
             </button>
           </div>
         )}

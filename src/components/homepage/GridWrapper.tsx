@@ -1,7 +1,9 @@
 'use client';
 
-import { GridSkeleton } from '../shared/GridSkeleton';
 import React from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Section } from '../layout/design-system/Section';
+import { Content } from '../layout/design-system/Content';
 
 interface GridWrapperProps {
   title: string;
@@ -18,34 +20,35 @@ export function GridWrapper({
   loading = false,
   skeletonCount = 4,
   gridCols = '4',
-  children
+  children,
 }: GridWrapperProps) {
-
-  const gridClass = gridCols === '3' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
+  const gridClass =
+    gridCols === '3'
+      ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
+      : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
 
   if (!loading && !children) return null;
 
   return (
-    <div className="w-full bg-zinc-100">
-      <section className="pp-container py-12">
+    <Section className="bg-surface-secondary">
+      <Content>
         <div className="space-y-12">
-          <div className="space-y-2 border-l-4 border-[#B87333] pl-6 mb-12">
-            <h2 className="text-4xl font-display font-black uppercase text-zinc-900 tracking-tight">
+          <div className="mb-12 space-y-2 border-l-4 border-brand-primary pl-6">
+            <h2 className="font-display text-4xl font-black uppercase tracking-tight text-foreground-primary">
               {title}
             </h2>
-            <p className="text-sm text-zinc-500 font-sans">
-              {subtitle}
-            </p>
+            <p className="font-sans text-sm text-foreground-muted">{subtitle}</p>
           </div>
-          
+
           <div className={`grid ${gridClass} gap-6`}>
-            {loading && Array.from({ length: skeletonCount }).map((_, i) => (
-              <GridSkeleton key={`skel-${i}`} />
-            ))}
+            {loading &&
+              Array.from({ length: skeletonCount }).map((_, i) => (
+                <Skeleton.PartCard key={`grid-skeleton-${i}`} />
+              ))}
             {!loading && children}
           </div>
         </div>
-      </section>
-    </div>
+      </Content>
+    </Section>
   );
 }

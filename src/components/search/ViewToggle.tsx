@@ -1,42 +1,43 @@
-import React from "react";
-import { LayoutGrid, List } from "lucide-react";
+import React from 'react';
+import { LayoutGrid, List } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ViewToggleProps {
-  currentView: "grid" | "list";
-  onViewChange: (view: "grid" | "list") => void;
+  currentView: 'grid' | 'list';
+  onViewChange: (view: 'grid' | 'list') => void;
   className?: string;
 }
 
 export const ViewToggle: React.FC<ViewToggleProps> = ({
   currentView,
   onViewChange,
-  className = "",
+  className = '',
 }) => {
   return (
-    <div
-      className={`flex items-center bg-zinc-100 rounded-sm p-1 gap-1 ${className}`}
-    >
+    <div className={cn('flex items-center gap-1 rounded-sm bg-surface-secondary p-1', className)}>
       <button
-        onClick={() => onViewChange("grid")}
-        className={`p-1.5 rounded-sm transition-all ${
-          currentView === "grid"
-            ? "bg-white shadow-sm text-zinc-900"
-            : "text-zinc-500 hover:text-zinc-700"
-        }`}
+        onClick={() => onViewChange('grid')}
+        className={cn(
+          'rounded-sm p-1.5 transition-all',
+          currentView === 'grid'
+            ? 'bg-surface-primary text-foreground-primary shadow-sm'
+            : 'text-foreground-muted hover:text-foreground-secondary',
+        )}
         aria-label="Grid view"
       >
-        <LayoutGrid className="w-4 h-4" />
+        <LayoutGrid className="h-4 w-4" />
       </button>
       <button
-        onClick={() => onViewChange("list")}
-        className={`p-1.5 rounded-sm transition-all ${
-          currentView === "list"
-            ? "bg-white shadow-sm text-zinc-900"
-            : "text-zinc-500 hover:text-zinc-700"
-        }`}
+        onClick={() => onViewChange('list')}
+        className={cn(
+          'rounded-sm p-1.5 transition-all',
+          currentView === 'list'
+            ? 'bg-surface-primary text-foreground-primary shadow-sm'
+            : 'text-foreground-muted hover:text-foreground-secondary',
+        )}
         aria-label="List view"
       >
-        <List className="w-4 h-4" />
+        <List className="h-4 w-4" />
       </button>
     </div>
   );

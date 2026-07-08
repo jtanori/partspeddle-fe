@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface EmptyStateProps {
   title: string;
@@ -15,23 +16,26 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionText,
   onAction,
   icon,
-  className = ''
+  className = '',
 }) => {
   return (
-    <div className={`bg-white border-2 border-dashed border-zinc-300 rounded-sm p-12 text-center space-y-6 ${className}`}>
+    <div
+      className={cn(
+        'space-y-6 rounded-sm border-2 border-dashed border-stroke-subtle bg-surface-primary p-12 text-center',
+        className,
+      )}
+    >
       {icon && <div className="flex justify-center">{icon}</div>}
       <div className="space-y-2">
-        <h3 className="font-display font-black text-2xl uppercase text-zinc-800 leading-tight">
+        <h3 className="font-display text-2xl font-black uppercase leading-tight text-foreground-primary">
           {title}
         </h3>
-        <p className="text-zinc-500 font-sans max-w-lg mx-auto text-sm">
-          {description}
-        </p>
+        <p className="mx-auto max-w-lg font-sans text-sm text-foreground-muted">{description}</p>
       </div>
       {actionText && onAction && (
         <button
           onClick={onAction}
-          className="px-8 py-3 bg-[#B87333] hover:bg-[#9c5f2b] text-white font-display font-bold uppercase transition-all shadow-md active:translate-y-0.5"
+          className="bg-brand-primary px-8 py-3 font-display font-bold uppercase text-foreground-inverse shadow-md transition-all hover:bg-brand-primary-hover active:translate-y-0.5"
         >
           {actionText}
         </button>
