@@ -19,24 +19,24 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
           <button
             key={i}
             onClick={() => setActiveImageIdx(i)}
-            className={`w-16 h-16 md:w-16 md:h-16 shrink-0 rounded-pp-atom border-2 transition-all overflow-hidden ${
+            className={`w-16 h-16 md:w-16 md:h-16 shrink-0 rounded-md border-2 transition-all overflow-hidden ${
               activeImageIdx === i
-                ? 'border-pp-primary ring-1 ring-pp-primary/20'
-                : 'border-zinc-100 hover:border-zinc-300'
+                ? 'border-brand-primary ring-1 ring-brand-primary/20'
+                : 'border-stroke-subtle hover:border-stroke-default'
             }`}
           >
             <img src={img} alt={`thumbnail ${i}`} className="w-full h-full object-cover" />
           </button>
         ))}
         {overflow > 0 && (
-          <div className="w-16 h-16 shrink-0 rounded-pp-atom bg-zinc-50 flex flex-col items-center justify-center border border-zinc-200">
-            <span className="font-black text-pp-text text-xs">+{overflow}</span>
+          <div className="w-16 h-16 shrink-0 rounded-md bg-surface-muted flex flex-col items-center justify-center border border-stroke-subtle">
+            <span className="font-black text-foreground-primary text-xs">+{overflow}</span>
           </div>
         )}
       </div>
 
       {/* Main Display */}
-      <div className="relative flex-1 rounded-pp-card overflow-hidden bg-white border border-zinc-100 group shadow-inner h-[300px] sm:h-[380px] md:h-auto">
+      <div className="relative flex-1 rounded-xl overflow-hidden bg-surface-primary border border-stroke-subtle group shadow-inner h-[300px] sm:h-[380px] md:h-auto">
         <img
           src={images[activeImageIdx]}
           alt="Product Main"
@@ -44,8 +44,8 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
         />
 
         {/* Grounded Zoom Overlay */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-pp-text/90 backdrop-blur-sm text-white px-5 py-2.5 rounded-full shadow-2xl text-[10px] hidden sm:flex items-center gap-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-          <Search className="w-3.5 h-3.5 text-pp-primary" />
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-foreground-primary/90 backdrop-blur-sm text-foreground-inverse px-5 py-2.5 rounded-full shadow-2xl text-[10px] hidden sm:flex items-center gap-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+          <Search className="w-3.5 h-3.5 text-brand-primary" />
           <span className="font-black tracking-[0.2em] uppercase">Hover to zoom</span>
         </div>
       </div>

@@ -17,11 +17,11 @@ export function InlineLoadingIndicator({
       aria-busy="true"
     >
       <Loader2
-        className="w-8 h-8 text-accent-amber animate-spin"
+        className="w-8 h-8 text-brand-primary animate-spin"
         aria-hidden="true"
       />
       {label ? (
-        <p className="text-sm font-medium text-zinc-500">{label}</p>
+        <p className="text-sm font-medium text-foreground-muted">{label}</p>
       ) : null}
     </div>
   );

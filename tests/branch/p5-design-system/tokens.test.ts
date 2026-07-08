@@ -49,6 +49,7 @@ describe('P5.0 design tokens', () => {
     const dirs = [
       path.join(repoRoot, 'src', 'components', 'ui'),
       path.join(repoRoot, 'src', 'components', 'design-system'),
+      path.join(repoRoot, 'src', 'components', 'pdp-modern'),
     ];
     const hexPattern = /#(?:[0-9a-fA-F]{3}){1,2}/;
     const legacyPattern = /(?:bg|text|border|rounded)-pp-/;
