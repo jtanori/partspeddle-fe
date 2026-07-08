@@ -15,7 +15,7 @@ export default function SellerInventoryPage() {
         secondaryAction={{ label: 'Export', href: '#' }}
       />
 
-      <Toolbar>
+      <Toolbar className="sticky top-0 z-10">
         <Button variant="outline" size="sm">
           <Filter className="mr-1.5 h-3.5 w-3.5" />
           Filter

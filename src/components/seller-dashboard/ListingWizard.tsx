@@ -121,20 +121,22 @@ export function ListingWizard({ onClose }: ListingWizardProps) {
   return (
     <div className="flex min-h-0 flex-1 gap-6">
       <div className="min-w-0 flex-1 space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="outline" size="sm" onClick={onClose}>
-            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-            Back to Inventory
-          </Button>
-          {saveLabel && (
-            <span
-              className={`text-meta font-bold uppercase tracking-wider ${
-                saveStatus === 'error' ? 'text-destructive' : 'text-foreground-muted'
-              }`}
-            >
-              {saveLabel}
-            </span>
-          )}
+        <div className="sticky top-0 z-10 -mx-4 bg-surface-secondary px-4 py-3 sm:mx-0 sm:bg-transparent sm:px-0 sm:py-0">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" onClick={onClose}>
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+              Back to Inventory
+            </Button>
+            {saveLabel && (
+              <span
+                className={`text-meta font-bold uppercase tracking-wider ${
+                  saveStatus === 'error' ? 'text-destructive' : 'text-foreground-muted'
+                }`}
+              >
+                {saveLabel}
+              </span>
+            )}
+          </div>
         </div>
 
         <Tabs

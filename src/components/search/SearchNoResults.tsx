@@ -1,5 +1,6 @@
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { SearchX } from 'lucide-react';
+import { EmptyState } from '@/components/common/EmptyState';
 
 interface SearchNoResultsProps {
   onClearSearch: () => void;
@@ -7,17 +8,12 @@ interface SearchNoResultsProps {
 
 export const SearchNoResults: React.FC<SearchNoResultsProps> = ({ onClearSearch }) => {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4 bg-transparent p-12">
-      <AlertTriangle className="h-16 w-16 text-brand-primary/70" />
-      <h3 className="font-display text-2xl font-black uppercase tracking-wider text-foreground-primary">
-        PART NOT FOUND
-      </h3>
-      <button
-        onClick={onClearSearch}
-        className="font-display text-sm font-bold uppercase text-brand-primary transition-colors hover:text-brand-primary-hover"
-      >
-        BACK TO MARKETPLACE
-      </button>
-    </div>
+    <EmptyState
+      title="No parts found"
+      description="Try adjusting your filters or search terms to find what you're looking for."
+      actionText="Clear Search"
+      onAction={onClearSearch}
+      icon={<SearchX className="h-12 w-12 text-brand-primary" />}
+    />
   );
 };

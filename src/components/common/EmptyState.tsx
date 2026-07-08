@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface EmptyStateProps {
   title: string;
@@ -33,12 +34,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         <p className="mx-auto max-w-lg font-sans text-sm text-foreground-muted">{description}</p>
       </div>
       {actionText && onAction && (
-        <button
-          onClick={onAction}
-          className="bg-brand-primary px-8 py-3 font-display font-bold uppercase text-foreground-inverse shadow-md transition-all hover:bg-brand-primary-hover active:translate-y-0.5"
-        >
-          {actionText}
-        </button>
+        <Button onClick={onAction}>{actionText}</Button>
       )}
     </div>
   );

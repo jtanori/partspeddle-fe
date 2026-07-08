@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { SearchResultsController } from '@/components/search/SearchResultsController';
 import { ProductSidebar } from '@/components/ProductSidebar';
@@ -11,10 +11,12 @@ import SortDropdown from '@/components/search/SortDropdown';
 import { GridResultsView } from '@/components/search/GridResultsView';
 import { ListResultsView } from '@/components/search/ListResultsView';
 import { SearchNoResults } from '@/components/search/SearchNoResults';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Section } from '@/components/layout/design-system/Section';
 import { Content } from '@/components/layout/design-system/Content';
+import { useToast } from '@/components/ui/toast';
 import { PartCondition, SearchFilters } from '@/types';
 import { SearchResultCardModel } from '@/domain/view-models/search';
 import { parseSearchParams, serializeSearchRequest } from '@/lib/search/parse-search-params';
@@ -38,6 +40,7 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { addToast } = useToast();
 
   const parsedRequest = useMemo(() => {
     const params: Record<string, string | string[] | undefined> = {};
@@ -66,6 +69,12 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(!isInitialRequest);
   const [searchError, setSearchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (searchError) {
+      addToast(searchError, { variant: 'error' });
+    }
+  }, [searchError, addToast]);
 
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
     search: true,
@@ -207,7 +216,7 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
     <Section className="bg-surface-primary">
       <Content className="py-8">
         <div className="flex gap-8">
-          <aside className="hidden w-[280px] shrink-0 md:block" aria-label="Search filters">
+          <aside className="sticky top-0 hidden h-fit w-[280px] shrink-0 self-start md:block" aria-label="Search filters">
             <ProductSidebar {...sidebarProps} />
           </aside>
 
@@ -236,9 +245,11 @@ export function SearchPageClient({ initialData }: SearchPageClientProps) {
             </div>
 
             {searchError ? (
-              <div className="py-8 text-center text-status-danger" role="alert">
-                Error: {searchError}
-              </div>
+              <ErrorState
+                title="Search unavailable"
+                description={searchError}
+                onRetry={() => window.location.reload()}
+              />
             ) : isLoading ? (
               loadingSkeleton
             ) : cards.length === 0 ? (

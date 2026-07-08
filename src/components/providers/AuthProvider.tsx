@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/hooks';
-import { MainLoadingIndicator } from '@/components/common/MainLoadingIndicator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AuthContext = createContext({});
 
@@ -75,7 +75,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [setUser]);
 
   if (isInitializing) {
-    return <MainLoadingIndicator label="Initializing session..." />;
+    return (
+      <div className="flex h-screen items-center justify-center bg-surface-secondary">
+        <div className="w-full max-w-md space-y-4 px-6">
+          <Skeleton className="mx-auto h-12 w-12 rounded-full" />
+          <Skeleton.Text lines={2} className="text-center" />
+        </div>
+      </div>
+    );
   }
 
   return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;

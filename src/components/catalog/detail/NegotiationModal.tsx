@@ -1,6 +1,6 @@
 import React from 'react';
 import { Send, X, DollarSign } from 'lucide-react';
-import { InlineLoadingIndicator } from '@/components/common/InlineLoadingIndicator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Part, Offer } from '../../../types';
 
 interface NegotiationModalProps {
@@ -55,7 +55,11 @@ export const NegotiationModal: React.FC<NegotiationModalProps> = ({
         </div>
 
         {negotiationState === 'sending' ? (
-          <InlineLoadingIndicator label="Transmitting specs to yard..." className="py-12" />
+          <div className="space-y-4 py-8">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         ) : negotiationState === 'replied' && activeOffer ? (
           <div className="space-y-5">
             <div className="p-4 rounded border font-sans text-xs flex flex-col space-y-3 bg-steel-black border-oil-dark">
