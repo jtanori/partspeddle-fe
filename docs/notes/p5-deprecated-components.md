@@ -55,8 +55,8 @@ Canonical part-page design: `/Users/dev/Documents/PartsPeddle/design-proposal.pn
 | `src/components/search/cards/SellerGridCard`   | Custom card styling                    | `Card` + `SellerCard`                     | Pending              |
 | `src/components/layout/AppWrapper`             | Conditional nav logic                  | Route-group layouts                       | Pending              |
 | `src/components/layout/PublicShell`            | One-off wrapper                        | `Container` / `Content` / `Section`       | Pending              |
-| `src/components/common/MainLoadingIndicator`   | Spinner loading                        | `Skeleton`                                | Pending              |
-| `src/components/common/InlineLoadingIndicator` | Spinner loading                        | `Skeleton`                                | Pending              |
+| `src/components/common/MainLoadingIndicator`   | Spinner loading                        | `Skeleton`                                | Migrated             |
+| `src/components/common/InlineLoadingIndicator` | Spinner loading                        | `Skeleton`                                | Migrated             |
 | `src/components/shared/GridSkeleton`           | Ad-hoc skeleton                        | `Skeleton` variants                       | Pending              |
 | `src/components/shared/PartCard`               | Pre-token card                         | `src/components/design-system/PartCard`   | Deprecated (Phase 2) |
 | `src/components/shared/SellerCard`             | Pre-token card                         | `src/components/design-system/SellerCard` | Deprecated (Phase 2) |
