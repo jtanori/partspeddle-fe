@@ -50,6 +50,7 @@ export default [js.configs.recommended, {
     ...reactRecommendedRules,
     ...reactHooksRecommendedRules,
     "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
   },
   settings: {
     react: { version: "detect" },

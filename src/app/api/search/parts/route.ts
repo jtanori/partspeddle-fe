@@ -99,6 +99,13 @@ export async function POST(req: NextRequest) {
     searchFailuresTotal.add(1);
     const message = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Search API failure', { error: message });
-    return NextResponse.json({ error: 'Search temporarily unavailable' }, { status: 500 });
+    return NextResponse.json({
+      hits: [],
+      facets: {},
+      totalHits: 0,
+      page: 0,
+      totalPages: 0,
+      warning: `Search currently unavailable: ${message}`,
+    }, { status: 200 });
   }
 }

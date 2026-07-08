@@ -75,7 +75,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
   return (
     <div
       className={cn(
-        'relative space-y-6 rounded-xl border border-stroke-subtle bg-surface-primary p-4 shadow-sm sm:p-5',
+        'relative space-y-6 rounded-xl border border-stroke-subtle bg-surface-primary p-4 sm:p-5 shadow-sm',
         isDisabled && 'opacity-60',
       )}
       id="unified-filters-card"

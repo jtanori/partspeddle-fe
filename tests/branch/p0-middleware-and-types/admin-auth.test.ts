@@ -30,14 +30,10 @@ function createRequest(cookies: Record<string, string> = {}): NextRequest {
 function mockSession(present: boolean) {
   createServerClientMock.mockReturnValue({
     auth: {
-      getSession: () =>
+      getUser: () =>
         Promise.resolve({
           data: {
-            session: present
-              ? {
-                  user: { id: 'user-1' },
-                }
-              : null,
+            user: present ? { id: 'user-1' } : null,
           },
           error: null,
         }),

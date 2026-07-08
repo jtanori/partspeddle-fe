@@ -11,9 +11,9 @@ function read(relativePath: string): string {
 }
 
 describe('search page layout markup', () => {
-  it('uses a single max-w-7xl container for sidebar and results', () => {
+  it('uses a single Content container for sidebar and results', () => {
     const searchPage = read('src/components/search/SearchPageClient.tsx');
-    expect(searchPage).toContain('max-w-7xl');
+    expect(searchPage).toContain('<Content');
     expect(searchPage).toContain('aria-label="Search filters"');
     expect(searchPage).toContain('aria-label="Search results"');
     expect(searchPage).not.toContain('<main');
@@ -33,10 +33,10 @@ describe('search page layout markup', () => {
     expect(loading).toContain('InlineLoadingIndicator');
   });
 
-  it('uses a single inline loading indicator for client-side search fetches', () => {
+  it('uses Skeleton placeholders for client-side search fetches', () => {
     const searchPage = read('src/components/search/SearchPageClient.tsx');
     const controller = read('src/components/search/SearchResultsController.tsx');
-    expect(searchPage).toContain('InlineLoadingIndicator');
+    expect(searchPage).toContain('Skeleton');
     expect(searchPage).not.toContain('Searching...');
     expect(controller).not.toContain('Buscando partes');
     expect(controller).toContain('return null');
