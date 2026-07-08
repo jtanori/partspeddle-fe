@@ -33,11 +33,6 @@ export const PublicShell = ({ children, showFooter = true }: PublicShellProps) =
     <div className="min-h-screen flex flex-col justify-between font-sans relative antialiased leading-relaxed bg-surface-secondary text-foreground-primary">
       <Navbar
         currentView={pathname}
-        onChangeView={(view) => {
-          const path = view === 'home' ? '/' : `/${view}`;
-          router.push(path);
-          setIsCartOpen(false);
-        }}
         onSearchSubmit={(text) => {
           setSearchQueryText(text);
           setSearchCategory('All Parts');
@@ -68,15 +63,7 @@ export const PublicShell = ({ children, showFooter = true }: PublicShellProps) =
 
       <div className="flex-grow transition-opacity duration-300 pb-16 md:pb-0">{children}</div>
 
-      {showFooter && (
-        <Footer
-          onChangeView={(view) => {
-            const path = view === 'home' ? '/' : `/${view}`;
-            router.push(path);
-          }}
-          onOpenModal={setInfoModalType}
-        />
-      )}
+      {showFooter && <Footer />}
     </div>
   );
 };

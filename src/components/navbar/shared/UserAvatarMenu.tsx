@@ -12,8 +12,9 @@ interface UserAvatarMenuProps {
   isUserMenuOpen: boolean;
   setIsUserMenuOpen: (isOpen: boolean) => void;
   handleAvatarClick: () => void;
-  onChangeView: (view: string) => void;
-  onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
+  onSetSellerTab?: (
+    tab: 'listings' | 'settings' | 'snap' | 'orders' | 'inventory' | 'create',
+  ) => void;
   onOpenSupport: () => void;
   onOpenTour: () => void;
   onLogout: () => void;
@@ -22,40 +23,57 @@ interface UserAvatarMenuProps {
 }
 
 export const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({
-  user, userRole, profile, isUserMenuOpen, setIsUserMenuOpen,
-  handleAvatarClick, onChangeView, onSetSellerTab, onOpenSupport,
-  onOpenTour, onLogout, showToast, userMenuRef
+  user,
+  userRole,
+  profile,
+  isUserMenuOpen,
+  setIsUserMenuOpen,
+  handleAvatarClick,
+  onSetSellerTab,
+  onOpenSupport,
+  onOpenTour,
+  onLogout,
+  showToast,
+  userMenuRef,
 }) => {
   return (
     <div className="relative" ref={userMenuRef}>
       {user ? (
-        <button 
+        <button
           onClick={handleAvatarClick}
           className="flex items-center transition-all focus:outline-none cursor-pointer rounded-sm overflow-hidden border border-white/10 hover:border-rust-copper/50"
           id="btn-nav-user-menu"
           title="Account menu"
         >
           <div className="relative w-[40px] h-[40px] bg-zinc-900">
-            <img 
-              src={profile?.avatar_url || profile?.logo_url || profile?.logoUrl || (userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src)}
+            <img
+              src={
+                profile?.avatar_url ||
+                profile?.logo_url ||
+                profile?.logoUrl ||
+                (userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src)
+              }
               alt={user.email || 'User avatar'}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
-              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src; }}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src =
+                  userRole === 'seller' ? userSellerAvatarImg.src : userAvatarImg.src;
+              }}
             />
           </div>
         </button>
       ) : (
-        <AuthActions onChangeView={onChangeView} variant="button" showToast={showToast} />
+        <AuthActions variant="button" showToast={showToast} />
       )}
 
-      <UserMenu 
+      <UserMenu
         user={user}
         userRole={userRole}
         profile={profile}
         isUserMenuOpen={isUserMenuOpen}
         setIsUserMenuOpen={setIsUserMenuOpen}
-        onChangeView={onChangeView}
         onSetSellerTab={onSetSellerTab}
         onOpenSupport={onOpenSupport}
         onOpenTour={onOpenTour}

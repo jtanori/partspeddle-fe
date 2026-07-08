@@ -1,39 +1,42 @@
+'use client';
+
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Home, Search, Plus, History, User } from 'lucide-react';
 import { SellActionSheet } from './shared/SellActionSheet';
 
 interface BottomTabBarProps {
   currentView: string;
-  onChangeView: (view: string) => void;
   user: any;
   showToast: (msg: string) => void;
-  onSetSellerTab?: (tab: 'listings' | 'create' | 'settings' | 'snap') => void;
+  onSetSellerTab?: (
+    tab: 'listings' | 'create' | 'settings' | 'snap' | 'orders' | 'inventory',
+  ) => void;
 }
 
 export default function BottomTabBar({
   currentView,
-  onChangeView,
   user,
   showToast,
-  onSetSellerTab
+  onSetSellerTab,
 }: BottomTabBarProps) {
+  const router = useRouter();
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
 
   return (
     <>
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-charcoal border-t border-oil-dark px-4 py-2 flex items-center justify-around select-none">
-        
-        <button 
-          onClick={() => onChangeView('home')}
-          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === 'home' ? 'text-rust-copper' : 'text-warm-gray'}`}
+        <button
+          onClick={() => router.push('/')}
+          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === '/' ? 'text-rust-copper' : 'text-warm-gray'}`}
         >
           <Home className="w-5 h-5" />
-          <span className="text-[9px] font-mono font-bold uppercase tracking-wider">Feed</span>
+          <span className="text-[9px] font-mono font-bold uppercase tracking-wider">Home</span>
         </button>
 
-        <button 
-          onClick={() => onChangeView('listing')}
-          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === 'listing' ? 'text-rust-copper' : 'text-warm-gray'}`}
+        <button
+          onClick={() => router.push('/search')}
+          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === '/search' ? 'text-rust-copper' : 'text-warm-gray'}`}
         >
           <Search className="w-5 h-5" />
           <span className="text-[9px] font-mono font-bold uppercase tracking-wider">Search</span>
@@ -43,12 +46,12 @@ export default function BottomTabBar({
         <div className="flex-1 flex justify-center -mt-5 relative z-50">
           <button
             onClick={() => {
-                if (!user) {
-                    showToast('Please log in or register to create a parts listing.');
-                    onChangeView('auth');
-                    return;
-                }
-                setIsActionSheetOpen(true);
+              if (!user) {
+                showToast('Please log in or register to create a parts listing.');
+                router.push('/login');
+                return;
+              }
+              setIsActionSheetOpen(true);
             }}
             className="w-14 h-14 rounded-full bg-rust-copper hover:bg-bronze text-steel-black shadow-lg shadow-rust-copper/40 flex items-center justify-center border-4 border-steel-black cursor-pointer transform active:scale-90 transition-transform"
           >
@@ -56,36 +59,36 @@ export default function BottomTabBar({
           </button>
         </div>
 
-        <button 
-          onClick={() => onChangeView('orders')}
-          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === 'orders' ? 'text-rust-copper' : 'text-warm-gray'}`}
+        <button
+          onClick={() => router.push('/seller/orders')}
+          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === '/seller/orders' ? 'text-rust-copper' : 'text-warm-gray'}`}
         >
           <History className="w-5 h-5" />
           <span className="text-[9px] font-mono font-bold uppercase tracking-wider">Orders</span>
         </button>
 
-        <button 
-          onClick={() => onChangeView('profile')}
-          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === 'profile' ? 'text-rust-copper' : 'text-warm-gray'}`}
+        <button
+          onClick={() => router.push('/profile')}
+          className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors ${currentView === '/profile' ? 'text-rust-copper' : 'text-warm-gray'}`}
         >
           <User className="w-5 h-5" />
-          <span className="text-[9px] font-mono font-bold uppercase tracking-wider">Garage</span>
+          <span className="text-[9px] font-mono font-bold uppercase tracking-wider">Profile</span>
         </button>
       </div>
 
-      <SellActionSheet 
+      <SellActionSheet
         isOpen={isActionSheetOpen}
         onClose={() => setIsActionSheetOpen(false)}
         onSelectManualCreate={() => {
-            setIsActionSheetOpen(false);
-            if (onSetSellerTab) onSetSellerTab('create');
-            window.location.href = '/dashboard';
+          setIsActionSheetOpen(false);
+          if (onSetSellerTab) onSetSellerTab('create');
+          router.push('/dashboard');
         }}
         onTriggerSnapCamera={() => {
-            setIsActionSheetOpen(false);
-            if (onSetSellerTab) onSetSellerTab('snap');
-            window.location.href = '/dashboard';
-            showToast("Initializing AI vision modules...");
+          setIsActionSheetOpen(false);
+          if (onSetSellerTab) onSetSellerTab('snap');
+          router.push('/dashboard');
+          showToast('Initializing AI vision modules...');
         }}
       />
     </>

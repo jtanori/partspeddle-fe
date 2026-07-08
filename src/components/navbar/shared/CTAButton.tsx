@@ -1,69 +1,49 @@
+'use client';
+
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { UserSession } from '../../../types';
 
 interface CTAButtonProps {
   user: UserSession | null;
   userRole: 'buyer' | 'seller';
   profile: Record<string, any> | null;
-  onChangeView: (view: string) => void;
-  onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap') => void;
+  onSetSellerTab?: (
+    tab: 'listings' | 'settings' | 'snap' | 'orders' | 'inventory' | 'create',
+  ) => void;
   showToast: (msg: string) => void;
 }
 
 export const CTAButton: React.FC<CTAButtonProps> = ({
-  user, userRole, profile, onChangeView, onSetSellerTab, showToast
+  user,
+  userRole,
+  onSetSellerTab,
+  showToast,
 }) => {
-  const isProfileComplete = profile && profile.name && profile.name.trim() !== 'Unnamed Yard' && profile.location && profile.location.trim() !== '';
+  const router = useRouter();
 
-  const getCTAConfig = () => {
+  const handleClick = () => {
     if (!user) {
-      return {
-        label: 'SELL PARTS',
-        onClick: () => {
-          onChangeView('auth');
-          showToast('Sign up with your yard specs to list mechanical units instantly.');
-        }
-      };
+      showToast('Sign up with your yard specs to list mechanical units instantly.');
+      router.push('/register?role=seller');
+      return;
     }
     if (userRole === 'buyer') {
-      return {
-        label: 'SELL PARTS',
-        onClick: () => {
-          if (onSetSellerTab) onSetSellerTab('snap');
-          onChangeView('listings');
-          showToast('Salvage Yard Onboarding: Initializing Snap-to-List.');
-        }
-      };
+      if (onSetSellerTab) onSetSellerTab('snap');
+      showToast('Salvage Yard Onboarding: Initializing Snap-to-List.');
+      router.push('/seller/create');
+      return;
     }
-    // Authenticated seller mode
-    if (!isProfileComplete) {
-      return {
-        label: 'COMPLETE PROFILE',
-        onClick: () => {
-          if (onSetSellerTab) onSetSellerTab('settings');
-          onChangeView('listings');
-          showToast('Redirecting to registry settings terminal.');
-        }
-      };
-    }
-    return {
-      label: 'ADD LISTING',
-      onClick: () => {
-        if (onSetSellerTab) onSetSellerTab('snap');
-        onChangeView('listings');
-        showToast('Specify core part details to post new salvage matching listing.');
-      }
-    };
+    if (onSetSellerTab) onSetSellerTab('snap');
+    router.push('/seller/create');
   };
 
-  const cta = getCTAConfig();
-
   return (
-    <button 
-      onClick={cta.onClick}
+    <button
+      onClick={handleClick}
       className="h-[40px] flex items-center justify-center bg-rust-copper text-white border border-white/10 rounded-sm px-5 text-[11px] font-black font-heading tracking-[0.15em] active:translate-y-[0.5px] cursor-pointer select-none whitespace-nowrap shadow-sm transition-all duration-150 relative overflow-hidden hover:bg-rust-copper/90 uppercase"
     >
-      <span className="relative z-10">{cta.label}</span>
+      <span className="relative z-10">SELL PARTS</span>
     </button>
   );
 };
