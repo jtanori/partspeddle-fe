@@ -3,15 +3,14 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Check } from 'lucide-react';
-import { useAuthStore, useSellerNavStore } from '@/store/hooks';
+import { useAuthStore } from '@/store/hooks';
 import Image from 'next/image';
 import heroImage from '../../assets/images/heor_1_b.png';
 import { Button } from '@/components/ui/button';
 
 export const HighFidelityHero: React.FC = () => {
   const router = useRouter();
-  const { user, setUserRole } = useAuthStore();
-  const { setActiveSellerTab } = useSellerNavStore();
+  const { user } = useAuthStore();
 
   return (
     <section
@@ -58,9 +57,7 @@ export const HighFidelityHero: React.FC = () => {
               variant="outline"
               onClick={() => {
                 if (user) {
-                  setUserRole('seller');
-                  setActiveSellerTab('listings');
-                  router.push('/dashboard');
+                  router.push('/seller/create');
                 } else {
                   router.push('/register?role=seller');
                 }

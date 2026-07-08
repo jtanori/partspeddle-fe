@@ -151,12 +151,12 @@ Publicly accessible routes implement `generateMetadata()` for dynamic SEO:
 
 ## Loading States
 
-Use the canonical loading indicators instead of one-off spinners:
+Use the canonical `Skeleton` component and its composite variants instead of one-off spinners:
 
-- **`MainLoadingIndicator`** — full-page / main loading states (e.g., `loading.tsx`, auth initialization, seller workspace bootstrap).
-- **`InlineLoadingIndicator`** — section / inline loading states (e.g., search results, inventory tables, taxonomy sidebar, negotiation modal).
+- **`Skeleton`** — generic pulse placeholder for blocks, text, and images.
+- **`Skeleton.PartCard`**, **`Skeleton.SellerCard`**, **`Skeleton.SearchResult`** — layout-specific skeletons for marketplace shells.
 
-Both components expose `role="status"`, `aria-busy="true"`, and `aria-live="polite"` for accessibility.
+Use these inside `loading.tsx` files and `<Suspense>` fallbacks for search results and data-heavy dashboard widgets.
 
 ---
 

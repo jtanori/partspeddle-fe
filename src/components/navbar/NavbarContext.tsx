@@ -8,16 +8,23 @@ interface NavbarContextType {
   cartCount: number;
   onLogout: () => void;
   onOpenCart: () => void;
-  onChangeView: (view: string) => void;
   onOpenSupport: () => void;
   onOpenTour: () => void;
-  onSetSellerTab?: (tab: 'listings' | 'settings' | 'snap' | 'orders' | 'inventory' | 'create') => void;
+  onSetSellerTab?: (
+    tab: 'listings' | 'settings' | 'snap' | 'orders' | 'inventory' | 'create',
+  ) => void;
   showToast: (msg: string) => void;
 }
 
 const NavbarContext = createContext<NavbarContextType | undefined>(undefined);
 
-export const NavbarProvider = ({ children, value }: { children: ReactNode, value: NavbarContextType }) => {
+export const NavbarProvider = ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: NavbarContextType;
+}) => {
   return <NavbarContext.Provider value={value}>{children}</NavbarContext.Provider>;
 };
 

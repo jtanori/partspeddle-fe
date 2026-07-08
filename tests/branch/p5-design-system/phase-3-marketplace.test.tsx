@@ -81,10 +81,10 @@ describe('P5.0 Phase 3 search result card convergence', () => {
 });
 
 describe('P5.0 Phase 3 search UI chrome', () => {
-  it('SearchNoResults renders back to marketplace action', () => {
+  it('SearchNoResults renders clear search action', () => {
     const onClear = vi.fn();
     render(<SearchNoResults onClearSearch={onClear} />);
-    const btn = screen.getByText('BACK TO MARKETPLACE');
+    const btn = screen.getByText('Clear Search');
     fireEvent.click(btn);
     expect(onClear).toHaveBeenCalledTimes(1);
   });

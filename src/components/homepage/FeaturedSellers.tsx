@@ -9,7 +9,6 @@ import { SectionHeader } from '../common/SectionHeader';
 import { SellerCard, SellerCardSeller } from '../design-system/seller-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '../common/EmptyState';
-import { ViewAllButton } from '../common/ViewAllButton';
 import { useTopSellers } from '@/hooks/useTopSellers';
 
 function toSellerCardSeller(seller: Seller): SellerCardSeller {
@@ -28,13 +27,11 @@ function toSellerCardSeller(seller: Seller): SellerCardSeller {
 interface FeaturedSellersProps {
   sellers?: Seller[];
   loading?: boolean;
-  onViewAll?: () => void;
 }
 
 export const FeaturedSellers: React.FC<FeaturedSellersProps> = ({
   sellers: propsSellers,
   loading = false,
-  onViewAll,
 }) => {
   const router = useRouter();
   const { sellers: fetchedSellers, loading: sellersLoading } = useTopSellers({
@@ -50,7 +47,6 @@ export const FeaturedSellers: React.FC<FeaturedSellersProps> = ({
         <SectionHeader
           title="Featured Recycling Yards"
           subtitle="Verified Network • Inspected and certified salvage facilities"
-          actions={<ViewAllButton onClick={onViewAll || (() => router.push('/search'))} />}
         />
 
         {showLoading ? (
@@ -65,7 +61,7 @@ export const FeaturedSellers: React.FC<FeaturedSellersProps> = ({
               <SellerCard
                 key={seller.id}
                 seller={toSellerCardSeller(seller)}
-                onViewInventory={() => router.push('/search')}
+                onViewInventory={() => router.push(`/seller/${seller.id}`)}
               />
             ))}
           </div>

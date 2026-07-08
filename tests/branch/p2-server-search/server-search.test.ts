@@ -26,8 +26,7 @@ describe('P2.2 server-side search fetch', () => {
   it('adds a dedicated loading skeleton for search transitions', () => {
     expect(fileExists('src/app/(public)/search/loading.tsx')).toBe(true);
     const loading = read('src/app/(public)/search/loading.tsx');
-    expect(loading).toContain('InlineLoadingIndicator');
-    expect(loading).not.toContain('animate-pulse');
+    expect(loading).toContain('Skeleton');
   });
 
   it('hydrates the client search page with server-provided initial data', () => {

@@ -38,25 +38,22 @@ describe('P5.0 Phase 3 — marketplace convergence cleanup', () => {
   });
 
   it('uses PPDS tokens in loading indicators', () => {
-    const main = read('src/components/common/MainLoadingIndicator.tsx');
-    const inline = read('src/components/common/InlineLoadingIndicator.tsx');
+    const skeleton = read('src/components/ui/skeleton.tsx');
 
-    expect(main).toContain('bg-brand-black');
-    expect(main).toContain('text-brand-primary');
-    expect(main).toContain('text-foreground-inverse/70');
-    expect(main).not.toContain('bg-[#0E0E0E]');
-    expect(main).not.toContain('text-[#B87333]');
+    expect(skeleton).toContain('bg-surface-muted');
+    expect(skeleton).toContain('bg-surface-primary');
+    expect(skeleton).not.toContain('bg-[#0E0E0E]');
+    expect(skeleton).not.toContain('text-[#B87333]');
 
-    expect(inline).toContain('text-brand-primary');
-    expect(inline).toContain('text-foreground-muted');
-    expect(inline).not.toContain('text-accent-amber');
-    expect(inline).not.toContain('text-zinc-500');
+    expect(exists('src/components/common/MainLoadingIndicator.tsx')).toBe(false);
+    expect(exists('src/components/common/InlineLoadingIndicator.tsx')).toBe(false);
   });
 
   it('migrated all pdp-modern components away from legacy pp-* tokens', () => {
     const pdpDir = path.resolve(__dirname, '../../../src/components/pdp-modern');
     const files = fs.readdirSync(pdpDir).filter((f) => f.endsWith('.tsx'));
-    const legacyPattern = /(?:bg|text|border|rounded|px|py|gap|space-x|space-y)-pp-|[\"']pp-(?:primary|text|success|surface|card|gap|pad|atom)[\"']/;
+    const legacyPattern =
+      /(?:bg|text|border|rounded|px|py|gap|space-x|space-y)-pp-|["']pp-(?:primary|text|success|surface|card|gap|pad|atom)["'];/;
 
     for (const file of files) {
       const source = fs.readFileSync(path.join(pdpDir, file), 'utf-8');

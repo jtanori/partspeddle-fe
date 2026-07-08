@@ -5,8 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PublicShell } from '@/components/layout/PublicShell';
 import { AuthPageShell } from '@/components/auth/AuthPageShell';
-import { MainLoadingIndicator } from '@/components/common/MainLoadingIndicator';
-import { InlineLoadingIndicator } from '@/components/common/InlineLoadingIndicator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -92,18 +91,14 @@ describe('P3.7 layout standardization', () => {
   });
 
   describe('Loading indicators', () => {
-    it('renders the main loading indicator with accessible busy state', () => {
-      render(<MainLoadingIndicator label="Booting..." />);
-      const status = screen.getByRole('status');
-      expect(status).toHaveAttribute('aria-busy', 'true');
-      expect(status).toHaveTextContent('Booting...');
+    it('renders the skeleton loading placeholder', () => {
+      render(<Skeleton data-testid="main-skeleton" className="h-20 w-full" />);
+      expect(screen.getByTestId('main-skeleton')).toBeInTheDocument();
     });
 
-    it('renders the inline loading indicator with accessible busy state', () => {
-      render(<InlineLoadingIndicator label="Working..." />);
-      const status = screen.getByRole('status');
-      expect(status).toHaveAttribute('aria-busy', 'true');
-      expect(status).toHaveTextContent('Working...');
+    it('renders the skeleton text placeholder', () => {
+      render(<Skeleton.Text data-testid="inline-skeleton" lines={2} />);
+      expect(screen.getByTestId('inline-skeleton')).toBeInTheDocument();
     });
   });
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { PartViewModel } from '@/domain/types/pdp.types';
 import ProductGallery from './ProductGallery';
 import ProductHeader from './ProductHeader';
@@ -34,17 +35,20 @@ export default function PDPRoot({ viewModel }: ProductDetailProps) {
       <Content className="py-4">
         {/* Breadcrumbs */}
         <nav className="mb-6 flex flex-wrap items-center gap-2 text-meta text-foreground-muted">
-          <a href="/" className="hover:text-brand-primary">
+          <Link href="/" className="hover:text-brand-primary">
             Home
-          </a>
+          </Link>
           <span>&rsaquo;</span>
-          <a href="/search" className="hover:text-brand-primary">
+          <Link href="/search" className="hover:text-brand-primary">
             Search results
-          </a>
+          </Link>
           <span>&rsaquo;</span>
-          <a href="#" className="hover:text-brand-primary uppercase tracking-tighter">
+          <Link
+            href={`/search?category=${encodeURIComponent(viewModel.header.subtitle)}`}
+            className="hover:text-brand-primary uppercase tracking-tighter"
+          >
             {viewModel.header.subtitle}
-          </a>
+          </Link>
           <span>&rsaquo;</span>
           <span className="truncate uppercase tracking-tighter">{viewModel.header.title}</span>
         </nav>
@@ -93,6 +97,7 @@ export default function PDPRoot({ viewModel }: ProductDetailProps) {
             {/* Detailed Info */}
             <div className="space-y-8">
               <DescriptionFitmentPanel
+                partId={viewModel.id}
                 description={viewModel.description}
                 fitment={viewModel.fitment}
               />
@@ -166,7 +171,7 @@ export default function PDPRoot({ viewModel }: ProductDetailProps) {
                 </ul>
               </Card>
 
-              <CompatibleParts parts={viewModel.crossSell} />
+              <CompatibleParts partId={viewModel.id} parts={viewModel.crossSell} />
               <RecentlyViewed parts={[]} />
               <NeedHelp />
             </div>

@@ -3,12 +3,12 @@
  */
 
 export type PartCondition =
-  | "NEW"
-  | "REMANUFACTURED"
-  | "USED_EXCELLENT"
-  | "USED_GOOD"
-  | "USED_FAIR"
-  | "FOR_PARTS";
+  | 'NEW'
+  | 'REMANUFACTURED'
+  | 'USED_EXCELLENT'
+  | 'USED_GOOD'
+  | 'USED_FAIR'
+  | 'FOR_PARTS';
 
 export interface Seller {
   id: string;
@@ -57,7 +57,7 @@ export interface Part {
   notes?: string;
   images: string[];
   sellerId: string;
-  status?: "draft" | "pending_review" | "available" | "reserved" | "sold" | "removed" | "archived";
+  status?: 'draft' | 'pending_review' | 'available' | 'reserved' | 'sold' | 'removed' | 'archived';
   compatibility: {
     make: string;
     model: string;
@@ -87,7 +87,7 @@ export interface Offer {
   partId: string;
   offeredPrice: number;
   message: string;
-  status: "Pending" | "Accepted" | "Counter-Offer" | "Declined";
+  status: 'Pending' | 'Accepted' | 'Counter-Offer' | 'Declined';
   replyMessage?: string;
   counterPrice?: number;
   timestamp: string;
@@ -100,7 +100,7 @@ export interface SearchFilters {
   partTypes: string[];
   priceRange: [number, number];
   conditions: PartCondition[];
-  sellerType: "all" | "trusted";
+  sellerType: 'all' | 'trusted';
   featured?: boolean;
   fitmentMake?: string;
   fitmentModel?: string;
@@ -108,8 +108,8 @@ export interface SearchFilters {
   fitmentEngine?: string;
   page?: number;
   hitsPerPage?: number;
-  sortBy?: "price_asc" | "price_desc" | "newest";
-  viewMode?: "grid" | "list";
+  sortBy?: 'price_asc' | 'price_desc' | 'newest';
+  viewMode?: 'grid' | 'list';
 }
 
 export interface TourStep {
@@ -129,7 +129,6 @@ export interface UserSession {
 
 export interface NavbarProps {
   currentView: string;
-  onChangeView: (view: string) => void;
   onSearchSubmit: (text: string) => void;
   cartCount: number;
   user: UserSession | null;
@@ -138,19 +137,21 @@ export interface NavbarProps {
   onOpenSearchModal?: (initialQuery?: string) => void;
   searchTextValue?: string;
   onSelectPart?: (partId: string) => void;
-  userRole: "buyer" | "seller";
-  onChangeUserRole: (role: "buyer" | "seller") => void;
+  userRole: 'buyer' | 'seller';
+  onChangeUserRole: (role: 'buyer' | 'seller') => void;
   profile: any;
   onOpenSupport: () => void;
   onOpenTour: () => void;
-  onSetSellerTab?: (tab: "listings" | "settings" | "snap") => void;
+  onSetSellerTab?: (
+    tab: 'listings' | 'settings' | 'snap' | 'orders' | 'inventory' | 'create',
+  ) => void;
   onSnapImagesUploaded?: (images: string[]) => void;
-  activeSellerTab?: "listings" | "settings" | "snap";
+  activeSellerTab?: 'listings' | 'settings' | 'snap' | 'orders' | 'inventory' | 'create';
 }
 
 export interface AIAnalysisResult {
   is_valid_vehicle?: boolean;
-  completeness_grade?: "A" | "B" | "C" | "D" | "F";
+  completeness_grade?: 'A' | 'B' | 'C' | 'D' | 'F';
   vehicle_metrics?: {
     year: number;
     make: string;
@@ -160,7 +161,7 @@ export interface AIAnalysisResult {
   inferred_manifest?: Array<{
     system: string;
     part_type: string;
-    estimated_integrity: "Excellent" | "Used OEM" | "Damaged";
+    estimated_integrity: 'Excellent' | 'Used OEM' | 'Damaged';
   }>;
   part_type?: string;
   system?: string;
@@ -175,4 +176,4 @@ export interface AIAnalysisResult {
   };
 }
 
-export { DEFAULT_PART_IMAGE as PARTS_FALLBACK_IMAGE } from "@/lib/part-images";
+export { DEFAULT_PART_IMAGE as PARTS_FALLBACK_IMAGE } from '@/lib/part-images';

@@ -10,7 +10,7 @@ describe('CompatibleParts', () => {
   ];
 
   it('renders cross-sell parts', () => {
-    render(<CompatibleParts parts={mockCrossSell} />);
+    render(<CompatibleParts partId="p1" parts={mockCrossSell} />);
     expect(screen.getByText('Alternator Pulley')).toBeDefined();
     expect(screen.getByText('$18.99')).toBeDefined();
     expect(screen.getByText('Alternator Brush Set')).toBeDefined();

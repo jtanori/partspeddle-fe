@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ShieldCheck, Hammer, Percent, Calendar } from 'lucide-react';
 import logoImg from '../../assets/images/logo_solid.png';
 import hero1 from '../../assets/images/hero_1.png';
@@ -8,10 +9,9 @@ import hero1 from '../../assets/images/hero_1.png';
 interface BrandStoryColumnProps {
   isSignUp: boolean;
   role: 'buyer' | 'seller';
-  onCancel: () => void;
 }
 
-export const BrandStoryColumn: React.FC<BrandStoryColumnProps> = ({ isSignUp, role, onCancel }) => {
+export const BrandStoryColumn: React.FC<BrandStoryColumnProps> = ({ isSignUp, role }) => {
   return (
     <div
       className="relative hidden h-auto flex-shrink-0 flex-col justify-between overflow-hidden bg-foreground-primary p-8 text-foreground-inverse md:flex md:h-full md:w-[35%] lg:w-[40%] lg:p-12 xl:w-1/2"
@@ -27,8 +27,8 @@ export const BrandStoryColumn: React.FC<BrandStoryColumnProps> = ({ isSignUp, ro
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground-primary/85 via-foreground-primary/60 to-transparent" />
 
       {/* Brand Logo System */}
-      <div
-        onClick={onCancel}
+      <Link
+        href="/"
         className="relative z-10 flex shrink-0 cursor-pointer select-none items-center bg-transparent transition-transform duration-300 hover:scale-[1.03]"
       >
         <img
@@ -37,7 +37,7 @@ export const BrandStoryColumn: React.FC<BrandStoryColumnProps> = ({ isSignUp, ro
           className="h-auto w-[185px] bg-transparent object-contain lg:w-[210px]"
           referrerPolicy="no-referrer"
         />
-      </div>
+      </Link>
 
       {/* Stripped Tagline Panel for Narrow Column Width */}
       <div className="relative z-10 mb-6 mt-auto flex max-w-xl shrink-0 flex-col py-4 lg:mb-8">

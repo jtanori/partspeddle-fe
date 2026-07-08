@@ -35,7 +35,8 @@ interface ListingsGridProps {
   parts: Part[];
   loading?: boolean;
   skeletonCount?: number;
-  onViewAll?: () => void;
+  viewAllHref?: string;
+  emptyActionHref?: string;
   emptyState?: {
     title: string;
     description: string;
@@ -50,13 +51,14 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
   parts,
   loading = false,
   skeletonCount = 4,
-  onViewAll,
+  viewAllHref = '/search',
+  emptyActionHref = '/search',
   emptyState,
 }) => {
   const router = useRouter();
   const [favorites, setFavorites] = useState<string[]>([]);
 
-  const handleViewAll = onViewAll || (() => router.push('/search'));
+  const handleViewAll = () => router.push(viewAllHref);
 
   const toggleFavorite = (partId: string) => {
     setFavorites((prev) =>
@@ -98,7 +100,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
               "We couldn't find any OEM parts matching this specific criteria in our active network. Try adjusting your search or check back later."
             }
             actionText={emptyState?.actionText || 'Search All Inventory'}
-            onAction={emptyState?.onAction || (() => router.push('/search'))}
+            onAction={emptyState?.onAction || (() => router.push(emptyActionHref))}
           />
         )}
       </Content>

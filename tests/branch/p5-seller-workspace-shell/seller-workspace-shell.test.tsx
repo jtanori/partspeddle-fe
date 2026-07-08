@@ -23,6 +23,10 @@ vi.mock('next/link', () => ({
   ),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 function readSource(relativePath: string) {
   return readFileSync(resolve(process.cwd(), relativePath), 'utf-8');
 }
