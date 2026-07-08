@@ -6,14 +6,13 @@ import {
   MapPin,
   Mail,
   Phone,
-  Camera,
   ShieldCheck,
   Check,
   Upload,
   ImageIcon,
   Loader2,
 } from 'lucide-react';
-import { InlineLoadingIndicator } from '@/components/common/InlineLoadingIndicator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '../../lib/supabase';
 
 export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialLogoUrl }) => {
@@ -72,7 +71,7 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
 
         {isUploading && (
           <div className="absolute inset-0 bg-shell-sidebar/80 flex items-center justify-center backdrop-blur-xs">
-            <InlineLoadingIndicator label="Uploading logo..." className="py-0" />
+            <Skeleton className="h-6 w-32 rounded-full" />
           </div>
         )}
       </div>
@@ -125,8 +124,57 @@ export const SettingsForm: React.FC = () => {
 
   if (!localProfile) {
     return (
-      <div className="terminal-panel">
-        <InlineLoadingIndicator label="Loading profile settings..." />
+      <div className="terminal-panel overflow-hidden">
+        <div className="bg-shell-canvas/50 p-4 sm:p-6 md:p-10 border-b border-border-default">
+          <div className="flex flex-col md:flex-row md:items-center gap-10">
+            <div className="border border-border-strong bg-shell-canvas/30 rounded-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 max-w-2xl shadow-panel w-full">
+              <Skeleton className="w-20 h-20 shrink-0 rounded-sm" />
+              <div className="flex-1 space-y-3">
+                <Skeleton className="h-3 w-48" />
+                <Skeleton className="h-3 w-3/4" />
+                <Skeleton className="h-8 w-40" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-56" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 bg-shell-workspace/30">
+          <div className="space-y-8">
+            <Skeleton className="h-4 w-40" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-32" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-36" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <Skeleton className="h-4 w-32" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-36" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 pt-8 flex justify-end border-t border-border-subtle mt-4">
+            <Skeleton className="h-12 w-52" />
+          </div>
+        </div>
       </div>
     );
   }

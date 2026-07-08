@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Filter, ArrowUpDown, Download } from 'lucide-react';
+import { Plus, Filter, ArrowUpDown } from 'lucide-react';
 import { InventoryTable } from '@/components/seller-dashboard/InventoryTable';
 import { PageHeader, Toolbar } from '@/components/workspace';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ export default function SellerInventoryPage() {
       <PageHeader
         title="Inventory"
         subtitle="Manage parts, track performance, and publish listings."
-        primaryAction={{ label: 'Add Part', href: '/seller/create' }}
+        primaryAction={{ label: 'New Listing', href: '/seller/create' }}
         secondaryAction={{ label: 'Export', href: '#' }}
       />
 
