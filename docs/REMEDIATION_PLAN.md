@@ -653,14 +653,14 @@ Page       → Inventory, Wizard, Orders, Analytics
    - Replace spinner loading with skeletons.
    - **Merged:** PR #61 (`feat(p5): seller workspace shell pages, sidebar, and skeleton loading states`).
 
-7. **Deploy & environment secrets review** (~0.5 sprint)
+7. **Deploy & environment secrets review** (~0.5 sprint) ✅
    - Review `fly/fly.stage.toml` and `fly/fly.prod.toml` to confirm each app targets the correct Fly.io app (`vintrack-stage` / `vintrack-prod`).
    - Classify environment variables in `.env.example`: `NEXT_PUBLIC_*` (browser-safe), server-only, and CI/deploy-only.
    - Verify `docs/DEPLOYMENT_RUNBOOK.md` documents staging vs production secret sets for Supabase, Algolia, Gemini, and Fly.io.
    - Confirm `vintrack-prod` has production-specific values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY` via `flyctl secrets`.
    - Add branch tests asserting env classification and deploy-script conventions.
 
-8. **Listing Draft / AI-assisted wizard** (~1.5–2 sprints)
+8. **Listing Draft / AI-assisted wizard** (~1.5–2 sprints) ✅
    - Replace the rigid step wizard with a persistent **Listing Draft** model.
    - Draft always exists; shows completion percentage.
    - Modules: Identification, Fitment, Pricing, Media, Shipping, SEO.

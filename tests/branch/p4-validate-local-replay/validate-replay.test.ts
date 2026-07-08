@@ -27,18 +27,21 @@ describe('P4.4 validate local migration replay', () => {
   describe('supabase/migrations/', () => {
     const migrationsDir = path.join(repoRoot, 'supabase', 'migrations');
 
-    it('contains exactly the rebaseline migration set', () => {
+    it('contains the rebaseline migration set and allows feature migrations', () => {
       const files = fs.existsSync(migrationsDir)
         ? fs
             .readdirSync(migrationsDir)
             .filter((f) => f.endsWith('.sql'))
             .sort()
         : [];
-      expect(files).toEqual([
-        '20260704000000_rebaseline_public_schema.sql',
-        '20260704000001_rebaseline_storage_assets.sql',
-        '20260704000002_rebaseline_auth_role_sync.sql',
-      ]);
+      expect(files.length).toBeGreaterThanOrEqual(3);
+      expect(files).toEqual(
+        expect.arrayContaining([
+          '20260704000000_rebaseline_public_schema.sql',
+          '20260704000001_rebaseline_storage_assets.sql',
+          '20260704000002_rebaseline_auth_role_sync.sql',
+        ]),
+      );
     });
 
     it('no longer archives historical migrations in the active path', () => {

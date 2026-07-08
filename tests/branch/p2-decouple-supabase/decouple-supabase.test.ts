@@ -42,6 +42,7 @@ describe('P2.6 decouple Supabase from presentation', () => {
     const layout = read('src/app/(seller)/layout.tsx');
     const inventory = read('src/components/seller-dashboard/InventoryTable.tsx');
     const wizard = read('src/components/seller-dashboard/ListingWizard.tsx');
+    const draftHook = read('src/hooks/useListingDraft.ts');
 
     expect(layout).toContain('useSellerProfile');
     expect(layout).not.toContain('supabase.from');
@@ -49,10 +50,13 @@ describe('P2.6 decouple Supabase from presentation', () => {
     expect(inventory).toContain('useSellerInventory');
     expect(inventory).not.toContain('supabase.from');
 
-    expect(wizard).toContain('/api/seller/assets/upload');
-    expect(wizard).toContain('/api/seller/inventory/commit');
+    // Draft wizard communicates through the drafts API, not direct Supabase.
+    expect(wizard).toContain('useListingDraft');
+    expect(draftHook).toContain('/api/seller/drafts');
     expect(wizard).not.toContain('supabase.storage');
     expect(wizard).not.toContain('supabase.rpc');
+    expect(draftHook).not.toContain('supabase.storage');
+    expect(draftHook).not.toContain('supabase.rpc');
   });
 
   it('uses homepage and seller hooks backed by public APIs', () => {

@@ -12,9 +12,11 @@ function read(relativePath: string): string {
 
 describe('P1.10 seller dashboard mobile adaptation', () => {
   it('hides the seller sidebar on mobile and shows it on md+', () => {
+    const sidebar = read('src/components/workspace/Sidebar.tsx');
     const layout = read('src/app/(seller)/layout.tsx');
-    expect(layout).toContain('hidden md:flex');
-    expect(layout).toContain('isMobileMenuOpen');
+    expect(sidebar).toContain('hidden');
+    expect(sidebar).toContain('md:flex');
+    expect(layout).toContain('isMobileSidebarOpen');
   });
 
   it('adds a mobile menu toggle to the seller dashboard header', () => {
@@ -45,8 +47,8 @@ describe('P1.10 seller dashboard mobile adaptation', () => {
   });
 
   it('prevents horizontal overflow in the seller workspace', () => {
-    const layout = read('src/app/(seller)/layout.tsx');
-    expect(layout).toContain('overflow-x-hidden');
-    expect(layout).toContain('min-w-0');
+    const workspaceLayout = read('src/components/workspace/workspace-layout.tsx');
+    expect(workspaceLayout).toContain('overflow-x-hidden');
+    expect(workspaceLayout).toContain('min-w-0');
   });
 });

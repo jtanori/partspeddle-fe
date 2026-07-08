@@ -50,14 +50,10 @@ function createRequest(pathname: string, cookies: Record<string, string> = {}): 
 function mockSession(role: string | null) {
   createServerClientMock.mockReturnValue({
     auth: {
-      getSession: () =>
+      getUser: () =>
         Promise.resolve({
           data: {
-            session: role
-              ? {
-                  user: { id: 'user-1' },
-                }
-              : null,
+            user: role ? { id: 'user-1' } : null,
           },
           error: null,
         }),

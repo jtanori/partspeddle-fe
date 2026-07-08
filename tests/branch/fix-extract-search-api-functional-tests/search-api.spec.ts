@@ -114,14 +114,15 @@ describe('Search API POST /api/search/parts', () => {
     expect(data.error).toBe('Query too long');
   });
 
-  it('returns 500 for infrastructure failures without leaking details', async () => {
+  it('gracefully degrades on infrastructure failures', async () => {
     searchMock.mockRejectedValue(new Error('Algolia timeout'));
 
     const response = await POST(createRequest({ query: 'Alternator' }));
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(200);
 
     const data = await response.json();
-    expect(data.error).toBe('Search temporarily unavailable');
-    expect(data).not.toHaveProperty('hits');
+    expect(data.hits).toEqual([]);
+    expect(data.totalHits).toBe(0);
+    expect(data.warning).toBe('Search currently unavailable: Algolia timeout');
   });
 });

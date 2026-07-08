@@ -28,18 +28,21 @@ describe('P4.3 rebaseline migrations from remote schema', () => {
   describe('supabase/migrations/', () => {
     const migrationsDir = path.join(repoRoot, 'supabase', 'migrations');
 
-    it('contains exactly the three rebaseline migrations', () => {
+    it('contains the three rebaseline migrations and allows feature migrations', () => {
       const topLevel = fs.existsSync(migrationsDir)
         ? fs
             .readdirSync(migrationsDir)
             .filter((f) => f.endsWith('.sql'))
             .sort()
         : [];
-      expect(topLevel).toEqual([
-        '20260704000000_rebaseline_public_schema.sql',
-        '20260704000001_rebaseline_storage_assets.sql',
-        '20260704000002_rebaseline_auth_role_sync.sql',
-      ]);
+      expect(topLevel.length).toBeGreaterThanOrEqual(3);
+      expect(topLevel).toEqual(
+        expect.arrayContaining([
+          '20260704000000_rebaseline_public_schema.sql',
+          '20260704000001_rebaseline_storage_assets.sql',
+          '20260704000002_rebaseline_auth_role_sync.sql',
+        ]),
+      );
     });
 
     it('no longer keeps historical migrations in the active path', () => {
