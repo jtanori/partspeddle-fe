@@ -2,8 +2,8 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/hooks';
 import { useSellerInventory } from '@/hooks/useSellerInventory';
-import { Eye, Package, TrendingUp, AlertCircle } from 'lucide-react';
-import { InlineLoadingIndicator } from '@/components/common/InlineLoadingIndicator';
+import { Package, TrendingUp } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface InventoryTableProps {
   filter?: 'active' | 'sold' | 'archived';
@@ -16,8 +16,78 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
 
   if (loading) {
     return (
-      <div className="terminal-panel">
-        <InlineLoadingIndicator label="Synchronizing yard inventory..." />
+      <div className="terminal-panel overflow-hidden">
+        <div className="p-4 sm:p-6 md:p-8 border-b border-border-default bg-shell-canvas/50">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-10 w-10 rounded-sm" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-3 w-64" />
+            </div>
+          </div>
+        </div>
+        <div className="hidden md:block">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-shell-canvas/30 border-b border-border-subtle">
+                {['PART DETAILS', 'LISTING PRICE', 'LISTING PERFORMANCE', 'ACTIONS'].map(
+                  (header) => (
+                    <th key={header} className="px-6 py-4">
+                      <Skeleton className="h-3 w-24" />
+                    </th>
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border-subtle">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td className="px-8 py-6">
+                    <div className="flex items-center gap-5">
+                      <Skeleton className="h-14 w-14 rounded-sm" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <Skeleton className="h-4 w-20" />
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex gap-6">
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-8 w-16" />
+                    </div>
+                  </td>
+                  <td className="px-8 py-6 text-right">
+                    <Skeleton className="ml-auto h-8 w-24" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="md:hidden space-y-4 p-6 bg-shell-canvas/20">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="terminal-elevated p-5 flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-16 w-16 rounded-sm" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-border-subtle">
+                <div className="flex gap-4">
+                  <Skeleton className="h-8 w-12" />
+                  <Skeleton className="h-8 w-12" />
+                </div>
+                <Skeleton className="h-8 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

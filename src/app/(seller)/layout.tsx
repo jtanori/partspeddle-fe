@@ -17,6 +17,8 @@ import {
   Upload,
   Download,
   Tag,
+  User,
+  DollarSign,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/hooks';
 import { useSellerProfile } from '@/hooks/useSellerProfile';
@@ -47,10 +49,11 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
       items: [
         { id: 'overview', href: '/seller', label: 'Overview', icon: LayoutDashboard },
         { id: 'inventory', href: '/seller/inventory', label: 'Inventory', icon: Package },
-        { id: 'listings', href: '/seller/create', label: 'New Listing', icon: Tag },
+        { id: 'listings', href: '/seller/listings', label: 'Listings', icon: Tag },
         { id: 'orders', href: '/seller/orders', label: 'Orders', icon: ShoppingBag },
-        { id: 'messages', href: '#', label: 'Messages', icon: MessageSquare },
-        { id: 'analytics', href: '/seller', label: 'Analytics', icon: BarChart3 },
+        { id: 'customers', href: '/seller/customers', label: 'Customers', icon: User },
+        { id: 'messages', href: '/seller/messages', label: 'Messages', icon: MessageSquare },
+        { id: 'analytics', href: '/seller/analytics', label: 'Analytics', icon: BarChart3 },
       ],
     },
     {
@@ -59,6 +62,7 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
         { id: 'imports', href: '#', label: 'Imports', icon: Upload },
         { id: 'exports', href: '#', label: 'Exports', icon: Download },
         { id: 'pricing', href: '#', label: 'Pricing', icon: Tag },
+        { id: 'financial', href: '/seller/financial', label: 'Financial', icon: DollarSign },
         {
           id: 'yard',
           label: 'Yard Control',
