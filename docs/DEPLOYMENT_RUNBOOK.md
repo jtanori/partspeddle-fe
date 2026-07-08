@@ -276,6 +276,7 @@ When configuring the **Production** environment, execute the following commands 
    gh secret set SUPABASE_SERVICE_ROLE_KEY --env production --body "<prod-service-role-key>"
    gh secret set ALGOLIA_APP_ID --env production --body "<prod-algolia-app-id>"
    gh secret set ALGOLIA_ADMIN_KEY --env production --body "<prod-algolia-admin-key>"
+   gh secret set GEMINI_API_KEY --env production --body "<prod-gemini-api-key>"
    ```
 
 3. **Verify Configuration**:
@@ -283,3 +284,60 @@ When configuring the **Production** environment, execute the following commands 
    ```bash
    gh api /repos/jtanori/partspeddle-fe/environments/production/secrets
    ```
+
+## Fly.io Application Secrets
+
+Fly.io apps do **not** read from GitHub Environments directly. The deployment workflow only supplies `FLY_API_TOKEN`; all runtime secrets must be set on each Fly.io app via `flyctl secrets`.
+
+### Required secrets per app
+
+Both `vintrack-stage` and `vintrack-prod` must have the following secrets:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_SUPABASE_URL` (same value as `SUPABASE_URL`)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (same value as `SUPABASE_ANON_KEY`)
+- `ALGOLIA_APP_ID`
+- `ALGOLIA_ADMIN_KEY`
+- `GEMINI_API_KEY`
+- `SUPABASE_WEBHOOK_SECRET`
+
+### Setting secrets
+
+```bash
+# Staging
+flyctl secrets set \
+  SUPABASE_URL="<stage-url>" \
+  SUPABASE_ANON_KEY="<stage-anon>" \
+  SUPABASE_SERVICE_ROLE_KEY="<stage-service-role>" \
+  NEXT_PUBLIC_SUPABASE_URL="<stage-url>" \
+  NEXT_PUBLIC_SUPABASE_ANON_KEY="<stage-anon>" \
+  ALGOLIA_APP_ID="<stage-app-id>" \
+  ALGOLIA_ADMIN_KEY="<stage-admin-key>" \
+  GEMINI_API_KEY="<stage-gemini-key>" \
+  SUPABASE_WEBHOOK_SECRET="<stage-webhook-secret>" \
+  --app vintrack-stage
+
+# Production
+flyctl secrets set \
+  SUPABASE_URL="<prod-url>" \
+  SUPABASE_ANON_KEY="<prod-anon>" \
+  SUPABASE_SERVICE_ROLE_KEY="<prod-service-role>" \
+  NEXT_PUBLIC_SUPABASE_URL="<prod-url>" \
+  NEXT_PUBLIC_SUPABASE_ANON_KEY="<prod-anon>" \
+  ALGOLIA_APP_ID="<prod-app-id>" \
+  ALGOLIA_ADMIN_KEY="<prod-admin-key>" \
+  GEMINI_API_KEY="<prod-gemini-key>" \
+  SUPABASE_WEBHOOK_SECRET="<prod-webhook-secret>" \
+  --app vintrack-prod
+```
+
+### Verify secrets
+
+```bash
+flyctl secrets list --app vintrack-stage
+flyctl secrets list --app vintrack-prod
+```
+
+Compare the output against `.env.example` to ensure no required variables are missing.
