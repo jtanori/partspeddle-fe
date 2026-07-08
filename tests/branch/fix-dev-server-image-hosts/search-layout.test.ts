@@ -30,7 +30,7 @@ describe('search page layout markup', () => {
     expect(loading).toContain('max-w-7xl');
     expect(loading).not.toContain('<main');
     expect(loading).not.toContain('container mx-auto');
-    expect(loading).toContain('InlineLoadingIndicator');
+    expect(loading).toContain('Skeleton');
   });
 
   it('uses Skeleton placeholders for client-side search fetches', () => {
