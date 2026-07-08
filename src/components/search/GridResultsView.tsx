@@ -1,6 +1,7 @@
-import React from "react";
-import { ProductGridCard } from "./cards/ProductGridCard";
-import { SearchResultCardModel } from "@/domain/view-models/search";
+import React from 'react';
+import { SearchResultCardModel } from '@/domain/view-models/search';
+import { PartCard } from '@/components/design-system/part-card';
+import { toPartCardPart } from './utils/to-part-card';
 
 interface GridResultsViewProps {
   cards: SearchResultCardModel[];
@@ -14,20 +15,21 @@ export const GridResultsView: React.FC<GridResultsViewProps> = ({
   cards,
   favorites,
   toggleFavorite,
-  onSelectPart,
-  className = "",
+  className = '',
 }) => {
   return (
     <div
-      className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 ${className}`}
+      className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${className}`}
     >
       {cards.map((card) => (
-        <ProductGridCard
+        <PartCard
           key={card.id}
-          card={card}
+          part={toPartCardPart(card)}
+          variant="grid"
+          href={`/listing/${card.id}`}
+          currency="MXN"
           isFavorite={favorites.includes(card.id)}
-          toggleFavorite={toggleFavorite}
-          onSelectPart={onSelectPart}
+          onFavorite={toggleFavorite}
         />
       ))}
     </div>

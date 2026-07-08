@@ -3,6 +3,8 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { SearchFilters, PartCondition } from '../types';
 import { useTaxonomy } from '../hooks/useTaxonomy';
 import { InlineLoadingIndicator } from './common/InlineLoadingIndicator';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ProductSidebarProps {
   filters: SearchFilters;
@@ -54,17 +56,15 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
     ? taxonomy?.partTypesByCategory[selectedCategory.id] || []
     : [];
 
-  const themeClasses = isDisabled
-    ? 'bg-zinc-50 border-zinc-200 text-zinc-900'
-    : 'bg-[#1A1A1A] border-stone-800 text-zinc-300';
+  const checkboxClass = 'h-4 w-4 rounded accent-brand-primary';
 
-  const headerTextClasses = isDisabled ? 'text-zinc-500' : 'text-rust-copper';
-  const sectionTextClasses = isDisabled ? 'text-zinc-900' : 'text-warm-gray';
+  const selectClass =
+    'w-full rounded border border-stroke-subtle bg-surface-primary p-2 text-sm text-foreground-primary outline-none focus:border-brand-primary';
 
   if (loading) {
     return (
       <div
-        className={`border rounded-xl p-5 relative shadow-sm ${themeClasses}`}
+        className="relative rounded-xl border border-stroke-subtle bg-surface-primary p-5 shadow-sm"
         id="unified-filters-card"
       >
         <InlineLoadingIndicator label="Loading taxonomy..." />
@@ -74,22 +74,23 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
 
   return (
     <div
-      className={`border rounded-xl p-4 sm:p-5 space-y-6 relative shadow-sm ${themeClasses}`}
+      className={cn(
+        'relative space-y-6 rounded-xl border border-stroke-subtle bg-surface-primary p-4 shadow-sm sm:p-5',
+        isDisabled && 'opacity-60',
+      )}
       id="unified-filters-card"
     >
       {/* FILTER BY Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3 pb-1">
-          <h2
-            className={`font-display font-black text-[11px] uppercase tracking-widest select-none ${headerTextClasses}`}
-          >
+          <h2 className="select-none font-display text-[11px] font-black uppercase tracking-widest text-brand-primary">
             FILTER BY
           </h2>
-          <div className="flex-grow h-px bg-zinc-200" />
+          <div className="h-px flex-grow bg-stroke-subtle" />
         </div>
         <button
           onClick={clearAllFilters}
-          className="text-[10px] font-bold uppercase text-zinc-500 hover:text-rust-copper transition-colors cursor-pointer bg-transparent border-none"
+          className="border-none bg-transparent text-[10px] font-bold uppercase text-foreground-muted transition-colors hover:text-brand-primary"
         >
           Clear All
         </button>
@@ -111,7 +112,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                     fitmentModel: 'All Models',
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               >
                 <option value="All Makes">All Makes</option>
                 {facets.make &&
@@ -129,7 +130,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                     fitmentModel: e.target.value,
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
                 disabled={filters.fitmentMake === 'All Makes'}
               >
                 <option value="All Models">All Models</option>
@@ -148,7 +149,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                     fitmentYear: e.target.value,
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               >
                 <option value="All Years">All Years</option>
                 {facets.year &&
@@ -167,24 +168,26 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           id: 'manufacturer',
           title: 'Manufacturer',
           content: (
-            <div className="space-y-1 max-h-40 overflow-y-auto">
+            <div className="max-h-40 space-y-1 overflow-y-auto">
               {facets.make &&
                 Object.keys(facets.make).map((make) => (
-                  <div
+                  <label
                     key={make}
-                    className="flex items-center gap-2 text-sm cursor-pointer"
-                    onClick={() =>
-                      setAndSyncFilters((p) => ({
-                        ...p,
-                        fitmentMake: p.fitmentMake === make ? 'All Makes' : make,
-                      }))
-                    }
+                    className="flex cursor-pointer items-center gap-2 text-sm text-foreground-secondary"
                   >
-                    <div
-                      className={`w-4 h-4 rounded border ${filters.fitmentMake === make ? 'bg-rust-copper border-rust-copper' : 'border-zinc-300'}`}
-                    ></div>
+                    <input
+                      type="checkbox"
+                      checked={filters.fitmentMake === make}
+                      onChange={() =>
+                        setAndSyncFilters((p) => ({
+                          ...p,
+                          fitmentMake: p.fitmentMake === make ? 'All Makes' : make,
+                        }))
+                      }
+                      className={checkboxClass}
+                    />
                     {make} ({facets.make[make]})
-                  </div>
+                  </label>
                 ))}
             </div>
           ),
@@ -204,10 +207,10 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                     partTypes: [],
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               >
                 <option value="">All Systems</option>
-                {taxonomy?.systems.map((sys) => (
+                {taxonomy?.systems.map((sys: string) => (
                   <option key={sys} value={sys}>
                     {sys}
                   </option>
@@ -223,10 +226,10 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                       partTypes: [],
                     }))
                   }
-                  className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                  className={selectClass}
                 >
                   <option value="">All Assemblies</option>
-                  {categories.map((cat) => (
+                  {categories.map((cat: any) => (
                     <option key={cat.slug_en} value={cat.slug_en}>
                       {cat.name_en || cat.name}
                     </option>
@@ -240,18 +243,20 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           id: 'partType',
           title: 'Part Type',
           content: (
-            <div className="space-y-1 max-h-40 overflow-y-auto">
-              {partTypes.map((type) => (
-                <div
+            <div className="max-h-40 space-y-1 overflow-y-auto">
+              {partTypes.map((type: any) => (
+                <label
                   key={type.slug_en}
-                  className="flex items-center gap-2 text-sm cursor-pointer"
-                  onClick={() => togglePartType(type.slug_en)}
+                  className="flex cursor-pointer items-center gap-2 text-sm text-foreground-secondary"
                 >
-                  <div
-                    className={`w-4 h-4 rounded border ${filters.partTypes.includes(type.slug_en) ? 'bg-rust-copper border-rust-copper' : 'border-zinc-300'}`}
-                  ></div>
+                  <input
+                    type="checkbox"
+                    checked={filters.partTypes.includes(type.slug_en)}
+                    onChange={() => togglePartType(type.slug_en)}
+                    className={checkboxClass}
+                  />
                   {type.name_en || type.name}
-                </div>
+                </label>
               ))}
             </div>
           ),
@@ -263,16 +268,18 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
             <div className="space-y-1">
               {(['Used OEM', 'OEM Original', 'Excellent', 'Good', 'For Parts'] as any[]).map(
                 (cond) => (
-                  <div
+                  <label
                     key={cond}
-                    className="flex items-center gap-2 text-sm cursor-pointer"
-                    onClick={() => toggleCondition(cond)}
+                    className="flex cursor-pointer items-center gap-2 text-sm text-foreground-secondary"
                   >
-                    <div
-                      className={`w-4 h-4 rounded border ${filters.conditions.includes(cond) ? 'bg-rust-copper border-rust-copper' : 'border-zinc-300'}`}
-                    ></div>
+                    <input
+                      type="checkbox"
+                      checked={filters.conditions.includes(cond)}
+                      onChange={() => toggleCondition(cond)}
+                      className={checkboxClass}
+                    />
                     {cond} ({getConditionCount(cond)})
-                  </div>
+                  </label>
                 ),
               )}
             </div>
@@ -288,15 +295,15 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                 placeholder="$ Min"
                 value={filters.priceRange[0]}
                 onChange={(e) => handlePriceChange(0, parseInt(e.target.value))}
-                className="w-full border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               />
-              <span className="text-zinc-400">-</span>
+              <span className="text-foreground-muted">-</span>
               <input
                 type="number"
                 placeholder="$ Max"
                 value={filters.priceRange[1]}
                 onChange={(e) => handlePriceChange(1, parseInt(e.target.value))}
-                className="w-full border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               />
             </div>
           ),
@@ -305,15 +312,15 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
         <div key={section.id} className="space-y-2">
           <div
             onClick={() => toggleSection(section.id)}
-            className="flex items-center justify-between cursor-pointer pb-2 border-b border-zinc-200"
+            className="flex cursor-pointer items-center justify-between border-b border-stroke-subtle pb-2"
           >
-            <span className={`font-display text-sm uppercase tracking-wider ${sectionTextClasses}`}>
+            <span className="font-display text-sm uppercase tracking-wider text-foreground-primary">
               {section.title}
             </span>
             {collapsedSections[section.id] ? (
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="h-4 w-4 text-foreground-muted" />
             ) : (
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="h-4 w-4 text-foreground-muted" />
             )}
           </div>
           {!collapsedSections[section.id] && section.content}
@@ -321,9 +328,9 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
       ))}
 
       {/* Apply Filters Button */}
-      <button className="w-full bg-rust-copper text-white font-black uppercase tracking-widest py-3 rounded-sm text-xs hover:bg-bronze transition-colors">
+      <Button className="w-full font-display text-xs font-black uppercase tracking-widest">
         Apply Filters
-      </button>
+      </Button>
     </div>
   );
 };

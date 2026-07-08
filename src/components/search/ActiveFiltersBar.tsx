@@ -1,5 +1,6 @@
-import React from "react";
-import { X } from "lucide-react";
+import React from 'react';
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Filter {
   key: string;
@@ -17,29 +18,29 @@ export const ActiveFiltersBar: React.FC<ActiveFiltersBarProps> = ({
   filters,
   onRemove,
   onClearAll,
-  className = "",
+  className = '',
 }) => {
   if (filters.length === 0) return null;
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${className}`}>
+    <div className={cn('flex flex-wrap items-center gap-2', className)}>
       {filters.map((filter) => (
         <span
           key={filter.key}
-          className="flex items-center gap-1.5 bg-zinc-100 border border-zinc-200 text-zinc-900 text-xs font-semibold px-2.5 py-1 rounded-sm"
+          className="flex items-center gap-1.5 rounded-sm border border-stroke-subtle bg-surface-secondary px-2.5 py-1 font-sans text-xs font-semibold text-foreground-primary"
         >
           {filter.label}
           <button
             onClick={() => onRemove(filter.key)}
-            className="hover:text-red-500 transition-colors"
+            className="transition-colors hover:text-status-danger"
           >
-            <X className="w-3 h-3" />
+            <X className="h-3 w-3" />
           </button>
         </span>
       ))}
       <button
         onClick={onClearAll}
-        className="text-xs text-zinc-500 hover:text-zinc-900 font-medium underline underline-offset-4 ml-2"
+        className="ml-2 text-xs font-medium text-foreground-muted underline underline-offset-4 hover:text-foreground-primary"
       >
         Clear All
       </button>

@@ -1,69 +1,86 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  User,
-  Briefcase,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-} from "lucide-react";
-import Link from "next/link";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Eye, EyeOff, Mail, Lock, User, CheckCircle } from 'lucide-react';
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [role, setRole] = useState<"buyer" | "seller">("buyer");
-  const [fullName, setFullName] = useState("");
-  const [businessName, setBusinessName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [confirmSalvage, setConfirmSalvage] = useState(false);
-
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const [isShaking, setIsShaking] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
+    setErrorMsg('');
+    setSuccessMsg('');
 
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMsg('Passwords do not match.');
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
+      return;
+    }
+    if (!passwordRegex.test(formData.password)) {
+      setErrorMsg(
+        'Password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.',
+      );
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
+      return;
+    }
+    if (!agreeToTerms) {
+      setErrorMsg('You must agree to the Terms of Service and Privacy Policy.');
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
+      return;
+    }
+
+    setLoading(true);
     try {
-      setLoading(true);
-      if (password !== confirmPassword)
-        throw new Error("Passwords do not match");
-      if (!agreeTerms)
-        throw new Error("You must agree to the Terms & Privacy Policy");
-      if (role === "seller" && !confirmSalvage)
-        throw new Error("You must confirm salvage yard license");
-
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
         options: {
           data: {
-            full_name: fullName,
-            role: role,
-            business_name: role === "seller" ? businessName : undefined,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            phone: formData.phone,
           },
         },
       });
       if (error) throw error;
 
-      setSuccessMsg(
-        "Account created! Please check your email for verification.",
-      );
+      // Confirm the user object with the auth server before storing state.
+      if (data.session) {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData.user) throw new Error('User verification failed');
+      }
+
+      setSuccessMsg('Account created successfully. Please check your email to confirm.');
+      setTimeout(() => router.push('/login'), 3000);
     } catch (err: any) {
-      setErrorMsg(err.message || "Registration failed");
+      setErrorMsg(err.message || 'Registration failed.');
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), 500);
     } finally {
@@ -72,7 +89,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className={isShaking ? "animate-auth-shake" : ""}>
+    <div className={isShaking ? 'animate-auth-shake' : ''}>
       <style>{`
         @keyframes authShake {
           0%, 100% { transform: translateX(0); }
@@ -82,175 +99,159 @@ export default function RegisterPage() {
         .animate-auth-shake { animation: authShake 300ms ease-in-out; }
       `}</style>
 
-      <div className="text-center md:text-left mb-8">
-        <h2 className="font-display text-3xl font-black uppercase text-[#1E1E1E] tracking-tight leading-none">
-          {role === "seller" ? "Join as a Seller" : "Create Account"}
+      <div className="mb-6 text-center md:text-left">
+        <h2 className="font-display text-2xl font-black uppercase tracking-tight leading-none text-foreground-primary">
+          Join PartsPeddle
         </h2>
-        <p className="text-xs text-zinc-500 font-sans mt-3 leading-relaxed">
-          Join the network of vetted salvage professionals.
+        <p className="mt-2 font-sans text-xs leading-relaxed text-foreground-muted">
+          Create your secure account to start buying or selling parts.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mb-6 p-1 bg-zinc-100 rounded-lg border border-zinc-200/60">
-        <button
-          type="button"
-          onClick={() => setRole("buyer")}
-          className={`py-2 text-xs font-display font-bold uppercase rounded-md tracking-wider transition-all ${role === "buyer" ? "bg-white text-rust-copper shadow-sm" : "text-zinc-500"}`}
-        >
-          Buyer
-        </button>
-        <button
-          type="button"
-          onClick={() => setRole("seller")}
-          className={`py-2 text-xs font-display font-bold uppercase rounded-md tracking-wider transition-all ${role === "seller" ? "bg-white text-rust-copper shadow-sm" : "text-zinc-500"}`}
-        >
-          Seller
-        </button>
-      </div>
-
       {errorMsg && (
-        <div className="p-4 mb-6 border-l-4 border-rust-copper bg-amber-50 rounded text-sm text-zinc-800 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-rust-copper shrink-0" />
+        <div className="mb-5 flex items-start gap-3 rounded border-l-4 border-status-warning bg-status-warning-soft p-4 text-sm text-foreground-primary">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-status-warning" />
           <span className="font-medium">{errorMsg}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="p-4 mb-6 border-l-4 border-emerald-600 bg-emerald-50 rounded text-sm text-zinc-800 flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="mb-5 flex items-start gap-3 rounded border-l-4 border-status-success bg-status-success-soft p-4 text-sm text-foreground-primary">
+          <CheckCircle className="h-5 w-5 shrink-0 text-status-success" />
           <span className="font-medium">{successMsg}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="relative">
-          <label className="text-[10px] tracking-widest uppercase font-display font-bold text-zinc-500 block mb-1 ml-1">
-            Full Name
-          </label>
-          <input
-            type="text"
-            required
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="w-full h-11 bg-zinc-50 border border-zinc-200 rounded-lg px-4 text-sm focus:ring-2 focus:ring-rust-copper outline-none transition-all"
-          />
-          <User className="absolute right-4 top-8 w-4 h-4 text-zinc-400" />
-        </div>
-
-        {role === "seller" && (
-          <div className="relative">
-            <label className="text-[10px] tracking-widest uppercase font-display font-bold text-zinc-500 block mb-1 ml-1">
-              Business Name
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="mb-1.5 ml-1 block font-display text-[10px] font-bold uppercase tracking-widest text-foreground-muted">
+              First Name
             </label>
             <input
               type="text"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              className="w-full h-11 bg-zinc-50 border border-zinc-200 rounded-lg px-4 text-sm focus:ring-2 focus:ring-rust-copper outline-none transition-all"
+              name="firstName"
+              required
+              value={formData.firstName}
+              onChange={handleChange}
+              className="h-12 w-full rounded-lg border border-stroke-subtle bg-surface-secondary px-4 text-base text-foreground-primary outline-none transition-all focus:ring-2 focus:ring-brand-primary"
             />
-            <Briefcase className="absolute right-4 top-8 w-4 h-4 text-zinc-400" />
           </div>
-        )}
+          <div>
+            <label className="mb-1.5 ml-1 block font-display text-[10px] font-bold uppercase tracking-widest text-foreground-muted">
+              Last Name
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              required
+              value={formData.lastName}
+              onChange={handleChange}
+              className="h-12 w-full rounded-lg border border-stroke-subtle bg-surface-secondary px-4 text-base text-foreground-primary outline-none transition-all focus:ring-2 focus:ring-brand-primary"
+            />
+          </div>
+        </div>
 
         <div className="relative">
-          <label className="text-[10px] tracking-widest uppercase font-display font-bold text-zinc-500 block mb-1 ml-1">
-            Email
+          <label className="mb-1.5 ml-1 block font-display text-[10px] font-bold uppercase tracking-widest text-foreground-muted">
+            Email Address
           </label>
           <input
             type="email"
+            name="email"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full h-11 bg-zinc-50 border border-zinc-200 rounded-lg px-4 text-sm focus:ring-2 focus:ring-rust-copper outline-none transition-all"
+            value={formData.email}
+            onChange={handleChange}
+            className="h-12 w-full rounded-lg border border-stroke-subtle bg-surface-secondary px-4 text-base text-foreground-primary outline-none transition-all focus:ring-2 focus:ring-brand-primary"
           />
-          <Mail className="absolute right-4 top-8 w-4 h-4 text-zinc-400" />
+          <Mail className="absolute right-4 top-9 h-4 w-4 text-foreground-muted" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="relative">
+            <label className="mb-1.5 ml-1 block font-display text-[10px] font-bold uppercase tracking-widest text-foreground-muted">
+              Password
+            </label>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="h-12 w-full rounded-lg border border-stroke-subtle bg-surface-secondary px-4 pr-12 text-base text-foreground-primary outline-none transition-all focus:ring-2 focus:ring-brand-primary"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-9 text-foreground-muted hover:text-foreground-secondary"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          <div className="relative">
+            <label className="mb-1.5 ml-1 block font-display text-[10px] font-bold uppercase tracking-widest text-foreground-muted">
+              Confirm
+            </label>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="confirmPassword"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="h-12 w-full rounded-lg border border-stroke-subtle bg-surface-secondary px-4 pr-12 text-base text-foreground-primary outline-none transition-all focus:ring-2 focus:ring-brand-primary"
+            />
+            <Lock className="absolute right-4 top-9 h-4 w-4 text-foreground-muted" />
+          </div>
         </div>
 
         <div className="relative">
-          <label className="text-[10px] tracking-widest uppercase font-display font-bold text-zinc-500 block mb-1 ml-1">
-            Password
+          <label className="mb-1.5 ml-1 block font-display text-[10px] font-bold uppercase tracking-widest text-foreground-muted">
+            Phone Number
           </label>
           <input
-            type={showPassword ? "text" : "password"}
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full h-11 bg-zinc-50 border border-zinc-200 rounded-lg px-4 text-sm focus:ring-2 focus:ring-rust-copper outline-none transition-all"
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="h-12 w-full rounded-lg border border-stroke-subtle bg-surface-secondary px-4 text-base text-foreground-primary outline-none transition-all focus:ring-2 focus:ring-brand-primary"
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-8 text-zinc-400"
-          >
-            {showPassword ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
+          <User className="absolute right-4 top-9 h-4 w-4 text-foreground-muted" />
         </div>
 
-        <div className="relative">
-          <label className="text-[10px] tracking-widest uppercase font-display font-bold text-zinc-500 block mb-1 ml-1">
-            Confirm Password
-          </label>
-          <input
-            type={showPassword ? "text" : "password"}
-            required
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full h-11 bg-zinc-50 border border-zinc-200 rounded-lg px-4 text-sm focus:ring-2 focus:ring-rust-copper outline-none transition-all"
-          />
-          <Lock className="absolute right-4 top-8 w-4 h-4 text-zinc-400" />
-        </div>
-
-        <label className="flex items-start gap-3 cursor-pointer">
+        <label className="flex items-start gap-3 pt-1">
           <input
             type="checkbox"
-            required
-            checked={agreeTerms}
-            onChange={(e) => setAgreeTerms(e.target.checked)}
-            className="mt-1 rounded text-rust-copper focus:ring-rust-copper"
+            checked={agreeToTerms}
+            onChange={(e) => setAgreeToTerms(e.target.checked)}
+            className="mt-1 h-4 w-4 accent-brand-primary"
           />
-          <span className="text-[11px] text-zinc-500">
-            I agree to the{" "}
-            <span className="text-rust-copper underline">Terms</span> and{" "}
-            <span className="text-rust-copper underline">Privacy Policy</span>
+          <span className="font-sans text-xs leading-relaxed text-foreground-muted">
+            I agree to the{' '}
+            <Link href="/terms" className="text-brand-primary hover:underline">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="text-brand-primary hover:underline">
+              Privacy Policy
+            </Link>
+            .
           </span>
         </label>
 
-        {role === "seller" && (
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              required
-              checked={confirmSalvage}
-              onChange={(e) => setConfirmSalvage(e.target.checked)}
-              className="mt-1 rounded text-rust-copper focus:ring-rust-copper"
-            />
-            <span className="text-[11px] text-zinc-500 font-medium">
-              I confirm I represent a{" "}
-              <span className="font-bold text-zinc-800">
-                licensed salvage yard
-              </span>
-              .
-            </span>
-          </label>
-        )}
-
-        <button
+        <Button
+          type="submit"
           disabled={loading}
-          className="w-full h-12 bg-rust-copper hover:bg-bronze disabled:opacity-70 transition-all text-white font-display font-black text-xs tracking-widest uppercase rounded-lg shadow-lg active:translate-y-0.5 mt-4"
+          className="mt-4 flex h-14 w-full items-center justify-center gap-2 font-display text-sm font-black uppercase tracking-widest"
         >
-          {loading ? "Creating Account..." : "Create Account"}
-        </button>
+          {loading ? 'Creating Account...' : 'Create Secure Account'}
+        </Button>
       </form>
 
-      <div className="mt-8 text-center text-sm text-zinc-600 font-sans border-t border-zinc-100 pt-6">
-        Already have an account?
+      <div className="mt-6 border-t border-stroke-subtle pt-5 text-center font-sans text-sm text-foreground-secondary">
+        Already registered?
         <Link
           href="/login"
-          className="text-rust-copper hover:underline font-bold uppercase tracking-wide text-xs ml-2"
+          className="ml-2 text-xs font-bold uppercase tracking-wide text-brand-primary hover:underline"
         >
           Sign In →
         </Link>

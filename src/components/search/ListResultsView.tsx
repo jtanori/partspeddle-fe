@@ -1,6 +1,7 @@
-import React from "react";
-import { ProductGridCard } from "./cards/ProductGridCard";
-import { SearchResultCardModel } from "@/domain/view-models/search";
+import React from 'react';
+import { SearchResultCardModel } from '@/domain/view-models/search';
+import { PartCard } from '@/components/design-system/part-card';
+import { toPartCardPart } from './utils/to-part-card';
 
 interface ListResultsViewProps {
   cards: SearchResultCardModel[];
@@ -14,21 +15,21 @@ export const ListResultsView: React.FC<ListResultsViewProps> = ({
   cards,
   favorites,
   toggleFavorite,
-  onSelectPart,
-  className = "",
+  className = '',
 }) => {
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
       {cards.map((card) => (
-        <ProductGridCard
+        <PartCard
           key={card.id}
-          card={card}
+          part={toPartCardPart(card)}
+          variant="list"
+          href={`/listing/${card.id}`}
+          currency="MXN"
           isFavorite={favorites.includes(card.id)}
-          toggleFavorite={toggleFavorite}
-          onSelectPart={onSelectPart}
+          onFavorite={toggleFavorite}
         />
       ))}
     </div>
   );
 };
-

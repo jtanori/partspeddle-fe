@@ -612,12 +612,12 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 3. **Marketplace page convergence** (~1.5 sprints)
    - Use the existing **part page** as the canonical template.
-   - Converge **home**, **search**, **live search**, **authentication**, and **footer** to PPDS cards, spacing, and typography.
+   - Converge **home**, **search**, **authentication**, and **footer** to PPDS cards, spacing, and typography.
    - Specific targets:
      - Home: more whitespace, single card system, larger category cards, modernized trust section.
      - Search: persistent left filter panel, top toolbar (results/sort/view/filters/inventory count), unified result cards.
-     - Live search: command-palette-style dropdown with sections (Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending).
      - Authentication: reduce empty space, apply token typography/buttons/cards.
+       - **Security fix:** replace uses of the `user` object returned by `supabase.auth.getSession()` or `supabase.auth.onAuthStateChange()` with `supabase.auth.getUser()` for any server-side or security-sensitive auth check. The session-derived user is read from storage and may not be authentic; `getUser()` validates the JWT against the Supabase Auth server.
      - Footer: align spacing, contrast, column widths, newsletter placement.
 
 4. **PPDS documentation & Storybook** (~0.5–1 sprint)
@@ -669,6 +669,12 @@ Page       → Inventory, Wizard, Orders, Analytics
    - Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
    - Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
    - WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
+
+10. **Live search command palette** (~1–1.5 sprints)
+    - Command-palette-style dropdown with sections: Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending.
+    - Reusable across marketplace header, workspace top navigation, and mobile search.
+    - Keyboard navigation, recent searches, and trending suggestions.
+    - Standalone phase to allow focused design and security review.
 
 **Mapping from public pages to seller workspace:**
 

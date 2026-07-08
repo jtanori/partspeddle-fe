@@ -9,7 +9,6 @@ import { Price } from './price';
 import { Rating } from './rating';
 import { InventoryCount } from './inventory-count';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DEFAULT_PART_IMAGE } from '@/lib/part-images';
 
 export interface PartCardPart {
   id: string;
@@ -33,6 +32,7 @@ interface PartCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'part'> 
   href?: string;
   isFavorite?: boolean;
   onFavorite?: (id: string) => void;
+  currency?: string;
 }
 
 /**
@@ -44,6 +44,7 @@ export function PartCard({
   href = `/listing/${part.id}`,
   isFavorite = false,
   onFavorite,
+  currency = 'USD',
   className,
   ...props
 }: PartCardProps) {
@@ -130,7 +131,12 @@ export function PartCard({
             isList ? 'mt-2 gap-4' : 'justify-between border-t border-stroke-subtle pt-3',
           )}
         >
-          <Price amount={part.price} compareAtAmount={part.compareAtPrice} size="card-title" />
+          <Price
+            amount={part.price}
+            currency={currency}
+            compareAtAmount={part.compareAtPrice}
+            size="card-title"
+          />
 
           {part.sellerName && !isList && (
             <div className="text-right">
