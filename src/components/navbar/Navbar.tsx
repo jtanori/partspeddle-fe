@@ -7,6 +7,7 @@ import { UserSession } from "../../types";
 import { NavbarSearch } from "./NavbarSearch";
 import { NavLeft, UserActions, MobileNavbar } from "./shared";
 import BottomTabBar from "./BottomTabBar";
+import { useToast } from "@/components/ui/toast";
 
 interface NavbarProps {
   currentView: string;
@@ -63,19 +64,15 @@ export default function Navbar({
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isUserMenuDrawerOpen, setIsUserMenuDrawerOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState(searchTextValue);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [placeholderText, setPlaceholderText] = useState(
     "Search parts, VIN...",
   );
 
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const { addToast } = useToast();
 
-  // Ephemeral toast notification system
   const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => {
-      setToastMsg((curr) => (curr === msg ? null : curr));
-    }, 4500);
+    addToast(msg, { variant: "info", duration: 4500 });
   };
 
   // Sync nav search local input when query text changes from other modals
@@ -175,20 +172,6 @@ export default function Navbar({
         showToast={showToast}
         onSetSellerTab={onSetSellerTab}
       />
-
-      {/* Floating toast notification bar */}
-      {toastMsg && (
-        <div className="fixed top-20 right-4 z-[9999] bg-charcoal border border-rust-copper/30 text-xs px-4 py-3 rounded-md shadow-xl text-base-cream animate-slide-in-right flex items-center gap-2 max-w-sm select-none font-sans">
-          <span className="w-2 h-2 rounded-full bg-rust-copper animate-ping"></span>
-          <span>{toastMsg}</span>
-          <button
-            onClick={() => setToastMsg(null)}
-            className="text-warm-gray hover:text-base-cream font-bold ml-2 text-[11px] min-w-[24px] h-6 flex items-center justify-center cursor-pointer"
-          >
-            ✕
-          </button>
-        </div>
-      )}
     </>
   );
 }

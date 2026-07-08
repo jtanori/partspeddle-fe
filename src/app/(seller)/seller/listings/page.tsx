@@ -1,6 +1,8 @@
 'use client';
 
+import { Tag } from 'lucide-react';
 import { PageHeader } from '@/components/workspace';
+import { EmptyState } from '@/components/common/EmptyState';
 
 export default function SellerListingsPage() {
   return (
@@ -11,11 +13,13 @@ export default function SellerListingsPage() {
         primaryAction={{ label: 'New Listing', href: '/seller/create' }}
         secondaryAction={{ label: 'Import', href: '#' }}
       />
-      <div className="rounded-xl border border-dashed border-stroke-subtle bg-surface-primary p-16 text-center">
-        <p className="text-meta font-black uppercase tracking-widest text-foreground-muted">
-          Listing management dashboard coming soon.
-        </p>
-      </div>
+      <EmptyState
+        title="No listings yet"
+        description="Published drafts and active listings will appear here. Create your first listing to get started."
+        actionText="Create Listing"
+        onAction={() => window.location.href = '/seller/create'}
+        icon={<Tag className="h-12 w-12 text-brand-primary" />}
+      />
     </div>
   );
 }

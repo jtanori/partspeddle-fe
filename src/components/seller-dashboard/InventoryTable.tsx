@@ -2,8 +2,10 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/hooks';
 import { useSellerInventory } from '@/hooks/useSellerInventory';
-import { Package, TrendingUp } from 'lucide-react';
+import { Package, TrendingUp, Plus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
 
 interface InventoryTableProps {
   filter?: 'active' | 'sold' | 'archived';
@@ -12,7 +14,7 @@ interface InventoryTableProps {
 export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
   const router = useRouter();
   const { user } = useAuthStore();
-  const { parts, loading } = useSellerInventory({ userId: user?.id, filter });
+  const { parts, loading, error } = useSellerInventory({ userId: user?.id, filter });
 
   if (loading) {
     return (
@@ -89,6 +91,28 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({ filter }) => {
           ))}
         </div>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorState
+        title="Could not load inventory"
+        description={error}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
+  if (parts.length === 0) {
+    return (
+      <EmptyState
+        title="No inventory yet"
+        description="Start building your catalog by creating a new listing."
+        actionText="Create Listing"
+        onAction={() => router.push('/seller/create')}
+        icon={<Package className="h-12 w-12 text-brand-primary" />}
+      />
     );
   }
 

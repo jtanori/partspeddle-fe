@@ -2,7 +2,7 @@ import React from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { SearchFilters, PartCondition } from '../types';
 import { useTaxonomy } from '../hooks/useTaxonomy';
-import { InlineLoadingIndicator } from './common/InlineLoadingIndicator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -64,10 +64,13 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
   if (loading) {
     return (
       <div
-        className="relative rounded-xl border border-stroke-subtle bg-surface-primary p-5 shadow-sm"
+        className="relative space-y-6 rounded-xl border border-stroke-subtle bg-surface-primary p-5 shadow-sm"
         id="unified-filters-card"
       >
-        <InlineLoadingIndicator label="Loading taxonomy..." />
+        <Skeleton className="h-5 w-3/4" />
+        <Skeleton.Text lines={6} />
+        <Skeleton className="h-5 w-1/2" />
+        <Skeleton.Text lines={4} />
       </div>
     );
   }

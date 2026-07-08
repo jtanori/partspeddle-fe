@@ -6,11 +6,69 @@ import { cn } from '@/lib/utils';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';
 
-interface ToastProps {
+interface ToastItem {
+  id: string;
   message: string;
-  variant?: ToastVariant;
-  duration?: number;
-  onDismiss?: () => void;
+  variant: ToastVariant;
+  duration: number;
+}
+
+interface ToastContextValue {
+  toasts: ToastItem[];
+  addToast: (message: string, options?: { variant?: ToastVariant; duration?: number }) => void;
+  dismissToast: (id: string) => void;
+}
+
+const ToastContext = React.createContext<ToastContextValue | null>(null);
+
+export function useToast(): ToastContextValue {
+  const context = React.useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
+}
+
+interface ToastProviderProps {
+  children: React.ReactNode;
+}
+
+/**
+ * Global toast provider. Renders a fixed toast container in the bottom-right
+ * (bottom-center on mobile) and exposes `useToast()` for queueing notifications.
+ */
+export function ToastProvider({ children }: ToastProviderProps) {
+  const [toasts, setToasts] = React.useState<ToastItem[]>([]);
+
+  const dismissToast = React.useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const addToast = React.useCallback(
+    (message: string, options: { variant?: ToastVariant; duration?: number } = {}) => {
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const toast: ToastItem = {
+        id,
+        message,
+        variant: options.variant ?? 'info',
+        duration: options.duration ?? 5000,
+      };
+      setToasts((prev) => [...prev, toast]);
+    },
+    [],
+  );
+
+  const value = React.useMemo(
+    () => ({ toasts, addToast, dismissToast }),
+    [toasts, addToast, dismissToast],
+  );
+
+  return (
+    <ToastContext.Provider value={value}>
+      {children}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+    </ToastContext.Provider>
+  );
 }
 
 const icons: Record<ToastVariant, React.ReactNode> = {
@@ -26,6 +84,13 @@ const styles: Record<ToastVariant, string> = {
   info: 'bg-status-info-soft text-status-info border-status-info/20',
   warning: 'bg-status-warning-soft text-status-warning border-status-warning/20',
 };
+
+interface ToastProps {
+  message: string;
+  variant?: ToastVariant;
+  duration?: number;
+  onDismiss?: () => void;
+}
 
 /**
  * Single toast notification.
@@ -61,14 +126,29 @@ export function Toast({ message, variant = 'info', duration = 5000, onDismiss }:
   );
 }
 
-interface ToastProviderProps {
-  children: React.ReactNode;
+interface ToastContainerProps {
+  toasts: ToastItem[];
+  onDismiss: (id: string) => void;
 }
 
-/**
- * Toast provider wrapper. Place near the app root.
- * Currently a no-op placeholder; real toast management will be added when needed.
- */
-export function ToastProvider({ children }: ToastProviderProps) {
-  return <>{children}</>;
+function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
+  if (toasts.length === 0) return null;
+
+  return (
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      className="fixed bottom-4 left-4 right-4 z-[100] flex flex-col gap-2 sm:bottom-6 sm:left-auto sm:right-6 sm:w-[360px]"
+    >
+      {toasts.map((toast) => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          variant={toast.variant}
+          duration={toast.duration}
+          onDismiss={() => onDismiss(toast.id)}
+        />
+      ))}
+    </div>
+  );
 }

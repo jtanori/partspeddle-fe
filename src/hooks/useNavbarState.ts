@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useToast } from '@/components/ui/toast';
 
 export const useNavbarState = (initialSearchText: string = '') => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -8,16 +9,13 @@ export const useNavbarState = (initialSearchText: string = '') => {
   const [syncedInitialSearchText, setSyncedInitialSearchText] =
     useState(initialSearchText);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [placeholderText, setPlaceholderText] = useState("Search parts, VIN...");
 
   const userMenuRef = useRef<HTMLDivElement | null>(null);
+  const { addToast } = useToast();
 
   const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => {
-      setToastMsg((curr) => (curr === msg ? null : curr));
-    }, 4500);
+    addToast(msg, { variant: 'info', duration: 4500 });
   };
 
   useEffect(() => {
@@ -65,7 +63,6 @@ export const useNavbarState = (initialSearchText: string = '') => {
     isUserMenuDrawerOpen, setIsUserMenuDrawerOpen,
     navSearchText, setNavSearchText,
     isDropdownOpen, setIsDropdownOpen,
-    toastMsg, setToastMsg,
     placeholderText,
     userMenuRef,
     showToast,

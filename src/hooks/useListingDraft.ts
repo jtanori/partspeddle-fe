@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '@/store/hooks';
+import { useToast } from '@/components/ui/toast';
 import {
   DEFAULT_DRAFT_PAYLOAD,
   type DraftModule,
@@ -21,6 +22,7 @@ interface UseListingDraftResult {
 
 export function useListingDraft(): UseListingDraftResult {
   const { user } = useAuthStore();
+  const { addToast } = useToast();
   const [draft, setDraft] = useState<ListingDraft | null>(null);
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -81,9 +83,10 @@ export function useListingDraft(): UseListingDraftResult {
       } catch (err) {
         console.error('useListingDraft save error:', err);
         setSaveStatus('error');
+        addToast('Failed to autosave draft. Changes may be lost.', { variant: 'error' });
       }
     },
-    [],
+    [addToast],
   );
 
   const flushPendingUpdate = useCallback(() => {
@@ -155,8 +158,9 @@ export function useListingDraft(): UseListingDraftResult {
     if (!response.ok) throw new Error('Publish failed');
     const result = (await response.json()) as { partId: string };
     setDraft((prev) => (prev ? { ...prev, status: 'published', publishedPartId: result.partId } : prev));
+    addToast('Listing published successfully.', { variant: 'success' });
     return result.partId;
-  }, [draft, flushPendingUpdate]);
+  }, [draft, flushPendingUpdate, addToast]);
 
   const discard = useCallback(async () => {
     if (!draft) return;
@@ -167,7 +171,8 @@ export function useListingDraft(): UseListingDraftResult {
     });
     if (!response.ok) throw new Error('Discard failed');
     setDraft((prev) => (prev ? { ...prev, status: 'discarded' } : prev));
-  }, [draft]);
+    addToast('Draft discarded.', { variant: 'info' });
+  }, [draft, addToast]);
 
   useEffect(() => {
     return () => {
