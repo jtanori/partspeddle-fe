@@ -8,7 +8,7 @@ Components are organized in layers.
 - `Badge`
 - `Card` / `CardSecondary` / `CardFloating`
 - `Chip` / `FilterChip`
-- `Input` (pending)
+- `Input` (pending — not yet added to Storybook; use `SearchInput` for the current catalog)
 - `Skeleton`
 - `Tabs`
 - `Accordion`
