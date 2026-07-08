@@ -1,10 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Tag } from 'lucide-react';
 import { PageHeader } from '@/components/workspace';
 import { EmptyState } from '@/components/common/EmptyState';
 
 export default function SellerListingsPage() {
+  const router = useRouter();
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -17,7 +20,7 @@ export default function SellerListingsPage() {
         title="No listings yet"
         description="Published drafts and active listings will appear here. Create your first listing to get started."
         actionText="Create Listing"
-        onAction={() => window.location.href = '/seller/create'}
+        onAction={() => router.push('/seller/create')}
         icon={<Tag className="h-12 w-12 text-brand-primary" />}
       />
     </div>

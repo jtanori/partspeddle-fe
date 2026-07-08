@@ -18,11 +18,7 @@ export function AuthPageShell({ children }: { children: React.ReactNode }) {
       className="flex w-full flex-col bg-surface-secondary md:h-screen md:flex-row md:overflow-hidden"
       id="id-auth-page-root"
     >
-      <BrandStoryColumn
-        isSignUp={isSignUp}
-        role="buyer"
-        onCancel={() => (window.location.href = '/')}
-      />
+      <BrandStoryColumn isSignUp={isSignUp} role="buyer" />
 
       <div className="flex min-h-screen w-full flex-col items-center justify-between bg-surface-primary md:h-full md:w-[65%] md:overflow-y-auto lg:w-[60%] xl:w-1/2">
         {/* Mobile Header */}
@@ -45,7 +41,7 @@ export function AuthPageShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <AuthFooter onCancel={() => (window.location.href = '/')} />
+        <AuthFooter />
 
         {bottomNotice && (
           <div className="animate-fade-in fixed bottom-24 left-1/2 z-50 flex max-w-sm -translate-x-1/2 items-center gap-3 rounded-lg border border-brand-primary/20 bg-surface-secondary px-4 py-3 shadow-floating">

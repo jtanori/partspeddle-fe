@@ -8,12 +8,18 @@ describe('DescriptionFitmentPanel', () => {
     fitment: {
       confidence: 'high',
       fitmentScore: 100,
-      vehicles: [{ year: 2015, make: 'Honda', model: 'Civic', engine: '1.8L' }]
-    }
+      vehicles: [{ year: 2015, make: 'Honda', model: 'Civic', engine: '1.8L' }],
+    },
   };
 
   it('renders description and fitment', () => {
-    render(<DescriptionFitmentPanel description={mockPart.description} fitment={mockPart.fitment} />);
+    render(
+      <DescriptionFitmentPanel
+        partId="p1"
+        description={mockPart.description}
+        fitment={mockPart.fitment}
+      />,
+    );
     // Select the heading specifically
     expect(screen.getByRole('heading', { name: /Description/i })).toBeDefined();
     expect(screen.getByRole('heading', { name: /Vehicle Fitment/i })).toBeDefined();
