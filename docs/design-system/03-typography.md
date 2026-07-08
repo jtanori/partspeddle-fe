@@ -33,3 +33,8 @@ Mono        — 14px / 1.5  / font-mono
 - Use `font-mono` for part numbers, VINs, prices when tabular alignment matters.
 - One H1 per page; logical H2/H3 hierarchy.
 - Marketplace uses larger display sizes; workspace uses the same scale but starts from Heading M.
+
+## Icons
+
+- **Lucide only.** All icons are rendered from `lucide-react`.
+- No custom icon font or SVG sprite sheets are used.

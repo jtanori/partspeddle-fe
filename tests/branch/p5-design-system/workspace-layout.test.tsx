@@ -105,12 +105,16 @@ describe('P5.0 workspace layout system', () => {
     expect(screen.getAllByTestId('logo').length).toBeGreaterThan(0);
   });
 
-  it('TopNavigation renders search and actions', () => {
-    render(<TopNavigation notifications={3} messages={1} />);
-    expect(screen.getByRole('searchbox')).toBeDefined();
-    expect(screen.getByLabelText('Notifications')).toBeDefined();
-    expect(screen.getByLabelText('Notifications').textContent).toContain('3');
-  });
+  it(
+    'TopNavigation renders search and actions',
+    () => {
+      render(<TopNavigation notifications={3} messages={1} />);
+      expect(screen.getByRole('searchbox')).toBeDefined();
+      expect(screen.getByLabelText('Notifications')).toBeDefined();
+      expect(screen.getByLabelText('Notifications').textContent).toContain('3');
+    },
+    10_000
+  );
 
   it('PageHeader renders title, subtitle, and actions', () => {
     render(

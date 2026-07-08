@@ -21,6 +21,8 @@ Primitives:
 - `Section` — vertical section padding.
 - `Stack` — vertical flex with token gaps.
 
+> **Note:** `Container`, `Content`, and `Section` are implemented as layout-aware components (or token-driven wrappers) and should be used in place of ad-hoc `div` wrappers so the page stays aligned to the PPDS grid.
+
 ## Workspace layout
 
 Productivity-oriented, persistent chrome.
