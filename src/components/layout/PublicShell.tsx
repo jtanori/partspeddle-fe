@@ -30,7 +30,7 @@ export const PublicShell = ({ children, showFooter = true }: PublicShellProps) =
   const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="min-h-screen flex flex-col justify-between font-sans relative antialiased leading-relaxed bg-base-cream text-steel-black">
+    <div className="min-h-screen flex flex-col justify-between font-sans relative antialiased leading-relaxed bg-surface-secondary text-foreground-primary">
       <Navbar
         currentView={pathname}
         onChangeView={(view) => {

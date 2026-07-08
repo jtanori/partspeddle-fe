@@ -55,7 +55,7 @@ export default async function ListingDetailPage({ params }: Props) {
   const viewModel = buildPDPView(part, seller, compiled);
 
   return (
-    <div className="bg-base-cream min-h-screen">
+    <div className="bg-surface-secondary min-h-screen">
       <PDPRoot viewModel={viewModel} />
     </div>
   );

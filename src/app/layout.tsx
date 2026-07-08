@@ -50,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${interTight.variable} ${rajdhani.variable} ${oswald.variable} ${mono.variable} antialiased min-h-screen bg-base-cream font-sans text-steel-black`}
+        className={`${inter.variable} ${interTight.variable} ${rajdhani.variable} ${oswald.variable} ${mono.variable} antialiased min-h-screen bg-surface-secondary font-sans text-foreground-primary`}
       >
         <Providers>
           <UIOverlays />
