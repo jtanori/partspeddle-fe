@@ -610,7 +610,7 @@ Page       → Inventory, Wizard, Orders, Analytics
    - Deliver domain components: `Price`, `Rating`, `InventoryCount`, `SellerSummary`, `ImageGallery`, `SpecificationTable`, `VehicleLineage`, `PartCard`, `SellerCard`.
    - Add branch tests per component; old ad-hoc components remain and are tracked for removal.
 
-3. **Marketplace page convergence** (~1.5 sprints)
+3. **Marketplace page convergence** (~1.5 sprints) ✅
    - Use the existing **part page** as the canonical template.
    - Converge **home**, **search**, **authentication**, and **footer** to PPDS cards, spacing, and typography.
    - Specific targets:
@@ -619,6 +619,8 @@ Page       → Inventory, Wizard, Orders, Analytics
      - Authentication: reduce empty space, apply token typography/buttons/cards.
        - **Security fix:** replace uses of the `user` object returned by `supabase.auth.getSession()` or `supabase.auth.onAuthStateChange()` with `supabase.auth.getUser()` for any server-side or security-sensitive auth check. The session-derived user is read from storage and may not be authentic; `getUser()` validates the JWT against the Supabase Auth server.
      - Footer: align spacing, contrast, column widths, newsletter placement.
+   - **Merged:** PR #60 (`feat(ui): finish P5.0 Phase 3 marketplace convergence token cleanup`).
+   - **Cleanup:** stale source branch `feat/p5-marketplace-convergence` can be deleted.
 
 4. **PPDS documentation & Storybook** (~0.5–1 sprint)
    - Create `docs/design-system/` with the proposed structure: philosophy, tokens, layout, typography, color, elevation/motion, component library, patterns, marketplace spec, seller-workspace spec, admin spec, responsive, accessibility, animation, content guidelines, Figma mapping.
@@ -636,7 +638,7 @@ Page       → Inventory, Wizard, Orders, Analytics
    - Add density modes (`comfortable`, `compact`, `dense`) via a context + CSS data attribute.
    - Add branch tests for workspace shell and density modes.
 
-6. **Seller workspace shell** (~1 sprint)
+6. **Seller workspace shell** (~1 sprint) ✅
    - Create or converge seller pages under `(seller)/` using the workspace layout:
      - Dashboard
      - Inventory
@@ -649,8 +651,16 @@ Page       → Inventory, Wizard, Orders, Analytics
      - Settings
    - Wire sidebar navigation to existing routes.
    - Replace spinner loading with skeletons.
+   - **Merged:** PR #61 (`feat(p5): seller workspace shell pages, sidebar, and skeleton loading states`).
 
-7. **Listing Draft / AI-assisted wizard** (~1.5–2 sprints)
+7. **Deploy & environment secrets review** (~0.5 sprint)
+   - Review `fly/fly.stage.toml` and `fly/fly.prod.toml` to confirm each app targets the correct Fly.io app (`vintrack-stage` / `vintrack-prod`).
+   - Classify environment variables in `.env.example`: `NEXT_PUBLIC_*` (browser-safe), server-only, and CI/deploy-only.
+   - Verify `docs/DEPLOYMENT_RUNBOOK.md` documents staging vs production secret sets for Supabase, Algolia, Gemini, and Fly.io.
+   - Confirm `vintrack-prod` has production-specific values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY` via `flyctl secrets`.
+   - Add branch tests asserting env classification and deploy-script conventions.
+
+8. **Listing Draft / AI-assisted wizard** (~1.5–2 sprints)
    - Replace the rigid step wizard with a persistent **Listing Draft** model.
    - Draft always exists; shows completion percentage.
    - Modules: Identification, Fitment, Pricing, Media, Shipping, SEO.
@@ -658,19 +668,20 @@ Page       → Inventory, Wizard, Orders, Analytics
    - Right inspector panel shows completion, publishing status, market value, suggested price, inventory, shipping estimate, compatibility, SEO score.
    - Autosave: local state → optimistic update → server sync → success indicator.
 
-8. **UX polish** (~0.5–1 sprint)
+9. **UX polish** (~0.5–1 sprint)
    - Replace all spinners with skeletons.
    - Add sticky action/filter panels.
    - Improve empty/error/responsive states.
    - Implement unified notification center.
 
-9. **SEO & accessibility hardening** (~0.5–1 sprint)
-   - Fix heading hierarchy (one H1 per page, logical H2s).
-   - Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
-   - Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
-   - WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
+10. **SEO & accessibility hardening** (~0.5–1 sprint)
 
-10. **Live search command palette** (~1–1.5 sprints)
+- Fix heading hierarchy (one H1 per page, logical H2s).
+- Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
+- Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
+- WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
+
+11. **Live search command palette** (~1–1.5 sprints)
     - Command-palette-style dropdown with sections: Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending.
     - Reusable across marketplace header, workspace top navigation, and mobile search.
     - Keyboard navigation, recent searches, and trending suggestions.
