@@ -1,25 +1,16 @@
-import { createServerClient } from '@supabase/ssr';
 import { NextRequest } from 'next/server';
+import { createAuthClient } from './supabase-server';
 import { getUserRole, type UserRole } from './user-roles';
 
 export interface AdminAuthResult {
-  session: any;
+  user: any;
   role: UserRole;
   isAdmin: boolean;
   response: { error: string; status: number } | null;
 }
 
 export async function requireAdmin(request: NextRequest): Promise<AdminAuthResult> {
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL || '',
-    process.env.SUPABASE_ANON_KEY || '',
-    {
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: () => {},
-      },
-    },
-  );
+  const supabase = createAuthClient(request);
 
   const {
     data: { user },
@@ -28,7 +19,7 @@ export async function requireAdmin(request: NextRequest): Promise<AdminAuthResul
 
   if (userError || !user) {
     return {
-      session: null,
+      user: null,
       role: 'buyer',
       isAdmin: false,
       response: { error: 'Unauthorized', status: 401 },
@@ -39,12 +30,12 @@ export async function requireAdmin(request: NextRequest): Promise<AdminAuthResul
 
   if (role !== 'admin') {
     return {
-      session: null,
+      user,
       role,
       isAdmin: false,
       response: { error: 'Forbidden', status: 403 },
     };
   }
 
-  return { session: null, role, isAdmin: true, response: null };
+  return { user, role, isAdmin: true, response: null };
 }

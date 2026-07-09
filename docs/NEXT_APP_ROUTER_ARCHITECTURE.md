@@ -101,15 +101,35 @@ src/app/
 
 ---
 
-## Middleware & Security (`middleware.ts`)
+## Middleware & Security (`src/proxy.ts`)
 
-The middleware enforces authentication and role-based access control (RBAC).
+The proxy middleware enforces authentication and role-based access control (RBAC) for page routes and provides defense-in-depth for API routes. All browser-initiated routes use cookie sessions via `@supabase/ssr`; canonical roles are read from `public.user_roles` through `src/lib/user-roles.ts`.
+
+See [`docs/ROUTE_AUTH_MATRIX.md`](./ROUTE_AUTH_MATRIX.md) for the complete route × role × auth mechanism matrix.
+
+### Page routes
 
 | Path Pattern   | Requirement    | Redirect if Failed        |
 | -------------- | -------------- | ------------------------- |
 | `/dashboard/*` | Authenticated  | `/login`                  |
 | `/seller/*`    | Role: `seller` | `/dashboard` (with alert) |
 | `/admin/*`     | Role: `admin`  | `/dashboard`              |
+
+### API routes
+
+| Path Pattern    | Unauthenticated | Wrong role |
+| --------------- | --------------- | ---------- |
+| `/api/seller/*` | 401 JSON        | 403 JSON   |
+| `/api/admin/*`  | 401 JSON        | 403 JSON   |
+
+### Session cookie hardening
+
+Cookies refreshed by the proxy are explicitly set with:
+
+- `httpOnly: true`
+- `secure: true` in production
+- `sameSite: 'lax'`
+- `path: '/'`
 
 ---
 
