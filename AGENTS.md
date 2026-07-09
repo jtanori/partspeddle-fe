@@ -14,3 +14,11 @@
 3. **No git mutations until verification is confirmed.** The agent must NOT stage, commit, push, or open pull requests until the operator or another agent has explicitly confirmed that tests, build, lint, and typecheck pass.
 
 4. **After verification, agent handles git workflow.** Once verification is confirmed, the agent may proceed with staging, committing, pushing the branch, and creating/merging the pull request as requested.
+
+## Shell Optimization
+
+Shell commands are RTK-optimized. See `.agents/rtk.md` for mappings.
+
+## Planning Artifacts
+
+All session plans, checkpoints, and planning documents must be saved in the `.planning/` directory at the project root.
