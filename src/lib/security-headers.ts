@@ -1,14 +1,28 @@
-const CONTENT_SECURITY_POLICY = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://*.supabase.co",
-  "font-src 'self'",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.algolia.net https://*.algolianet.com",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join('; ');
+const isProduction = process.env.NODE_ENV === 'production';
+
+const CONTENT_SECURITY_POLICY = isProduction
+  ? [
+      "default-src 'self'",
+      "script-src 'self'",
+      "style-src 'self'",
+      "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://*.supabase.co",
+      "font-src 'self'",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.algolia.net https://*.algolianet.com",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; ')
+  : [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https://images.unsplash.com https://picsum.photos https://*.supabase.co",
+      "font-src 'self'",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.algolia.net https://*.algolianet.com",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; ');
 
 export const SECURITY_HEADERS = {
   'Content-Security-Policy': CONTENT_SECURITY_POLICY,
