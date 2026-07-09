@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import fs from 'node:fs';
@@ -46,6 +47,11 @@ vi.mock('@/store/hooks', () => ({
 }));
 
 vi.mock('@/assets/images/logo_solid.png', () => ({ default: { src: '/logo.png' } }));
+
+vi.mock('@/components/ui/toast', () => ({
+  ToastProvider: ({ children }: { children: React.ReactNode }) => children,
+  useToast: () => ({ addToast: vi.fn(), dismissToast: vi.fn(), toasts: [] }),
+}));
 
 describe('P3.7 layout standardization', () => {
   beforeEach(() => {

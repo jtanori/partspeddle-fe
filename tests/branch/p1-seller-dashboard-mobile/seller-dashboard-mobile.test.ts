@@ -12,7 +12,7 @@ function read(relativePath: string): string {
 
 describe('P1.10 seller dashboard mobile adaptation', () => {
   it('hides the seller sidebar on mobile and shows it on md+', () => {
-    const sidebar = read('src/components/workspace/Sidebar.tsx');
+    const sidebar = read('src/components/workspace/sidebar.tsx');
     const layout = read('src/app/(seller)/layout.tsx');
     expect(sidebar).toContain('hidden');
     expect(sidebar).toContain('md:flex');

@@ -221,14 +221,14 @@ describe('IPS page refactors', () => {
     render(<TermsPage />);
     expect(screen.getByRole('heading', { name: /Terms of Service/i, level: 1 })).toBeDefined();
     expect(screen.getByRole('link', { name: 'Acceptance' })).toBeDefined();
-    expect(screen.getByText('Limitation of Liability')).toBeDefined();
+    expect(screen.getByRole('heading', { name: 'Limitation of Liability' })).toBeDefined();
   });
 
   it('Privacy page renders TOC and data sections', () => {
     render(<PrivacyPage />);
     expect(screen.getByRole('heading', { name: /Privacy Policy/i, level: 1 })).toBeDefined();
     expect(screen.getByRole('link', { name: 'Information We Collect' })).toBeDefined();
-    expect(screen.getByText('Data Retention')).toBeDefined();
+    expect(screen.getByRole('heading', { name: 'Data Retention' })).toBeDefined();
   });
 
   it('Salvage Network page renders stats, features, and timeline', () => {
