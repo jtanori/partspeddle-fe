@@ -876,6 +876,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 **Why:** Branch tests assert token compliance and component contracts, but they are a poor way for designers and engineers to browse states, variants, and the canonical part page in isolation. Storybook provides a stable visual reference and future visual-regression target for the design system.  
 **Files/scope:** `.storybook/**`, `src/components/ui/**/*.stories.tsx`, `src/components/layout/design-system/**/*.stories.tsx`, `src/components/pdp-modern/**/*.stories.tsx`.  
+**Status:** 🔄 Partially completed — Storybook is installed and many primitive/composite/workspace stories exist, but there is no CI build gate, no canonical `PDPRoot` story, and no branch tests. A detailed plan is saved in `.planning/p5-10-storybook-design-system-documentation.md`.  
 **Action:**
 
 - Install Storybook for Next.js 16 + React 19 + Tailwind CSS v4 and verify it starts alongside the dev server.
