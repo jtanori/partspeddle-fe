@@ -577,7 +577,8 @@ Status markers:
 
 **Why:** Public and authenticated APIs lack consistent validation, rate limits, and safe error surfaces (P3.4 partially addresses search).  
 **Files:** `src/app/api/**`, shared `src/lib/api/` helpers (new), `next.config.ts`.  
-**Action:**
+**Status:** ✅ Completed in PR #78 (`feat/p5-3-to-p5-8-security-hardening` → `develop`) — Zod validation, safe error envelopes, rate limiting, payload-size checks, and graceful search degradation are implemented and tested.  
+**Action:
 
 - Input validation with Zod (or equivalent) on every Route Handler body/query; standard error envelope (`4xx` client / `5xx` infra).
 - Method allowlists per route; payload size limits (uploads, search query, Gemini images).
@@ -590,7 +591,7 @@ Status markers:
 
 **Why:** Direct `supabaseAdmin` usage in pages and handlers bypasses RLS and concentrates service-role power.  
 **Files:** `src/repositories/**`, `src/lib/supabase-admin.ts`, `src/lib/supabase.ts`, pages/routes currently importing admin client (`app/page.tsx`, `app/(public)/listing/**`, seller/admin APIs).  
-**Status:** 🔄 Partially scoped — repository interfaces exist but have no implementations; `supabaseAdmin` is used in 20+ app-layer files. A detailed plan is saved in `.planning/p5-4-repository-data-access-security.md`.  
+**Status:** ✅ Completed in PR #78 — repository factory is implemented, app-layer `supabaseAdmin` imports are documented in `docs/DATA_ACCESS.md`, and branch tests enforce no undocumented service-role usage in `src/app/` or `src/components/`.  
 **Action:**
 
 - Rule: **browser** → anon key + RLS; **server user context** → SSR Supabase client with user session; **service role** → repositories/background jobs only, never in Client Components or public Server Components.
@@ -603,7 +604,7 @@ Status markers:
 
 **Why:** Marketplace systems mix public anon keys, service role, Algolia admin, and Gemini keys — leakage paths include logs, client bundles, and CI.  
 **Files:** `package.json`, `.env.example`, `fly/*.toml`, `.github/workflows/**`, `src/lib/logger.ts`, `src/lib/supabase.ts`.  
-**Status:** 🔄 Partially scoped — env classification exists in `.env.example`, but there is no runtime validation, client-bundle audit, log redaction, or `pnpm audit` gate. A detailed plan is saved in `.planning/p5-5-secrets-env-sensitive-data-exposure.md`.  
+**Status:** ✅ Completed in PR #78 — runtime env validation (`src/lib/env.ts`), log redaction for tokens/keys, safe error responses, and CI `pnpm audit` + GitGuardian gates are in place.  
 **Action:**
 
 - Inventory env vars: classify `NEXT_PUBLIC_*` (safe), server-only, CI/deploy-only; fail build/start if required secrets missing in production.
@@ -617,7 +618,7 @@ Status markers:
 
 **Why:** CSP still allows `unsafe-inline`/`unsafe-eval`; client stores auth state; uploads and third-party assets expand XSS/CSRF surface.  
 **Files:** `src/lib/security-headers.ts`, `src/components/**`, `src/store/**`, `src/hooks/**`, Tailwind/Next font pipeline.  
-**Status:** 🔄 Partially scoped — CSP is permissive, auth role is stored in `localStorage`, and upload UI lacks client validation, but no `dangerouslySetInnerHTML` usage was found. A detailed plan is saved in `.planning/p5-6-frontend-client-side-security.md`.  
+**Status:** ✅ Completed in PR #78 — production CSP strips `unsafe-inline`/`unsafe-eval`, auth slice no longer persists role in `localStorage`, client upload validation is implemented, and no `dangerouslySetInnerHTML` usage remains.  
 **Action:**
 
 - Tighten CSP incrementally (nonces/hashes for scripts/styles where feasible); document required third-party origins (Supabase, Algolia, Unsplash).
@@ -631,7 +632,7 @@ Status markers:
 
 **Why:** App-layer service role can negate RLS; policies must match the routing/RBAC model. Complements P4.6 with an application-facing lens.  
 **Files:** `supabase/migrations/**`, `src/repositories/**`, `src/app/api/**`, `docs/PRC.md`.  
-**Status:** 🔄 Partially scoped — RLS policies exist in `supabase/SCHEMA.sql` and the rebaseline migration, but there is no repository-to-policy map and service role currently bypasses most policies. A detailed plan is saved in `.planning/p5-7-database-security-alignment.md`.  
+**Status:** ✅ Completed in PR #78 — `docs/RLS_POLICY_MAP.md` maps tables/operations to clients and routes, the rebaseline migration enables RLS on `parts` and `seller_profiles`, and service-role exceptions are documented.  
 **Action:**
 
 - Map each repository/route to required RLS policies; flag any that **require** service role and document justification.
@@ -644,7 +645,7 @@ Status markers:
 
 **Why:** Disparate fixes need a single production gate before high-traffic launch.  
 **Files:** `docs/PRC.md` Section 11, `tests/security/**`, `.github/workflows/ci.yml`.  
-**Status:** 🔄 Partially scoped — `docs/PRC.md` exists and `tests/security/search/security-search.spec.ts` covers basic query safety, but there is no consolidated security suite, manual checklist, or sign-off artifact. A detailed plan is saved in `.planning/p5-8-production-web-security-certification.md`.  
+**Status:** ✅ Completed in PR #78 — consolidated `tests/security/**` suite covers headers, RBAC redirects, API auth negatives, secrets redaction, and search safety; sign-off artifacts are linked from `docs/PRC.md`.  
 **Action:**
 
 - Checklist run: headers (P2.9), TLS/HSTS (Fly), RBAC matrix (P5.2), API validation (P5.3), secrets scan (P5.5), OWASP Top 10 relevant items (broken access control, injection, SSRF on Gemini/webhooks, security misconfiguration).
@@ -1090,13 +1091,13 @@ Final cross-cutting milestones to close the remediation effort.
 | P2         | P2.1–P2.10                           | —                                                                                                                           |
 | P3         | P3.1–P3.7                            | —                                                                                                                           |
 | P4         | P4.1–P4.6                            | —                                                                                                                           |
-| P5         | P5.1                                 | P5.2–P5.8, P5.10 Storybook for design-system documentation                                                                  |
+| P5         | P5.1–P5.8                            | P5.10 Storybook for design-system documentation                                                                             |
 | P6         | P6.6                                 | P6.1–P6.5, P6.7                                                                                                             |
 | P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases |
 | Completion | Final verification                   | CI/CD consolidation, Final `develop → main` merge                                                                           |
 
-**Total completed:** ~51 items  
-**Total pending:** ~25 items (P5.3–P5.8, P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
+**Total completed:** ~58 items  
+**Total pending:** ~18 items (P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 
