@@ -1,12 +1,17 @@
-import type { NextConfig } from "next";
-import { securityHeaderEntries } from "./src/lib/security-headers";
+import type { NextConfig } from 'next';
+import { securityHeaderEntries } from './src/lib/security-headers';
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  output: 'standalone',
+  api: {
+    bodyParser: {
+      sizeLimit: '2mb',
+    },
+  },
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: '/:path*',
         headers: securityHeaderEntries().map(({ key, value }) => ({
           key,
           value,
@@ -17,34 +22,34 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "images.unsplash.com",
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
       {
-        protocol: "https",
-        hostname: "**.supabase.co",
+        protocol: 'https',
+        hostname: '**.supabase.co',
       },
       {
-        protocol: "https",
-        hostname: "picsum.photos",
+        protocol: 'https',
+        hostname: 'picsum.photos',
       },
     ],
   },
   async redirects() {
     return [
       {
-        source: "/listing",
-        destination: "/search",
+        source: '/listing',
+        destination: '/search',
         permanent: true,
       },
       {
-        source: "/detail/:id",
-        destination: "/listing/:id",
+        source: '/detail/:id',
+        destination: '/listing/:id',
         permanent: true,
       },
       {
-        source: "/auth",
-        destination: "/login",
+        source: '/auth',
+        destination: '/login',
         permanent: false,
       },
     ];
