@@ -22,7 +22,10 @@ function getTextContent(node: React.ReactNode): string {
   if (node == null) return '';
   if (typeof node === 'string' || typeof node === 'number') return String(node);
   if (Array.isArray(node)) return node.map(getTextContent).join('');
-  if (React.isValidElement(node)) return getTextContent(node.props.children);
+  if (React.isValidElement(node)) {
+    const props = node.props as { children?: React.ReactNode };
+    return getTextContent(props.children);
+  }
   return '';
 }
 
