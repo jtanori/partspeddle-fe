@@ -15,7 +15,7 @@ import { safeErrorResponse } from '@/lib/api/errors';
 import { rateLimit } from '@/lib/api/rate-limit';
 
 const searchPartsSchema = z.object({
-  query: z.string().max(1000).optional().default(''),
+  query: z.string().optional().default(''),
   page: z.coerce.number().int().min(0).max(1000).optional().default(0),
   hitsPerPage: z.coerce.number().int().min(1).max(100).optional().default(20),
   fitment: z
@@ -64,6 +64,10 @@ export async function POST(req: NextRequest) {
   }
 
   const body = validated.data;
+
+  if (body.query.length > 1000) {
+    return safeErrorResponse('Query too long', 400);
+  }
 
   try {
     const filters: SearchFilters = {
@@ -142,6 +146,13 @@ export async function POST(req: NextRequest) {
     searchFailuresTotal.add(1);
     const message = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Search API failure', { error: message });
-    return safeErrorResponse('Search currently unavailable.', 500);
+    return NextResponse.json({
+      hits: [],
+      facets: {},
+      totalHits: 0,
+      page: 0,
+      totalPages: 0,
+      warning: `Search currently unavailable: ${message}`,
+    });
   }
 }

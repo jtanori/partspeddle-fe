@@ -29,7 +29,7 @@ Create new repositories under `src/repositories/impl/` and add them to `src/repo
 
 ---
 
-## Service-role Exceptions in `src/app/`
+## Service-role exceptions in `src/app/`
 
 The following API routes import `@/lib/supabase-admin` for justified reasons. All other app code must use the repository factory or `createAuthClient`/`createAnonServerClient`.
 

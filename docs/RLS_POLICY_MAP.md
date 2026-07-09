@@ -30,7 +30,7 @@ This document maps every application route/repository to the Postgres Row-Level 
 
 ---
 
-## Service-Role Exceptions
+## Service-role exceptions
 
 These operations legitimately bypass RLS using `supabaseAdmin`:
 

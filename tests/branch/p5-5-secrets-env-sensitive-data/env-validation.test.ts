@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 describe('P5.5 environment validation', () => {
   it('throws in production when required variables are missing', async () => {
     const originalEnv = { ...process.env };
+    vi.resetModules();
     process.env.NODE_ENV = 'production';
     process.env.SUPABASE_URL = '';
     process.env.SUPABASE_ANON_KEY = '';
@@ -20,6 +21,7 @@ describe('P5.5 environment validation', () => {
 
   it('warns but does not throw in development when variables are missing', async () => {
     const originalEnv = { ...process.env };
+    vi.resetModules();
     process.env.NODE_ENV = 'development';
     process.env.SUPABASE_URL = '';
     process.env.SUPABASE_ANON_KEY = '';
