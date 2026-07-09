@@ -55,6 +55,8 @@ All visual values are defined as tokens in `src/index.css` and exposed through T
 | Token               | Size | Usage                      |
 | ------------------- | ---- | -------------------------- |
 | `--text-display`    | 48px | Hero headlines             |
+| `--text-display-l`  | 40px | Large page titles          |
+| `--text-display-m`  | 32px | Medium display headlines   |
 | `--text-hero`       | 36px | Page titles                |
 | `--text-section`    | 28px | Section titles             |
 | `--text-card-title` | 22px | Card titles                |
