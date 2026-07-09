@@ -73,7 +73,7 @@ describe('P5.1 route-group loading and error UX', () => {
 
   it('auth error renders a reset button', () => {
     const source = read('src', 'app', '(auth)', 'error.tsx');
-    expect(source).toContain('"use client"');
+    expect(source).toContain("'use client'");
     expect(source).toContain('Button');
     expect(source).toContain('reset');
   });
@@ -86,7 +86,7 @@ describe('P5.1 route-group loading and error UX', () => {
 
   it('admin error renders a reset button', () => {
     const source = read('src', 'app', '(admin)', 'error.tsx');
-    expect(source).toContain('"use client"');
+    expect(source).toContain("'use client'");
     expect(source).toContain('Button');
   });
 });
