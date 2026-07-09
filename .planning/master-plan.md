@@ -658,22 +658,6 @@ Status markers:
 
 **Tracked as P3.5 in this plan.** This item was numbered P5.9 in `docs/REMEDIATION_PLAN.md`; during consolidation it was kept at P3.5 because it is a low-priority operations task rather than a routing/web-security concern.
 
-### P5.10 Add Storybook for design-system documentation
-
-**Why:** Branch tests assert token compliance and component contracts, but they are a poor way for designers and engineers to browse states, variants, and the canonical part page in isolation. Storybook provides a stable visual reference and future visual-regression target for the design system.  
-**Files/scope:** `.storybook/**`, `src/components/ui/**/*.stories.tsx`, `src/components/layout/design-system/**/*.stories.tsx`, `src/components/pdp-modern/**/*.stories.tsx`.  
-**Status:** 🔄 Partially completed — Storybook is installed and many primitive/composite/workspace stories exist, but there is no CI build gate, no canonical `PDPRoot` story, and no branch tests. A detailed plan is saved in `.planning/p5-10-storybook-design-system-documentation.md`.  
-**Action:**
-
-- Install Storybook for Next.js 16 + React 19 + Tailwind CSS v4 and verify it starts alongside the dev server.
-- Write stories for the core tokens/primitives (`Button`, `Badge`, `Card` variants, `Container`, `Content`, `MainGrid`, `Section`, `Stack`).
-- Write stories for the canonical part page (`PDPRoot`) with representative mock data.
-- Configure a11y and viewport addons; run Storybook as part of CI smoke checks.
-- Keep component branch tests as the primary regression harness; Storybook is visual/reference documentation, not a replacement for tests.
-- **Depends on:** P7.7 Phase 2 (core component library).
-
----
-
 ## P6 — Security hardening follow-ups
 
 These gaps were identified during the P4.6 database security audit. They are not blockers for the current remediation sprint but must be addressed before production certification (P5.8).
@@ -1035,7 +1019,23 @@ Page       → Inventory, Wizard, Orders, Analytics
 - Coordinate with P5.1 (App Router normalization) so route-group refactors consume PPDS components instead of duplicating them.
 
 **Depends on:** P2.1 (card/search standardization), P3.7 (layout standardization), P4.6 (DB audit complete).  
-**Unblocks:** P5.1–P5.8, P5.10 by providing the component layer and workspace architecture those refactored routes will use.
+**Unblocks:** P5.1–P5.8 by providing the component layer and workspace architecture those refactored routes will use.
+
+---
+
+### P5.10 Add Storybook for design-system documentation
+
+**Why:** Branch tests assert token compliance and component contracts, but they are a poor way for designers and engineers to browse states, variants, and the canonical part page in isolation. Storybook provides a stable visual reference and future visual-regression target for the design system.  
+**Files/scope:** `.storybook/**`, `src/components/ui/**/*.stories.tsx`, `src/components/layout/design-system/**/*.stories.tsx`, `src/components/pdp-modern/**/*.stories.tsx`.  
+**Status:** 🔄 Partially completed — Storybook is installed and many primitive/composite/workspace stories exist, but there is no CI build gate, no canonical `PDPRoot` story, and no branch tests. A detailed plan is saved in `.planning/p5-10-storybook-design-system-documentation.md`.  
+**Action:**
+
+- Install Storybook for Next.js 16 + React 19 + Tailwind CSS v4 and verify it starts alongside the dev server.
+- Write stories for the core tokens/primitives (`Button`, `Badge`, `Card` variants, `Container`, `Content`, `MainGrid`, `Section`, `Stack`).
+- Write stories for the canonical part page (`PDPRoot`) with representative mock data.
+- Configure a11y and viewport addons; run Storybook as part of CI smoke checks.
+- Keep component branch tests as the primary regression harness; Storybook is visual/reference documentation, not a replacement for tests.
+- **Depends on:** P7.7 Phase 2 (core component library).
 
 ---
 
@@ -1091,9 +1091,9 @@ Final cross-cutting milestones to close the remediation effort.
 | P2         | P2.1–P2.10                           | —                                                                                                                           |
 | P3         | P3.1–P3.7                            | —                                                                                                                           |
 | P4         | P4.1–P4.6                            | —                                                                                                                           |
-| P5         | P5.1–P5.8                            | P5.10 Storybook for design-system documentation                                                                             |
+| P5         | P5.1–P5.8                            | — (P5.10 moved to P7)                                                                                                       |
 | P6         | P6.6                                 | P6.1–P6.5, P6.7                                                                                                             |
-| P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases |
+| P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases, P5.10 Storybook |
 | Completion | Final verification                   | CI/CD consolidation, Final `develop → main` merge                                                                           |
 
 **Total completed:** ~58 items  
@@ -1110,11 +1110,11 @@ Final cross-cutting milestones to close the remediation effort.
 4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → update production Fly.io secrets (P3.5) → expand ESLint strict typing outside domain (P3.6) → standardize layout architecture across pages (P3.7).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
 6. **P6 security hardening follow-ups:** address non-critical gaps from P4.6 (P6.1–P6.6) before production certification; apply the remote-first migration checklist (P6.7) once the migration strategy is chosen.
-7. **P5 routing, web security & application architecture:** proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → add Storybook for design-system documentation (P5.10). Production Fly.io secrets are tracked at P3.5.
+7. **P5 routing, web security & application architecture:** proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8). Production Fly.io secrets are tracked at P3.5.
 
 Items marked **Depends on** should not start until their dependency is complete.
 
-8. **P7 public experience, design system extension & navigation governance:** UX polish (P7.1) and link audit (P7.2) can start once the marketplace convergence in P7.7 is stable; Information Page System (P7.3) is already implemented; Editorial Page Archetypes (P7.4), Support Center (P7.5), and Navigation Registry (P7.6) follow. P7.6 Navigation Registry depends on P5.1 (route-group structure stable). The broader PPDS roadmap (P7.7) can advance in parallel with P5.1–P5.3.
+8. **P7 public experience, design system extension & navigation governance:** UX polish (P7.1) and link audit (P7.2) can start once the marketplace convergence in P7.7 is stable; Information Page System (P7.3) is already implemented; Editorial Page Archetypes (P7.4), Support Center (P7.5), and Navigation Registry (P7.6) follow. The broader PPDS roadmap (P7.7) can advance in parallel with P5.1–P5.3. Add Storybook for design-system documentation (P5.10, moved from P5) after P7.7 Phase 2.
 
 9. **Completion:** consolidate and document the CI/CD pipeline (Completion — CI/CD consolidation) → merge `develop` into `main` and tag the release (Completion — Final `develop → main` merge).
 
