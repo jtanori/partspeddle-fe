@@ -896,36 +896,42 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Why:** `part_images` public read leaks images linked to draft/removed/sold parts; `fraud_events`/`risk_scores` expose internal signals to the subject user; `offers`/`conversations` insert policies lack part/seller validation; `seller_owns_profile` is an implicit `FOR ALL` policy allowing profile deletion.  
 **Files:** `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (policy section).  
+**Status:** 🔄 Pending — the migration still contains the permissive policies. A detailed plan is saved in `.planning/p6-1-tighten-overly-permissive-rls-policies.md`.  
 **Action:** Add status/part-availability checks to public reads; validate `seller_id`/`part_id` on insert policies; restrict `seller_owns_profile` to SELECT/UPDATE.
 
 ### P6.2 Restrict grants and default privileges
 
 **Why:** `GRANT ALL` is given to `anon` and `authenticated` on every table and function, including sensitive ones (`audit_log`, `fraud_events`, `risk_scores`, `users`, `transactions`). Default privileges propagate this pattern to future objects.  
 **Files:** `supabase/SCHEMA.sql`, `supabase/migrations/20260704000000_rebaseline_public_schema.sql`.  
+**Status:** 🔄 Pending — the migration still contains `GRANT ALL` on all tables/functions and broad default privileges. A detailed plan is saved in `.planning/p6-2-restrict-grants-and-default-privileges.md`.  
 **Action:** Replace table grants with least-privilege grants; remove function grants on trigger/INTERNAL functions; remove `anon`/`authenticated` from default table/function privileges where not required.
 
 ### P6.3 Remove unused Postgres extensions
 
 **Why:** `pg_net`, `pg_graphql`, `supabase_vault`, and `uuid-ossp` are installed but not used by the marketplace core, increasing attack surface.  
 **Files:** `supabase/SCHEMA.sql`.  
+**Status:** 🔄 Pending — the four extensions are still created in the rebaseline migration and not referenced elsewhere. A detailed plan is saved in `.planning/p6-3-remove-unused-postgres-extensions.md`.  
 **Action:** Confirm no dependencies, then `DROP EXTENSION IF EXISTS ...` for each unused extension.
 
 ### P6.4 Replace service-role usage in public/analytics routes
 
 **Why:** `supabaseAdmin` is used in public read routes (`/api/sellers/top`, `/api/parts/featured`, `/api/taxonomy`, home/listing pages) and in analytics writes (`/api/search/clicks`, `/api/search/events`) that accept client-controlled IDs.  
 **Files:** `src/app/api/**`, `src/app/(public)/**`, `src/app/(seller)/**`.  
+**Status:** 🔄 Pending — the listed routes still import `supabaseAdmin`. A detailed plan is saved in `.planning/p6-4-replace-service-role-in-public-analytics-routes.md`.  
 **Action:** Use anon/SSR clients for public reads; write analytics through RLS-permitted inserts or validate/authenticate IDs server-side.
 
 ### P6.5 Add replay protection to webhook signatures
 
 **Why:** `sync-algolia-webhook` verifies HMAC but has no timestamp/nonce, so a captured valid payload can be replayed.  
 **Files:** `supabase/functions/sync-algolia-webhook/index.ts`.  
+**Status:** 🔄 Pending — the Edge Function verifies HMAC but does not validate a timestamp or nonce. A detailed plan is saved in `.planning/p6-5-replay-protection-webhook-signatures.md`.  
 **Action:** Include a timestamp in the signed payload and reject requests older than a short tolerance window.
 
 ### P6.6 Rotate exposed staging service-role JWT ✅
 
 **Why:** The 2026-07-07 schema dump confirmed that staging still contains legacy `sync-algolia-webhook` and `notify-new-message` database triggers that call Edge Functions with a hard-coded service-role JWT. That token must be considered exposed.  
 **Files/scope:** Supabase staging project, `docs/DEPLOYMENT_RUNBOOK.md`.  
+**Status:** ✅ Completed in code — legacy triggers are dropped in the rebaseline migration and Edge Functions no longer trust the legacy bearer-token path. Physical JWT rotation is tracked in P6.7. A completion note is saved in `.planning/p6-6-rotate-exposed-staging-service-role-jwt.md`.  
 **Action:**
 
 - Migration fix is in place in `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (lines 763–764):
@@ -940,6 +946,7 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Why:** Before the local Supabase initiative the team followed a remote-first strategy: schema changes were applied directly on the Supabase dashboard or via ad-hoc scripts, and the repo did not have a migration history. The rebaseline migration and trigger-cleanup fixes now exist in `supabase/migrations/`, but they have not yet been applied to the live staging/production projects. We need a one-time checklist to safely introduce migration-driven deployments and apply the P6.6 remediation.  
 **Files/scope:** Supabase staging/production projects, `supabase/migrations/20260704000000_rebaseline_public_schema.sql`, `docs/DEPLOYMENT_RUNBOOK.md`, `.github/workflows/ci.yml`.  
+**Status:** 🔄 Pending — the migration stack exists locally but has not been applied to staging or production, and the service-role JWT has not been rotated remotely. A detailed plan is saved in `.planning/p6-7-apply-remediation-migrations-to-remote-databases.md`.  
 **Action:**
 
 1. **Choose the migration strategy** and document it in `docs/DEPLOYMENT_RUNBOOK.md`:
