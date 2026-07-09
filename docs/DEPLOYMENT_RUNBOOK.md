@@ -373,13 +373,21 @@ Rotate credentials on a regular schedule and immediately after any suspected exp
 
 ## Supabase JWT secrets
 
-1. In the Supabase dashboard, go to **Project Settings → API → JWT Settings**.
-2. Generate a new JWT secret.
-3. Update `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_ANON_KEY` in:
+1. Confirm the legacy database triggers that hard-coded a service-role JWT have been removed:
+   ```sql
+   SELECT trigger_name, event_object_table
+   FROM information_schema.triggers
+   WHERE trigger_name IN ('sync-algolia-webhook', 'notify-new-message');
+   ```
+   Expected: zero rows. If any remain, run `supabase db push` to apply the rebaseline migration that drops them before rotating the secret.
+2. In the Supabase dashboard, go to **Project Settings → API → JWT Settings**.
+3. Generate a new JWT secret.
+4. Update `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_ANON_KEY` in:
    - GitHub Environment secrets (staging / production).
    - Fly.io app secrets (`vintrack-stage`, `vintrack-prod`).
-4. Restart the Fly.io apps to pick up the new secrets.
-5. Run `GET /api/health` and a smoke test to verify.
+5. Redeploy Edge Functions so they pick up the new `SUPABASE_SERVICE_ROLE_KEY` secret.
+6. Restart the Fly.io apps to pick up the new secrets.
+7. Run `GET /api/health` and a smoke test to verify.
 
 ## Algolia API keys
 
