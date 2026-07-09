@@ -121,8 +121,8 @@ export async function POST(req: NextRequest) {
       const searchResult = await searchRepository.search(
         body.query ?? '',
         filters,
-        body.page,
-        body.hitsPerPage,
+        body.page ?? 0,
+        body.hitsPerPage ?? 20,
       );
       span.end();
       return searchResult;
