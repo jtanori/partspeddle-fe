@@ -299,7 +299,7 @@ Fly.io apps do **not** read from GitHub Environments directly. The deployment wo
 
 ### Required secrets per app
 
-Both `vintrack-stage` and `vintrack-prod` must have the following secrets:
+Both `vintrack-stage` and `vintrack-prod` must have the following Fly.io runtime secrets:
 
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
@@ -308,8 +308,15 @@ Both `vintrack-stage` and `vintrack-prod` must have the following secrets:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (same value as `SUPABASE_ANON_KEY`)
 - `ALGOLIA_APP_ID`
 - `ALGOLIA_ADMIN_KEY`
+- `ALGOLIA_SEARCH_INDEX_NAME`
+- `ALGOLIA_INDEX_PRICE_ASC` (optional; defaults to `{ALGOLIA_SEARCH_INDEX_NAME}_price_asc`)
+- `ALGOLIA_INDEX_PRICE_DESC` (optional; defaults to `{ALGOLIA_SEARCH_INDEX_NAME}_price_desc`)
+- `ALGOLIA_INDEX_NEWEST` (optional; defaults to `{ALGOLIA_SEARCH_INDEX_NAME}_newest`)
 - `GEMINI_API_KEY`
-- `SUPABASE_WEBHOOK_SECRET`
+- `APP_URL`
+- `APP_PUBLIC_URL` (currently unused by application code, but kept for future operational scripts)
+
+`SUPABASE_WEBHOOK_SECRET` is required by the `sync-algolia-webhook` Edge Function and must be set via `supabase secrets set`, not on the Fly.io app.
 
 ### Setting secrets
 
@@ -349,3 +356,11 @@ flyctl secrets list --app vintrack-prod
 ```
 
 Compare the output against `.env.example` to ensure no required variables are missing.
+
+### Production secret rotation log
+
+- **2026-07-09** — P3.5 production Fly.io secrets updated from `.env.production` on `vintrack-prod`.
+  - Updated: `SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`.
+  - Added: `ALGOLIA_SEARCH_API_KEY`, `APP_PUBLIC_URL`.
+  - Unchanged (already production-specific): `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  - Health check passed: `GET https://vintrack-prod.fly.dev/api/health` returned HTTP 200.

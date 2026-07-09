@@ -432,7 +432,7 @@ Status markers:
 - Return `5xx` for infrastructure failures and `4xx` for client errors.
 - Log full errors server-side but return generic messages to the client.
 
-### P3.5 Update production Fly.io secrets
+### P3.5 Update production Fly.io secrets ✅
 
 **Why:** `vintrack-prod` is currently using the same Supabase/Algolia/Gemini secrets as staging. Production needs its own project/credentials before it handles real traffic.  
 **Files/scope:** `docs/DEPLOYMENT_RUNBOOK.md`, Fly.io app `vintrack-prod`.  
@@ -441,6 +441,8 @@ Status markers:
 - Obtain production values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY`.
 - Run `flyctl secrets set ... --app vintrack-prod` for each production secret.
 - Redeploy `vintrack-prod` and verify `/api/health` and a smoke search request.
+
+**Completed 2026-07-09:** Production secrets sourced from `.env.production` and set on `vintrack-prod`. App redeployed and `/api/health` returned HTTP 200. See `docs/DEPLOYMENT_RUNBOOK.md` §6 for details.
 
 ### P3.6 Expand ESLint strict typing outside `src/domain` ✅
 
@@ -1016,7 +1018,7 @@ Final cross-cutting milestones to close the remediation effort.
 | P0         | P0.1–P0.6            | —                                                          |
 | P1         | P1.1–P1.10           | —                                                          |
 | P2         | P2.1–P2.10           | —                                                          |
-| P3         | P3.1–P3.4, P3.6–P3.7 | P3.5 production Fly.io secrets                             |
+| P3         | P3.1–P3.7            | —                                                          |
 | P4         | P4.1–P4.6            | —                                                          |
 | P5         | P5.0 closed          | P5.1–P5.8, P5.10 Storybook for design-system documentation |
 | P6         | P6.6                 | P6.1–P6.5, P6.7                                            |
