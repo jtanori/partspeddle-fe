@@ -39,6 +39,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Dependency audit
+        run: pnpm audit --production
+
       - name: Run linter
         run: pnpm lint
 

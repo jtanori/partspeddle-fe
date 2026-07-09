@@ -26,6 +26,8 @@
     "test:e2e:smoke:local": "E2E_BASE_URL=http://localhost:3000 playwright test",
     "test:e2e:smoke:staging": "E2E_BASE_URL=https://stage.partspeddle.com playwright test",
     "test:e2e:smoke:production": "E2E_BASE_URL=https://partspeddle.com playwright test",
+    "security:bundle-audit": "tsx scripts/security/audit-client-bundle.ts",
+    "security:env-check": "tsx scripts/security/env-check.ts",
     "db:seed": "tsx scripts/seed/seed-staging.ts",
     "db:seed:staging": "tsx scripts/seed/seed-staging.ts",
     "db:seed:users": "tsx scripts/seed/seed-users.ts",
