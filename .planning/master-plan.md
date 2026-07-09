@@ -535,7 +535,7 @@ Status markers:
 
 ---
 
-## P5 — Routing, web security, public pages & navigation governance
+## P5 — Routing, web security & application architecture
 
 **Stack context (audit baseline):** Next.js 16 App Router + `proxy.ts` (auth/RBAC), React 19, Supabase SSR (`@supabase/ssr`) + Postgres RLS, Algolia server SDK, Fly.io (`force_https`), Edge Functions (Deno), Gemini API, Zustand client state, OpenTelemetry. P2.9 baseline security headers are live via `next.config.ts`.
 
@@ -546,222 +546,6 @@ Status markers:
 - Parallel backend layers: thin `app/api/*/route.ts` handlers coexist with `src/backend/modules/*/contracts/*` Express-style handlers — not idiomatic Next.js Route Handlers + colocated server modules.
 - Widespread `supabaseAdmin` in Route Handlers bypasses RLS; seller auth uses Bearer tokens + service role instead of cookie session helpers everywhere.
 - Legacy deps remain (`express`, `vite`) though runtime is Next-only.
-- Public editorial pages share no canonical layout system; navigation is hardcoded across components.
-- UI/UX inconsistency: pages use different card styles, spacing scales, border radii, and typography, so the product does not yet feel like one coherent design system.
-
-### P5.0 Public pages, design system extension & navigation ✅ CLOSED
-
-**Why:** The six public information pages (`/about`, `/contact`, `/terms`, `/privacy`, `/salvage-network`, `/trust-verification`) were built as isolated pages and navigation was scattered as hardcoded strings. P5.0 consolidates them into a governed Information Page System, defines Editorial Page Archetypes, scopes a Support Center, and introduces a Navigation Registry. The detailed subplans have been folded into this section; P5.0 is now closed and tracked as part of the master plan.
-**Files:** `src/app/(public)/**`, `src/components/information-pages/**`, `src/navigation/**`, `docs/design-system/**`, `docs/PPDS-AI-Design-Spec.md`.
-
-#### P5.0.1 Information Page System (IPS) — IMPLEMENTED
-
-Build reusable editorial components and refactor the six existing public pages.
-
-- **Components added:** `InformationPageHeader`, `InformationLayout`, `StickySidebar`, `TableOfContents`, `EditorialSection`, `InfoCallout`, `SupportCard`, `RelatedLinksCard`, `ContactMethodCard`, `NetworkStatisticCard`, `TrustFeatureCard`, `VerificationProcessTimeline`, `EditorialCTA`, `ContactForm`.
-- **Pages refactored:** `/about`, `/contact`, `/terms`, `/privacy`, `/salvage-network`, `/trust-verification`.
-- **Artifacts:** Storybook stories, branch tests (`tests/branch/phase-11-information-page-system/`), updated `docs/design-system/06-component-library.md` and `docs/PPDS-AI-Design-Spec.md`.
-
-#### P5.0.2 Editorial Page Archetypes — PLANNED / BACKLOG
-
-Define canonical page compositions so future editorial pages derive from a layout rather than ad-hoc assembly.
-
-- **Archetypes:** A — Simple Editorial, B — Documentation, C — Support Center, D — Feature Explanation, E — Program/Network Landing, F — FAQ/Knowledge Base, G — Comparison/Trust.
-- **Layout helpers:** `SimpleEditorialLayout`, `DocumentationLayout`, `SupportCenterLayout`, `FeatureExplanationLayout`, `ProgramLandingLayout`, `KnowledgeBaseLayout`, `ComparisonTrustLayout`.
-- **Missing components to add:** `ComparisonTable`, `FAQSearch`, `KnowledgeBaseGrid`.
-- **Future pages mapped to archetypes:** Help Center (F), Buyer/Seller Guide (F), Returns (A), Shipping (A), Careers (A), Buyer Protection (D), Escrow (D), Authentication (D).
-
-#### P5.0.3 PartsPeddle Support Center (PSC) — PLANNED / BACKLOG
-
-Lightweight support system around a canonical **Support Conversation** domain.
-
-- **Data model:** `support_conversations`, `support_messages`, `support_participants`, `support_attachments`.
-- **Realtime:** subscribe to `support_messages` on channel `conversation:{id}`.
-- **UX:** floating `SupportLauncher`, `SupportMessenger`, conversation bubbles, suggestion chips, attachment cards.
-- **Rollout:** Phase 1 MVP (human chat + admin inbox) → Phase 2 AI assistant with Algolia retrieval → Phase 3 marketplace context (orders, listings, payments attached).
-- **API routes:** `POST /api/support/conversation`, `POST /api/support/message`, `GET /api/support/history`, `POST /api/support/close`.
-
-#### P5.0.4 PPDS Navigation Registry (PNR) — PLANNED / BACKLOG
-
-Replace hardcoded paths with a typed registry that generates URLs, menus, breadcrumbs, sitemaps, and metadata.
-
-- **Route object:** `RouteDefinition` with `id`, `name`, `path`, `title`, `description`, `visibility`, `layout`, `breadcrumbs`, `parent`, `featureFlag`, `permissions`, `searchable`, `sitemap`.
-- **Builders:** `route-builder`, `breadcrumb-builder`, `menu-builder`, `sitemap-builder`, `metadata-builder`.
-- **Guards:** permission and feature-flag checks.
-- **Consumers:** navbar, footer, sidebar, breadcrumbs, `sitemap.xml`, `robots.txt`, SEO metadata, Algolia search, support chatbot.
-- **Future direction:** evolve into a semantic navigation graph (PNGS) where pages are nodes and relationships are typed edges (`NAVIGATION`, `RELATED`, `PARENT`, `NEXT`, `CTA`).
-
-**Depends on:** P5.1 (route-group structure stable before navigation registry consumes routes).
-
-#### P5.0.5 PartsPeddle Product Design System (PPDS) — expanded plan
-
-**Why:** The product is no longer a collection of pages. It is an ecosystem — Marketplace, Seller Workspace, Buyer Workspace, Admin, Support, and eventually Mobile — that must share one visual and interaction language. The public marketplace design already established the canonical tokens and components; now we formalize it into the **PartsPeddle Product Design System (PPDS)** and use it as the operating system for every surface. The dashboard and the new AI-assisted listing workflow are the first internal consumers.  
-**Files/scope:** `docs/design-system/**`, `tailwind.config.ts`, `src/index.css`, `src/components/ui/**`, `src/components/design-system/**`, `src/app/(public)/**`, `src/app/(auth)/**`, `src/app/(dashboard)/**`, `src/app/(seller)/**`, `src/components/homepage/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/navbar/**`, `src/components/footer/**`, `src/components/seller-dashboard/**`, `src/app/layout.tsx`.
-
-**PPDS consumers:**
-
-```text
-PartsPeddle
-├── Marketplace      (public pages)
-├── Seller Workspace (inventory, listings, orders, analytics)
-├── Buyer Workspace  (watchlist, messages, purchases)
-├── Admin            (SCGS, moderation, system)
-├── Support          (help, disputes)
-└── Mobile           (future)
-```
-
-**Layer 1 — Foundations (shared everywhere):**
-
-| Token      | Value / notes                                                      |
-| ---------- | ------------------------------------------------------------------ |
-| Primary    | Industrial Orange (`--color-brand-primary`)                        |
-| Secondary  | Steel                                                              |
-| Neutral    | Warm Gray                                                          |
-| Semantic   | Success, Warning, Danger, Information                              |
-| Typography | Display XL/L/M, Heading XL/L/M/S, Body L/M/S, Caption, Label, Mono |
-| Radius     | XS, SM, MD, LG, XL, Full                                           |
-| Shadows    | Surface, Floating, Popover, Modal, Hero                            |
-| Motion     | Fast, Normal, Slow durations with shared easing                    |
-| Spacing    | 4, 8, 12, 16, 24, 32, 48, 64, 96                                   |
-
-Foundations are **never** redefined inside dashboard or marketplace pages.
-
-**Layer 2 — Layout systems:**
-
-- **Marketplace layout**: centered, wide margins, hero sections, editorial spacing.
-- **Workspace layout**: sidebar, top navigation, page header, toolbar, content grid, optional right inspector panel.
-
-Both layouts use the exact same spacing tokens; only composition changes.
-
-**Layer 3 — Component hierarchy:**
-
-```text
-Primitive  → Button, Input, Badge, Chip, Avatar, Icon, Divider
-Composite  → Search Bar, Price Tag, Seller Card, Vehicle Card, Image Gallery, Progress Bar
-Section    → Listing Summary, Vehicle Compatibility, Media Manager, Pricing, Shipping, SEO
-Page       → Inventory, Wizard, Orders, Analytics
-```
-
-**Execution phases:**
-
-1. **Foundations — tokens and primitives** (~1 sprint) ✅
-   - Move hardcoded colors/spacing/radii/shadows into `src/index.css` `@theme` tokens and keep legacy aliases in `tailwind.config.ts` during transition.
-   - Lock the public-page layout grid (`Container`, `Content`, `MainGrid`).
-   - Standardize one icon family (Lucide) and one font scale.
-   - Add branch tests asserting token usage and forbidding new hardcoded values.
-
-2. **Core component library** (~1–1.5 sprints) ✅
-   - Build canonical components in `src/components/ui` and `src/components/design-system`.
-   - Deliver primitives: `Button`, `Card`, `Badge`, `Chip`, `Tabs`, `Accordion`, `Breadcrumb`, `Skeleton`, `Pagination`, `SearchInput`, `FilterGroup`, `Modal`, `Drawer`, `Toast`, `Tooltip`.
-   - Deliver domain components: `Price`, `Rating`, `InventoryCount`, `SellerSummary`, `ImageGallery`, `SpecificationTable`, `VehicleLineage`, `PartCard`, `SellerCard`.
-   - Add branch tests per component; old ad-hoc components remain and are tracked for removal.
-
-3. **Marketplace page convergence** (~1.5 sprints) ✅
-   - Use the existing **part page** as the canonical template.
-   - Converge **home**, **search**, **authentication**, and **footer** to PPDS cards, spacing, and typography.
-   - Specific targets:
-     - Home: more whitespace, single card system, larger category cards, modernized trust section.
-     - Search: persistent left filter panel, top toolbar (results/sort/view/filters/inventory count), unified result cards.
-     - Authentication: reduce empty space, apply token typography/buttons/cards.
-       - **Security fix:** replace uses of the `user` object returned by `supabase.auth.getSession()` or `supabase.auth.onAuthStateChange()` with `supabase.auth.getUser()` for any server-side or security-sensitive auth check. The session-derived user is read from storage and may not be authentic; `getUser()` validates the JWT against the Supabase Auth server.
-     - Footer: align spacing, contrast, column widths, newsletter placement.
-   - **Merged:** PR #60 (`feat(ui): finish P5.0 Phase 3 marketplace convergence token cleanup`).
-   - **Cleanup:** stale source branch `feat/p5-marketplace-convergence` can be deleted.
-
-4. **PPDS documentation & Storybook** (~0.5–1 sprint)
-   - Create `docs/design-system/` with the proposed structure: philosophy, tokens, layout, typography, color, elevation/motion, component library, patterns, marketplace spec, seller-workspace spec, admin spec, responsive, accessibility, animation, content guidelines, Figma mapping.
-   - Install Storybook and add stories for primitives, composites, and the canonical part page.
-   - Add branch tests asserting documentation files exist and Storybook builds.
-
-5. **Workspace layout system** (~1 sprint)
-   - Build the workspace shell components:
-     - `WorkspaceLayout` (sidebar + top nav + content + optional inspector).
-     - `Sidebar` task-oriented navigation.
-     - `TopNavigation` global search + notifications + messages + tasks + profile.
-     - `PageHeader` (title + subtitle + primary/secondary actions).
-     - `Toolbar` page-specific actions/filters.
-     - `InspectorPanel` contextual right panel.
-   - Add density modes (`comfortable`, `compact`, `dense`) via a context + CSS data attribute.
-   - Add branch tests for workspace shell and density modes.
-
-6. **Seller workspace shell** (~1 sprint) ✅
-   - Create or converge seller pages under `(seller)/` using the workspace layout:
-     - Dashboard
-     - Inventory
-     - Listings
-     - Orders
-     - Customers
-     - Messages
-     - Analytics
-     - Financial
-     - Settings
-   - Wire sidebar navigation to existing routes.
-   - Replace spinner loading with skeletons.
-   - **Merged:** PR #61 (`feat(p5): seller workspace shell pages, sidebar, and skeleton loading states`).
-
-7. **Deploy & environment secrets review** (~0.5 sprint) ✅
-   - Review `fly/fly.stage.toml` and `fly/fly.prod.toml` to confirm each app targets the correct Fly.io app (`vintrack-stage` / `vintrack-prod`).
-   - Classify environment variables in `.env.example`: `NEXT_PUBLIC_*` (browser-safe), server-only, and CI/deploy-only.
-   - Verify `docs/DEPLOYMENT_RUNBOOK.md` documents staging vs production secret sets for Supabase, Algolia, Gemini, and Fly.io.
-   - Confirm `vintrack-prod` has production-specific values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY` via `flyctl secrets`.
-   - Add branch tests asserting env classification and deploy-script conventions.
-
-8. **Listing Draft / AI-assisted wizard** (~1.5–2 sprints) ✅
-   - Replace the rigid step wizard with a persistent **Listing Draft** model.
-   - Draft always exists; shows completion percentage.
-   - Modules: Identification, Fitment, Pricing, Media, Shipping, SEO.
-   - AI identifies from image → enriches → user approves.
-   - Right inspector panel shows completion, publishing status, market value, suggested price, inventory, shipping estimate, compatibility, SEO score.
-   - Autosave: local state → optimistic update → server sync → success indicator.
-
-9. **UX polish** (~0.5–1 sprint)
-   - Replace all spinners with skeletons.
-   - Add sticky action/filter panels.
-   - Improve empty/error/responsive states.
-   - Implement unified notification center.
-
-10. **SEO & accessibility hardening** (~0.5–1 sprint)
-
-- Fix heading hierarchy (one H1 per page, logical H2s).
-- Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
-- Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
-- WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
-
-11. **Live search command palette** (~1–1.5 sprints)
-    - Command-palette-style dropdown with sections: Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending.
-    - Reusable across marketplace header, workspace top navigation, and mobile search.
-    - Keyboard navigation, recent searches, and trending suggestions.
-    - Standalone phase to allow focused design and security review.
-
-**Mapping from public pages to seller workspace:**
-
-| Public experience    | Seller workspace        |
-| -------------------- | ----------------------- |
-| Header               | Top Navigation          |
-| Search Bar           | Global Workspace Search |
-| Product Card         | Inventory Card          |
-| Product Gallery      | Media Manager           |
-| Seller Info          | Customer / Seller Panel |
-| Specifications       | Property Editor         |
-| Filters              | Workspace Filters       |
-| Sticky Purchase Card | Context Inspector       |
-| Related Listings     | Recommendations         |
-| Loading Skeletons    | Same Skeleton System    |
-| Buttons              | Same Button System      |
-| Typography           | Same Typography System  |
-| Design Tokens        | Same Design Tokens      |
-
-**Optimal implementation approach:**
-
-- Treat PPDS as the **product operating system**, not a page redesign.
-- Build components in `src/components/ui` and `src/components/design-system` with Tailwind + CSS variables; avoid one-off styled wrappers.
-- Migrate surfaces incrementally: marketplace first (it defines the canon), then seller workspace, then admin.
-- Use **Storybook-style branch tests** (`tests/branch/p5-design-system/`) to assert token compliance, component contracts, workspace layouts, and page-level regressions.
-- Run PPDS work in a long-lived feature branch or series of stacked PRs to `develop`; merge each phase only after tests pass.
-- Coordinate with P5.1 (App Router normalization) so route-group refactors consume PPDS components instead of duplicating them.
-
-**Depends on:** P2.1 (card/search standardization), P3.7 (layout standardization), P4.6 (DB audit complete).  
-**Unblocks:** P5.1–P5.10 by providing the component layer and workspace architecture those refactored routes will use.
 
 ### P5.1 Normalize Next.js App Router structure
 
@@ -884,7 +668,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 - Write stories for the canonical part page (`PDPRoot`) with representative mock data.
 - Configure a11y and viewport addons; run Storybook as part of CI smoke checks.
 - Keep component branch tests as the primary regression harness; Storybook is visual/reference documentation, not a replacement for tests.
-- **Depends on:** P5.0 Phase 2 (component library).
+- **Depends on:** P7.7 Phase 2 (core component library).
 
 ---
 
@@ -985,6 +769,274 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 ---
 
+## P7 — Public experience, design system extension & navigation governance
+
+**Why:** The public marketplace surfaces, design system, and navigation model were previously scoped under P5.0 but are logically a separate track from routing/web-security hardening. P7 owns UX polish, link integrity, the Information Page System, Editorial Page Archetypes, Support Center, Navigation Registry, and the broader PPDS roadmap.
+
+**Stack context:** Next.js 16 App Router, Tailwind CSS v4, React 19, existing `src/components/ui` and `src/components/design-system` primitives, Supabase, Algolia.
+
+**Known product drift (to remediate in P7):**
+
+- Public editorial pages share no canonical layout system.
+- Navigation is hardcoded across components; breadcrumbs, footer, and menus are not generated from a single source of truth.
+- UI/UX inconsistency: pages use different card styles, spacing scales, border radii, and typography, so the product does not yet feel like one coherent design system.
+- Loading states still use spinners in several marketplace surfaces.
+- Several footer/navbar/homepage/PDP links point to non-existent pages or placeholder hashes.
+
+### P7.1 Phase 9 — UX Polish
+
+**Goal:** Remove remaining spinner loading states, add sticky action/filter panels, standardize empty/error/responsive states, and wire a unified notification center.
+
+**Files:** `src/app/(public)/loading.tsx`, `src/app/(public)/search/loading.tsx`, `src/components/providers/AuthProvider.tsx`, `src/components/ProductSidebar.tsx`, `src/components/common/EmptyState.tsx`, `src/components/common/ErrorState.tsx` (new), `src/components/search/SearchPageClient.tsx`, `src/components/search/SearchNoResults.tsx`, `src/components/seller-dashboard/InventoryTable.tsx`, `src/app/(seller)/seller/inventory/page.tsx`, `src/app/(seller)/seller/create/page.tsx`, `src/app/(seller)/seller/listings/page.tsx`, `src/components/ui/toast.tsx`, `src/components/navbar/Navbar.tsx`, `src/hooks/useNavbarState.ts`, `src/app/layout.tsx`.
+
+**Work items:**
+
+- Replace spinners with skeletons on public loading pages, auth provider, and product sidebar.
+- Add sticky results header on search and sticky toolbars on seller inventory/create pages.
+- Improve empty states (`EmptyState` uses canonical `Button`) and add a reusable `ErrorState`.
+- Improve responsive states on search and seller workspace.
+- Implement a real `ToastProvider` with `useToast()` hook; replace navbar's local toast.
+- Add toast calls for draft save/publish/discard, search errors, and navbar actions.
+
+**Testing:** Create or update `tests/branch/p7-ux-polish/ux-polish.test.tsx`.
+
+**Artifacts:** `.planning/phase-9-ux-polish-plan.md`, `.planning/phase-9-toast-triggers.md`.
+
+### P7.2 Phase 10 — Link Audit
+
+**Goal:** Audit and fix broken, misleading, or placeholder links across footer, navbar, homepage, search, live search, PDP, and auth pages.
+
+**Status:** In progress.
+
+**Files:** `src/components/Footer.tsx`, `src/components/navbar/**`, `src/components/home/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/auth/**`, `src/app/(public)/**`.
+
+**Planned changes:**
+
+- **Footer:** fix social links to real platform URLs, remove dead links ("All Categories", "Search Parts Index", "New Listings", "Contact Us"), and point about/salvage/trust/contact/terms/privacy to the new public pages.
+- **Navbar:** route seller menu items into `(seller)/`, fix mobile bottom tabs, and create a user profile route for the Garage tab.
+- **Homepage:** pass relevant filter args to `/search`, link seller inventory to a public seller profile, and fix logged-in "SELL PARTS" route to `/seller/create`.
+- **Search / live search:** wire seller grid card "View Inventory" to public seller profile; route VIN suggestions to `/search?q=<vin>` until `/decode-vin` exists.
+- **PDP:** fix category breadcrumb, wire compatible vehicles/parts and recently viewed routes, add live chat/tel:/mailto: actions, and link seller profile.
+- **Auth footer:** remove "Back to Store" and point support desk to `/contact`.
+
+**Artifacts:** `.planning/phase-10-link-audit.md`.
+
+### P7.3 Phase 11 — Information Page System (IPS) ✅ IMPLEMENTED
+
+Build reusable editorial components and refactor the six existing public pages.
+
+- **Components added:** `InformationPageHeader`, `InformationLayout`, `StickySidebar`, `TableOfContents`, `EditorialSection`, `InfoCallout`, `SupportCard`, `RelatedLinksCard`, `ContactMethodCard`, `NetworkStatisticCard`, `TrustFeatureCard`, `VerificationProcessTimeline`, `EditorialCTA`, `ContactForm`.
+- **Pages refactored:** `/about`, `/contact`, `/terms`, `/privacy`, `/salvage-network`, `/trust-verification`.
+- **Artifacts:** Storybook stories, branch tests (`tests/branch/phase-11-information-page-system/`), updated `docs/design-system/06-component-library.md` and `docs/PPDS-AI-Design-Spec.md`.
+
+**Artifacts:** `.planning/archive/phase-11-information-page-system.md`.
+
+### P7.4 Phase 11b — Editorial Page Archetypes
+
+Define canonical page compositions so future editorial pages derive from a layout rather than ad-hoc assembly.
+
+- **Archetypes:** A — Simple Editorial, B — Documentation, C — Support Center, D — Feature Explanation, E — Program/Network Landing, F — FAQ/Knowledge Base, G — Comparison/Trust.
+- **Layout helpers:** `SimpleEditorialLayout`, `DocumentationLayout`, `SupportCenterLayout`, `FeatureExplanationLayout`, `ProgramLandingLayout`, `KnowledgeBaseLayout`, `ComparisonTrustLayout`.
+- **Missing components to add:** `ComparisonTable`, `FAQSearch`, `KnowledgeBaseGrid`.
+- **Future pages mapped to archetypes:** Help Center (F), Buyer/Seller Guide (F), Returns (A), Shipping (A), Careers (A), Buyer Protection (D), Escrow (D), Authentication (D).
+
+**Artifacts:** `.planning/archive/phase-11b-editorial-page-archetypes.md`.
+
+### P7.5 Phase 12 — PartsPeddle Support Center (PSC)
+
+Lightweight support system around a canonical **Support Conversation** domain.
+
+- **Data model:** `support_conversations`, `support_messages`, `support_participants`, `support_attachments`.
+- **Realtime:** subscribe to `support_messages` on channel `conversation:{id}`.
+- **UX:** floating `SupportLauncher`, `SupportMessenger`, conversation bubbles, suggestion chips, attachment cards.
+- **Rollout:** Phase 1 MVP (human chat + admin inbox) → Phase 2 AI assistant with Algolia retrieval → Phase 3 marketplace context (orders, listings, payments attached).
+- **API routes:** `POST /api/support/conversation`, `POST /api/support/message`, `GET /api/support/history`, `POST /api/support/close`.
+
+**Artifacts:** `.planning/archive/phase-12-support-center.md`.
+
+### P7.6 Phase 13 — PPDS Navigation Registry (PNR)
+
+Replace hardcoded paths with a typed registry that generates URLs, menus, breadcrumbs, sitemaps, and metadata.
+
+- **Route object:** `RouteDefinition` with `id`, `name`, `path`, `title`, `description`, `visibility`, `layout`, `breadcrumbs`, `parent`, `featureFlag`, `permissions`, `searchable`, `sitemap`.
+- **Builders:** `route-builder`, `breadcrumb-builder`, `menu-builder`, `sitemap-builder`, `metadata-builder`.
+- **Guards:** permission and feature-flag checks.
+- **Consumers:** navbar, footer, sidebar, breadcrumbs, `sitemap.xml`, `robots.txt`, SEO metadata, Algolia search, support chatbot.
+- **Future direction:** evolve into a semantic navigation graph (PNGS) where pages are nodes and relationships are typed edges (`NAVIGATION`, `RELATED`, `PARENT`, `NEXT`, `CTA`).
+
+**Depends on:** P5.1 (route-group structure stable before navigation registry consumes routes).
+
+**Artifacts:** `.planning/archive/phase-13-navigation-registry.md`.
+
+### P7.7 PPDS Expanded Plan
+
+**Why:** The product is no longer a collection of pages. It is an ecosystem — Marketplace, Seller Workspace, Buyer Workspace, Admin, Support, and eventually Mobile — that must share one visual and interaction language. The public marketplace design already established the canonical tokens and components; now we formalize it into the **PartsPeddle Product Design System (PPDS)** and use it as the operating system for every surface. The dashboard and the new AI-assisted listing workflow are the first internal consumers.  
+**Files/scope:** `docs/design-system/**`, `tailwind.config.ts`, `src/index.css`, `src/components/ui/**`, `src/components/design-system/**`, `src/app/(public)/**`, `src/app/(auth)/**`, `src/app/(dashboard)/**`, `src/app/(seller)/**`, `src/components/homepage/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/navbar/**`, `src/components/footer/**`, `src/components/seller-dashboard/**`, `src/app/layout.tsx`.
+
+**PPDS consumers:**
+
+```text
+PartsPeddle
+├── Marketplace      (public pages)
+├── Seller Workspace (inventory, listings, orders, analytics)
+├── Buyer Workspace  (watchlist, messages, purchases)
+├── Admin            (SCGS, moderation, system)
+├── Support          (help, disputes)
+└── Mobile           (future)
+```
+
+**Layer 1 — Foundations (shared everywhere):**
+
+| Token      | Value / notes                                                      |
+| ---------- | ------------------------------------------------------------------ |
+| Primary    | Industrial Orange (`--color-brand-primary`)                        |
+| Secondary  | Steel                                                              |
+| Neutral    | Warm Gray                                                          |
+| Semantic   | Success, Warning, Danger, Information                              |
+| Typography | Display XL/L/M, Heading XL/L/M/S, Body L/M/S, Caption, Label, Mono |
+| Radius     | XS, SM, MD, LG, XL, Full                                           |
+| Shadows    | Surface, Floating, Popover, Modal, Hero                            |
+| Motion     | Fast, Normal, Slow durations with shared easing                    |
+| Spacing    | 4, 8, 12, 16, 24, 32, 48, 64, 96                                   |
+
+Foundations are **never** redefined inside dashboard or marketplace pages.
+
+**Layer 2 — Layout systems:**
+
+- **Marketplace layout**: centered, wide margins, hero sections, editorial spacing.
+- **Workspace layout**: sidebar, top navigation, page header, toolbar, content grid, optional right inspector panel.
+
+Both layouts use the exact same spacing tokens; only composition changes.
+
+**Layer 3 — Component hierarchy:**
+
+```text
+Primitive  → Button, Input, Badge, Chip, Avatar, Icon, Divider
+Composite  → Search Bar, Price Tag, Seller Card, Vehicle Card, Image Gallery, Progress Bar
+Section    → Listing Summary, Vehicle Compatibility, Media Manager, Pricing, Shipping, SEO
+Page       → Inventory, Wizard, Orders, Analytics
+```
+
+**Execution phases:**
+
+1. **Foundations — tokens and primitives** (~1 sprint) ✅
+   - Move hardcoded colors/spacing/radii/shadows into `src/index.css` `@theme` tokens and keep legacy aliases in `tailwind.config.ts` during transition.
+   - Lock the public-page layout grid (`Container`, `Content`, `MainGrid`).
+   - Standardize one icon family (Lucide) and one font scale.
+   - Add branch tests asserting token usage and forbidding new hardcoded values.
+
+2. **Core component library** (~1–1.5 sprints) ✅
+   - Build canonical components in `src/components/ui` and `src/components/design-system`.
+   - Deliver primitives: `Button`, `Card`, `Badge`, `Chip`, `Tabs`, `Accordion`, `Breadcrumb`, `Skeleton`, `Pagination`, `SearchInput`, `FilterGroup`, `Modal`, `Drawer`, `Toast`, `Tooltip`.
+   - Deliver domain components: `Price`, `Rating`, `InventoryCount`, `SellerSummary`, `ImageGallery`, `SpecificationTable`, `VehicleLineage`, `PartCard`, `SellerCard`.
+   - Add branch tests per component; old ad-hoc components remain and are tracked for removal.
+
+3. **Marketplace page convergence** (~1.5 sprints) ✅
+   - Use the existing **part page** as the canonical template.
+   - Converge **home**, **search**, **authentication**, and **footer** to PPDS cards, spacing, and typography.
+   - Specific targets:
+     - Home: more whitespace, single card system, larger category cards, modernized trust section.
+     - Search: persistent left filter panel, top toolbar (results/sort/view/filters/inventory count), unified result cards.
+     - Authentication: reduce empty space, apply token typography/buttons/cards.
+       - **Security fix:** replace uses of the `user` object returned by `supabase.auth.getSession()` or `supabase.auth.onAuthStateChange()` with `supabase.auth.getUser()` for any server-side or security-sensitive auth check. The session-derived user is read from storage and may not be authentic; `getUser()` validates the JWT against the Supabase Auth server.
+     - Footer: align spacing, contrast, column widths, newsletter placement.
+   - **Merged:** PR #60 (`feat(ui): finish P5.0 Phase 3 marketplace convergence token cleanup`).
+   - **Cleanup:** stale source branch `feat/p5-marketplace-convergence` can be deleted.
+
+4. **PPDS documentation & Storybook** (~0.5–1 sprint)
+   - Create `docs/design-system/` with the proposed structure: philosophy, tokens, layout, typography, color, elevation/motion, component library, patterns, marketplace spec, seller-workspace spec, admin spec, responsive, accessibility, animation, content guidelines, Figma mapping.
+   - Install Storybook and add stories for primitives, composites, and the canonical part page.
+   - Add branch tests asserting documentation files exist and Storybook builds.
+
+5. **Workspace layout system** (~1 sprint)
+   - Build the workspace shell components:
+     - `WorkspaceLayout` (sidebar + top nav + content + optional inspector).
+     - `Sidebar` task-oriented navigation.
+     - `TopNavigation` global search + notifications + messages + tasks + profile.
+     - `PageHeader` (title + subtitle + primary/secondary actions).
+     - `Toolbar` page-specific actions/filters.
+     - `InspectorPanel` contextual right panel.
+   - Add density modes (`comfortable`, `compact`, `dense`) via a context + CSS data attribute.
+   - Add branch tests for workspace shell and density modes.
+
+6. **Seller workspace shell** (~1 sprint) ✅
+   - Create or converge seller pages under `(seller)/` using the workspace layout:
+     - Dashboard
+     - Inventory
+     - Listings
+     - Orders
+     - Customers
+     - Messages
+     - Analytics
+     - Financial
+     - Settings
+   - Wire sidebar navigation to existing routes.
+   - Replace spinner loading with skeletons.
+   - **Merged:** PR #61 (`feat(p5): seller workspace shell pages, sidebar, and skeleton loading states`).
+
+7. **Deploy & environment secrets review** (~0.5 sprint) ✅
+   - Review `fly/fly.stage.toml` and `fly/fly.prod.toml` to confirm each app targets the correct Fly.io app (`vintrack-stage` / `vintrack-prod`).
+   - Classify environment variables in `.env.example`: `NEXT_PUBLIC_*` (browser-safe), server-only, and CI/deploy-only.
+   - Verify `docs/DEPLOYMENT_RUNBOOK.md` documents staging vs production secret sets for Supabase, Algolia, Gemini, and Fly.io.
+   - Confirm `vintrack-prod` has production-specific values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY` via `flyctl secrets`.
+   - Add branch tests asserting env classification and deploy-script conventions.
+
+8. **Listing Draft / AI-assisted wizard** (~1.5–2 sprints) ✅
+   - Replace the rigid step wizard with a persistent **Listing Draft** model.
+   - Draft always exists; shows completion percentage.
+   - Modules: Identification, Fitment, Pricing, Media, Shipping, SEO.
+   - AI identifies from image → enriches → user approves.
+   - Right inspector panel shows completion, publishing status, market value, suggested price, inventory, shipping estimate, compatibility, SEO score.
+   - Autosave: local state → optimistic update → server sync → success indicator.
+
+9. **UX polish** (~0.5–1 sprint)
+   - Detailed plan captured in **P7.1**.
+
+10. **SEO & accessibility hardening** (~0.5–1 sprint)
+
+- Fix heading hierarchy (one H1 per page, logical H2s).
+- Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
+- Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
+- WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
+
+11. **Live search command palette** (~1–1.5 sprints)
+    - Command-palette-style dropdown with sections: Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending.
+    - Reusable across marketplace header, workspace top navigation, and mobile search.
+    - Keyboard navigation, recent searches, and trending suggestions.
+    - Standalone phase to allow focused design and security review.
+
+**Mapping from public pages to seller workspace:**
+
+| Public experience    | Seller workspace        |
+| -------------------- | ----------------------- |
+| Header               | Top Navigation          |
+| Search Bar           | Global Workspace Search |
+| Product Card         | Inventory Card          |
+| Product Gallery      | Media Manager           |
+| Seller Info          | Customer / Seller Panel |
+| Specifications       | Property Editor         |
+| Filters              | Workspace Filters       |
+| Sticky Purchase Card | Context Inspector       |
+| Related Listings     | Recommendations         |
+| Loading Skeletons    | Same Skeleton System    |
+| Buttons              | Same Button System      |
+| Typography           | Same Typography System  |
+| Design Tokens        | Same Design Tokens      |
+
+**Optimal implementation approach:**
+
+- Treat PPDS as the **product operating system**, not a page redesign.
+- Build components in `src/components/ui` and `src/components/design-system` with Tailwind + CSS variables; avoid one-off styled wrappers.
+- Migrate surfaces incrementally: marketplace first (it defines the canon), then seller workspace, then admin.
+- Use **Storybook-style branch tests** (`tests/branch/p7-design-system/`) to assert token compliance, component contracts, workspace layouts, and page-level regressions.
+- Run PPDS work in a long-lived feature branch or series of stacked PRs to `develop`; merge each phase only after tests pass.
+- Coordinate with P5.1 (App Router normalization) so route-group refactors consume PPDS components instead of duplicating them.
+
+**Depends on:** P2.1 (card/search standardization), P3.7 (layout standardization), P4.6 (DB audit complete).  
+**Unblocks:** P5.1–P5.8, P5.10 by providing the component layer and workspace architecture those refactored routes will use.
+
+---
+
 ## Final verification
 
 ### Final verification — Supabase CI/CD end-to-end exercise
@@ -1029,20 +1081,21 @@ Final cross-cutting milestones to close the remediation effort.
 
 ## Current Status Summary
 
-| Phase      | Completed          | Pending                                                                    |
-| ---------- | ------------------ | -------------------------------------------------------------------------- |
-| Pre-P0     | Pre-P0.1           | —                                                                          |
-| P0         | P0.1–P0.6          | —                                                                          |
-| P1         | P1.1–P1.10         | —                                                                          |
-| P2         | P2.1–P2.10         | —                                                                          |
-| P3         | P3.1–P3.7          | —                                                                          |
-| P4         | P4.1–P4.6          | —                                                                          |
-| P5         | P5.0 closed        | P5.1 (partial), P5.2–P5.8, P5.10 Storybook for design-system documentation |
-| P6         | P6.6               | P6.1–P6.5, P6.7                                                            |
-| Completion | Final verification | CI/CD consolidation, Final `develop → main` merge                          |
+| Phase      | Completed                            | Pending                                                                                                                     |
+| ---------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Pre-P0     | Pre-P0.1                             | —                                                                                                                           |
+| P0         | P0.1–P0.6                            | —                                                                                                                           |
+| P1         | P1.1–P1.10                           | —                                                                                                                           |
+| P2         | P2.1–P2.10                           | —                                                                                                                           |
+| P3         | P3.1–P3.7                            | —                                                                                                                           |
+| P4         | P4.1–P4.6                            | —                                                                                                                           |
+| P5         | —                                    | P5.1 (partial), P5.2–P5.8, P5.10 Storybook for design-system documentation                                                  |
+| P6         | P6.6                                 | P6.1–P6.5, P6.7                                                                                                             |
+| P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases |
+| Completion | Final verification                   | CI/CD consolidation, Final `develop → main` merge                                                                           |
 
-**Total completed:** ~43 items  
-**Total pending:** 17 items (P5.1 partial, P5.2–P5.8, P5.10, P6.1–P6.5, P6.7, CI/CD consolidation, Final `develop → main` merge)
+**Total completed:** ~49 items  
+**Total pending:** ~27 items (P5.1 partial, P5.2–P5.8, P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 
@@ -1055,12 +1108,14 @@ Final cross-cutting milestones to close the remediation effort.
 4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → update production Fly.io secrets (P3.5) → expand ESLint strict typing outside domain (P3.6) → standardize layout architecture across pages (P3.7).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
 6. **P6 security hardening follow-ups:** address non-critical gaps from P4.6 (P6.1–P6.6) before production certification; apply the remote-first migration checklist (P6.7) once the migration strategy is chosen.
-7. **P5 routing, web security, public pages & navigation:** P5.0 public pages and navigation governance is **closed** (IPS implemented; archetypes, support center, navigation registry, and PPDS execution phases are backlog items tracked in the master plan). Remaining P5 work: App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → add Storybook for design-system documentation (P5.10). Production Fly.io secrets are tracked at P3.5.
+7. **P5 routing, web security & application architecture:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → add Storybook for design-system documentation (P5.10). Production Fly.io secrets are tracked at P3.5.
 
 Items marked **Depends on** should not start until their dependency is complete.
 
-8. **Completion:** consolidate and document the CI/CD pipeline (Completion — CI/CD consolidation) → merge `develop` into `main` and tag the release (Completion — Final `develop → main` merge).
+8. **P7 public experience, design system extension & navigation governance:** UX polish (P7.1) and link audit (P7.2) can start once the marketplace convergence in P7.7 is stable; Information Page System (P7.3) is already implemented; Editorial Page Archetypes (P7.4), Support Center (P7.5), and Navigation Registry (P7.6) follow. P7.6 Navigation Registry depends on P5.1 (route-group structure stable). The broader PPDS roadmap (P7.7) can advance in parallel with P5.1–P5.3.
+
+9. **Completion:** consolidate and document the CI/CD pipeline (Completion — CI/CD consolidation) → merge `develop` into `main` and tag the release (Completion — Final `develop → main` merge).
 
 Items marked **Depends on** should not start until their dependency is complete.
 
-**Cross-track note:** P5 can begin P5.1–P5.3 in parallel with late P3 items; P5.7 should follow P4.6/P6; P5.8 is the final security gate before production traffic; the final merge happens after all verification passes.
+**Cross-track note:** P5 can begin P5.1–P5.3 in parallel with late P3 items; P5.7 should follow P4.6/P6; P5.8 is the final security gate before production traffic. P7 can run in parallel with P5.1–P5.3, except P7.6 Navigation Registry which depends on P5.1. The final merge happens after all verification passes.
