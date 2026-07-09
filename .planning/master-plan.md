@@ -666,42 +666,37 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Why:** `part_images` public read leaks images linked to draft/removed/sold parts; `fraud_events`/`risk_scores` expose internal signals to the subject user; `offers`/`conversations` insert policies lack part/seller validation; `seller_owns_profile` is an implicit `FOR ALL` policy allowing profile deletion.  
 **Files:** `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (policy section).  
-**Status:** 🔄 Pending — the migration still contains the permissive policies. A detailed plan is saved in `.planning/p6-1-tighten-overly-permissive-rls-policies.md`.  
-**Action:** Add status/part-availability checks to public reads; validate `seller_id`/`part_id` on insert policies; restrict `seller_owns_profile` to SELECT/UPDATE.
+**Status:** ✅ Done — migration `20260710000000_tighten_rls_policies.sql` tightens `part_images` reads to available parts, drops user-facing `fraud_events`/`risk_scores` policies, strengthens `offers`/`conversations` inserts with part-availability and seller-match checks, and splits `seller_owns_profile` into SELECT/UPDATE-only policies. Branch tests in `tests/branch/p6-1-tighten-rls-policies/`. Updated `docs/RLS_POLICY_MAP.md`.
 
 ### P6.2 Restrict grants and default privileges
 
 **Why:** `GRANT ALL` is given to `anon` and `authenticated` on every table and function, including sensitive ones (`audit_log`, `fraud_events`, `risk_scores`, `users`, `transactions`). Default privileges propagate this pattern to future objects.  
 **Files:** `supabase/SCHEMA.sql`, `supabase/migrations/20260704000000_rebaseline_public_schema.sql`.  
-**Status:** 🔄 Pending — the migration still contains `GRANT ALL` on all tables/functions and broad default privileges. A detailed plan is saved in `.planning/p6-2-restrict-grants-and-default-privileges.md`.  
-**Action:** Replace table grants with least-privilege grants; remove function grants on trigger/INTERNAL functions; remove `anon`/`authenticated` from default table/function privileges where not required.
+**Status:** ✅ Done — migration `20260711000000_restrict_grants.sql` replaces broad `GRANT ALL` on `anon`/`authenticated` with least-privilege SELECT/INSERT/UPDATE/DELETE grants per table, removes `EXECUTE` grants on trigger/internal functions, and removes `anon`/`authenticated` from default table/function privileges. Branch tests in `tests/branch/p6-2-restrict-grants/`.
 
 ### P6.3 Remove unused Postgres extensions
 
 **Why:** `pg_net`, `pg_graphql`, `supabase_vault`, and `uuid-ossp` are installed but not used by the marketplace core, increasing attack surface.  
 **Files:** `supabase/SCHEMA.sql`.  
-**Status:** 🔄 Pending — the four extensions are still created in the rebaseline migration and not referenced elsewhere. A detailed plan is saved in `.planning/p6-3-remove-unused-postgres-extensions.md`.  
-**Action:** Confirm no dependencies, then `DROP EXTENSION IF EXISTS ...` for each unused extension.
+**Status:** ✅ Done — migration `20260712000000_drop_unused_extensions.sql` drops `pg_net`, `pg_graphql`, `supabase_vault`, and `uuid-ossp` after confirming they are unused. Removed unused `CREATE EXTENSION` blocks from `supabase/SCHEMA.sql`. Branch tests in `tests/branch/p6-3-remove-unused-extensions/`.
 
 ### P6.4 Replace service-role usage in public/analytics routes
 
 **Why:** `supabaseAdmin` is used in public read routes (`/api/sellers/top`, `/api/parts/featured`, `/api/taxonomy`, home/listing pages) and in analytics writes (`/api/search/clicks`, `/api/search/events`) that accept client-controlled IDs.  
 **Files:** `src/app/api/**`, `src/app/(public)/**`, `src/app/(seller)/**`.  
-**Status:** 🔄 Pending — the listed routes still import `supabaseAdmin`. A detailed plan is saved in `.planning/p6-4-replace-service-role-in-public-analytics-routes.md`.  
-**Action:** Use anon/SSR clients for public reads; write analytics through RLS-permitted inserts or validate/authenticate IDs server-side.
+**Status:** ✅ Done — public pages and API routes now use `createAnonServerClient`; the `src/app/api/search/events/route.ts` no longer accepts client-controlled `userId`/`sessionId`. Branch tests in `tests/branch/p6-4-replace-service-role-public-routes/`.
 
 ### P6.5 Add replay protection to webhook signatures
 
 **Why:** `sync-algolia-webhook` verifies HMAC but has no timestamp/nonce, so a captured valid payload can be replayed.  
 **Files:** `supabase/functions/sync-algolia-webhook/index.ts`.  
-**Status:** 🔄 Pending — the Edge Function verifies HMAC but does not validate a timestamp or nonce. A detailed plan is saved in `.planning/p6-5-replay-protection-webhook-signatures.md`.  
-**Action:** Include a timestamp in the signed payload and reject requests older than a short tolerance window.
+**Status:** ✅ Done — `supabase/functions/sync-algolia-webhook/index.ts` now rejects payloads missing `timestamp` or older than `MAX_AGE_MS` (60s), with a 5s future-skew allowance. HMAC verification remains in place. Branch tests in `tests/branch/p6-5-webhook-replay-protection/`. Updated `docs/DEPLOYMENT_RUNBOOK.md` with the webhook signature format.
 
 ### P6.6 Rotate exposed staging service-role JWT ✅
 
 **Why:** The 2026-07-07 schema dump confirmed that staging still contains legacy `sync-algolia-webhook` and `notify-new-message` database triggers that call Edge Functions with a hard-coded service-role JWT. That token must be considered exposed.  
 **Files/scope:** Supabase staging project, `docs/DEPLOYMENT_RUNBOOK.md`.  
-**Status:** ✅ Completed in code — legacy triggers are dropped in the rebaseline migration and Edge Functions no longer trust the legacy bearer-token path. Physical JWT rotation is tracked in P6.7. A completion note is saved in `.planning/p6-6-rotate-exposed-staging-service-role-jwt.md`.  
+**Status:** ✅ Completed in code — legacy triggers are dropped in the rebaseline migration and Edge Functions no longer trust the legacy bearer-token path. Branch tests in `tests/branch/p6-6-rotate-exposed-staging-service-role-jwt/` verify the drops and that the Edge Function no longer relies on an `Authorization` header. `docs/DEPLOYMENT_RUNBOOK.md` now includes a pre-rotation trigger-removal checklist. Physical JWT rotation is tracked in P6.7. A completion note is saved in `.planning/p6-6-rotate-exposed-staging-service-role-jwt.md`.  
 **Action:**
 
 - Migration fix is in place in `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (lines 763–764):
@@ -716,7 +711,7 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Why:** Before the local Supabase initiative the team followed a remote-first strategy: schema changes were applied directly on the Supabase dashboard or via ad-hoc scripts, and the repo did not have a migration history. The rebaseline migration and trigger-cleanup fixes now exist in `supabase/migrations/`, but they have not yet been applied to the live staging/production projects. We need a one-time checklist to safely introduce migration-driven deployments and apply the P6.6 remediation.  
 **Files/scope:** Supabase staging/production projects, `supabase/migrations/20260704000000_rebaseline_public_schema.sql`, `docs/DEPLOYMENT_RUNBOOK.md`, `.github/workflows/ci.yml`.  
-**Status:** 🔄 Pending — the migration stack exists locally but has not been applied to staging or production, and the service-role JWT has not been rotated remotely. A detailed plan is saved in `.planning/p6-7-apply-remediation-migrations-to-remote-databases.md`.  
+**Status:** 🔄 Pending — the migration stack exists locally but has not been applied to staging or production, and the service-role JWT has not been rotated remotely. The operational plan is saved in `.planning/p6-7-apply-remediation-migrations-to-remote-databases.md`; the drift-check script and formal remote-migration checklist artifact have not been created yet (on hold pending operator approval).  
 **Action:**
 
 1. **Choose the migration strategy** and document it in `docs/DEPLOYMENT_RUNBOOK.md`:
@@ -1092,12 +1087,12 @@ Final cross-cutting milestones to close the remediation effort.
 | P3         | P3.1–P3.7                            | —                                                                                                                           |
 | P4         | P4.1–P4.6                            | —                                                                                                                           |
 | P5         | P5.1–P5.8                            | — (P5.10 moved to P7)                                                                                                       |
-| P6         | P6.6                                 | P6.1–P6.5, P6.7                                                                                                             |
+| P6         | P6.1–P6.6                            | P6.7 (ops artifacts + remote application on hold)                                                                           |
 | P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases, P5.10 Storybook |
 | Completion | Final verification                   | CI/CD consolidation, Final `develop → main` merge                                                                           |
 
 **Total completed:** ~58 items  
-**Total pending:** ~18 items (P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
+**Total pending:** ~13 items (P5.10, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 
