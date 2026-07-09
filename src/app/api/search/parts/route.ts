@@ -65,7 +65,8 @@ export async function POST(req: NextRequest) {
 
   const body = validated.data;
 
-  if (body.query.length > 1000) {
+  const query = body.query ?? '';
+  if (query.length > 1000) {
     return safeErrorResponse('Query too long', 400);
   }
 
@@ -121,9 +122,9 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await tracer.startActiveSpan('search-repository-query', async (span) => {
-      span.setAttributes({ query: body.query, page: body.page, hitsPerPage: body.hitsPerPage });
+      span.setAttributes({ query, page: body.page, hitsPerPage: body.hitsPerPage });
       const searchResult = await searchRepository.search(
-        body.query ?? '',
+        query,
         filters,
         body.page ?? 0,
         body.hitsPerPage ?? 20,
