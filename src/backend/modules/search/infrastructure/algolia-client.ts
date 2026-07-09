@@ -32,10 +32,7 @@ export const algoliaClient = new Proxy({} as SearchClient, {
   },
 });
 
-const algoliaSearchIndexName = process.env.ALGOLIA_SEARCH_INDEX_NAME;
-if (!algoliaSearchIndexName) {
-  throw new Error('ALGOLIA_SEARCH_INDEX_NAME is not configured');
-}
+const algoliaSearchIndexName = process.env.ALGOLIA_SEARCH_INDEX_NAME || 'parts';
 
 export const SEARCH_INDEX_NAME = algoliaSearchIndexName;
 export const INDEX_PRICE_ASC =

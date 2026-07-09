@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 import { getUserRole } from '@/lib/user-roles';
 
 vi.mock('@/lib/observability', () => ({
@@ -18,7 +19,7 @@ vi.mock('@/lib/user-roles', () => ({
   getUserRole: vi.fn(),
 }));
 
-const createServerClientMock = vi.fn();
+const createServerClientMock = vi.mocked(createServerClient);
 const getUserRoleMock = vi.mocked(getUserRole);
 
 function createRequest(pathname: string): NextRequest {
@@ -51,7 +52,7 @@ function mockSession(role: string | null) {
           error: null,
         }),
     },
-  });
+  } as any);
   getUserRoleMock.mockResolvedValue(role as any);
 }
 

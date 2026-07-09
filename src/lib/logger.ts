@@ -10,6 +10,8 @@ const SENSITIVE_KEYS = new Set([
   'service_role',
   'serviceRole',
   'service_role_key',
+  'algoliaadminkey',
+  'algolia_admin_key',
   'authorization',
   'cookie',
   'email',
