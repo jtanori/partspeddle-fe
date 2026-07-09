@@ -37,7 +37,9 @@ describe('P6.4 replace service-role usage in public and analytics routes', () =>
       const content = read(route);
       expect(content).not.toContain('@/lib/supabase-admin');
       expect(content).not.toContain('supabaseAdmin');
-      expect(content).toContain('createAnonServerClient');
+      expect(
+        content.includes('createAnonServerClient') || content.includes("createRepositories('public')"),
+      ).toBe(true);
     }
   });
 
