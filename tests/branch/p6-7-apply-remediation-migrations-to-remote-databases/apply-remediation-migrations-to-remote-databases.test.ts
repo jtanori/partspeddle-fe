@@ -39,8 +39,8 @@ describe('P6.7 apply remediation migrations to remote-first databases', () => {
 
   it('has a remote migration dry-run script', () => {
     const script = read('scripts/db/dry-run-remote-migrations.ts');
-    expect(script).toContain('--env staging');
-    expect(script).toContain('--env production');
+    expect(script).toContain("'staging'");
+    expect(script).toContain("'production'");
     expect(script).toContain('supabase db push --dry-run');
     expect(script).toContain('Restoring previous linked project');
   });
