@@ -32,6 +32,28 @@ function unauthorized(message: string): Response {
   });
 }
 
+const MAX_AGE_MS = 60_000;
+const FUTURE_SKEW_MS = 5_000;
+
+function parseTimestamp(value: unknown): number | null {
+  if (typeof value === 'number') {
+    const ms = value > 1_000_000_000_000 ? value : value * 1000;
+    return Number.isFinite(ms) ? ms : null;
+  }
+  if (typeof value === 'string') {
+    const ms = Date.parse(value);
+    return Number.isNaN(ms) ? null : ms;
+  }
+  return null;
+}
+
+function isStaleTimestamp(value: unknown): boolean {
+  const eventTime = parseTimestamp(value);
+  if (eventTime === null) return true;
+  const now = Date.now();
+  return eventTime < now - MAX_AGE_MS || eventTime > now + FUTURE_SKEW_MS;
+}
+
 async function verifyWebhookSignature(req: Request): Promise<boolean> {
   if (!SUPABASE_WEBHOOK_SECRET) {
     console.error('SUPABASE_WEBHOOK_SECRET is not configured');
@@ -82,6 +104,9 @@ serve(async (req) => {
 
   try {
     const payload = await req.json();
+    if (isStaleTimestamp(payload.timestamp)) {
+      return unauthorized('Missing or stale webhook timestamp');
+    }
     const { type, table, record, old_record } = payload;
 
     if (table !== 'parts') {

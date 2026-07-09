@@ -20,7 +20,11 @@ This document maps every application route/repository to the Postgres Row-Level 
 | `listing_drafts`      | INSERT    | `seller_id = auth.uid()`                            | authenticated | `/api/seller/drafts/active`                                                        |
 | `listing_drafts`      | UPDATE    | `seller_id = auth.uid()`                            | authenticated | `/api/seller/drafts/[id]`                                                          |
 | `listing_drafts`      | DELETE    | `seller_id = auth.uid()`                            | authenticated | `/api/seller/drafts/[id]/discard`                                                  |
-| `part_images`         | SELECT    | Linked to `AVAILABLE` parts                         | anon          | `(public)/listing/[id]`, ListingRepository                                         |
+| `part_images`         | SELECT    | Linked to `AVAILABLE` parts (`EXISTS` check)        | anon          | `(public)/listing/[id]`, ListingRepository                                         |
+| `offers`              | INSERT    | Buyer owns offer; part is `AVAILABLE` and seller matches part | authenticated | Buyer offer creation                                                               |
+| `conversations`       | INSERT    | Buyer owns conversation; part is `AVAILABLE` and seller matches part | authenticated | Buyer/seller messaging                                                             |
+| `fraud_events`        | SELECT    | No `authenticated` access (service-role only)       | service_role  | Internal risk/ops dashboards                                                       |
+| `risk_scores`         | SELECT    | No `authenticated` access (service-role only)       | service_role  | Internal risk/ops dashboards                                                       |
 | `categories`          | SELECT    | Public read                                         | anon          | `/api/taxonomy`, CatalogRepository                                                 |
 | `part_types`          | SELECT    | Public read                                         | anon          | `/api/taxonomy`, CatalogRepository                                                 |
 | `search_events`       | INSERT    | Allow anon/authenticated inserts                    | anon          | `/api/search/events`                                                               |
@@ -49,7 +53,7 @@ These operations legitimately bypass RLS using `supabaseAdmin`:
 
 ## Migration
 
-The RLS policies above are applied in `supabase/migrations/20260709210000_p5_7_rls_alignment.sql`.
+The RLS policies above are applied in `supabase/migrations/20260709210000_p5_7_rls_alignment.sql` and tightened in `supabase/migrations/20260710000000_tighten_rls_policies.sql`.
 
 When adding new tables:
 

@@ -7,11 +7,9 @@ import { rateLimit } from '@/lib/api/rate-limit';
 import { logger } from '@/lib/logger';
 
 const searchEventSchema = z.object({
-  userId: z.string().optional(),
   query: z.string().max(1000).optional(),
   filters: z.record(z.unknown()).optional(),
   resultCount: z.number().int().min(0).optional(),
-  sessionId: z.string().optional(),
   latencyMs: z.number().optional(),
   traceId: z.string().optional(),
   provider: z.string().optional(),
@@ -31,11 +29,9 @@ export async function POST(req: NextRequest) {
   }
 
   const {
-    userId,
     query,
     filters,
     resultCount,
-    sessionId,
     latencyMs,
     traceId,
     provider,
@@ -46,11 +42,9 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = createAnonServerClient();
     const { error } = await supabase.from('search_events').insert({
-      user_id: userId,
       query,
       filters,
       result_count: resultCount,
-      session_id: sessionId,
       latency_ms: latencyMs,
       trace_id: traceId,
       search_provider: provider,

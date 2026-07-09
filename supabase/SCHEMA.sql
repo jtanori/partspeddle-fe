@@ -33,34 +33,6 @@ COMMENT ON SCHEMA "public" IS 'standard public schema';
 
 
 --
--- Name: pg_net; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "public";
-
-
---
--- Name: EXTENSION "pg_net"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "pg_net" IS 'Async HTTP';
-
-
---
--- Name: pg_graphql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "pg_graphql" WITH SCHEMA "graphql";
-
-
---
--- Name: EXTENSION "pg_graphql"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "pg_graphql" IS 'pg_graphql: GraphQL support';
-
-
---
 -- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -88,30 +60,6 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
 -- COMMENT ON EXTENSION "pgcrypto" IS 'cryptographic functions';
 
 
---
--- Name: supabase_vault; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
-
-
---
--- Name: EXTENSION "supabase_vault"; Type: COMMENT; Schema: -; Owner: 
---
-
--- COMMENT ON EXTENSION "supabase_vault" IS 'Supabase Vault Extension';
-
-
---
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
-
-
---
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
---
 
 -- COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
