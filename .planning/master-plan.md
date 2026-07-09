@@ -522,10 +522,11 @@ Status markers:
 - Fix migration SQL until diff is empty or documented intentional deviations are approved.
 - **Depends on:** P4.3.
 
-### P4.5 Exercise Supabase CI/CD integrations end-to-end ✅
+### P4.5 Exercise Supabase CI/CD integrations end-to-end
 
 **Why:** Workflow YAML alone is insufficient — deploy paths, secrets, and function bundles must be proven in staging.  
-**Files:** `.github/workflows/**`, Supabase staging project, Fly.io staging (if app depends on new schema/functions).  
+**Files:** `.github/workflows/**`, Supabase staging project, Fly.io staging (if app depends on new schema/functions).
+**Status:** Partially completed; moved to the end of the backlog for a final full-cycle verification before the `develop → main` merge.  
 **Action:**
 
 - Run migration deploy and function deploy from CI against staging; confirm `/api/health`, search outbox processing, and one Edge Function smoke call.
@@ -1019,13 +1020,13 @@ Final cross-cutting milestones to close the remediation effort.
 | P1         | P1.1–P1.10           | —                                                          |
 | P2         | P2.1–P2.10           | —                                                          |
 | P3         | P3.1–P3.7            | —                                                          |
-| P4         | P4.1–P4.6            | —                                                          |
+| P4         | P4.1–P4.4, P4.6      | P4.5 end-to-end deploy verification (continued from partial) |
 | P5         | P5.0 closed          | P5.1–P5.8, P5.10 Storybook for design-system documentation |
 | P6         | P6.6                 | P6.1–P6.5, P6.7                                            |
 | Completion | —                    | CI/CD consolidation, Final `develop → main` merge          |
 
 **Total completed:** ~42 items  
-**Total pending:** 17 items (P3.5, P5.1–P5.8, P5.10, P6.1–P6.5, P6.7, CI/CD consolidation, Final `develop → main` merge)
+**Total pending:** 18 items (P4.5, P5.1–P5.8, P5.10, P6.1–P6.5, P6.7, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 
