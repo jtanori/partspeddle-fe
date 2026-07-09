@@ -564,6 +564,7 @@ Status markers:
 
 **Why:** `proxy.ts` protects `/dashboard`, `/seller`, `/admin` pages but API routes and alternate entry points need a unified access matrix.  
 **Files:** `src/proxy.ts`, `src/lib/admin-auth.ts`, `src/lib/seller-auth.ts`, `src/lib/user-roles.ts`, `src/app/api/**`.  
+**Status:** ✅ Completed in PR #77 (`feat/p5-2-routing-proxy-session-security` → `develop`).  
 **Action:**
 
 - Publish route × role × auth mechanism matrix (cookie session vs Bearer vs public).
@@ -1094,8 +1095,8 @@ Final cross-cutting milestones to close the remediation effort.
 | P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases |
 | Completion | Final verification                   | CI/CD consolidation, Final `develop → main` merge                                                                           |
 
-**Total completed:** ~50 items  
-**Total pending:** ~26 items (P5.2–P5.8, P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
+**Total completed:** ~51 items  
+**Total pending:** ~25 items (P5.3–P5.8, P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 
