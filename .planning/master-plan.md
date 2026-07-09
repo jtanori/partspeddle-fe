@@ -522,18 +522,6 @@ Status markers:
 - Fix migration SQL until diff is empty or documented intentional deviations are approved.
 - **Depends on:** P4.3.
 
-### P4.5 Exercise Supabase CI/CD integrations end-to-end
-
-**Why:** Workflow YAML alone is insufficient — deploy paths, secrets, and function bundles must be proven in staging.  
-**Files:** `.github/workflows/**`, Supabase staging project, Fly.io staging (if app depends on new schema/functions).
-**Status:** Partially completed; moved to the end of the backlog for a final full-cycle verification before the `develop → main` merge.  
-**Action:**
-
-- Run migration deploy and function deploy from CI against staging; confirm `/api/health`, search outbox processing, and one Edge Function smoke call.
-- Test failure modes: bad migration blocks deploy; function deploy rolls forward cleanly.
-- Record evidence (CI run URLs, schema version, function versions) in runbook or certification note.
-- **Depends on:** P4.1, P4.4.
-
 ### P4.6 Perform full database security audit ✅
 
 **Why:** RLS, `SECURITY DEFINER` functions, grants, vault secrets, and service-role exposure need a systematic review after schema rebaseline and deploy automation.  
@@ -779,6 +767,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 **Why:** Monolithic and non-standard paths make auth boundaries, caching, and security reviews harder; docs and code diverge.  
 **Files:** `src/app/**`, `docs/NEXT_APP_ROUTER_ARCHITECTURE.md`, `docs/ROUTE_INVENTORY.md`.  
+**Status:** 🔄 Partially completed — route groups `(public)`, `(auth)`, `(dashboard)`, `(seller)`, `(admin)` and the `(public)/page.tsx` home route are in place; `scgs` has moved under `(admin)`. Remaining: retire duplicate `backend/modules/*/contracts/*` HTTP handlers, add missing `loading.tsx`/`error.tsx` per group, and add route-group branch tests.  
 **Action:**
 
 - Enforce route groups: `(public)`, `(auth)`, `(dashboard)`, `(seller)`, `(admin)`; move `app/page.tsx` → `(public)/page.tsx`, relocate `app/scgs/**` under `(admin)/scgs/**` (or documented ops group).
@@ -983,6 +972,20 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 ---
 
+## Final verification
+
+### Final verification — Supabase CI/CD end-to-end exercise
+
+**Why:** Workflow YAML alone is insufficient — deploy paths, secrets, and function bundles must be proven in staging before the final `develop → main` merge.  
+**Files:** `.github/workflows/**`, Supabase staging project, Fly.io staging (if app depends on new schema/functions).  
+**Status:** ✅ Completed — staging CI/CD deploy path exercised and verified; evidence recorded in the deployment runbook.  
+**Action:**
+
+- ✅ Run migration deploy and function deploy from CI against staging; confirm `/api/health`, search outbox processing, and one Edge Function smoke call.
+- ✅ Test failure modes: bad migration blocks deploy; function deploy rolls forward cleanly.
+- ✅ Record evidence (CI run URLs, schema version, function versions) in runbook or certification note.
+- **Depends on:** P4.1, P4.4.
+
 ## Completion
 
 Final cross-cutting milestones to close the remediation effort.
@@ -1013,20 +1016,20 @@ Final cross-cutting milestones to close the remediation effort.
 
 ## Current Status Summary
 
-| Phase      | Completed            | Pending                                                    |
-| ---------- | -------------------- | ---------------------------------------------------------- |
-| Pre-P0     | Pre-P0.1             | —                                                          |
-| P0         | P0.1–P0.6            | —                                                          |
-| P1         | P1.1–P1.10           | —                                                          |
-| P2         | P2.1–P2.10           | —                                                          |
-| P3         | P3.1–P3.7            | —                                                          |
-| P4         | P4.1–P4.4, P4.6      | P4.5 end-to-end deploy verification (continued from partial) |
-| P5         | P5.0 closed          | P5.1–P5.8, P5.10 Storybook for design-system documentation |
-| P6         | P6.6                 | P6.1–P6.5, P6.7                                            |
-| Completion | —                    | CI/CD consolidation, Final `develop → main` merge          |
+| Phase      | Completed          | Pending                                                                    |
+| ---------- | ------------------ | -------------------------------------------------------------------------- |
+| Pre-P0     | Pre-P0.1           | —                                                                          |
+| P0         | P0.1–P0.6          | —                                                                          |
+| P1         | P1.1–P1.10         | —                                                                          |
+| P2         | P2.1–P2.10         | —                                                                          |
+| P3         | P3.1–P3.7          | —                                                                          |
+| P4         | P4.1–P4.6          | —                                                                          |
+| P5         | P5.0 closed        | P5.1 (partial), P5.2–P5.8, P5.10 Storybook for design-system documentation |
+| P6         | P6.6               | P6.1–P6.5, P6.7                                                            |
+| Completion | Final verification | CI/CD consolidation, Final `develop → main` merge                          |
 
-**Total completed:** ~42 items  
-**Total pending:** 18 items (P4.5, P5.1–P5.8, P5.10, P6.1–P6.5, P6.7, CI/CD consolidation, Final `develop → main` merge)
+**Total completed:** ~43 items  
+**Total pending:** 17 items (P5.1 partial, P5.2–P5.8, P5.10, P6.1–P6.5, P6.7, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 
