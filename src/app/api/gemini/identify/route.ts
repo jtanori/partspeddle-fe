@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { GoogleGenAI, Type } from '@google/genai';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAuthClient } from '@/lib/supabase-server';
+import { getUserRole } from '@/lib/user-roles';
+import { validateBody, checkPayloadSize } from '@/lib/api/validation';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { rateLimit } from '@/lib/api/rate-limit';
+import { logger } from '@/lib/logger';
+
+const geminiIdentifySchema = z.object({
+  images: z.array(z.string().max(10_000_000)).max(5),
+  image: z.string().max(10_000_000).optional(),
+  mode: z.enum(['part', 'vehicle']).optional().default('part'),
+});
+
+const MAX_TOTAL_IMAGE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 // Lazy Gemini initialization
 let ai: GoogleGenAI | null = null;
@@ -15,14 +29,59 @@ const getGemini = () => {
 };
 
 export async function POST(req: NextRequest) {
+  const supabase = createAuthClient(req);
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return safeErrorResponse('Unauthorized', 401);
+  }
+
+  const role = await getUserRole(supabase, user.id);
+  if (role !== 'seller' && role !== 'admin') {
+    return safeErrorResponse('Forbidden', 403);
+  }
+
+  const rateLimited = rateLimit(req, {
+    keyPrefix: 'gemini:identify',
+    limit: 10,
+    windowSeconds: 60,
+    userId: user.id,
+  });
+  if (rateLimited) {
+    return rateLimited;
+  }
+
+  const tooLarge = checkPayloadSize(req, MAX_TOTAL_IMAGE_SIZE);
+  if (tooLarge) {
+    return tooLarge;
+  }
+
+  const validated = await validateBody(geminiIdentifySchema, req);
+  if (!validated.success) {
+    return validated.response;
+  }
+
+  const { images, image, mode } = validated.data;
+  const imagesArray = images || (image ? [image] : []);
+
+  if (imagesArray.length === 0) {
+    return safeErrorResponse('Missing image attachments.', 400);
+  }
+
+  // Validate total decoded image size before sending to Gemini.
+  let totalBytes = 0;
+  for (const img of imagesArray) {
+    const base64 = img.startsWith('data:') ? img.split(',')[1] || img : img;
+    totalBytes += Buffer.byteLength(base64, 'base64');
+  }
+  if (totalBytes > MAX_TOTAL_IMAGE_SIZE) {
+    return safeErrorResponse('Total image payload exceeds 10 MB.', 413);
+  }
+
   try {
-    const { images, image, mode } = await req.json();
-    const imagesArray = images || (image ? [image] : []);
-
-    if (imagesArray.length === 0) {
-      return NextResponse.json({ error: 'Missing image attachments.' }, { status: 400 });
-    }
-
     const gemini = getGemini();
 
     const imageParts = imagesArray.map((img: string) => {
@@ -127,12 +186,14 @@ export async function POST(req: NextRequest) {
 
     const responseText = result.text;
     if (!responseText) {
-      return NextResponse.json({ error: 'Gemini returned an empty response.' }, { status: 502 });
+      return safeErrorResponse('Gemini returned an empty response.', 502);
     }
 
     return NextResponse.json(JSON.parse(responseText));
   } catch (error) {
-    console.error('Gemini Scan Error:', error);
-    return NextResponse.json({ error: 'Failed to identify auto part.' }, { status: 500 });
+    logger.error('Gemini Scan Error', {
+      error: error instanceof Error ? error.message : 'Unknown',
+    });
+    return safeErrorResponse('Failed to identify auto part.', 500);
   }
 }

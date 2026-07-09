@@ -1,32 +1,61 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
-import { requireSeller } from "@/lib/seller-auth";
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { requireSeller } from '@/lib/seller-auth';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { rateLimit } from '@/lib/api/rate-limit';
+import { logger } from '@/lib/logger';
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
 
 export async function POST(req: NextRequest) {
   const auth = await requireSeller(req);
   if (auth.error) return auth.error;
 
+  const rateLimited = rateLimit(req, {
+    keyPrefix: 'seller:assets:upload',
+    limit: 60,
+    windowSeconds: 60,
+    userId: auth.user.id,
+  });
+  if (rateLimited) {
+    return rateLimited;
+  }
+
   try {
     const formData = await req.formData();
-    const file = formData.get("file");
+    const file = formData.get('file');
 
     if (!file || !(file instanceof Blob)) {
-      return NextResponse.json({ error: "Missing file upload." }, { status: 400 });
+      return safeErrorResponse('Missing file upload.', 400);
     }
 
-    const fileName = `${auth.user.id}/${crypto.randomUUID()}.jpg`;
+    if (!ALLOWED_MIME_TYPES.includes(file.type || '')) {
+      return safeErrorResponse(
+        `Invalid file type. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}.`,
+        400,
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return safeErrorResponse('File exceeds 20 MB limit.', 413);
+    }
+
+    const extension =
+      file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
+    const fileName = `${auth.user.id}/${crypto.randomUUID()}.${extension}`;
 
     const { error: uploadError } = await supabaseAdmin.storage
-      .from("yard-assets")
-      .upload(fileName, file, { contentType: file.type || "image/jpeg" });
+      .from('yard-assets')
+      .upload(fileName, file, { contentType: file.type || 'image/jpeg' });
 
     if (uploadError) {
-      console.error("API Error (POST /api/seller/assets/upload):", uploadError);
-      return NextResponse.json({ error: uploadError.message }, { status: 500 });
+      logger.error('API Error (POST /api/seller/assets/upload)', { error: uploadError.message });
+      return safeErrorResponse('Failed to upload file.', 500);
     }
 
     const { data: publicUrlData } = supabaseAdmin.storage
-      .from("yard-assets")
+      .from('yard-assets')
       .getPublicUrl(fileName);
 
     return NextResponse.json({
@@ -34,8 +63,8 @@ export async function POST(req: NextRequest) {
       publicUrl: publicUrlData.publicUrl,
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    console.error("API Exception (POST /api/seller/assets/upload):", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    logger.error('API Exception (POST /api/seller/assets/upload)', { error: message });
+    return safeErrorResponse('Internal server error.', 500);
   }
 }

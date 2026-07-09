@@ -1,30 +1,16 @@
-import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
-import { buildTaxonomy } from "@/lib/taxonomy";
+import { NextResponse } from 'next/server';
+import { createRepositories } from '@/repositories/factory';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
-    const [
-      { data: categories, error: categoriesError },
-      { data: partTypes, error: partTypesError },
-    ] = await Promise.all([
-      supabaseAdmin
-        .from("categories")
-        .select("id, slug, slug_en, name, name_en, name_es, icon"),
-      supabaseAdmin
-        .from("part_types")
-        .select("id, category_id, slug, slug_en, name, name_en, name_es"),
-    ]);
-
-    if (categoriesError) throw categoriesError;
-    if (partTypesError) throw partTypesError;
-
-    return NextResponse.json(
-      buildTaxonomy(categories || [], partTypes || []),
-    );
+    const { catalog } = createRepositories('public');
+    const taxonomy = await catalog.getTaxonomy();
+    return NextResponse.json(taxonomy);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    console.error("API Exception (/api/taxonomy):", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    logger.error('API Exception (/api/taxonomy)', { error: message });
+    return safeErrorResponse('Failed to load taxonomy.', 500);
   }
 }

@@ -14,11 +14,14 @@ describe('P0 taxonomy source of truth and indexing', () => {
   it('loads taxonomy via API-backed useTaxonomy hook', () => {
     const hook = read('src/hooks/useTaxonomy.ts');
     const route = read('src/app/api/taxonomy/route.ts');
+    const repository = read('src/repositories/impl/supabase-catalog.repository.ts');
     expect(hook).toContain('useTaxonomy');
     expect(hook).toContain('/api/taxonomy');
-    expect(route).toContain('categories');
-    expect(route).toContain('part_types');
-    expect(route).toContain('slug_en');
+    expect(route).toContain('createRepositories');
+    expect(route).toContain('getTaxonomy');
+    expect(repository).toContain('categories');
+    expect(repository).toContain('part_types');
+    expect(repository).toContain('slug_en');
   });
 
   it('indexes category and part_type by English slugs with display labels', () => {
