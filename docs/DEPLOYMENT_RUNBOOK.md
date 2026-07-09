@@ -398,3 +398,22 @@ Rotate credentials on a regular schedule and immediately after any suspected exp
 1. Generate a new secret for `SUPABASE_WEBHOOK_SECRET`.
 2. Update it via `supabase secrets set SUPABASE_WEBHOOK_SECRET=<new> --project-ref <ref>` for each project.
 3. Update GitHub Environment secrets if the Edge Function CI workflow uses it.
+
+### Webhook signature format
+
+The `sync-algolia-webhook` Edge Function expects a signed JSON payload with a `timestamp` field:
+
+```json
+{
+  "type": "INSERT",
+  "table": "parts",
+  "record": { ... },
+  "old_record": null,
+  "timestamp": "2026-07-09T19:00:00.000Z"
+}
+```
+
+- Compute the HMAC-SHA256 signature over the exact JSON body using `SUPABASE_WEBHOOK_SECRET`.
+- Send the hex signature in the `x-webhook-signature` header.
+- Requests without a `timestamp` or older than 60 seconds are rejected with `401`.
+- A small future skew of 5 seconds is allowed to tolerate clock drift.
