@@ -176,6 +176,8 @@ After a change lands on `develop`, the `smoke-staging` CI job runs automatically
 - `STAGING_SUPABASE_ANON_KEY`
 - `STAGING_SUPABASE_SERVICE_ROLE_KEY`
 
+These values are aliased in `.env.staging` (e.g., `STAGING_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY`). Source the file to run smoke tests locally.
+
 ## Evidence template
 
 When exercising the deploy path (e.g. for P4.5 certification), record:
@@ -194,6 +196,12 @@ When exercising the deploy path (e.g. for P4.5 certification), record:
 ```
 
 To run the smoke script locally against staging:
+
+```bash
+source .env.staging && pnpm ci:smoke:staging
+```
+
+Or export the variables manually:
 
 ```bash
 STAGING_URL=https://stage.partspeddle.com \

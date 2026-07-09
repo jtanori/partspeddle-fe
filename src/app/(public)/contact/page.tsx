@@ -1,92 +1,144 @@
-import { PublicInfoPage, publicInfoMetadata } from '@/components/layout/PublicInfoPage';
+import { publicInfoMetadata } from '@/components/layout/PublicInfoPage';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Content } from '@/components/layout/design-system/Content';
+import { Section } from '@/components/layout/design-system/Section';
+import { Accordion } from '@/components/ui/accordion';
+import {
+  InformationPageHeader,
+  InformationLayout,
+  StickySidebar,
+  ContactMethodCard,
+  ContactForm,
+  SupportCard,
+  RelatedLinksCard,
+  EditorialCTA,
+} from '@/components/information-pages';
+import { Zap, Phone, Mail, MessageCircle, MapPin, Briefcase, ShieldCheck, Flag } from 'lucide-react';
 
 export const metadata = publicInfoMetadata(
   'Contact Us',
   'Get in touch with PartsPeddle support, sales, and seller services.',
 );
 
+const faqItems = [
+  {
+    id: 'response-time',
+    title: 'How quickly will support respond?',
+    content:
+      'We aim to respond to all inquiries within one business day. Live chat is available during weekday business hours for faster help.',
+  },
+  {
+    id: 'order-help',
+    title: 'What information should I include about an order?',
+    content:
+      'Include your order number, the part listing title, and a brief description of the issue. Photos of any damage or fitment problems help us resolve things faster.',
+  },
+  {
+    id: 'seller-support',
+    title: 'How do I get help with my seller account?',
+    content:
+      'Email seller support with your registered business name and a description of your question. Our seller success team will route you to the right specialist.',
+  },
+  {
+    id: 'partnerships',
+    title: 'Who do I contact about partnerships?',
+    content:
+      'Use the partnerships card in the sidebar, or email partnerships@partspeddle.com with details about your business and how you would like to work together.',
+  },
+];
+
 export default function ContactPage() {
   return (
-    <PublicInfoPage
-      title="Contact Us"
-      subtitle="We are here to help with orders, listings, and partnerships."
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <h3 className="font-display font-bold uppercase tracking-wider text-foreground-primary">
-            Contact Methods
-          </h3>
-          <p>
-            <strong>Email:</strong>{' '}
-            <a href="mailto:support@partspeddle.com" className="text-brand-primary hover:underline">
-              support@partspeddle.com
-            </a>
-          </p>
-          <p>
-            <strong>USA Phone:</strong>{' '}
-            <a href="tel:+18005550199" className="text-brand-primary hover:underline">
-              +1 (800) 555-0199
-            </a>
-          </p>
-          <p>
-            <strong>Mexico Phone:</strong>{' '}
-            <a href="tel:+52555550199" className="text-brand-primary hover:underline">
-              +52 (55) 5550-1999
-            </a>
-          </p>
-          <p>
-            <strong>Physical Address:</strong>
-            <br />
-            PartsPeddle Headquarters
-            <br />
-            123 Industrial Blvd, Suite 400
-            <br />
-            Charlotte, NC 28206, USA
-          </p>
-        </div>
+    <>
+      <Content>
+        <Breadcrumb
+          items={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
+          className="py-6"
+        />
+        <InformationPageHeader
+          eyebrow="Support"
+          title="We're here to help."
+          description="Have a question about an order, listing, seller account, or partnership? Our team is ready to connect you with the right people."
+        />
+      </Content>
 
-        <div className="space-y-4">
-          <h3 className="font-display font-bold uppercase tracking-wider text-foreground-primary">
-            Social Networks
-          </h3>
-          <ul className="space-y-2">
-            <li>
-              <a
-                href="https://www.facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-primary hover:underline"
-              >
-                Facebook
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-primary hover:underline"
-              >
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-primary hover:underline"
-              >
-                YouTube
-              </a>
-            </li>
-          </ul>
-          <p className="text-xs text-foreground-muted">
-            For order inquiries, please include your order number. For seller support, include your
-            registered business name.
-          </p>
-        </div>
-      </div>
-    </PublicInfoPage>
+      <Section spacing="lg" className="bg-surface-secondary">
+        <Content>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <ContactMethodCard
+              icon={<Zap className="h-5 w-5" />}
+              title="Fast Support"
+              value="support@partspeddle.com"
+              description="Response within one business day."
+              cta={{ label: 'Email us', href: 'mailto:support@partspeddle.com' }}
+            />
+            <ContactMethodCard
+              icon={<Phone className="h-5 w-5" />}
+              title="Phone"
+              value="+1 (800) 555-0199"
+              description="Mon–Fri, 8am–6pm ET."
+              cta={{ label: 'Call now', href: 'tel:+18005550199' }}
+            />
+            <ContactMethodCard
+              icon={<Mail className="h-5 w-5" />}
+              title="Email"
+              value="support@partspeddle.com"
+              description="For order and listing questions."
+              cta={{ label: 'Send email', href: 'mailto:support@partspeddle.com' }}
+            />
+            <ContactMethodCard
+              icon={<MessageCircle className="h-5 w-5" />}
+              title="Live Chat"
+              value="Available weekdays"
+              description="Chat with our team in real time."
+              cta={{ label: 'Start chat', href: '/contact' }}
+            />
+          </div>
+
+          <div className="mt-10">
+            <InformationLayout
+              main={<ContactForm />}
+              sidebar={
+                <StickySidebar>
+                  <SupportCard
+                    icon={<MapPin className="h-6 w-6" />}
+                    title="Mailing address"
+                    description="PartsPeddle Headquarters, 123 Industrial Blvd, Suite 400, Charlotte, NC 28206, USA."
+                    cta={{ label: 'Get directions', href: '#' }}
+                  />
+                  <SupportCard
+                    icon={<Briefcase className="h-6 w-6" />}
+                    title="Partnerships"
+                    description="Interested in integrating, sponsoring, or working together? Reach our partnerships team."
+                    cta={{ label: 'Email partnerships', href: 'mailto:partnerships@partspeddle.com' }}
+                  />
+                  <SupportCard
+                    icon={<ShieldCheck className="h-6 w-6" />}
+                    title="Trust & safety"
+                    description="Report fraud, suspicious listings, or verification concerns to our trust team."
+                    cta={{ label: 'Learn more', href: '/trust-verification' }}
+                  />
+                  <SupportCard
+                    icon={<Flag className="h-6 w-6" />}
+                    title="Report a listing"
+                    description="See something inaccurate or prohibited? Flag it and we will review it quickly."
+                    cta={{ label: 'Report listing', href: '/contact?subject=Report%20listing' }}
+                  />
+                </StickySidebar>
+              }
+            />
+          </div>
+
+          <div className="mt-12">
+            <h2 className="mb-6 font-display text-section font-bold uppercase tracking-tight text-foreground-primary">
+              Frequently asked questions
+            </h2>
+            <Accordion items={faqItems} />
+          </div>
+        </Content>
+      </Section>
+
+      <EditorialCTA />
+    </>
   );
 }

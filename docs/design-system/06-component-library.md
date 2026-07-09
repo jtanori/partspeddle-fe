@@ -43,6 +43,25 @@ Components are organized in layers.
 - `InspectorPanel`
 - `DensityProvider`
 
+## Information Page System (`src/components/information-pages/`)
+
+Reusable components for public editorial pages:
+
+- `InformationPageHeader`
+- `InformationLayout`
+- `StickySidebar`
+- `TableOfContents`
+- `EditorialSection`
+- `InfoCallout`
+- `SupportCard`
+- `RelatedLinksCard`
+- `ContactMethodCard`
+- `NetworkStatisticCard`
+- `TrustFeatureCard`
+- `VerificationProcessTimeline`
+- `EditorialCTA`
+- `ContactForm`
+
 ## Sections
 
 Reusable page sections built from composites:
@@ -60,3 +79,4 @@ Reusable page sections built from composites:
 - Composites are domain-aware but still reusable across surfaces.
 - Workspace components are internal-only.
 - Sections are page-level building blocks.
+- IPS components are marketplace-only and follow the public page structure: header, breadcrumb, compact page header, main content, optional editorial CTA, footer.

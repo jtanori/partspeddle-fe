@@ -79,6 +79,8 @@
 
   /* Typography scale */
   --text-display: 48px;
+  --text-display-l: 40px;
+  --text-display-m: 32px;
   --text-hero: 36px;
   --text-section: 28px;
   --text-card-title: 22px;

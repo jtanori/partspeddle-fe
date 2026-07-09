@@ -82,14 +82,14 @@ describe('P4.2 local Supabase environment', () => {
     });
   });
 
-  describe('docs/REMEDIATION_PLAN.md', () => {
-    const plan = readFile('docs', 'REMEDIATION_PLAN.md');
+  describe('.planning/master-plan.md', () => {
+    const plan = readFile('.planning', 'master-plan.md');
 
-    it('no longer places production Fly secrets in P3', () => {
-      expect(plan).not.toContain('### P3.5 Update production Fly.io secrets');
+    it('places production Fly secrets in P3.5', () => {
+      expect(plan).toContain('### P3.5 Update production Fly.io secrets');
     });
 
-    it('places production Fly secrets after P5.8', () => {
+    it('keeps a P5.9 cross-reference to the production Fly secrets item', () => {
       expect(plan).toContain('### P5.9 Update production Fly.io secrets');
     });
   });

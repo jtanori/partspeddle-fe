@@ -21,7 +21,7 @@ Status markers:
 
 ## Pre-P0 — Repository cleanup (do first)
 
-### Pre-P0.1 Audit and clean up stale branches
+### Pre-P0.1 Audit and clean up stale branches ✅
 
 **Why:** The repository has accumulated many local and remote branches. Some are already merged into `main` and can be deleted safely; others have unmerged work that must be reviewed before it is lost. Cleaning this up before the remediation work prevents merge conflicts, lost code, and confusion about which branch is the source of truth.  
 **Files/scope:** All `refs/heads/*` and `origin/*` branches.  
@@ -42,10 +42,10 @@ Status markers:
 | ----------------------------------- | ---------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `main`                              | —                | 2026-06-16          | Source of truth for production.                                                                                                        |
 | `develop`                           | **No** (ahead 2) | 2026-06-30          | Contains PR #3 merge + fly buildpack fix. **Merge to `main` after review.**                                                            |
-| `search/ranking-migration-prep`     | **No**           | 2026-06-30          | PR #3 source branch; has unmerged commits beyond the `develop` merge (870a74b). **Review before deletion.**                            |
+| `search/ranking-migration-prep`     | **No**           | 2026-06-30          | PR #3 source branch; unique commit `870a74b` already reflected in `develop`; branch deleted.                                           |
 | `search/scgs-projection-foundation` | Partial (PR #2)  | 2026-06-16          | PR #2 was merged into `main`, but branch tip has 3 additional unmerged commits (1970482...). **Review extra commits before deletion.** |
-| `feat/search-refinement`            | **No**           | 2026-06-11          | Substantial unmerged search refactoring work. **Review for relevance.**                                                                |
-| `feat/next-app-routing`             | **No**           | 2026-06-08          | Appears to be a stash/worktree index ("index on feat/next-app-routing"). Likely not relevant; **verify and delete.**                   |
+| `feat/search-refinement`            | **No**           | 2026-06-11          | Branch was stale and superseded by later search work; deleted without extracting fixtures.                                             |
+| `feat/next-app-routing`             | **No**           | 2026-06-08          | Stash/worktree index with no relevant unmerged work; branch and remote tracking branch deleted.                                        |
 | `feat/algolia-indexing`             | **Yes**          | 2026-06-03          | Safe to delete.                                                                                                                        |
 | `feat/db-improvements`              | **Yes**          | 2026-06-03          | Safe to delete.                                                                                                                        |
 | `feat/update-listing-scripts`       | **Yes**          | 2026-06-03          | Safe to delete.                                                                                                                        |
@@ -432,7 +432,17 @@ Status markers:
 - Return `5xx` for infrastructure failures and `4xx` for client errors.
 - Log full errors server-side but return generic messages to the client.
 
-### P3.5 Expand ESLint strict typing outside `src/domain` ✅
+### P3.5 Update production Fly.io secrets
+
+**Why:** `vintrack-prod` is currently using the same Supabase/Algolia/Gemini secrets as staging. Production needs its own project/credentials before it handles real traffic.  
+**Files/scope:** `docs/DEPLOYMENT_RUNBOOK.md`, Fly.io app `vintrack-prod`.  
+**Action:**
+
+- Obtain production values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY`.
+- Run `flyctl secrets set ... --app vintrack-prod` for each production secret.
+- Redeploy `vintrack-prod` and verify `/api/health` and a smoke search request.
+
+### P3.6 Expand ESLint strict typing outside `src/domain` ✅
 
 **Why:** P2.8d enforced `no-explicit-any` and `no-unused-vars` as errors only in `src/domain`. The rest of `src/` still has ~115 `no-explicit-any` violations and ~105 `no-unused-vars` warnings (non-blocking). `eslint --fix` does not auto-resolve these rules.  
 **Files:** `eslint.config.js`, primarily `src/backend/modules/search/**`, `src/app/api/search/**`, `src/lib/search/**`, `scripts/search/**`, then remaining `src/**` incrementally.  
@@ -445,11 +455,11 @@ Status markers:
 
 - **Depends on:** P2.8d (domain strict rules landed).
 
-### P3.6 Standardize layout architecture across pages ✅
+### P3.7 Standardize layout architecture across pages ✅
 
 **Why:** The current UI uses inconsistent layout strategies per page: `src/app/layout.tsx` and `AppWrapper` contain conditional logic to hide the navigation bar on auth pages, while public pages, search, listing/PDP, and dashboard all re-implement wrappers or import nav components directly. This scatters layout concerns, complicates route-group auth boundaries, and duplicates global chrome (nav bars, footers, overlays). Next.js App Router conventions favor colocated layouts in route groups that compose with `children`, so each page provides only its unique content.  
 **References:** [Next.js project structure](https://nextjs.org/docs/app/getting-started/project-structure), [Layouts and pages](https://nextjs.org/docs/app/getting-started/layouts-and-pages), [Linking and navigating](https://nextjs.org/docs/app/getting-started/linking-and-navigating).  
-**Files:** `src/app/layout.tsx`, `src/app/(public)/layout.tsx`, `src/app/(auth)/layout.tsx`, `src/app/(dashboard)/layout.tsx`, `src/app/(seller)/layout.tsx`, `src/app/(admin)/layout.tsx`, `src/components/layout/AppWrapper.tsx`, `src/components/UIOverlays.tsx`, `src/components/navbar/*`, `src/app/page.tsx`, `src/app/(public)/page.tsx`, `src/app/(public)/search/page.tsx`, `src/app/(public)/listing/[id]/page.tsx`.  
+**Files:** `src/app/layout.tsx`, `src/app/(public)/layout.tsx`, `src/app/(auth)/layout.tsx`, `src/app/(dashboard)/layout.tsx`, `src/app/(seller)/layout.tsx`, `src/app/(admin)/layout.tsx`, `src/components/layout/AppWrapper.tsx`, `src/components/UIOverlays.tsx`, `src/components/navbar/*`, `src/components/footer/*`, `src/app/page.tsx`, `src/app/(public)/page.tsx`, `src/app/(public)/search/page.tsx`, `src/app/(public)/listing/[id]/page.tsx`.  
 **Action:**
 
 - Adopt Next.js route-group layouts: one root `layout.tsx` with global providers/styles, then group-level layouts for `(auth)` (no global nav), `(public)` (home/search/listing with nav + footer), `(dashboard)`/`(seller)`/`(admin)` (authenticated nav + sidebar).
@@ -534,7 +544,7 @@ Status markers:
 
 ---
 
-## P5 — Routing & web security
+## P5 — Routing, web security, public pages & navigation governance
 
 **Stack context (audit baseline):** Next.js 16 App Router + `proxy.ts` (auth/RBAC), React 19, Supabase SSR (`@supabase/ssr`) + Postgres RLS, Algolia server SDK, Fly.io (`force_https`), Edge Functions (Deno), Gemini API, Zustand client state, OpenTelemetry. P2.9 baseline security headers are live via `next.config.ts`.
 
@@ -545,9 +555,54 @@ Status markers:
 - Parallel backend layers: thin `app/api/*/route.ts` handlers coexist with `src/backend/modules/*/contracts/*` Express-style handlers — not idiomatic Next.js Route Handlers + colocated server modules.
 - Widespread `supabaseAdmin` in Route Handlers bypasses RLS; seller auth uses Bearer tokens + service role instead of cookie session helpers everywhere.
 - Legacy deps remain (`express`, `vite`) though runtime is Next-only.
+- Public editorial pages share no canonical layout system; navigation is hardcoded across components.
 - UI/UX inconsistency: pages use different card styles, spacing scales, border radii, and typography, so the product does not yet feel like one coherent design system.
 
-### P5.0 PartsPeddle Product Design System (PPDS) — highest priority in P5
+### P5.0 Public pages, design system extension & navigation ✅ CLOSED
+
+**Why:** The six public information pages (`/about`, `/contact`, `/terms`, `/privacy`, `/salvage-network`, `/trust-verification`) were built as isolated pages and navigation was scattered as hardcoded strings. P5.0 consolidates them into a governed Information Page System, defines Editorial Page Archetypes, scopes a Support Center, and introduces a Navigation Registry. The detailed subplans have been folded into this section; P5.0 is now closed and tracked as part of the master plan.
+**Files:** `src/app/(public)/**`, `src/components/information-pages/**`, `src/navigation/**`, `docs/design-system/**`, `docs/PPDS-AI-Design-Spec.md`.
+
+#### P5.0.1 Information Page System (IPS) — IMPLEMENTED
+
+Build reusable editorial components and refactor the six existing public pages.
+
+- **Components added:** `InformationPageHeader`, `InformationLayout`, `StickySidebar`, `TableOfContents`, `EditorialSection`, `InfoCallout`, `SupportCard`, `RelatedLinksCard`, `ContactMethodCard`, `NetworkStatisticCard`, `TrustFeatureCard`, `VerificationProcessTimeline`, `EditorialCTA`, `ContactForm`.
+- **Pages refactored:** `/about`, `/contact`, `/terms`, `/privacy`, `/salvage-network`, `/trust-verification`.
+- **Artifacts:** Storybook stories, branch tests (`tests/branch/phase-11-information-page-system/`), updated `docs/design-system/06-component-library.md` and `docs/PPDS-AI-Design-Spec.md`.
+
+#### P5.0.2 Editorial Page Archetypes — PLANNED / BACKLOG
+
+Define canonical page compositions so future editorial pages derive from a layout rather than ad-hoc assembly.
+
+- **Archetypes:** A — Simple Editorial, B — Documentation, C — Support Center, D — Feature Explanation, E — Program/Network Landing, F — FAQ/Knowledge Base, G — Comparison/Trust.
+- **Layout helpers:** `SimpleEditorialLayout`, `DocumentationLayout`, `SupportCenterLayout`, `FeatureExplanationLayout`, `ProgramLandingLayout`, `KnowledgeBaseLayout`, `ComparisonTrustLayout`.
+- **Missing components to add:** `ComparisonTable`, `FAQSearch`, `KnowledgeBaseGrid`.
+- **Future pages mapped to archetypes:** Help Center (F), Buyer/Seller Guide (F), Returns (A), Shipping (A), Careers (A), Buyer Protection (D), Escrow (D), Authentication (D).
+
+#### P5.0.3 PartsPeddle Support Center (PSC) — PLANNED / BACKLOG
+
+Lightweight support system around a canonical **Support Conversation** domain.
+
+- **Data model:** `support_conversations`, `support_messages`, `support_participants`, `support_attachments`.
+- **Realtime:** subscribe to `support_messages` on channel `conversation:{id}`.
+- **UX:** floating `SupportLauncher`, `SupportMessenger`, conversation bubbles, suggestion chips, attachment cards.
+- **Rollout:** Phase 1 MVP (human chat + admin inbox) → Phase 2 AI assistant with Algolia retrieval → Phase 3 marketplace context (orders, listings, payments attached).
+- **API routes:** `POST /api/support/conversation`, `POST /api/support/message`, `GET /api/support/history`, `POST /api/support/close`.
+
+#### P5.0.4 PPDS Navigation Registry (PNR) — PLANNED / BACKLOG
+
+Replace hardcoded paths with a typed registry that generates URLs, menus, breadcrumbs, sitemaps, and metadata.
+
+- **Route object:** `RouteDefinition` with `id`, `name`, `path`, `title`, `description`, `visibility`, `layout`, `breadcrumbs`, `parent`, `featureFlag`, `permissions`, `searchable`, `sitemap`.
+- **Builders:** `route-builder`, `breadcrumb-builder`, `menu-builder`, `sitemap-builder`, `metadata-builder`.
+- **Guards:** permission and feature-flag checks.
+- **Consumers:** navbar, footer, sidebar, breadcrumbs, `sitemap.xml`, `robots.txt`, SEO metadata, Algolia search, support chatbot.
+- **Future direction:** evolve into a semantic navigation graph (PNGS) where pages are nodes and relationships are typed edges (`NAVIGATION`, `RELATED`, `PARENT`, `NEXT`, `CTA`).
+
+**Depends on:** P5.1 (route-group structure stable before navigation registry consumes routes).
+
+#### P5.0.5 PartsPeddle Product Design System (PPDS) — expanded plan
 
 **Why:** The product is no longer a collection of pages. It is an ecosystem — Marketplace, Seller Workspace, Buyer Workspace, Admin, Support, and eventually Mobile — that must share one visual and interaction language. The public marketplace design already established the canonical tokens and components; now we formalize it into the **PartsPeddle Product Design System (PPDS)** and use it as the operating system for every surface. The dashboard and the new AI-assisted listing workflow are the first internal consumers.  
 **Files/scope:** `docs/design-system/**`, `tailwind.config.ts`, `src/index.css`, `src/components/ui/**`, `src/components/design-system/**`, `src/app/(public)/**`, `src/app/(auth)/**`, `src/app/(dashboard)/**`, `src/app/(seller)/**`, `src/components/homepage/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/navbar/**`, `src/components/footer/**`, `src/components/seller-dashboard/**`, `src/app/layout.tsx`.
@@ -714,8 +769,8 @@ Page       → Inventory, Wizard, Orders, Analytics
 - Run PPDS work in a long-lived feature branch or series of stacked PRs to `develop`; merge each phase only after tests pass.
 - Coordinate with P5.1 (App Router normalization) so route-group refactors consume PPDS components instead of duplicating them.
 
-**Depends on:** P2.1 (card/search standardization), P3.6 (layout standardization), P4.6 (DB audit complete).  
-**Unblocks:** P5.1–P5.9 by providing the component layer and workspace architecture those refactored routes will use.
+**Depends on:** P2.1 (card/search standardization), P3.7 (layout standardization), P4.6 (DB audit complete).  
+**Unblocks:** P5.1–P5.10 by providing the component layer and workspace architecture those refactored routes will use.
 
 ### P5.1 Normalize Next.js App Router structure
 
@@ -776,7 +831,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 - Audit client bundle for server secrets (`ALGOLIA_ADMIN_KEY`, `SERVICE_ROLE`, `GEMINI_API_KEY` must never ship).
 - Redact tokens/PII in logs and OpenTelemetry spans; scrub error responses (generic client message, detailed server log).
 - GitGuardian + `pnpm audit` gates in CI; document secret rotation in `docs/DEPLOYMENT_RUNBOOK.md`.
-- Align with P5.9 (production Fly secrets separation).
+- Align with P3.5 (production Fly secrets separation).
 - **Depends on:** P5.4 (data-access paths known).
 
 ### P5.6 Frontend and client-side security
@@ -818,14 +873,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 ### P5.9 Update production Fly.io secrets
 
-**Why:** `vintrack-prod` is currently using the same Supabase/Algolia/Gemini secrets as staging. Production needs its own project/credentials before it handles real traffic.  
-**Files/scope:** `docs/DEPLOYMENT_RUNBOOK.md`, Fly.io app `vintrack-prod`.  
-**Action:**
-
-- Obtain production values for `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, and `GEMINI_API_KEY`.
-- Run `flyctl secrets set ... --app vintrack-prod` for each production secret.
-- Redeploy `vintrack-prod` and verify `/api/health` and a smoke search request.
-- **Depends on:** P5.8.
+**Tracked as P3.5 in this plan.** This item was numbered P5.9 in `docs/REMEDIATION_PLAN.md`; during consolidation it was kept at P3.5 because it is a low-priority operations task rather than a routing/web-security concern.
 
 ### P5.10 Add Storybook for design-system documentation
 
@@ -844,9 +892,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 ## P6 — Security hardening follow-ups
 
-These gaps were identified during the P4.6 database security audit. They are
-not blockers for the current remediation sprint but must be addressed before
-production certification (P5.8).
+These gaps were identified during the P4.6 database security audit. They are not blockers for the current remediation sprint but must be addressed before production certification (P5.8).
 
 ### P6.1 Tighten overly permissive RLS policies
 
@@ -934,17 +980,68 @@ production certification (P5.8).
 
 ---
 
+## Completion
+
+Final cross-cutting milestones to close the remediation effort.
+
+### CI/CD consolidation
+
+**Why:** The deploy pipeline has been patched incrementally (Fly.io env-file handling, Supabase migration jobs, staging smoke tests). A final consolidation pass ensures the pipeline is documented, reproducible, and fully green before production traffic.  
+**Files/scope:** `.github/workflows/ci.yml`, `fly/fly.stage.toml`, `fly/fly.prod.toml`, `scripts/ops/deploy.sh`, `docs/DEPLOYMENT_RUNBOOK.md`.  
+**Action:**
+
+- Verify the `develop` branch deploys cleanly to staging via GitHub Actions (Fly.io + Supabase + smoke tests).
+- Verify the `main` branch deploys cleanly to production.
+- Document any manual steps or secrets required in `docs/DEPLOYMENT_RUNBOOK.md`.
+- Remove or archive the local deploy workarounds if CI is now the canonical path.
+
+### Final `develop → main` merge
+
+**Why:** `main` is the production source of truth, but all remediation work has landed on `develop`. A final merge promotes the completed work to `main`.  
+**Files/scope:** `main`, `develop`.  
+**Action:**
+
+- Ensure all P0–P6 work is verified on `develop`.
+- Open a merge PR from `develop` to `main`.
+- Run the full CI suite and staging smoke tests one last time.
+- Merge and tag the release.
+
+---
+
+## Current Status Summary
+
+| Phase      | Completed            | Pending                                                    |
+| ---------- | -------------------- | ---------------------------------------------------------- |
+| Pre-P0     | Pre-P0.1             | —                                                          |
+| P0         | P0.1–P0.6            | —                                                          |
+| P1         | P1.1–P1.10           | —                                                          |
+| P2         | P2.1–P2.10           | —                                                          |
+| P3         | P3.1–P3.4, P3.6–P3.7 | P3.5 production Fly.io secrets                             |
+| P4         | P4.1–P4.6            | —                                                          |
+| P5         | P5.0 closed          | P5.1–P5.8, P5.10 Storybook for design-system documentation |
+| P6         | P6.6                 | P6.1–P6.5, P6.7                                            |
+| Completion | —                    | CI/CD consolidation, Final `develop → main` merge          |
+
+**Total completed:** ~42 items  
+**Total pending:** 17 items (P3.5, P5.1–P5.8, P5.10, P6.1–P6.5, P6.7, CI/CD consolidation, Final `develop → main` merge)
+
+---
+
 ## Execution order
 
 0. **Pre-P0 cleanup:** audit and clean up stale branches (Pre-P0.1) before any code changes.
 1. **P0 foundation:** taxonomy source of truth (P0.2) → taxonomy indexing (P0.1) → unified indexing logic (P0.3) → middleware + admin protection (P0.4) → remove `ignoreBuildErrors` and fix imports/types (P0.5) → fix remaining TypeScript errors from PR #3 (P0.6).
 2. **P1 hardening:** server-side roles (P1.1) → fitment in Algolia (P1.2) → ranking cleanup (P1.3) → Edge Function security (P1.4) → filter escaping (P1.5) → CI/Docker fixes (P1.6) → mobile viewport / video tutorial / focus cleanup (P1.7) → mobile search and homepage overflow fixes (P1.8) → modern PDP responsive layout (P1.9) → seller dashboard mobile adaptation (P1.10).
 3. **P2 quality:** UI/UX card/search standardization (P2.1) → server-side search fetch (P2.2) → health check (P2.3) → result mapping (P2.4) → drift/parity audits (P2.5) → Supabase decoupling (P2.6) → store refactor (P2.7) → strict mode + ESLint (P2.8) → security headers (P2.9) → DB trigger cleanup (P2.10).
-4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → expand ESLint strict typing outside domain (P3.5) → standardize layout architecture across pages (P3.6).
+4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → update production Fly.io secrets (P3.5) → expand ESLint strict typing outside domain (P3.6) → standardize layout architecture across pages (P3.7).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
-6. **P6 security hardening:** address non-critical gaps from P4.6 (P6.1–P6.6) before production certification; apply the remote-first migration checklist (P6.7) once the migration strategy is chosen.
-7. **P5 routing & web security:** design system convergence (P5.0) → App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → update production Fly.io secrets (P5.9).
+6. **P6 security hardening follow-ups:** address non-critical gaps from P4.6 (P6.1–P6.6) before production certification; apply the remote-first migration checklist (P6.7) once the migration strategy is chosen.
+7. **P5 routing, web security, public pages & navigation:** P5.0 public pages and navigation governance is **closed** (IPS implemented; archetypes, support center, navigation registry, and PPDS execution phases are backlog items tracked in the master plan). Remaining P5 work: App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → add Storybook for design-system documentation (P5.10). Production Fly.io secrets are tracked at P3.5.
 
 Items marked **Depends on** should not start until their dependency is complete.
 
-**Cross-track note:** P5 can begin P5.1–P5.3 in parallel with late P3 items; P5.7 should follow P4.6; P5.8 is the final security gate before production traffic.
+8. **Completion:** consolidate and document the CI/CD pipeline (Completion — CI/CD consolidation) → merge `develop` into `main` and tag the release (Completion — Final `develop → main` merge).
+
+Items marked **Depends on** should not start until their dependency is complete.
+
+**Cross-track note:** P5 can begin P5.1–P5.3 in parallel with late P3 items; P5.7 should follow P4.6/P6; P5.8 is the final security gate before production traffic; the final merge happens after all verification passes.
