@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { createAuthClient } from '@/lib/supabase-server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { requireSeller } from '@/lib/seller-auth';
 import { validateBody, checkPayloadSize } from '@/lib/api/validation';
@@ -19,7 +20,8 @@ export async function GET(req: NextRequest) {
   if (auth.error) return auth.error;
 
   try {
-    const { data, error } = await supabaseAdmin
+    const supabase = createAuthClient(req);
+    const { data, error } = await supabase
       .from('seller_profiles')
       .select('*')
       .eq('user_id', auth.user.id)

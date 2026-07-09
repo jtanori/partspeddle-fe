@@ -17,3 +17,18 @@ export function createAuthClient(request: NextRequest) {
     },
   });
 }
+
+/**
+ * Create an anonymous (anon-key) server client for public reads.
+ *
+ * Use this in public Server Components and public API routes where no
+ * authenticated user is required. RLS policies enforce what data is visible.
+ */
+export function createAnonServerClient() {
+  return createServerClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '', {
+    cookies: {
+      getAll: () => [],
+      setAll: () => {},
+    },
+  });
+}
