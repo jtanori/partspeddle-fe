@@ -25,7 +25,13 @@ export async function proxy(request: NextRequest) {
         setAll: (cookiesToSet) => {
           cookiesToSet.forEach(({ name, value, options }) => {
             request.cookies.set(name, value);
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              path: '/',
+            });
           });
         },
       },
@@ -46,6 +52,9 @@ export async function proxy(request: NextRequest) {
 
     const isAuthenticated = !userError && !!user;
 
+    const isApiSellerRoute = url.pathname.startsWith('/api/seller/');
+    const isApiAdminRoute = url.pathname.startsWith('/api/admin/');
+
     const isProtectedRoute =
       url.pathname.startsWith('/dashboard') ||
       url.pathname.startsWith('/seller') ||
@@ -56,7 +65,13 @@ export async function proxy(request: NextRequest) {
       url.pathname.startsWith('/register') ||
       url.pathname === '/auth';
 
-    // Protected routes require an authenticated user
+    // Protected API routes return JSON errors instead of page redirects.
+    if ((isApiSellerRoute || isApiAdminRoute) && !isAuthenticated) {
+      span.end();
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Protected page routes require an authenticated user
     if (isProtectedRoute && !isAuthenticated) {
       url.pathname = '/login';
       span.end();
@@ -65,6 +80,16 @@ export async function proxy(request: NextRequest) {
 
     if (isAuthenticated) {
       const role: UserRole = await getUserRole(supabase, user.id);
+
+      if (isApiSellerRoute && role !== 'seller') {
+        span.end();
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+
+      if (isApiAdminRoute && role !== 'admin') {
+        span.end();
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
 
       if (url.pathname.startsWith('/seller') && role !== 'seller') {
         url.pathname = '/dashboard';
