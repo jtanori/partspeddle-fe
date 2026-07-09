@@ -72,7 +72,7 @@ function getLimiter(name: string, options: RateLimitOptions): TokenBucketRateLim
 
 function getClientIdentifier(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
-  const ip = forwarded?.split(',')[0]?.trim() || req.ip || 'anonymous';
+  const ip = forwarded?.split(',')[0]?.trim() || (req as any).ip || 'anonymous';
   return ip;
 }
 

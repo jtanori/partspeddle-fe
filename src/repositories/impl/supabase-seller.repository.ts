@@ -7,7 +7,7 @@ export interface SellerProfile {
   whatsapp: string | null;
   verification_status: string | null;
   created_at: string;
-  users?: { avatar_url: string | null } | null;
+  users?: { avatar_url: string | null }[] | null;
 }
 
 export class SupabaseSellerRepository {

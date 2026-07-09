@@ -40,7 +40,7 @@ jobs:
         run: pnpm install
 
       - name: Dependency audit
-        run: pnpm audit --production
+        run: pnpm audit --production --audit-level high
 
       - name: Run linter
         run: pnpm lint
@@ -54,6 +54,31 @@ jobs:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
           ALGOLIA_SEARCH_INDEX_NAME: ${{ secrets.ALGOLIA_SEARCH_INDEX_NAME }}
+
+  security:
+    name: Security Tests
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run security tests
+        run: pnpm test -- tests/security
+
+      - name: Run bundle audit
+        run: pnpm build && pnpm security:bundle-audit
 
   deploy-staging:
     name: Deploy Staging to Fly.io

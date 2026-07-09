@@ -48,7 +48,7 @@ export default async function ListingDetailPage({ params }: Props) {
     listingId: id,
     categoryId: (part as any).category_id,
   });
-  const viewModel = buildPDPView(part, seller, compiled);
+  const viewModel = buildPDPView(part as any, seller, compiled);
 
   return (
     <div className="bg-surface-secondary min-h-screen">

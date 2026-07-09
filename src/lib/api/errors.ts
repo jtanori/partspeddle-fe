@@ -11,7 +11,7 @@ export interface ApiErrorEnvelope {
  */
 export function safeErrorResponse(
   message: string,
-  status: 400 | 401 | 403 | 405 | 413 | 429 | 500 = 500,
+  status: 400 | 401 | 403 | 404 | 405 | 413 | 429 | 500 | 502 = 500,
   details?: Array<{ path: string; message: string }>,
 ): NextResponse<ApiErrorEnvelope> {
   const body: ApiErrorEnvelope = { error: message };

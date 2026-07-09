@@ -35,7 +35,7 @@ const searchPartsSchema = z.object({
   conditions: z.union([z.string(), z.array(z.string())]).optional(),
   priceRange: z.tuple([z.number(), z.number()]).optional(),
   sellerType: z.string().optional(),
-  sortBy: z.string().optional(),
+  sortBy: z.enum(['relevance', 'price_asc', 'price_desc', 'newest']).optional(),
 });
 
 const searchRepository = new AlgoliaSearchRepository();
