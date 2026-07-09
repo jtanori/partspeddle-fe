@@ -37,6 +37,24 @@ describe('P6.7 apply remediation migrations to remote-first databases', () => {
     expect(pkg.scripts['db:verify:remote-drift']).toBe('tsx scripts/db/verify-remote-drift.ts');
   });
 
+  it('has a remote migration dry-run script', () => {
+    const script = read('scripts/db/dry-run-remote-migrations.ts');
+    expect(script).toContain('--env staging');
+    expect(script).toContain('--env production');
+    expect(script).toContain('supabase db push --dry-run');
+    expect(script).toContain('Restoring previous linked project');
+  });
+
+  it('exposes staging and production dry-run package scripts', () => {
+    const pkg = JSON.parse(read('package.json'));
+    expect(pkg.scripts['db:dry-run:staging']).toBe(
+      'tsx scripts/db/dry-run-remote-migrations.ts --env staging',
+    );
+    expect(pkg.scripts['db:dry-run:production']).toBe(
+      'tsx scripts/db/dry-run-remote-migrations.ts --env production',
+    );
+  });
+
   it('lists the remediation migrations in chronological order', () => {
     const migrations = readDir('supabase/migrations');
     expect(migrations).toContain('20260704000000_rebaseline_public_schema.sql');

@@ -55,6 +55,8 @@
     "db:baseline:dump": "supabase db dump --linked --yes --keep-comments -f supabase/baseline/remote_$(date +%Y%m%d)_public.sql",
     "db:validate:replay": "tsx scripts/db/compare-schema.ts",
     "db:verify:remote-drift": "tsx scripts/db/verify-remote-drift.ts",
+    "db:dry-run:staging": "tsx scripts/db/dry-run-remote-migrations.ts --env staging",
+    "db:dry-run:production": "tsx scripts/db/dry-run-remote-migrations.ts --env production",
     "db:deploy:dry-run": "supabase db push --dry-run",
     "ci:smoke:staging": "tsx scripts/ci/smoke-staging.ts",
     "prepare": "husky",
