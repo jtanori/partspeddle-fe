@@ -1,35 +1,45 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { createRepositories } from '@/repositories/factory';
+import { validateQuery } from '@/lib/api/validation';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { rateLimit } from '@/lib/api/rate-limit';
+import { logger } from '@/lib/logger';
+
+const querySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(50).optional().default(4),
+});
 
 export async function GET(req: NextRequest) {
   const started = performance.now();
+
+  const rateLimited = rateLimit(req, {
+    keyPrefix: 'public:featured',
+    limit: 30,
+    windowSeconds: 60,
+  });
+  if (rateLimited) {
+    return rateLimited;
+  }
+
+  const validated = validateQuery(querySchema, req.nextUrl.searchParams);
+  if (!validated.success) {
+    return validated.response;
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get("limit") || "4", 10);
+    const { listing } = createRepositories('public');
+    const data = await listing.findFeatured(validated.data.limit ?? 4);
 
-    const { data, error } = await supabaseAdmin
-      .from("parts")
-      .select(
-        "*, part_images(url), users(id, seller_profiles(id, business_name, rating))",
-      )
-      .eq("status", "AVAILABLE")
-      .order("created_at", { ascending: false })
-      .limit(limit);
+    logger.info('API /api/parts/featured', {
+      durationMs: Math.round(performance.now() - started),
+      count: data.length,
+    });
 
-    console.log(
-      `/api/parts/featured query took ${Math.round(performance.now() - started)}ms`,
-    );
-
-    if (error) {
-      console.error("API Error (/api/parts/featured):", JSON.stringify(error));
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
     return NextResponse.json(data);
-  } catch (err: any) {
-    console.error("API Exception (/api/parts/featured):", err);
-    return NextResponse.json(
-      { error: err.message || "Internal server error" },
-      { status: 500 },
-    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    logger.error('API Exception (/api/parts/featured)', { error: message });
+    return safeErrorResponse('Failed to load featured parts.', 500);
   }
 }

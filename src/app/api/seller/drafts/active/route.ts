@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAuthClient } from '@/lib/supabase-server';
 import { requireSeller } from '@/lib/seller-auth';
 import { DEFAULT_DRAFT_PAYLOAD } from '@/domain/types/listing-draft';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   const auth = await requireSeller(req);
   if (auth.error) return auth.error;
 
   try {
-    const { data: existing, error: fetchError } = await supabaseAdmin
+    const supabase = createAuthClient(req);
+    const { data: existing, error: fetchError } = await supabase
       .from('listing_drafts')
       .select('*')
       .eq('seller_id', auth.user.id)
@@ -18,15 +21,15 @@ export async function GET(req: NextRequest) {
       .single();
 
     if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error('API Error (GET /api/seller/drafts/active):', fetchError);
-      return NextResponse.json({ error: fetchError.message }, { status: 500 });
+      logger.error('API Error (GET /api/seller/drafts/active)', { error: fetchError.message });
+      return safeErrorResponse('Failed to load draft.', 500);
     }
 
     if (existing) {
       return NextResponse.json(existing);
     }
 
-    const { data: created, error: createError } = await supabaseAdmin
+    const { data: created, error: createError } = await supabase
       .from('listing_drafts')
       .insert({
         seller_id: auth.user.id,
@@ -38,17 +41,14 @@ export async function GET(req: NextRequest) {
       .single();
 
     if (createError || !created) {
-      console.error('API Error (POST create draft):', createError);
-      return NextResponse.json(
-        { error: createError?.message || 'Failed to create draft' },
-        { status: 500 },
-      );
+      logger.error('API Error (POST create draft)', { error: createError?.message });
+      return safeErrorResponse(createError?.message || 'Failed to create draft.', 500);
     }
 
     return NextResponse.json(created, { status: 201 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
-    console.error('API Exception (GET /api/seller/drafts/active):', err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    logger.error('API Exception (GET /api/seller/drafts/active)', { error: message });
+    return safeErrorResponse('Internal server error.', 500);
   }
 }

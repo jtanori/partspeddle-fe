@@ -364,3 +364,37 @@ Compare the output against `.env.example` to ensure no required variables are mi
   - Added: `ALGOLIA_SEARCH_API_KEY`, `APP_PUBLIC_URL`.
   - Unchanged (already production-specific): `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
   - Health check passed: `GET https://vintrack-prod.fly.dev/api/health` returned HTTP 200.
+
+---
+
+# 7. Secret Rotation Procedure
+
+Rotate credentials on a regular schedule and immediately after any suspected exposure.
+
+## Supabase JWT secrets
+
+1. In the Supabase dashboard, go to **Project Settings → API → JWT Settings**.
+2. Generate a new JWT secret.
+3. Update `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_ANON_KEY` in:
+   - GitHub Environment secrets (staging / production).
+   - Fly.io app secrets (`vintrack-stage`, `vintrack-prod`).
+4. Restart the Fly.io apps to pick up the new secrets.
+5. Run `GET /api/health` and a smoke test to verify.
+
+## Algolia API keys
+
+1. In the Algolia dashboard, revoke the existing admin key and create a new one.
+2. Update `ALGOLIA_ADMIN_KEY` in GitHub and Fly.io secrets.
+3. Trigger a reindex via `/api/admin/search/reindex` to confirm the new key works.
+
+## Gemini API key
+
+1. In Google AI Studio, revoke the existing key and create a new one.
+2. Update `GEMINI_API_KEY` in GitHub and Fly.io secrets.
+3. Test `/api/gemini/identify` with a sample image.
+
+## Webhook secret
+
+1. Generate a new secret for `SUPABASE_WEBHOOK_SECRET`.
+2. Update it via `supabase secrets set SUPABASE_WEBHOOK_SECRET=<new> --project-ref <ref>` for each project.
+3. Update GitHub Environment secrets if the Edge Function CI workflow uses it.

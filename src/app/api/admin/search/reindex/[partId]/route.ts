@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SearchIndexWorker } from '@/backend/modules/search/application/search-index-worker';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { requireAdmin } from '@/lib/admin-auth';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { rateLimit } from '@/lib/api/rate-limit';
+import { logger } from '@/lib/logger';
 
 const searchIndexWorker = new SearchIndexWorker();
 
@@ -9,6 +12,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ par
   const auth = await requireAdmin(req);
   if (auth.response) {
     return NextResponse.json({ error: auth.response.error }, { status: auth.response.status });
+  }
+
+  const rateLimited = rateLimit(req, {
+    keyPrefix: 'admin:search:reindex',
+    limit: 5,
+    windowSeconds: 60,
+    userId: auth.user.id,
+  });
+  if (rateLimited) {
+    return rateLimited;
   }
 
   try {
@@ -39,7 +52,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ par
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Admin Reindex Error:', error);
-    return NextResponse.json({ error: 'Failed to reindex', message }, { status: 500 });
+    logger.error('Admin Reindex Error', { error: message });
+    return safeErrorResponse('Failed to reindex', 500);
   }
 }

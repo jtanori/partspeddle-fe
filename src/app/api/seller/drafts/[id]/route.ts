@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { z } from 'zod';
+import { createAuthClient } from '@/lib/supabase-server';
 import { requireSeller } from '@/lib/seller-auth';
 import { scoreCompletion } from '@/lib/listing-completion';
+import { validateBody } from '@/lib/api/validation';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { logger } from '@/lib/logger';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
+
+const patchDraftSchema = z.object({
+  payload: z.record(z.unknown()).optional(),
+  marketValueEstimate: z.number().optional(),
+  suggestedPrice: z.number().optional(),
+});
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   const auth = await requireSeller(req);
@@ -14,7 +24,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   const { id } = await params;
 
   try {
-    const { data, error } = await supabaseAdmin
+    const supabase = createAuthClient(req);
+    const { data, error } = await supabase
       .from('listing_drafts')
       .select('*')
       .eq('id', id)
@@ -22,15 +33,15 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       .single();
 
     if (error) {
-      console.error('API Error (GET /api/seller/drafts/[id]):', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      logger.error('API Error (GET /api/seller/drafts/[id])', { error: error.message });
+      return safeErrorResponse('Failed to load draft.', error.code === 'PGRST116' ? 404 : 500);
     }
 
     return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
-    console.error('API Exception (GET /api/seller/drafts/[id]):', err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    logger.error('API Exception (GET /api/seller/drafts/[id])', { error: message });
+    return safeErrorResponse('Internal server error.', 500);
   }
 }
 
@@ -38,14 +49,19 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const auth = await requireSeller(req);
   if (auth.error) return auth.error;
 
+  const validated = await validateBody(patchDraftSchema, req);
+  if (!validated.success) {
+    return validated.response;
+  }
+
+  const { payload: payloadPatch, marketValueEstimate, suggestedPrice } = validated.data;
   const { id } = await params;
 
   try {
-    const body = await req.json();
-    const { payload: payloadPatch, marketValueEstimate, suggestedPrice } = body;
+    const supabase = createAuthClient(req);
 
     // Fetch current draft to merge payload modules.
-    const { data: current, error: fetchError } = await supabaseAdmin
+    const { data: current, error: fetchError } = await supabase
       .from('listing_drafts')
       .select('payload')
       .eq('id', id)
@@ -53,10 +69,10 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       .single();
 
     if (fetchError || !current) {
-      console.error('API Error (PATCH fetch draft):', fetchError);
-      return NextResponse.json(
-        { error: fetchError?.message || 'Draft not found' },
-        { status: fetchError?.code === 'PGRST116' ? 404 : 500 },
+      logger.error('API Error (PATCH fetch draft)', { error: fetchError?.message });
+      return safeErrorResponse(
+        fetchError?.message || 'Draft not found.',
+        fetchError?.code === 'PGRST116' ? 404 : 500,
       );
     }
 
@@ -80,7 +96,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       update.suggested_price = suggestedPrice;
     }
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabase
       .from('listing_drafts')
       .update(update)
       .eq('id', id)
@@ -89,17 +105,14 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       .single();
 
     if (error || !data) {
-      console.error('API Error (PATCH /api/seller/drafts/[id]):', error);
-      return NextResponse.json(
-        { error: error?.message || 'Update failed' },
-        { status: 500 },
-      );
+      logger.error('API Error (PATCH /api/seller/drafts/[id])', { error: error?.message });
+      return safeErrorResponse(error?.message || 'Update failed.', 500);
     }
 
     return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
-    console.error('API Exception (PATCH /api/seller/drafts/[id]):', err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    logger.error('API Exception (PATCH /api/seller/drafts/[id])', { error: message });
+    return safeErrorResponse('Internal server error.', 500);
   }
 }

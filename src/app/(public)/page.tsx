@@ -2,7 +2,7 @@ import { HighFidelityHero } from '@/components/homepage/HighFidelityHero';
 import { ListingsGrid } from '@/components/homepage/ListingsGrid';
 import { FeaturedSellers } from '@/components/homepage/FeaturedSellers';
 import { FinalCTA } from '@/components/homepage/FinalCTA';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAnonServerClient } from '@/lib/supabase-server';
 import type { Metadata } from 'next';
 import { Part, Seller } from '@/types';
 import { tracer } from '@/lib/observability';
@@ -58,20 +58,21 @@ const mapSeller = (row: any): Seller => ({
 export default async function Homepage() {
   noStore();
   return tracer.startActiveSpan('homepage-fetch-data', async (span) => {
+    const supabase = createAnonServerClient();
     const [featuredRes, recentRes, sellersRes] = await Promise.all([
-      supabaseAdmin
+      supabase
         .from('parts')
         .select('id, title, description, price_mxn, created_at, part_images(url)')
         .eq('status', 'AVAILABLE')
         .order('views', { ascending: false })
         .limit(8),
-      supabaseAdmin
+      supabase
         .from('parts')
         .select('id, title, description, price_mxn, created_at, part_images(url)')
         .eq('status', 'AVAILABLE')
         .order('created_at', { ascending: false })
         .limit(4),
-      supabaseAdmin
+      supabase
         .from('seller_profiles')
         .select('id, business_name, location, users(avatar_url)')
         .limit(4),

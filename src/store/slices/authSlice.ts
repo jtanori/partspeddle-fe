@@ -1,9 +1,8 @@
-import type { StateCreator } from "zustand";
-import { supabase } from "@/lib/supabase";
-import type { UserSession } from "@/types";
-import { safeGetItem, safeSetItem } from "../storage";
+import type { StateCreator } from 'zustand';
+import { supabase } from '@/lib/supabase';
+import type { UserSession } from '@/types';
 
-export type UserRole = "buyer" | "seller";
+export type UserRole = 'buyer' | 'seller';
 
 export interface SellerProfile {
   id?: string;
@@ -30,19 +29,15 @@ export interface AuthSlice {
 
 export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   user: null,
-  userRole:
-    (safeGetItem("parts_peddle_user_role") as UserRole) || "buyer",
+  // Role is derived from the server session; never store it in localStorage.
+  userRole: 'buyer',
   profile: null,
 
   setUser: (user) => set({ user }),
-  setUserRole: (role) => {
-    safeSetItem("parts_peddle_user_role", role);
-    set({ userRole: role });
-  },
+  setUserRole: (role) => set({ userRole: role }),
   setProfile: (profile) => set({ profile }),
   logout: async () => {
     await supabase.auth.signOut();
-    set({ user: null, userRole: "buyer", profile: null });
-    safeSetItem("parts_peddle_user_role", "buyer");
+    set({ user: null, userRole: 'buyer', profile: null });
   },
 });

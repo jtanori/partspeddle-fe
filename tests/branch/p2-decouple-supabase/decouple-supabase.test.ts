@@ -17,8 +17,8 @@ function fileExists(relativePath: string): boolean {
 describe('P2.6 decouple Supabase from presentation', () => {
   it('exposes taxonomy through a server API route', () => {
     const route = read('src/app/api/taxonomy/route.ts');
-    expect(route).toContain('buildTaxonomy');
-    expect(route).toContain('supabaseAdmin');
+    expect(route).toContain('createRepositories');
+    expect(route).toContain('catalog.getTaxonomy');
   });
 
   it('routes useTaxonomy through the taxonomy API', () => {
