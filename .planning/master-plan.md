@@ -818,6 +818,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 **Why:** Marketplace systems mix public anon keys, service role, Algolia admin, and Gemini keys — leakage paths include logs, client bundles, and CI.  
 **Files:** `package.json`, `.env.example`, `fly/*.toml`, `.github/workflows/**`, `src/lib/logger.ts`, `src/lib/supabase.ts`.  
+**Status:** 🔄 Partially scoped — env classification exists in `.env.example`, but there is no runtime validation, client-bundle audit, log redaction, or `pnpm audit` gate. A detailed plan is saved in `.planning/p5-5-secrets-env-sensitive-data-exposure.md`.  
 **Action:**
 
 - Inventory env vars: classify `NEXT_PUBLIC_*` (safe), server-only, CI/deploy-only; fail build/start if required secrets missing in production.
@@ -831,6 +832,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 **Why:** CSP still allows `unsafe-inline`/`unsafe-eval`; client stores auth state; uploads and third-party assets expand XSS/CSRF surface.  
 **Files:** `src/lib/security-headers.ts`, `src/components/**`, `src/store/**`, `src/hooks/**`, Tailwind/Next font pipeline.  
+**Status:** 🔄 Partially scoped — CSP is permissive, auth role is stored in `localStorage`, and upload UI lacks client validation, but no `dangerouslySetInnerHTML` usage was found. A detailed plan is saved in `.planning/p5-6-frontend-client-side-security.md`.  
 **Action:**
 
 - Tighten CSP incrementally (nonces/hashes for scripts/styles where feasible); document required third-party origins (Supabase, Algolia, Unsplash).
@@ -844,6 +846,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 **Why:** App-layer service role can negate RLS; policies must match the routing/RBAC model. Complements P4.6 with an application-facing lens.  
 **Files:** `supabase/migrations/**`, `src/repositories/**`, `src/app/api/**`, `docs/PRC.md`.  
+**Status:** 🔄 Partially scoped — RLS policies exist in `supabase/SCHEMA.sql` and the rebaseline migration, but there is no repository-to-policy map and service role currently bypasses most policies. A detailed plan is saved in `.planning/p5-7-database-security-alignment.md`.  
 **Action:**
 
 - Map each repository/route to required RLS policies; flag any that **require** service role and document justification.
@@ -856,6 +859,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 **Why:** Disparate fixes need a single production gate before high-traffic launch.  
 **Files:** `docs/PRC.md` Section 11, `tests/security/**`, `.github/workflows/ci.yml`.  
+**Status:** 🔄 Partially scoped — `docs/PRC.md` exists and `tests/security/search/security-search.spec.ts` covers basic query safety, but there is no consolidated security suite, manual checklist, or sign-off artifact. A detailed plan is saved in `.planning/p5-8-production-web-security-certification.md`.  
 **Action:**
 
 - Checklist run: headers (P2.9), TLS/HSTS (Fly), RBAC matrix (P5.2), API validation (P5.3), secrets scan (P5.5), OWASP Top 10 relevant items (broken access control, injection, SSRF on Gemini/webhooks, security misconfiguration).
