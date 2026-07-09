@@ -21,16 +21,23 @@ case "$ENVIRONMENT" in
   staging)
     CONFIG="fly/fly.stage.toml"
     EXPECTED_BRANCH="develop"
+    ENV_FILE=".env.staging"
     ;;
   production)
     CONFIG="fly/fly.prod.toml"
     EXPECTED_BRANCH="main"
+    ENV_FILE=".env.production"
     ;;
   *)
     echo "Error: unknown environment '$ENVIRONMENT'. Use 'staging' or 'production'."
     exit 1
     ;;
 esac
+
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "Error: environment file '$ENV_FILE' not found."
+  exit 1
+fi
 
 if ! command -v flyctl &> /dev/null; then
   echo "Error: flyctl is not installed. See https://fly.io/docs/hands-on/install-flyctl/"
@@ -61,5 +68,5 @@ if [[ "$ENVIRONMENT" == "production" ]]; then
   fi
 fi
 
-echo "Deploying $ENVIRONMENT with config: $CONFIG"
-flyctl deploy --config "$CONFIG"
+echo "Deploying $ENVIRONMENT with config: $CONFIG using env file: $ENV_FILE"
+flyctl deploy --config "$CONFIG" --build-arg "ENV_FILE=$ENV_FILE"

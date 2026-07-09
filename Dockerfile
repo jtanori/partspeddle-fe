@@ -21,6 +21,10 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Select the environment-specific .env file for the build.
+# The deploy script passes --build-arg ENV_FILE=.env.staging or .env.production.
+ARG ENV_FILE=.env
+RUN cp "${ENV_FILE}" .env
 RUN pnpm build
 
 FROM base AS runner
