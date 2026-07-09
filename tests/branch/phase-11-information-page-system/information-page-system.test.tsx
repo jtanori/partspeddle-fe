@@ -28,11 +28,13 @@ import TrustVerificationPage from '@/app/(public)/trust-verification/page';
 import { PublicInfoPage } from '@/components/layout/PublicInfoPage';
 
 beforeAll(() => {
-  global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  })) as unknown as typeof IntersectionObserver;
+  global.IntersectionObserver = vi.fn().mockImplementation(function () {
+    return {
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    };
+  }) as unknown as typeof IntersectionObserver;
 });
 
 describe('IPS foundation components', () => {
