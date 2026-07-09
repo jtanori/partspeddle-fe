@@ -547,17 +547,17 @@ Status markers:
 - Widespread `supabaseAdmin` in Route Handlers bypasses RLS; seller auth uses Bearer tokens + service role instead of cookie session helpers everywhere.
 - Legacy deps remain (`express`, `vite`) though runtime is Next-only.
 
-### P5.1 Normalize Next.js App Router structure
+### P5.1 Normalize Next.js App Router structure ✅
 
 **Why:** Monolithic and non-standard paths make auth boundaries, caching, and security reviews harder; docs and code diverge.  
 **Files:** `src/app/**`, `docs/NEXT_APP_ROUTER_ARCHITECTURE.md`, `docs/ROUTE_INVENTORY.md`.  
-**Status:** 🔄 Partially completed — route groups `(public)`, `(auth)`, `(dashboard)`, `(seller)`, `(admin)` and the `(public)/page.tsx` home route are in place; `scgs` has moved under `(admin)`. Remaining: retire duplicate `backend/modules/*/contracts/*` HTTP handlers, add missing `loading.tsx`/`error.tsx` per group, and add route-group branch tests.  
+**Status:** ✅ Completed — route groups `(public)`, `(auth)`, `(dashboard)`, `(seller)`, `(admin)` are in place; `app/page.tsx` lives under `(public)/page.tsx`; `scgs` is under `(admin)/scgs/**`; duplicate `backend/modules/*/contracts/*` HTTP handlers have been removed; each route group has `loading.tsx` and `error.tsx`; branch tests assert route-group conventions.  
 **Action:**
 
-- Enforce route groups: `(public)`, `(auth)`, `(dashboard)`, `(seller)`, `(admin)`; move `app/page.tsx` → `(public)/page.tsx`, relocate `app/scgs/**` under `(admin)/scgs/**` (or documented ops group).
-- One canonical pattern per concern: **Route Handler** (`route.ts`) → server module (`src/server/` or `src/lib/`) → repository; retire duplicate `backend/modules/*/contracts/*` HTTP handlers where Route Handlers already exist.
-- Add missing layouts/`loading.tsx`/`error.tsx` per group; document public vs protected vs role-gated segments.
-- Add branch tests asserting route-group conventions and absence of orphan top-level pages using service-role clients.
+- ✅ Enforce route groups: `(public)`, `(auth)`, `(dashboard)`, `(seller)`, `(admin)`; move `app/page.tsx` → `(public)/page.tsx`, relocate `app/scgs/**` under `(admin)/scgs/**`.
+- ✅ One canonical pattern per concern: **Route Handler** (`route.ts`) → server module (`src/server/` or `src/lib/`) → repository; retired duplicate `backend/modules/*/contracts/*` HTTP handlers.
+- ✅ Add missing `loading.tsx`/`error.tsx` per group.
+- ✅ Add branch tests asserting route-group conventions and absence of orphan top-level pages.
 - **Depends on:** P2.10 (trigger/outbox stable), P3.1 (dead code removal reduces noise).
 
 ### P5.2 Routing, proxy, and session security
@@ -1089,13 +1089,13 @@ Final cross-cutting milestones to close the remediation effort.
 | P2         | P2.1–P2.10                           | —                                                                                                                           |
 | P3         | P3.1–P3.7                            | —                                                                                                                           |
 | P4         | P4.1–P4.6                            | —                                                                                                                           |
-| P5         | —                                    | P5.1 (partial), P5.2–P5.8, P5.10 Storybook for design-system documentation                                                  |
+| P5         | P5.1                                 | P5.2–P5.8, P5.10 Storybook for design-system documentation                                                                  |
 | P6         | P6.6                                 | P6.1–P6.5, P6.7                                                                                                             |
 | P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases |
 | Completion | Final verification                   | CI/CD consolidation, Final `develop → main` merge                                                                           |
 
-**Total completed:** ~49 items  
-**Total pending:** ~27 items (P5.1 partial, P5.2–P5.8, P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
+**Total completed:** ~50 items  
+**Total pending:** ~26 items (P5.2–P5.8, P5.10, P6.1–P6.5, P6.7, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 
@@ -1108,7 +1108,7 @@ Final cross-cutting milestones to close the remediation effort.
 4. **P3 polish:** dead code removal, metadata, Prettier/Husky, error responses → update production Fly.io secrets (P3.5) → expand ESLint strict typing outside domain (P3.6) → standardize layout architecture across pages (P3.7).
 5. **P4 Supabase platform:** local environment (P4.2) → remote schema rebaseline (P4.3) → local replay parity (P4.4) → CI/CD for migrations + functions (P4.1) → end-to-end deploy verification (P4.5) → full database security audit (P4.6).
 6. **P6 security hardening follow-ups:** address non-critical gaps from P4.6 (P6.1–P6.6) before production certification; apply the remote-first migration checklist (P6.7) once the migration strategy is chosen.
-7. **P5 routing, web security & application architecture:** App Router normalization (P5.1) → proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → add Storybook for design-system documentation (P5.10). Production Fly.io secrets are tracked at P3.5.
+7. **P5 routing, web security & application architecture:** proxy/session RBAC (P5.2) → API security baseline (P5.3) → repository/data-access containment (P5.4) → secrets/env hygiene (P5.5) → frontend client security (P5.6) → DB/app RLS alignment (P5.7, after P4.6/P6) → production security certification (P5.8) → add Storybook for design-system documentation (P5.10). Production Fly.io secrets are tracked at P3.5.
 
 Items marked **Depends on** should not start until their dependency is complete.
 
@@ -1118,4 +1118,4 @@ Items marked **Depends on** should not start until their dependency is complete.
 
 Items marked **Depends on** should not start until their dependency is complete.
 
-**Cross-track note:** P5 can begin P5.1–P5.3 in parallel with late P3 items; P5.7 should follow P4.6/P6; P5.8 is the final security gate before production traffic. P7 can run in parallel with P5.1–P5.3, except P7.6 Navigation Registry which depends on P5.1. The final merge happens after all verification passes.
+**Cross-track note:** P5.2–P5.3 can run in parallel with late P3 items; P5.7 should follow P4.6/P6; P5.8 is the final security gate before production traffic. P7 can run in parallel with P5.2–P5.3; P7.6 Navigation Registry depends on P5.1 (completed). The final merge happens after all verification passes.
