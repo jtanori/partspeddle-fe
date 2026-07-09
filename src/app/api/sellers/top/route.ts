@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const { seller } = createRepositories('public');
-    const data = await seller.findTopSellers(validated.data.limit);
+    const data = await seller.findTopSellers(validated.data.limit ?? 4);
     return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';

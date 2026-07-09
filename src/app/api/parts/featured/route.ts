@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const { listing } = createRepositories('public');
-    const data = await listing.findFeatured(validated.data.limit);
+    const data = await listing.findFeatured(validated.data.limit ?? 4);
 
     logger.info('API /api/parts/featured', {
       durationMs: Math.round(performance.now() - started),

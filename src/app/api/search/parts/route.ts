@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
     const result = await tracer.startActiveSpan('search-repository-query', async (span) => {
       span.setAttributes({ query: body.query, page: body.page, hitsPerPage: body.hitsPerPage });
       const searchResult = await searchRepository.search(
-        body.query,
+        body.query ?? '',
         filters,
         body.page,
         body.hitsPerPage,
