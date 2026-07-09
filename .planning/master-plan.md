@@ -805,6 +805,7 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 **Why:** Direct `supabaseAdmin` usage in pages and handlers bypasses RLS and concentrates service-role power.  
 **Files:** `src/repositories/**`, `src/lib/supabase-admin.ts`, `src/lib/supabase.ts`, pages/routes currently importing admin client (`app/page.tsx`, `app/(public)/listing/**`, seller/admin APIs).  
+**Status:** 🔄 Partially scoped — repository interfaces exist but have no implementations; `supabaseAdmin` is used in 20+ app-layer files. A detailed plan is saved in `.planning/p5-4-repository-data-access-security.md`.  
 **Action:**
 
 - Rule: **browser** → anon key + RLS; **server user context** → SSR Supabase client with user session; **service role** → repositories/background jobs only, never in Client Components or public Server Components.
