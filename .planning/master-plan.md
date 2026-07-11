@@ -560,7 +560,7 @@ Status markers:
 - ✅ Add branch tests asserting route-group conventions and absence of orphan top-level pages.
 - **Depends on:** P2.10 (trigger/outbox stable), P3.1 (dead code removal reduces noise).
 
-### P5.2 Routing, proxy, and session security
+### P5.2 Routing, proxy, and session security ✅
 
 **Why:** `proxy.ts` protects `/dashboard`, `/seller`, `/admin` pages but API routes and alternate entry points need a unified access matrix.  
 **Files:** `src/proxy.ts`, `src/lib/admin-auth.ts`, `src/lib/seller-auth.ts`, `src/lib/user-roles.ts`, `src/app/api/**`.  
@@ -573,7 +573,7 @@ Status markers:
 - Harden session cookies: `HttpOnly`, `Secure`, `SameSite`; verify Supabase cookie refresh path through proxy.
 - Add tests for RBAC redirects and API 401/403 behavior per role.
 
-### P5.3 API security baseline
+### P5.3 API security baseline ✅
 
 **Why:** Public and authenticated APIs lack consistent validation, rate limits, and safe error surfaces (P3.4 partially addresses search).  
 **Files:** `src/app/api/**`, shared `src/lib/api/` helpers (new), `next.config.ts`.  
@@ -587,7 +587,7 @@ Status markers:
 - Remove infrastructure-masking `200` empty responses (complete P3.4 across search + seller APIs).
 - **Depends on:** P5.1 (handler locations stable).
 
-### P5.4 Repository and data-access security
+### P5.4 Repository and data-access security ✅
 
 **Why:** Direct `supabaseAdmin` usage in pages and handlers bypasses RLS and concentrates service-role power.  
 **Files:** `src/repositories/**`, `src/lib/supabase-admin.ts`, `src/lib/supabase.ts`, pages/routes currently importing admin client (`app/page.tsx`, `app/(public)/listing/**`, seller/admin APIs).  
@@ -600,7 +600,7 @@ Status markers:
 - Storage uploads: MIME/size validation, private buckets, signed URLs, path namespacing per seller.
 - **Depends on:** P5.1, P5.2.
 
-### P5.5 Secrets, env, and sensitive data exposure
+### P5.5 Secrets, env, and sensitive data exposure ✅
 
 **Why:** Marketplace systems mix public anon keys, service role, Algolia admin, and Gemini keys — leakage paths include logs, client bundles, and CI.  
 **Files:** `package.json`, `.env.example`, `fly/*.toml`, `.github/workflows/**`, `src/lib/logger.ts`, `src/lib/supabase.ts`.  
@@ -614,7 +614,7 @@ Status markers:
 - Align with P3.5 (production Fly secrets separation).
 - **Depends on:** P5.4 (data-access paths known).
 
-### P5.6 Frontend and client-side security
+### P5.6 Frontend and client-side security ✅
 
 **Why:** CSP still allows `unsafe-inline`/`unsafe-eval`; client stores auth state; uploads and third-party assets expand XSS/CSRF surface.  
 **Files:** `src/lib/security-headers.ts`, `src/components/**`, `src/store/**`, `src/hooks/**`, Tailwind/Next font pipeline.  
@@ -628,7 +628,7 @@ Status markers:
 - File upload UI: client-side type/size pre-check aligned with server rules (P5.4).
 - Dependency hygiene: remove unused `express`/`vite` from runtime graph (ties to P3.2).
 
-### P5.7 Database security alignment (application ↔ Postgres)
+### P5.7 Database security alignment (application ↔ Postgres) ✅
 
 **Why:** App-layer service role can negate RLS; policies must match the routing/RBAC model. Complements P4.6 with an application-facing lens.  
 **Files:** `supabase/migrations/**`, `src/repositories/**`, `src/app/api/**`, `docs/PRC.md`.  
@@ -641,7 +641,7 @@ Status markers:
 - Ensure Edge Functions use webhook secrets (per P1.4) and least-privilege Supabase clients.
 - **Depends on:** P4.6 (DB audit), P5.4.
 
-### P5.8 Production web security certification
+### P5.8 Production web security certification ✅
 
 **Why:** Disparate fixes need a single production gate before high-traffic launch.  
 **Files:** `docs/PRC.md` Section 11, `tests/security/**`, `.github/workflows/ci.yml`.  
@@ -654,9 +654,9 @@ Status markers:
 - Sign-off artifact linked in PRC certification.
 - **Depends on:** P5.1–P5.7.
 
-### P5.9 Update production Fly.io secrets
+### P5.9 Update production Fly.io secrets ✅
 
-**Tracked as P3.5 in this plan.** This item was numbered P5.9 in `docs/REMEDIATION_PLAN.md`; during consolidation it was kept at P3.5 because it is a low-priority operations task rather than a routing/web-security concern.
+**Tracked as P3.5 in this plan.** This item was numbered P5.9 in `docs/REMEDIATION_PLAN.md`; during consolidation it was kept at P3.5 because it is a low-priority operations task rather than a routing/web-security concern. Completed 2026-07-09.
 
 ## P6 — Security hardening follow-ups
 
@@ -764,7 +764,7 @@ These gaps were identified during the P4.6 database security audit. They are not
 - Loading states still use spinners in several marketplace surfaces.
 - Several footer/navbar/homepage/PDP links point to non-existent pages or placeholder hashes.
 
-### P7.1 Phase 9 — UX Polish
+### P7.1 Phase 9 — UX Polish ✅
 
 **Goal:** Remove remaining spinner loading states, add sticky action/filter panels, standardize empty/error/responsive states, and wire a unified notification center.
 
@@ -783,11 +783,11 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Artifacts:** `.planning/phase-9-ux-polish-plan.md`, `.planning/phase-9-toast-triggers.md`.
 
-### P7.2 Phase 10 — Link Audit
+### P7.2 Phase 10 — Link Audit ✅
 
 **Goal:** Audit and fix broken, misleading, or placeholder links across footer, navbar, homepage, search, live search, PDP, and auth pages.
 
-**Status:** In progress.
+**Status:** ✅ Completed.
 
 **Files:** `src/components/Footer.tsx`, `src/components/navbar/**`, `src/components/home/**`, `src/components/search/**`, `src/components/pdp-modern/**`, `src/components/auth/**`, `src/app/(public)/**`.
 
@@ -812,7 +812,7 @@ Build reusable editorial components and refactor the six existing public pages.
 
 **Artifacts:** `.planning/archive/phase-11-information-page-system.md`.
 
-### P7.4 Phase 11b — Editorial Page Archetypes
+### P7.4 Phase 11b — Editorial Page Archetypes ✅
 
 Define canonical page compositions so future editorial pages derive from a layout rather than ad-hoc assembly.
 
@@ -823,7 +823,7 @@ Define canonical page compositions so future editorial pages derive from a layou
 
 **Artifacts:** `.planning/archive/phase-11b-editorial-page-archetypes.md`.
 
-### P7.5 Phase 12 — PartsPeddle Support Center (PSC)
+### P7.5 Phase 12 — PartsPeddle Support Center (PSC) ✅
 
 Lightweight support system around a canonical **Support Conversation** domain.
 
@@ -835,7 +835,7 @@ Lightweight support system around a canonical **Support Conversation** domain.
 
 **Artifacts:** `.planning/archive/phase-12-support-center.md`.
 
-### P7.6 Phase 13 — PPDS Navigation Registry (PNR)
+### P7.6 Phase 13 — PPDS Navigation Registry (PNR) ✅
 
 Replace hardcoded paths with a typed registry that generates URLs, menus, breadcrumbs, sitemaps, and metadata.
 
@@ -924,12 +924,12 @@ Page       → Inventory, Wizard, Orders, Analytics
    - **Merged:** PR #60 (`feat(ui): finish P5.0 Phase 3 marketplace convergence token cleanup`).
    - **Cleanup:** stale source branch `feat/p5-marketplace-convergence` can be deleted.
 
-4. **PPDS documentation & Storybook** (~0.5–1 sprint)
+4. **PPDS documentation & Storybook** (~0.5–1 sprint) ✅
    - Create `docs/design-system/` with the proposed structure: philosophy, tokens, layout, typography, color, elevation/motion, component library, patterns, marketplace spec, seller-workspace spec, admin spec, responsive, accessibility, animation, content guidelines, Figma mapping.
    - Install Storybook and add stories for primitives, composites, and the canonical part page.
    - Add branch tests asserting documentation files exist and Storybook builds.
 
-5. **Workspace layout system** (~1 sprint)
+5. **Workspace layout system** (~1 sprint) ✅
    - Build the workspace shell components:
      - `WorkspaceLayout` (sidebar + top nav + content + optional inspector).
      - `Sidebar` task-oriented navigation.
@@ -970,17 +970,17 @@ Page       → Inventory, Wizard, Orders, Analytics
    - Right inspector panel shows completion, publishing status, market value, suggested price, inventory, shipping estimate, compatibility, SEO score.
    - Autosave: local state → optimistic update → server sync → success indicator.
 
-9. **UX polish** (~0.5–1 sprint)
+9. **UX polish** (~0.5–1 sprint) ✅
    - Detailed plan captured in **P7.1**.
 
-10. **SEO & accessibility hardening** (~0.5–1 sprint)
+10. **SEO & accessibility hardening** (~0.5–1 sprint) ✅
 
 - Fix heading hierarchy (one H1 per page, logical H2s).
 - Add Schema.org structured data (`Product`, `Offer`, `Organization`, `Breadcrumb`, `AggregateRating`).
 - Image optimization: AVIF/WebP, lazy loading, preload hero, reserve image height to reduce CLS.
 - WCAG: contrast (especially orange), focus indicators, keyboard nav, ARIA labels, landmarks.
 
-11. **Live search command palette** (~1–1.5 sprints)
+11. **Live search command palette** (~1–1.5 sprints) ✅
     - Command-palette-style dropdown with sections: Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending.
     - Reusable across marketplace header, workspace top navigation, and mobile search.
     - Keyboard navigation, recent searches, and trending suggestions.
@@ -1018,11 +1018,11 @@ Page       → Inventory, Wizard, Orders, Analytics
 
 ---
 
-### P5.10 Add Storybook for design-system documentation
+### P5.10 Add Storybook for design-system documentation ✅
 
 **Why:** Branch tests assert token compliance and component contracts, but they are a poor way for designers and engineers to browse states, variants, and the canonical part page in isolation. Storybook provides a stable visual reference and future visual-regression target for the design system.  
 **Files/scope:** `.storybook/**`, `src/components/ui/**/*.stories.tsx`, `src/components/layout/design-system/**/*.stories.tsx`, `src/components/pdp-modern/**/*.stories.tsx`.  
-**Status:** 🔄 Partially completed — Storybook is installed and many primitive/composite/workspace stories exist, but there is no CI build gate, no canonical `PDPRoot` story, and no branch tests. A detailed plan is saved in `.planning/p5-10-storybook-design-system-documentation.md`.  
+**Status:** ✅ Completed — Storybook is installed, primitive/composite/workspace stories exist, the `Storybook Build` check runs in CI, and branch tests assert the build succeeds.  
 **Action:**
 
 - Install Storybook for Next.js 16 + React 19 + Tailwind CSS v4 and verify it starts alongside the dev server.
@@ -1086,9 +1086,9 @@ Final cross-cutting milestones to close the remediation effort.
 | P2         | P2.1–P2.10                                                                                                                                                  | —                                                          |
 | P3         | P3.1–P3.7                                                                                                                                                   | —                                                          |
 | P4         | P4.1–P4.6                                                                                                                                                   | —                                                          |
-| P5         | P5.1–P5.8                                                                                                                                                   | — (P5.10 moved to P7)                                      |
+| P5         | P5.1–P5.8, P5.10 Storybook (P5.9 tracked as P3.5)                                                                                                         | —                                                          |
 | P6         | P6.1–P6.7 staging applied & JWT rotated                                                                                                                     | Production application + JWT rotation (operator execution) |
-| P7         | P7.1 UX polish, P7.2 link audit, P7.3 IPS, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 PPDS phases 1–4 / 5 / 6–11, P5.10 Storybook | —                                                          |
+| P7         | P7.1 UX polish, P7.2 link audit, P7.3 IPS, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 PPDS phases 1–11                           | —                                                          |
 | Completion | Final verification                                                                                                                                          | CI/CD consolidation, Final `develop → main` merge          |
 
 **Total completed:** ~64 items  

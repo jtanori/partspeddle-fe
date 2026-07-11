@@ -1,32 +1,23 @@
-# Session Checkpoint — P7 Final Items
+# Session Checkpoint — P7 Complete, P6 Production Review Next
 
 **Date:** 2026-07-11
-**Branch:** `feat/p7-workspace-layout-and-command-palette`
-**Status:** Tackling the last two P7 items before moving to P6 production / final merge.
+**Branch:** `develop` (up-to-date with `origin/develop`)
+**Status:** All P7 items merged. Next step is to verify P6 status and decide what remains before the final `develop → main` merge.
 
 ## Completed Work
 
 - Merged PR #82 (P7.1/P7.2 verification) into `develop`.
 - Merged PR #83 (P7.4, P7.5, P7.6, P7.7 Phase 4/9, P5.10) into `develop`.
-- Moved `FLY_API_TOKEN` from repository secrets to the staging environment.
+- Merged PR #84 (P7.7 Phase 5 Workspace Layout + Phase 11 Live Search Command Palette) into `develop`.
+- Updated `.planning/master-plan.md` and this checkpoint to mark P5 and P7 complete.
 
 ## Active Work
 
-Branch `feat/p7-workspace-layout-and-command-palette` checked out from latest `develop`.
-
-Remaining P7 items in this branch:
-
-1. ✅ **P7.7 Phase 5 — Workspace Layout System** already implemented in prior work (`src/components/workspace/`, `tests/branch/p5-design-system/workspace-layout.test.tsx`).
-
-2. ✅ **P7.7 Phase 11 — Live Search Command Palette**
-   - `SearchCommandPalette` modal component using existing search projection.
-   - Global `Cmd/Ctrl+K` shortcut via `useCommandPalette` hook.
-   - Integrated into `PublicShell` (marketplace) and seller workspace `TopNavigation`.
-   - Branch tests added.
+Review P6 status to confirm whether staging remediation migrations have been applied and what remains for production.
 
 ## Next Steps
 
-1. Implement workspace layout system and commit.
-2. Implement live search command palette and commit.
-3. Push branch and open PR to `develop`.
-4. Wait for CI, merge, and update master plan.
+1. Inspect git log / branch tests / migrations for P6.1–P6.7.
+2. Confirm which P6 items are already in `develop` and verified on staging.
+3. Identify anything still needed for production (migrations, JWT rotation, smoke tests).
+4. Plan the production cutover sequence or the final `develop → main` merge.
