@@ -1,8 +1,8 @@
 # Session Checkpoint — DC Delivery Certification
 
 **Date:** 2026-07-11
-**Branch:** `feat/d0-workstream-a-audit` (audit branch; evidence will be added here)
-**Status:** Strategy replanned. D0 reframed as DC (Delivery Certification) initiative. Phase 1 evidence gathering in progress. No code changes until certification gates are measured.
+**Branch:** `feat/d0-workstream-a-audit`
+**Status:** DC-7 EGS implemented; DC-6 deployment verification implemented using Option D (runtime validation inside container). Awaiting operator benchmark results and verification commands.
 
 ## Completed Work
 
@@ -13,26 +13,34 @@
 - Created `ci-test/pipeline-hardening` branch and verified staging deploys work from non-`develop` branches.
 - Archived `.planning/master-plan.md` to `.planning/archive/master-plan-2026-07-11.md`.
 - Completed `docs/operations/delivery-audit.md` (D0 Workstream A).
-- Created `.planning/dc-delivery-certification.md` with 8 certification gates (DC-1 through DC-8) and phased execution plan.
+- Created `.planning/dc-delivery-certification.md` with certification gates DC-0 through DC-8 plus DC-7.1.
 
 ## Active Work
 
-- **DC-7 — Environment Governance System (EGS)** is implemented on `feat/d0-workstream-a-audit`.
+- **DC-7 — Environment Governance System (EGS)** implemented.
+- **DC-7.1 — Environment Drift Certification** drift matrix generated.
+- **DC-6 — Deployment Verification** implemented using Option D (runtime secrets validated inside the deployed container, health endpoint as CI contract).
 - `.planning/temp/benchmark-delivery.sh` prepared for operator-run deep benchmarking (DC-0, DC-1, DC-2).
-- DC plan updated with **DC-0 (Toolchain Baseline)** and revised execution order.
 
 ## EGS Deliverables Completed
 
-- `config/environment/schema.ts` — canonical definitions with scope/secret/required/default metadata.
-- `config/environment/classify.ts` — classification helpers.
+- `config/environment/schema.ts` — canonical definitions with scope/provider/secret/required/default metadata.
+- `config/environment/classify.ts` — classification helpers including provider filters.
 - `config/environment/validate.ts` — validators for runtime, CI deploy, smoke test, all.
 - `config/environment/README.md` — operator documentation.
-- `config/environment/generated/{required,public,secrets}.md` — auto-generated docs.
+- `config/environment/generated/{required,public,secrets,providers,drift-matrix}.md` — auto-generated docs.
 - `docs/operations/secret-governance.md` — secret storage policy.
 - `scripts/ops/env-validate.ts` and `scripts/ops/env-report.ts`.
 - `package.json` scripts `env:validate` and `env:report`.
-- `.github/workflows/ci.yml` smoke-staging job now runs `pnpm env:validate smoke-test` before smoke tests.
+- `.github/workflows/ci.yml` smoke-staging job runs `pnpm env:validate smoke-test` before smoke tests.
 - `src/lib/env.ts` and `scripts/security/env-check.ts` refactored to use the canonical schema.
+
+## DC-6 Deliverables Completed
+
+- `src/lib/health-checks.ts` now includes an `environment` check powered by EGS `validateRuntime`.
+- `scripts/ops/verify-deployment.ts` polls `/api/health` with retries and timeouts.
+- `package.json` scripts `deploy:verify` and `ci:verify:staging`.
+- `.github/workflows/ci.yml` smoke-staging job now runs `pnpm ci:verify:staging` before smoke tests.
 
 ## Evidence Summary
 
@@ -40,14 +48,16 @@
 - **DC-1 / DC-3 (Docker):** Functional behavior verified; timed out at 600 s on cold `pnpm install`. No `.env` dependency.
 - **DC-2 (Husky):** One-file TS commit took **77.3 s** (cold). ESLint/Prettier fast; lint-staged orchestration suspected. Final root cause pending benchmark script.
 - **DC-4 (Staging deploy):** GitHub Actions run `29151750670` passed all staging deploy and smoke-test jobs.
-- **DC-7 (EGS):** Implemented; pending operator verification (typecheck / test) and decision on runtime-secret CI validation.
+- **DC-6 (Deployment Verification):** Implemented; needs a CI run to confirm health endpoint integration works.
+- **DC-7 (EGS):** Implemented; pending operator typecheck/test verification.
+- **DC-7.1 (Drift):** Matrix generated; automated comparison against Fly/GitHub secrets pending.
 
 ## Next Steps
 
 1. Operator runs `.planning/temp/benchmark-delivery.sh` and shares the log.
-2. Operator runs `pnpm typecheck` and `pnpm test` to verify EGS refactors (especially `tests/branch/p5-5-secrets-env-sensitive-data/env-validation.test.ts`).
-3. Decide how to validate runtime variables in CI (they live in Fly secrets, not GitHub, so runtime `env:validate` in GitHub Actions requires either duplicating them to the GitHub environment or validating inside the deployed container).
-4. Move to **DC-6 (Deployment Verification)** once EGS is verified.
+2. Operator runs `pnpm typecheck` and `pnpm test` to verify EGS and health-check refactors.
+3. After verification passes, push `feat/d0-workstream-a-audit` and open a PR to `develop` to validate the full CI pipeline.
+4. Once CI is green, proceed to **DC-8 (Observability)**.
 
 ## Blocked
 

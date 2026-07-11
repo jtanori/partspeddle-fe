@@ -121,14 +121,37 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 **Acceptance Criteria:**
 
-- [ ] Health check runs automatically after every Fly.io deploy.
-- [ ] Migration verification runs automatically after every Supabase deploy.
-- [ ] Smoke tests run automatically after deploys.
+- [ ] Runtime environment validation happens inside the deployed container (Option D: GitHub Actions never holds production runtime secrets merely to validate them).
+- [ ] `/api/health` reports structured readiness including: environment, database, Algolia.
+- [ ] A deployment verification script polls `/api/health` after every Fly.io deploy and fails the pipeline if checks do not pass within the timeout.
+- [ ] Smoke tests run automatically after deployment verification succeeds.
 - [ ] Rollback runbook exists and is accurate.
+
+**Deployment Verification Pipeline:**
+
+```
+Deploy Image
+    ↓
+Container Starts
+    ↓
+EGS Runtime Validation
+    ↓
+Database Connectivity
+    ↓
+Algolia Connectivity
+    ↓
+Health Endpoint
+    ↓
+Smoke Tests
+    ↓
+Deployment Success
+```
 
 **Evidence Required:**
 
-- Updated `.github/workflows/ci.yml` with verification jobs.
+- `src/lib/health-checks.ts` integrated with EGS.
+- `scripts/ops/verify-deployment.ts` polling `/api/health`.
+- Updated `.github/workflows/ci.yml` with `pnpm ci:verify:staging` before smoke tests.
 - `docs/operations/recovery-runbook.md`.
 
 ---
@@ -156,6 +179,22 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 ---
 
+### DC-7.1 — Environment Drift Certification
+
+**Acceptance Criteria:**
+
+- [ ] Every deployment environment exposes the same set of required runtime variables.
+- [ ] Drift is checked by variable **presence**, not values.
+- [ ] A generated drift matrix exists and is kept in sync with the schema.
+- [ ] CI or operational tooling can compare two environments against the matrix.
+
+**Evidence Required:**
+
+- `config/environment/generated/drift-matrix.md`.
+- Script or CI step that compares Fly secret lists / GitHub environment secrets against the matrix.
+
+---
+
 ### DC-8 — Delivery pipeline is observable and reproducible
 
 **Acceptance Criteria:**
@@ -174,7 +213,7 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 ## Execution Phases
 
-Revised order: **DC-4 → DC-7 → DC-6 → DC-8 → DC-5**, with **DC-0** captured in parallel and **DC-2** addressed only after benchmark evidence identifies the true bottleneck.
+Revised order: **DC-4 → DC-7 → DC-7.1 → DC-6 → DC-8 → DC-5**, with **DC-0** captured in parallel and **DC-2** addressed only after benchmark evidence identifies the true bottleneck.
 
 ### Phase 0 — Toolchain Baseline (DC-0)
 
@@ -184,13 +223,13 @@ Record pinned toolchain versions and clean-clone behavior. No production changes
 
 No code changes. Gather evidence for DC-1, DC-2, DC-3, DC-4 using `.planning/temp/benchmark-delivery.sh`.
 
-### Phase 2 — Environment Governance System (DC-7)
+### Phase 2 — Environment Governance System (DC-7 + DC-7.1)
 
-Implement EGS: schema, validator, classification, generated docs, secret policy, CI integration.
+Implement EGS: schema, validator, classification, generated docs, secret policy, drift matrix.
 
 ### Phase 3 — Deployment Verification (DC-6)
 
-Add health checks, migration verification, rollback runbook. Depends on DC-7 because "healthy" must be defined by the environment schema.
+Add runtime environment check to `/api/health`, deployment verification script, and CI integration. Depends on DC-7 because "healthy" must be defined by the environment schema.
 
 ### Phase 4 — Observability (DC-8)
 
@@ -208,17 +247,18 @@ Address only after benchmark evidence shows where the latency truly lives.
 
 ## Evidence Log
 
-| Gate | Evidence                                         | Status        | Notes                                                                                                                                                                               |
-| ---- | ------------------------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| DC-0 | Toolchain versions + clean-clone behavior        | In progress   | Benchmark script `.planning/temp/benchmark-delivery.sh` prepared; awaiting operator run results.                                                                                    |
-| DC-1 | `docker build .` output                          | Functional ✅ | Build timed out after 600 s during cold `pnpm install`. No `.env` references; image is environment-agnostic. Pending **performance validation** on warm cache.                      |
-| DC-2 | Husky timing output                              | Measured      | `time git commit` for one TS file: **real 1 m 17.3 s**. ESLint/Prettier stages fast; latency likely in lint-staged orchestration. Final root cause pending benchmark script.        |
-| DC-3 | Dockerfile + .dockerignore review + docker build | Measured      | Dockerfile contains no `.env` references and is environment-agnostic. `.dockerignore` excludes `.env*`.                                                                             |
-| DC-4 | Latest `develop` GitHub Actions run              | Passed        | Run `29151750670` conclusion `success`. Deploy Staging to Fly.io ✅, Deploy Supabase to Staging ✅, Staging Smoke Tests ✅. One non-fatal Fly proxy warning noted for later review. |
-| DC-5 | Latest `main` GitHub Actions run                 | Not started   | Blocked until DC-4 through DC-8 are complete and operator approves production touch.                                                                                                |
-| DC-6 | CI verification jobs + recovery runbook          | Not started   | Depends on DC-7.                                                                                                                                                                    |
-| DC-7 | Environment schema + validator + secret policy   | In progress   | EGS implemented: schema, classify, validate, generated docs, secret-governance.md. Smoke-test validation added to CI. Runtime validation in CI pending secret alignment.            |
-| DC-8 | Deployment records + observability docs          | Not started   | Depends on DC-6/DC-7.                                                                                                                                                               |
+| Gate   | Evidence                                         | Status        | Notes                                                                                                                                                                                 |
+| ------ | ------------------------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DC-0   | Toolchain versions + clean-clone behavior        | In progress   | Benchmark script `.planning/temp/benchmark-delivery.sh` prepared; awaiting operator run results.                                                                                      |
+| DC-1   | `docker build .` output                          | Functional ✅ | Build timed out after 600 s during cold `pnpm install`. No `.env` references; image is environment-agnostic. Pending **performance validation** on warm cache.                        |
+| DC-2   | Husky timing output                              | Measured      | `time git commit` for one TS file: **real 1 m 17.3 s**. ESLint/Prettier stages fast; latency likely in lint-staged orchestration. Final root cause pending benchmark script.          |
+| DC-3   | Dockerfile + .dockerignore review + docker build | Measured      | Dockerfile contains no `.env` references and is environment-agnostic. `.dockerignore` excludes `.env*`.                                                                               |
+| DC-4   | Latest `develop` GitHub Actions run              | Passed        | Run `29151750670` conclusion `success`. Deploy Staging to Fly.io ✅, Deploy Supabase to Staging ✅, Staging Smoke Tests ✅. One non-fatal Fly proxy warning noted for later review.   |
+| DC-5   | Latest `main` GitHub Actions run                 | Not started   | Blocked until DC-4 through DC-8 are complete and operator approves production touch.                                                                                                  |
+| DC-6   | CI verification jobs + recovery runbook          | In progress   | Runtime env check added to `/api/health`; `scripts/ops/verify-deployment.ts` created; CI smoke-staging job runs deployment verification before smoke tests. Recovery runbook pending. |
+| DC-7   | Environment schema + validator + secret policy   | In progress   | EGS implemented: schema with `provider` metadata, classify, validate, generated docs, secret-governance.md. Smoke-test validation in CI.                                              |
+| DC-7.1 | Environment drift matrix                         | In progress   | `config/environment/generated/drift-matrix.md` generated. Automated drift check against Fly/GitHub secrets pending.                                                                   |
+| DC-8   | Deployment records + observability docs          | Not started   | Depends on DC-6/DC-7.                                                                                                                                                                 |
 
 ---
 

@@ -21,11 +21,34 @@ export const EnvScope = {
 
 export type EnvScope = (typeof EnvScope)[keyof typeof EnvScope];
 
+/**
+ * Canonical providers where a variable's value is stored or injected.
+ *
+ * This is metadata for drift detection and operational documentation; it does
+ * not change validation behavior.
+ */
+export const EnvProvider = {
+  /** Local `.env.local` file; never committed. */
+  LOCAL_ENV: 'local-env',
+  /** Fly.io runtime secrets. */
+  FLY_SECRETS: 'fly-secrets',
+  /** GitHub repository-level or environment secrets. */
+  GITHUB_SECRETS: 'github-secrets',
+  /** Supabase platform configuration / CLI. */
+  SUPABASE: 'supabase',
+  /** Value is derived or hard-coded (e.g. URLs constructed from project ID). */
+  DERIVED: 'derived',
+} as const;
+
+export type EnvProvider = (typeof EnvProvider)[keyof typeof EnvProvider];
+
 export interface EnvVarDefinition {
   name: string;
   description: string;
   /** Where the variable is consumed. */
   scope: EnvScope;
+  /** Where the variable's authoritative value is stored or injected. */
+  provider: EnvProvider;
   /** Whether the value must be treated as a secret. */
   secret: boolean;
   /** Whether the variable must be present for the scope to be valid. */
@@ -49,6 +72,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'APP_URL',
     description: 'Canonical application URL used by server-side code and metadata.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: false,
     required: true,
@@ -57,6 +81,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'SUPABASE_URL',
     description: 'Supabase project URL used by server-side code.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: false,
     required: true,
@@ -65,6 +90,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'SUPABASE_ANON_KEY',
     description: 'Supabase anon key used by server-side code.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: true,
     required: true,
@@ -73,6 +99,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'SUPABASE_SERVICE_ROLE_KEY',
     description: 'Supabase service-role key used by server-side code (privileged).',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: true,
     required: true,
@@ -81,6 +108,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'ALGOLIA_APP_ID',
     description: 'Algolia application ID used for server-side admin operations.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: false,
     required: true,
@@ -89,6 +117,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'ALGOLIA_ADMIN_KEY',
     description: 'Algolia admin API key used by server-side code.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: true,
     required: true,
@@ -97,6 +126,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'ALGOLIA_SEARCH_INDEX_NAME',
     description: 'Primary Algolia search index name.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: false,
     required: false,
@@ -106,6 +136,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'ALGOLIA_INDEX_PRICE_ASC',
     description: 'Algolia index used for price ascending sort.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: false,
     required: false,
@@ -114,6 +145,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'ALGOLIA_INDEX_PRICE_DESC',
     description: 'Algolia index used for price descending sort.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: false,
     required: false,
@@ -122,6 +154,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'ALGOLIA_INDEX_NEWEST',
     description: 'Algolia index used for newest-first sort.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: false,
     required: false,
@@ -130,6 +163,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'GEMINI_API_KEY',
     description: 'Google Gemini API key used by server-side AI features.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: true,
     required: true,
@@ -138,6 +172,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'SUPABASE_WEBHOOK_SECRET',
     description: 'Shared secret for validating Supabase webhooks in Edge Functions.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.SERVER_RUNTIME,
     secret: true,
     required: false,
@@ -150,6 +185,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'NEXT_PUBLIC_SUPABASE_URL',
     description: 'Supabase project URL exposed to the browser.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.PUBLIC_RUNTIME,
     secret: false,
     required: true,
@@ -158,6 +194,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     description: 'Supabase anon key exposed to the browser.',
+    provider: EnvProvider.FLY_SECRETS,
     scope: EnvScope.PUBLIC_RUNTIME,
     secret: true,
     required: true,
@@ -170,6 +207,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'FLY_API_TOKEN',
     description: 'Fly.io API token used by GitHub Actions to deploy applications.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.CI_DEPLOY,
     secret: true,
     required: true,
@@ -178,6 +216,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'SUPABASE_ACCESS_TOKEN',
     description: 'Supabase personal access token used by GitHub Actions and the CLI.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.CI_DEPLOY,
     secret: true,
     required: true,
@@ -186,6 +225,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'STAGING_SUPABASE_PROJECT_ID',
     description: 'Staging Supabase project reference ID.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.CI_DEPLOY,
     secret: false,
     required: true,
@@ -194,6 +234,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'PRODUCTION_SUPABASE_PROJECT_ID',
     description: 'Production Supabase project reference ID.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.CI_DEPLOY,
     secret: false,
     required: true,
@@ -206,6 +247,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'STAGING_URL',
     description: 'Staging application URL used by smoke tests.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.SMOKE_TEST,
     secret: false,
     required: true,
@@ -214,6 +256,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'STAGING_SUPABASE_URL',
     description: 'Staging Supabase URL used by smoke tests.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.SMOKE_TEST,
     secret: false,
     required: true,
@@ -222,6 +265,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'STAGING_SUPABASE_ANON_KEY',
     description: 'Staging Supabase anon key used by smoke tests.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.SMOKE_TEST,
     secret: true,
     required: true,
@@ -230,6 +274,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'STAGING_SUPABASE_SERVICE_ROLE_KEY',
     description: 'Staging Supabase service-role key used by smoke tests.',
+    provider: EnvProvider.GITHUB_SECRETS,
     scope: EnvScope.SMOKE_TEST,
     secret: true,
     required: true,
@@ -250,6 +295,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'TRACE_ID',
     description: 'Optional trace identifier for SCGS replay validation.',
+    provider: EnvProvider.LOCAL_ENV,
     scope: EnvScope.DEVELOPMENT,
     secret: false,
     required: false,

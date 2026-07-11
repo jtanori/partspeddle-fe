@@ -262,6 +262,12 @@ jobs:
           STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
 
+      - name: Verify deployment health
+        run: pnpm ci:verify:staging
+        env:
+          VERIFY_TIMEOUT_MS: 120000
+          VERIFY_INTERVAL_MS: 5000
+
       - name: Run staging smoke tests
         run: pnpm ci:smoke:staging
         env:

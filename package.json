@@ -62,6 +62,8 @@
     "db:backup:staging": "mkdir -p backups && supabase db dump --linked --schema public -f backups/staging_schema_$(date +%Y%m%d_%H%M%S).sql && supabase db dump --linked --data-only --schema public -f backups/staging_data_$(date +%Y%m%d_%H%M%S).sql",
     "db:backup:production": "mkdir -p backups && supabase db dump --linked --schema public -f backups/production_schema_$(date +%Y%m%d_%H%M%S).sql && supabase db dump --linked --data-only --schema public -f backups/production_data_$(date +%Y%m%d_%H%M%S).sql",
     "db:deploy:dry-run": "supabase db push --dry-run",
+    "deploy:verify": "tsx scripts/ops/verify-deployment.ts",
+    "ci:verify:staging": "tsx scripts/ops/verify-deployment.ts https://stage.partspeddle.com",
     "ci:smoke:staging": "tsx scripts/ci/smoke-staging.ts",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",

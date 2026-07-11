@@ -2,6 +2,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import {
   ENVIRONMENT_VARIABLES,
+  EnvProvider,
   EnvScope,
   type EnvVarDefinition,
 } from '../../config/environment/schema';
@@ -15,11 +16,11 @@ function badge(value: boolean, yes = 'Yes', no = 'No'): string {
 
 function row(def: EnvVarDefinition): string {
   const defaultCol = def.defaultValue !== undefined ? `\`${String(def.defaultValue)}\`` : '—';
-  return `| \`${def.name}\` | ${def.description} | ${def.scope} | ${badge(def.required)} | ${badge(def.secret)} | ${defaultCol} |`;
+  return `| \`${def.name}\` | ${def.description} | ${def.scope} | ${def.provider} | ${badge(def.required)} | ${badge(def.secret)} | ${defaultCol} |`;
 }
 
 function tableHeader(): string {
-  return '| Variable | Description | Scope | Required | Secret | Default |\n| --- | --- | --- | --- | --- | --- |';
+  return '| Variable | Description | Scope | Provider | Required | Secret | Default |\n| --- | --- | --- | --- | --- | --- | --- |';
 }
 
 function generateRequired(): string {
@@ -82,6 +83,44 @@ function generateSecrets(): string {
   return lines.join('\n');
 }
 
+function generateProviders(): string {
+  const providers = Object.values(EnvProvider);
+  const lines: string[] = [
+    '# Environment Variables by Provider',
+    '',
+    'Auto-generated from `config/environment/schema.ts`.',
+    '',
+  ];
+
+  for (const provider of providers) {
+    const vars = classify.byProvider(provider);
+    if (vars.length === 0) continue;
+    lines.push(`## ${provider}`, '', tableHeader(), ...vars.map(row), '');
+  }
+
+  return lines.join('\n');
+}
+
+function generateDriftMatrix(): string {
+  const runtimeScopes = [EnvScope.SERVER_RUNTIME, EnvScope.PUBLIC_RUNTIME];
+  const runtimeVars = ENVIRONMENT_VARIABLES.filter((v) => runtimeScopes.includes(v.scope));
+
+  const lines: string[] = [
+    '# Environment Drift Matrix',
+    '',
+    'Runtime variables that must exist in every deployment environment (staging, production).',
+    'This matrix is used for **DC-7.1 Environment Drift Certification**.',
+    '',
+    '| Variable | Staging | Production | Provider | Secret |',
+    '| --- | --- | --- | --- | --- |',
+    ...runtimeVars.map((v) => `| \`${v.name}\` | ✅ | ✅ | ${v.provider} | ${badge(v.secret)} |`),
+    '',
+    '> Values are not compared; only schema presence is verified.',
+    '',
+  ];
+  return lines.join('\n');
+}
+
 function writeGenerated(fileName: string, content: string): void {
   const path = `${OUTPUT_DIR}/${fileName}`;
   mkdirSync(dirname(path), { recursive: true });
@@ -92,5 +131,7 @@ function writeGenerated(fileName: string, content: string): void {
 writeGenerated('required.md', generateRequired());
 writeGenerated('public.md', generatePublic());
 writeGenerated('secrets.md', generateSecrets());
+writeGenerated('providers.md', generateProviders());
+writeGenerated('drift-matrix.md', generateDriftMatrix());
 
 console.log('Environment documentation generated successfully.');

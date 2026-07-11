@@ -1,4 +1,4 @@
-import { ENVIRONMENT_VARIABLES, EnvScope, type EnvVarDefinition } from './schema';
+import { ENVIRONMENT_VARIABLES, EnvProvider, EnvScope, type EnvProvider as EnvProviderType, type EnvVarDefinition } from './schema';
 
 /**
  * Classification helpers for environment variables.
@@ -13,6 +13,10 @@ export function byScope(scope: EnvScope): EnvVarDefinition[] {
 
 export function byScopes(scopes: readonly EnvScope[]): EnvVarDefinition[] {
   return ENVIRONMENT_VARIABLES.filter((v) => scopes.includes(v.scope));
+}
+
+export function byProvider(provider: EnvProviderType): EnvVarDefinition[] {
+  return ENVIRONMENT_VARIABLES.filter((v) => v.provider === provider);
 }
 
 export function required(): EnvVarDefinition[] {
@@ -45,4 +49,12 @@ export function smokeTest(): EnvVarDefinition[] {
 
 export function development(): EnvVarDefinition[] {
   return ENVIRONMENT_VARIABLES.filter((v) => v.scope === EnvScope.DEVELOPMENT);
+}
+
+export function flySecrets(): EnvVarDefinition[] {
+  return ENVIRONMENT_VARIABLES.filter((v) => v.provider === EnvProvider.FLY_SECRETS);
+}
+
+export function githubSecrets(): EnvVarDefinition[] {
+  return ENVIRONMENT_VARIABLES.filter((v) => v.provider === EnvProvider.GITHUB_SECRETS);
 }
