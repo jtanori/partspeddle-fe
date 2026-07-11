@@ -13,6 +13,7 @@ import Navbar from '../navbar/Navbar';
 import Footer from '../Footer';
 import { SupportLauncher } from '../support';
 import { SearchCommandPalette } from '../search/SearchCommandPalette';
+import { useSearchCommandRegistry } from '../search/utils/search-command-registry';
 import { useCommandPalette } from '@/hooks/useCommandPalette';
 
 interface PublicShellProps {
@@ -23,6 +24,7 @@ interface PublicShellProps {
 export const PublicShell = ({ children, showFooter = true }: PublicShellProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { executeCommand } = useSearchCommandRegistry();
   const { open: commandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPalette();
 
   const { user, userRole, setUserRole, logout, profile } = useAuthStore();
@@ -72,6 +74,7 @@ export const PublicShell = ({ children, showFooter = true }: PublicShellProps) =
       <SearchCommandPalette
         open={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
+        onSelect={executeCommand}
       />
 
       <SupportLauncher />

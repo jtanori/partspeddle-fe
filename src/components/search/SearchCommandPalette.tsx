@@ -8,30 +8,29 @@ import { SearchInput } from '@/components/ui/search-input';
 import { SearchDropdownController } from './SearchDropdownController';
 import { SearchResultsDropdown } from './SearchResultsDropdown';
 import { LiveSearchResults, SearchSuggestion } from './types/search-types';
-import { useSearchCommandRegistry } from './utils/search-command-registry';
 import { SearchInputState } from './hooks/useSearchStateMachine';
 
 export interface SearchCommandPaletteProps {
   open: boolean;
   onClose: () => void;
+  onSelect: (suggestion: SearchSuggestion) => void;
 }
 
-export function SearchCommandPalette({ open, onClose }: SearchCommandPaletteProps) {
+export function SearchCommandPalette({ open, onClose, onSelect }: SearchCommandPaletteProps) {
   const [query, setQuery] = React.useState('');
   const [results, setResults] = React.useState<
     LiveSearchResults | Record<'recent' | 'popular', SearchSuggestion[]> | null
   >(null);
   const [loading, setLoading] = React.useState(false);
-  const { executeCommand } = useSearchCommandRegistry();
 
   const handleSelect = React.useCallback(
     (suggestion: SearchSuggestion) => {
-      executeCommand(suggestion);
+      onSelect(suggestion);
       onClose();
       setQuery('');
       setResults(null);
     },
-    [executeCommand, onClose],
+    [onSelect, onClose],
   );
 
   const handleViewAll = React.useCallback(() => {

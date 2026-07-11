@@ -10,14 +10,18 @@ function CommandPaletteWrapper() {
       <button type="button" onClick={() => setOpen(true)} data-testid="open">
         Open
       </button>
-      <SearchCommandPalette open={open} onClose={() => setOpen(false)} />
+      <SearchCommandPalette
+        open={open}
+        onClose={() => setOpen(false)}
+        onSelect={vi.fn()}
+      />
     </>
   );
 }
 
 describe('P7.7 Phase 11 — Live Search Command Palette', () => {
   it('renders when open is true', () => {
-    render(<SearchCommandPalette open onClose={vi.fn()} />);
+    render(<SearchCommandPalette open onClose={vi.fn()} onSelect={vi.fn()} />);
     expect(screen.getByRole('dialog')).toBeDefined();
     expect(
       screen.getByPlaceholderText('Search parts, vehicles, categories, sellers...'),
@@ -25,7 +29,7 @@ describe('P7.7 Phase 11 — Live Search Command Palette', () => {
   });
 
   it('does not render when open is false', () => {
-    render(<SearchCommandPalette open={false} onClose={vi.fn()} />);
+    render(<SearchCommandPalette open={false} onClose={vi.fn()} onSelect={vi.fn()} />);
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
@@ -49,13 +53,23 @@ describe('P7.7 Phase 11 — Live Search Command Palette', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
+  it('calls onClose when the backdrop is clicked', () => {
+    const onClose = vi.fn();
+    render(<SearchCommandPalette open onClose={onClose} onSelect={vi.fn()} />);
+    const backdrop = screen.getByRole('dialog').parentElement?.previousSibling;
+    if (backdrop && backdrop instanceof Element) {
+      fireEvent.click(backdrop);
+    }
+    expect(onClose).toHaveBeenCalled();
+  });
+
   it('shows helper text when empty', () => {
-    render(<SearchCommandPalette open onClose={vi.fn()} />);
+    render(<SearchCommandPalette open onClose={vi.fn()} onSelect={vi.fn()} />);
     expect(screen.getByText('Start typing to search across the marketplace.')).toBeDefined();
   });
 
   it('updates query on input change', async () => {
-    render(<SearchCommandPalette open onClose={vi.fn()} />);
+    render(<SearchCommandPalette open onClose={vi.fn()} onSelect={vi.fn()} />);
     const input = screen.getByPlaceholderText('Search parts, vehicles, categories, sellers...');
     fireEvent.change(input, { target: { value: 'alternator' } });
     await waitFor(() => {
