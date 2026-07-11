@@ -116,6 +116,63 @@ The repository needs an explicit organizational layer that separates:
 
 ---
 
+## Preparation (must complete before full platform migration)
+
+These two items must land before the large-scale repository reorganization begins. Each is implemented in its own branch and merged via a dedicated PR.
+
+### Prep 1 — Fix CSP security
+
+**Goal:** Remove the temporary `'unsafe-inline'` relaxation from production CSP and replace it with a nonce-based App Router CSP.
+
+**Branch:** `feat/prep-nonce-based-csp`  
+**PR:** One dedicated PR.
+
+**Implementation:**
+
+- Generate a unique nonce per request in `middleware.ts`.
+- Set `Content-Security-Policy` via middleware so it includes `script-src 'nonce-<value>' 'self'`.
+- Remove CSP from `src/lib/security-headers.ts` (other security headers can stay in `next.config.ts`).
+- Let Next.js App Router detect the nonce from the response header and apply it to inline Flight bootstrap scripts automatically.
+- Update `tests/security/headers.spec.ts` and `tests/branch/p5-6-frontend-client-security/frontend-security.test.ts` to assert:
+  - Production CSP does not contain `'unsafe-inline'` for scripts.
+  - Production CSP contains a `nonce-` token.
+  - `'unsafe-eval'` is still absent.
+- Verify hydration works in staging and production.
+
+**Acceptance criteria:**
+
+- Production CSP does not contain `'unsafe-inline'` for `script-src`.
+- Browser console shows no CSP violations for Next.js inline scripts.
+- Every page hydrates correctly.
+- All security tests pass.
+- Smoke tests pass after deployment.
+
+### Prep 2 — Update documentation with all introduced changes
+
+**Goal:** Synchronize documentation with the delivery certification work, CSP changes, production promotion, and planning cleanup that have already landed.
+
+**Branch:** `feat/prep-update-docs`  
+**PR:** One dedicated PR.
+
+**Implementation:**
+
+- Update `docs/operations/delivery-audit.md` to reflect completed DC gates and the successful production promotion.
+- Update or create `docs/operations/deployment-observability.md` describing the deployment artifact format and location.
+- Update `config/environment/README.md` if production secret provisioning changed.
+- Update `docs/operations/secret-governance.md` to document the GitHub `production` environment Algolia secrets.
+- Add a note about the temporary CSP relaxation and the nonce-based target to `docs/engineering/security.md` (or create it).
+- Update root `README.md` if it references stale paths like `.planning/master-plan.md`.
+- Ensure `docs/PRC.md` Section 11 links to current security test locations.
+
+**Acceptance criteria:**
+
+- No broken internal documentation links.
+- Docs accurately describe the current delivery pipeline, CSP state, and secret governance.
+- A new contributor can read the root `README.md` and find the correct planning and operations docs.
+- `pnpm test` and `pnpm lint` still pass.
+
+---
+
 ## Phases
 
 ### Phase 0 — Decision and documentation
@@ -275,9 +332,11 @@ The repository needs an explicit organizational layer that separates:
 
 ## Dependencies
 
-- **Blocked by:** None for Phase 0 (documentation only).
+- **Blocked by:**
+  - **Prep 1 (CSP security)** must be complete before any Phase 2+ application moves.
+  - **Prep 2 (documentation update)** must be complete before Phase 0 navigation documents are finalized.
 - **Blocks:** Large-scale file moves until approved.
-- **Related:** P5.6 CSP hardening (deferred follow-up) should be implemented within the new `apps/web/` structure once Phase 2 is complete.
+- **Related:** Prep 1 replaces the deferred P5.6 CSP hardening follow-up.
 
 ---
 
@@ -293,4 +352,4 @@ The repository needs an explicit organizational layer that separates:
 
 ## Recommendation
 
-Start with **Phase 0** immediately. It costs nothing and dramatically improves discoverability. Delay file moves until ongoing feature work stabilizes, then execute phases in order with a verifying CI run after each.
+Start with **Prep 1** and **Prep 2** immediately. CSP security must be restored before the platform migration begins, and documentation must reflect the current state before navigation documents are written. Once both prep items are merged, execute Phase 0, then proceed through phases in order with a verifying CI run after each.
