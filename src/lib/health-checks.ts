@@ -102,25 +102,10 @@ async function checkAlgolia(): Promise<DependencyCheckResult> {
       latencyMs: Math.round(performance.now() - startedAt),
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Algolia check failed';
-
-    // A brand-new Algolia app has no indices until the first object is
-    // indexed. The search service is reachable, so treat a missing index as
-    // healthy rather than block the entire deployment. The index will be
-    // created automatically when listings are published.
-    if (message.toLowerCase().includes('index does not exist')) {
-      return {
-        status: 'ok',
-        latencyMs: Math.round(performance.now() - startedAt),
-        message:
-          'Index does not exist yet; search will return empty results until listings are indexed',
-      };
-    }
-
     return {
       status: 'error',
       latencyMs: Math.round(performance.now() - startedAt),
-      message,
+      message: error instanceof Error ? error.message : 'Algolia check failed',
     };
   }
 }
