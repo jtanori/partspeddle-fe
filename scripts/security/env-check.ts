@@ -1,33 +1,20 @@
-import { env } from '@/lib/env';
+import { validateRuntime } from '../../config/environment/validate';
 
 function checkEnv(): boolean {
-  const requiredServer = [
-    'SUPABASE_URL',
-    'SUPABASE_ANON_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'ALGOLIA_APP_ID',
-    'ALGOLIA_ADMIN_KEY',
-    'GEMINI_API_KEY',
-  ];
-  const requiredPublic = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+  const result = validateRuntime({ includeOptional: true, strict: true });
 
-  let ok = true;
-  for (const key of requiredServer) {
-    const value = (env.server as Record<string, string | undefined>)[key];
-    if (!value) {
-      console.error(`Missing server environment variable: ${key}`);
-      ok = false;
+  if (!result.success) {
+    for (const error of result.errors) {
+      console.error(`Missing or invalid environment variable: ${error.name} — ${error.message}`);
     }
-  }
-  for (const key of requiredPublic) {
-    const value = process.env[key];
-    if (!value) {
-      console.error(`Missing public environment variable: ${key}`);
-      ok = false;
-    }
+    return false;
   }
 
-  return ok;
+  if (result.defaulted.length > 0) {
+    console.warn(`Using default values for optional variables: ${result.defaulted.join(', ')}`);
+  }
+
+  return true;
 }
 
 if (!checkEnv()) {

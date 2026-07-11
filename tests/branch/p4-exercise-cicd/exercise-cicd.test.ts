@@ -15,18 +15,18 @@ describe('P4.5 exercise Supabase CI/CD end-to-end', () => {
   describe('.github/workflows/ci.yml', () => {
     const workflow = fs.existsSync(ciPath) ? fs.readFileSync(ciPath, 'utf-8') : '';
 
-    it('contains a smoke-staging job', () => {
-      expect(workflow).toMatch(/smoke-staging:/);
+    it('contains a smoke-tests job', () => {
+      expect(workflow).toMatch(/smoke-tests:/);
     });
 
-    it('runs smoke-staging after Fly.io and Supabase staging deploys', () => {
+    it('runs smoke-tests after Fly.io and Supabase deploys', () => {
       expect(workflow).toMatch(
-        /smoke-staging:[\s\S]*?needs:\s*\[deploy-staging,\s*deploy-supabase-staging\]/m,
+        /smoke-tests:[\s\S]*?needs:\s*\[configure,\s*deploy-fly,\s*deploy-supabase\]/m,
       );
     });
 
-    it('only runs smoke-staging on develop pushes', () => {
-      expect(workflow).toMatch(/smoke-staging:[\s\S]*?github\.ref == 'refs\/heads\/develop'/m);
+    it('only runs smoke-tests on delivery branches', () => {
+      expect(workflow).toMatch(/smoke-tests:[\s\S]*?needs\.configure\.outputs\.is-delivery-branch == 'true'/m);
     });
   });
 

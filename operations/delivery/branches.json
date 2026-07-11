@@ -1,0 +1,12 @@
+{
+  "$schema": "./branches.schema.json",
+  "description": "Branch configuration for the delivery pipeline. GitHub Actions and delivery scripts should consume this file instead of hard-coding branch names.",
+  "deliveryBranches": [
+    "ci-test/pipeline-hardening",
+    "develop",
+    "main"
+  ],
+  "productionBranch": "main",
+  "stagingBranch": "develop",
+  "deliveryIntegrationBranch": "ci-test/pipeline-hardening"
+}
