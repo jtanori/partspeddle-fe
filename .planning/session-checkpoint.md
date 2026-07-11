@@ -1,29 +1,32 @@
-# Session Checkpoint — P7 Remaining Items Complete
+# Session Checkpoint — P7 Final Items
 
 **Date:** 2026-07-11
-**Branch:** `feat/p7-remaining-public-experience`
-**Status:** P7.4, P7.5, P7.6, P5.10, and P7.7 Phase 4/9 implemented. Branch ready for PR.
+**Branch:** `feat/p7-workspace-layout-and-command-palette`
+**Status:** Tackling the last two P7 items before moving to P6 production / final merge.
 
 ## Completed Work
 
-- Merged PR #82 (`docs(tests): verify p7.1 ux polish and p7.2 link audit`) into `develop`.
-- **P7.4 — Editorial Page Archetypes:** Added `src/components/information-pages/archetypes.tsx` with seven archetype layouts, refactored all six public editorial pages, added `ComparisonTable`, `FAQSearch`, `KnowledgeBaseGrid`, design-system doc, and branch tests.
-- **P7.5 — Support Center:** Added `support_conversations`, `support_messages`, `support_participants` migration with RLS, four `/api/support/*` routes, `SupportLauncher`/`SupportMessenger` UI integrated into `PublicShell`, realtime channel, hook, and branch tests.
-- **P7.6 — Navigation Registry:** Added typed route registry under `src/navigation/`, builders for routes, breadcrumbs, menus, sitemap, metadata, permission/feature-flag guards, and branch tests.
-- **P7.7 — PPDS:**
-  - Phase 4 (docs/Storybook): Canonical `PDPRoot` Storybook story, CI build gate, branch tests.
-  - Phase 9 (SEO/a11y): Schema.org structured-data helpers (`Product`, `Organization`, `BreadcrumbList`) and branch tests.
-- **P5.10 — Storybook:** Covered by P7.7 Phase 4 work.
+- Merged PR #82 (P7.1/P7.2 verification) into `develop`.
+- Merged PR #83 (P7.4, P7.5, P7.6, P7.7 Phase 4/9, P5.10) into `develop`.
+- Moved `FLY_API_TOKEN` from repository secrets to the staging environment.
 
-## Remaining After This Branch
+## Active Work
 
-- **P7.7 Phase 5** — Workspace layout system (shell components, density modes).
-- **P7.7 Phase 11** — Live search command palette (keyboard-navigable dropdown across marketplace/workspace).
-- **P6 Production** — Operator-executed production migration + JWT rotation.
-- **Completion** — CI/CD consolidation, final `develop → main` merge.
+Branch `feat/p7-workspace-layout-and-command-palette` checked out from latest `develop`.
+
+Remaining P7 items in this branch:
+
+1. ✅ **P7.7 Phase 5 — Workspace Layout System** already implemented in prior work (`src/components/workspace/`, `tests/branch/p5-design-system/workspace-layout.test.tsx`).
+
+2. **P7.7 Phase 11 — Live Search Command Palette**
+   - Command-palette-style dropdown with sections: Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending.
+   - Keyboard navigation, recent searches, trending suggestions.
+   - Reusable across marketplace header and workspace top navigation.
+   - Branch tests.
 
 ## Next Steps
 
-1. Push `feat/p7-remaining-public-experience` and open a PR to `develop`.
-2. Wait for CI (tests, lint, typecheck, build, Storybook build, security tests) to pass.
-3. Merge into `develop` once verified.
+1. Implement workspace layout system and commit.
+2. Implement live search command palette and commit.
+3. Push branch and open PR to `develop`.
+4. Wait for CI, merge, and update master plan.

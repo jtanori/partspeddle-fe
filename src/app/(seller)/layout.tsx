@@ -30,6 +30,8 @@ import {
   TopNavigation,
   type SidebarSection,
 } from '@/components/workspace';
+import { SearchCommandPalette } from '@/components/search/SearchCommandPalette';
+import { useCommandPalette } from '@/hooks/useCommandPalette';
 import logoImg from '@/assets/images/logo_solid.png';
 
 export default function SellerLayout({ children }: { children: React.ReactNode }) {
@@ -37,6 +39,7 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
   const [isYardControlOpen, setIsYardControlOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const { profile, loading: isLoading } = useSellerProfile({ userId: user?.id });
+  const { open: commandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPalette();
 
   useEffect(() => {
     if (profile) {
@@ -119,6 +122,7 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
     <TopNavigation
       onMenuToggle={() => setIsMobileSidebarOpen(true)}
       onSearch={(value) => console.log('Workspace search:', value)}
+      onOpenCommandPalette={() => setCommandPaletteOpen(true)}
       notifications={2}
       messages={1}
       tasks={0}
@@ -133,6 +137,11 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
       <WorkspaceLayout sidebar={sidebar} topNav={topNav} loading={isLoading} density="compact">
         {children}
       </WorkspaceLayout>
+
+      <SearchCommandPalette
+        open={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+      />
 
       {isYardControlOpen && (
         <YardControlCore
