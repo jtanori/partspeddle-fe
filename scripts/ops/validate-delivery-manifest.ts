@@ -30,6 +30,19 @@ function validate(): void {
   if (!manifest.recovery) errors.push('recovery is required');
   if (!manifest.certification) errors.push('certification is required');
 
+  if (manifest.verification?.healthContract) {
+    const hc = manifest.verification.healthContract;
+    if (!hc.contractVersion) errors.push('verification.healthContract.contractVersion is required');
+    if (!hc.supportedVersions || hc.supportedVersions.length === 0) {
+      errors.push('verification.healthContract.supportedVersions must not be empty');
+    }
+    if (!hc.requiredChecks || hc.requiredChecks.length === 0) {
+      errors.push('verification.healthContract.requiredChecks must not be empty');
+    }
+  } else {
+    errors.push('verification.healthContract is required');
+  }
+
   // Verify referenced files exist.
   try {
     readFileSync(manifest.recovery.runbookPath, 'utf-8');

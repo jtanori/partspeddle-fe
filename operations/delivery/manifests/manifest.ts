@@ -27,10 +27,20 @@ export interface VerificationStep {
   command: string;
 }
 
+export interface HealthContractConfig {
+  contractVersion: string;
+  supportedVersions: string[];
+  requiredFields: string[];
+  requiredChecks: string[];
+  statusValues: string[];
+  checkStatusValues: string[];
+}
+
 export interface VerificationConfig {
   sequence: VerificationStep[];
   requiredHealthChecks: string[];
   postDeployChecks: string[];
+  healthContract: HealthContractConfig;
 }
 
 export interface ObservabilityConfig {

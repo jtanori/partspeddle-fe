@@ -48,7 +48,9 @@
     "requiredHealthChecks": ["environment", "supabase", "algolia"],
     "postDeployChecks": ["deployment-health", "smoke-tests"],
     "healthContract": {
-      "requiredFields": ["status", "version", "environment", "checks"],
+      "contractVersion": "1.0.0",
+      "supportedVersions": ["1.0.0"],
+      "requiredFields": ["contractVersion", "status", "version", "environment", "checks"],
       "requiredChecks": ["environment", "supabase", "algolia"],
       "statusValues": ["ok", "degraded"],
       "checkStatusValues": ["ok", "error"]

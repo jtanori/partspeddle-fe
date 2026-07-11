@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { runHealthChecks } from "@/lib/health-checks";
+import { HEALTH_CONTRACT_VERSION } from "../../../operations/kernel/contracts/health.contract";
 
 export async function GET() {
   const report = await runHealthChecks();
   const httpStatus = report.status === "ok" ? 200 : 503;
 
   const body: Record<string, unknown> = {
+    contractVersion: HEALTH_CONTRACT_VERSION,
     status: report.status,
     version: report.version,
     environment: report.environment,
