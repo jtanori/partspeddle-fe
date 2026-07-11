@@ -22,7 +22,7 @@ function generateNonce(): string {
  * Next.js App Router uses this nonce when emitting inline Flight bootstrap
  * scripts, allowing us to keep a strict CSP without `unsafe-inline`.
  */
-export function middleware(request: NextRequest): NextResponse {
+export function middleware(_request: NextRequest): NextResponse {
   const nonce = generateNonce();
   const csp = buildContentSecurityPolicy(nonce);
 
