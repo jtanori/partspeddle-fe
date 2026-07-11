@@ -22,7 +22,8 @@
 - **DC-6 — Deployment Verification** implemented using Option D (runtime secrets validated inside the deployed container, health endpoint as CI contract).
 - **Operational Manifest (OMF)** introduced: `operations/delivery/manifests/delivery.manifest.json` is now the canonical descriptor for environments, deployment topology, verification sequence, recovery, and certification gates.
 - `.planning/temp/benchmark-delivery.sh` prepared for operator-run deep benchmarking (DC-0, DC-1, DC-2).
-- Awaiting operator verification (`pnpm typecheck`, `pnpm test`, benchmark script, CI run on `ci-test/pipeline-hardening`).
+- Opened PR #91 to `ci-test/pipeline-hardening` for CI validation.
+- Awaiting operator verification (`pnpm typecheck`, `pnpm test`, benchmark script, CI run on PR #91).
 
 ## EGS Deliverables Completed
 

@@ -245,6 +245,8 @@ Address only after benchmark evidence shows where the latency truly lives.
 
 ---
 
+PR #91 (`feat/d0-workstream-a-audit` → `ci-test/pipeline-hardening`) opened for CI validation of EGS, DC-6, and Operational Manifest.
+
 ## Evidence Log
 
 | Gate   | Evidence                                         | Status        | Notes                                                                                                                                                                                                                        |
