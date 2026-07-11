@@ -4,16 +4,16 @@
 
 1. **Agent does all coding.** The agent is responsible for writing, editing, and refactoring code to fulfill the requested task.
 
-2. **Agent does NOT run verification commands.** The agent must NOT run:
+2. **Agent does NOT run verification commands by default.** The agent must NOT run the following unless the operator explicitly asks for them:
    - `pnpm test` / `vitest` / `jest`
    - `pnpm build`
    - `pnpm lint`
    - `pnpm typecheck`
-     These are left to the operator or another verifying agent.
+     When the operator explicitly requests verification, the agent runs the requested command(s), reports the results, and uses the outcome to decide whether the current change is ready to commit, push, or PR.
 
-3. **No git mutations until verification is confirmed.** The agent must NOT stage, commit, push, or open pull requests until the operator or another agent has explicitly confirmed that tests, build, lint, and typecheck pass.
+3. **No git mutations until verification is confirmed.** The agent must NOT stage, commit, push, or open pull requests until tests, build, lint, and typecheck pass, either through the operator's own run or through an explicit verification run requested from the agent.
 
-4. **After verification, agent handles git workflow.** Once verification is confirmed, the agent may proceed with staging, committing, pushing the branch, and creating/merging the pull request as requested.
+4. **After verification, agent handles git workflow.** Once verification passes, the agent may proceed with staging, committing, pushing the branch, and creating/merging the pull request as requested.
 
 ## Shell Optimization
 
