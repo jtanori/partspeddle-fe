@@ -43,6 +43,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Validate delivery manifest
+        run: pnpm delivery:manifest:validate
+
       - name: Dependency audit
         run: pnpm audit --production --audit-level high
 

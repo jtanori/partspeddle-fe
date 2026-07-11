@@ -20,8 +20,9 @@
 - **DC-7 — Environment Governance System (EGS)** implemented.
 - **DC-7.1 — Environment Drift Certification** drift matrix generated.
 - **DC-6 — Deployment Verification** implemented using Option D (runtime secrets validated inside the deployed container, health endpoint as CI contract).
+- **Operational Manifest (OMF)** introduced: `operations/delivery/manifests/delivery.manifest.json` is now the canonical descriptor for environments, deployment topology, verification sequence, recovery, and certification gates.
 - `.planning/temp/benchmark-delivery.sh` prepared for operator-run deep benchmarking (DC-0, DC-1, DC-2).
-- Awaiting operator verification (`pnpm typecheck`, `pnpm test`, benchmark script, CI run).
+- Awaiting operator verification (`pnpm typecheck`, `pnpm test`, benchmark script, CI run on `ci-test/pipeline-hardening`).
 
 ## EGS Deliverables Completed
 
@@ -39,9 +40,17 @@
 ## DC-6 Deliverables Completed
 
 - `src/lib/health-checks.ts` now includes an `environment` check powered by EGS `validateRuntime`.
-- `scripts/ops/verify-deployment.ts` polls `/api/health` with retries and timeouts.
+- `scripts/ops/verify-deployment.ts` polls `/api/health` with retries and timeouts; reads environment URL from the Operational Manifest.
 - `package.json` scripts `deploy:verify` and `ci:verify:staging`.
 - `.github/workflows/ci.yml` smoke-staging job now runs `pnpm ci:verify:staging` before smoke tests.
+- `scripts/ops/validate-delivery-manifest.ts` validates the manifest in CI.
+
+## Operational Manifest (OMF) Deliverables Completed
+
+- `operations/delivery/manifests/delivery.manifest.json` — canonical descriptor.
+- `operations/delivery/manifests/delivery.manifest.schema.json` — JSON schema.
+- `operations/delivery/manifests/manifest.ts` — TypeScript types and loader.
+- `operations/delivery/README.md` — operator documentation.
 
 ## Evidence Summary
 

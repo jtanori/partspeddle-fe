@@ -1,0 +1,90 @@
+{
+  "$schema": "./delivery.manifest.schema.json",
+  "version": "1.0.0",
+  "project": "partspeddle-fe",
+  "description": "Operational Manifest for the PartsPeddle / VinTrack delivery platform. This file is the canonical descriptor of environments, deployment topology, verification sequence, rollback policy, and certification gates.",
+  "environments": {
+    "staging": {
+      "name": "staging",
+      "appUrl": "https://stage.partspeddle.com",
+      "flyApp": "vintrack-stage",
+      "githubEnvironment": "staging",
+      "supabaseProjectIdSecret": "STAGING_SUPABASE_PROJECT_ID",
+      "healthEndpoint": "/api/health"
+    },
+    "production": {
+      "name": "production",
+      "appUrl": "https://partspeddle.com",
+      "flyApp": "vintrack-prod",
+      "githubEnvironment": "production",
+      "supabaseProjectIdSecret": "PRODUCTION_SUPABASE_PROJECT_ID",
+      "healthEndpoint": "/api/health"
+    }
+  },
+  "deployment": {
+    "topology": ["fly.io", "supabase"],
+    "rollbackStrategy": "fly-release-rollback",
+    "healthEndpoint": "/api/health",
+    "requiredSecretsProvider": ["fly-secrets", "github-secrets"]
+  },
+  "verification": {
+    "sequence": [
+      {
+        "name": "environment-validation",
+        "description": "Validate smoke-test environment variables before running checks.",
+        "command": "pnpm env:validate smoke-test"
+      },
+      {
+        "name": "deployment-health",
+        "description": "Poll the application health endpoint until all checks pass.",
+        "command": "pnpm deploy:verify {appUrl}"
+      },
+      {
+        "name": "smoke-tests",
+        "description": "Run Playwright smoke tests against the deployed environment.",
+        "command": "pnpm ci:smoke:{environment}"
+      }
+    ],
+    "requiredHealthChecks": ["environment", "supabase", "algolia"],
+    "postDeployChecks": ["deployment-health", "smoke-tests"]
+  },
+  "observability": {
+    "deploymentRecordsDir": "artifacts/deployments",
+    "requiredMetadata": [
+      "sha",
+      "branch",
+      "environment",
+      "imageDigest",
+      "durationMs",
+      "healthResult",
+      "smokeResult",
+      "migrationResult",
+      "flyReleaseVersion"
+    ]
+  },
+  "recovery": {
+    "runbookPath": "docs/operations/recovery-runbook.md",
+    "rollbackCommands": {
+      "staging": "flyctl releases rollback <version> -a vintrack-stage",
+      "production": "flyctl releases rollback <version> -a vintrack-prod"
+    },
+    "healthCheckCommands": {
+      "staging": "pnpm ci:verify:staging",
+      "production": "pnpm deploy:verify https://partspeddle.com"
+    }
+  },
+  "certification": {
+    "gates": ["DC-0", "DC-1", "DC-2", "DC-3", "DC-4", "DC-6", "DC-7", "DC-7.1", "DC-8", "DC-5"],
+    "blockingGatesForProduction": [
+      "DC-0",
+      "DC-1",
+      "DC-2",
+      "DC-3",
+      "DC-4",
+      "DC-6",
+      "DC-7",
+      "DC-7.1",
+      "DC-8"
+    ]
+  }
+}

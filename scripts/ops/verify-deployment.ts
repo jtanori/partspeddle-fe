@@ -7,8 +7,11 @@
  *
  * Usage:
  *   tsx scripts/ops/verify-deployment.ts https://stage.partspeddle.com
+ *   tsx scripts/ops/verify-deployment.ts --environment staging
  *   DEPLOYMENT_URL=https://stage.partspeddle.com tsx scripts/ops/verify-deployment.ts
  */
+
+import { getEnvironment, interpolateCommand } from '../../operations/delivery/manifests/manifest';
 
 interface DependencyCheckResult {
   status: 'ok' | 'error';
@@ -22,13 +25,32 @@ interface HealthReport {
   checks: Record<string, DependencyCheckResult>;
 }
 
-const baseUrl = process.argv[2] || process.env.DEPLOYMENT_URL;
-if (!baseUrl) {
-  console.error('Error: deployment URL is required.');
+function resolveBaseUrl(): string {
+  const args = process.argv.slice(2);
+
+  const envIndex = args.findIndex((arg) => arg === '--environment' || arg === '-e');
+  if (envIndex !== -1 && args[envIndex + 1]) {
+    const environment = args[envIndex + 1];
+    const env = getEnvironment(environment);
+    return env.appUrl;
+  }
+
+  const positionalUrl = args.find((arg) => !arg.startsWith('-'));
+  if (positionalUrl) {
+    return positionalUrl;
+  }
+
+  if (process.env.DEPLOYMENT_URL) {
+    return process.env.DEPLOYMENT_URL;
+  }
+
+  console.error('Error: deployment URL or --environment is required.');
   console.error('Usage: tsx scripts/ops/verify-deployment.ts <url>');
+  console.error('   or: tsx scripts/ops/verify-deployment.ts --environment staging');
   process.exit(1);
 }
 
+const baseUrl = resolveBaseUrl();
 const timeoutMs = Number(process.env.VERIFY_TIMEOUT_MS || '120000');
 const intervalMs = Number(process.env.VERIFY_INTERVAL_MS || '5000');
 const healthUrl = `${baseUrl.replace(/\/$/, '')}/api/health`;
@@ -59,9 +81,7 @@ async function verifyDeployment(): Promise<void> {
 
       for (const [name, check] of Object.entries(report.checks)) {
         const indicator = check.status === 'ok' ? '✓' : '✗';
-        console.log(
-          `  ${indicator} ${name}: ${check.status} (${check.latencyMs}ms)${check.message ? ` — ${check.message}` : ''}`,
-        );
+        console.log(`  ${indicator} ${name}: ${check.status} (${check.latencyMs}ms)${check.message ? ` — ${check.message}` : ''}`);
       }
 
       if (report.status === 'ok') {
@@ -83,3 +103,5 @@ async function verifyDeployment(): Promise<void> {
 }
 
 verifyDeployment();
+
+export { interpolateCommand };
