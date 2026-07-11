@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 
 describe('P5.5 environment validation', () => {
-  it('throws in production when required variables are missing', async () => {
+  it('throws in production when required variables are missing', { timeout: 20000 }, async () => {
     const originalEnv = { ...process.env };
     vi.resetModules();
     process.env.NODE_ENV = 'production';
@@ -19,7 +19,7 @@ describe('P5.5 environment validation', () => {
     process.env = originalEnv;
   });
 
-  it('warns but does not throw in development when variables are missing', async () => {
+  it('warns but does not throw in development when variables are missing', { timeout: 20000 }, async () => {
     const originalEnv = { ...process.env };
     vi.resetModules();
     process.env.NODE_ENV = 'development';

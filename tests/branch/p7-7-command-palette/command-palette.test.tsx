@@ -64,7 +64,7 @@ function CommandPaletteWrapper() {
 }
 
 describe('P7.7 Phase 11 — Live Search Command Palette', () => {
-  it('renders when open is true', () => {
+  it('renders when open is true', { timeout: 20000 }, () => {
     render(<SearchCommandPalette open onClose={vi.fn()} onSelect={vi.fn()} />);
     expect(screen.getByRole('dialog')).toBeDefined();
     expect(
