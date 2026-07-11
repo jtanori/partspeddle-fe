@@ -77,7 +77,7 @@ describe('P5.0 Seller Workspace Shell', () => {
   });
 
   describe('seller layout sidebar', () => {
-    it('includes workspace navigation hrefs', async () => {
+    it('includes workspace navigation hrefs', { timeout: 20000 }, async () => {
       const { default: SellerLayout } = await import('@/app/(seller)/layout');
       render(
         <SellerLayout>

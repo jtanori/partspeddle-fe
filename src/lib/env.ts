@@ -1,19 +1,30 @@
 import { z } from 'zod';
+import { ENVIRONMENT_VARIABLES, EnvScope } from '../../config/environment/schema';
 
-const serverSchema = z.object({
-  SUPABASE_URL: z.string().url().min(1),
-  SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  ALGOLIA_APP_ID: z.string().min(1),
-  ALGOLIA_ADMIN_KEY: z.string().min(1),
-  GEMINI_API_KEY: z.string().min(1),
-  ALGOLIA_SEARCH_INDEX_NAME: z.string().optional().default('parts'),
-});
+/**
+ * Runtime environment validator.
+ *
+ * This module re-exports typed server/public objects derived from the
+ * canonical schema in `config/environment/schema.ts`. It preserves the
+ * original behavior:
+ *
+ * - In production, missing/invalid variables throw.
+ * - In development, they warn and return empty objects.
+ */
 
-const publicSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url().min(1),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-});
+const serverEntries = ENVIRONMENT_VARIABLES.filter((v) => v.scope === EnvScope.SERVER_RUNTIME);
+const publicEntries = ENVIRONMENT_VARIABLES.filter((v) => v.scope === EnvScope.PUBLIC_RUNTIME);
+
+function buildShape(entries: typeof ENVIRONMENT_VARIABLES) {
+  const shape: Record<string, z.ZodType<unknown>> = {};
+  for (const def of entries) {
+    shape[def.name] = def.required ? def.schema : def.schema.optional().default(def.defaultValue);
+  }
+  return shape;
+}
+
+const serverSchema = z.object(buildShape(serverEntries));
+const publicSchema = z.object(buildShape(publicEntries));
 
 function validateEnv() {
   const isProduction = process.env.NODE_ENV === 'production';
@@ -26,7 +37,6 @@ function validateEnv() {
     if (isProduction) {
       throw new Error(message);
     }
-
     console.warn(message);
   }
 
@@ -35,7 +45,6 @@ function validateEnv() {
     if (isProduction) {
       throw new Error(message);
     }
-
     console.warn(message);
   }
 
