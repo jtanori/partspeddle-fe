@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SECURITY_HEADERS } from '@/lib/security-headers';
+import { buildContentSecurityPolicy } from '@/lib/security-headers';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +20,7 @@ describe('dev server image host configuration', () => {
   });
 
   it('allows picsum.photos in the CSP img-src directive', () => {
-    const csp = SECURITY_HEADERS['Content-Security-Policy'];
+    const csp = buildContentSecurityPolicy('test-nonce');
     expect(csp).toContain('https://picsum.photos');
   });
 });

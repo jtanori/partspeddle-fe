@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { securityHeaderEntries } from '@/lib/security-headers';
+import { securityHeaderEntries, buildContentSecurityPolicy } from '@/lib/security-headers';
 import { validateFile } from '@/lib/upload-validation';
 import fs from 'fs';
 import path from 'path';
@@ -18,24 +18,28 @@ function* walk(dir: string): Generator<string> {
 }
 
 describe('P5.6 frontend and client-side security', () => {
-  it('production csp does not allow unsafe-eval', () => {
+  it('static headers do not include Content-Security-Policy', () => {
+    const keys = securityHeaderEntries().map((h) => h.key);
+    expect(keys).not.toContain('Content-Security-Policy');
+  });
+
+  it('nonce-aware production csp does not allow unsafe-inline or unsafe-eval in script-src', () => {
     const originalEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
-    const headers = securityHeaderEntries();
-    const csp = headers.find((h) => h.key === 'Content-Security-Policy')?.value || '';
-    // Next.js App Router emits inline Flight bootstrap scripts that hydrate the
-    // server-rendered HTML, so production allows 'unsafe-inline'. 'unsafe-eval'
-    // is still prohibited because production code should not use eval().
-    expect(csp).not.toContain("'unsafe-eval'");
+    const csp = buildContentSecurityPolicy('dGVzdC1ub25jZQ==');
+    const scriptSrc = csp.match(/script-src[^;]+/)?.[0] ?? '';
+    expect(scriptSrc).toContain("'nonce-dGVzdC1ub25jZQ=='");
+    expect(scriptSrc).not.toContain("'unsafe-inline'");
+    expect(scriptSrc).not.toContain("'unsafe-eval'");
     process.env.NODE_ENV = originalEnv;
   });
 
-  it('dev csp allows unsafe-inline for hot reload', () => {
+  it('fallback csp allows unsafe-inline in script-src when no nonce is provided', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
-    const headers = securityHeaderEntries();
-    const csp = headers.find((h) => h.key === 'Content-Security-Policy')?.value || '';
-    expect(csp).toContain("'unsafe-inline'");
+    process.env.NODE_ENV = 'production';
+    const csp = buildContentSecurityPolicy();
+    const scriptSrc = csp.match(/script-src[^;]+/)?.[0] ?? '';
+    expect(scriptSrc).toBe("script-src 'self' 'unsafe-inline'");
     process.env.NODE_ENV = originalEnv;
   });
 

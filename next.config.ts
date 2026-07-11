@@ -9,9 +9,12 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
+    // Content-Security-Policy is intentionally omitted here. It is set with a
+    // per-request nonce by src/middleware.ts so Next.js App Router can hydrate
+    // safely without allowing 'unsafe-inline' scripts globally.
     return [
       {
-        source: "/:path*",
+        source: '/:path*',
         headers: securityHeaderEntries().map(({ key, value }) => ({
           key,
           value,
