@@ -1,0 +1,138 @@
+# Project Map — PartsPeddle / VinTrack
+
+This file is the table of contents for the repository. If you are new to the project, start here.
+
+---
+
+## Repository at a glance
+
+PartsPeddle is evolving from a single Next.js application into a **platform repository**: application code, shared packages, backend modules, governance, and operations tooling are being separated into distinct top-level domains.
+
+Current state (today):
+
+```text
+partspeddle-fe/
+├── src/                    # Next.js application and backend modules
+├── tests/                  # All tests (branch, certification, security)
+├── docs/                   # Knowledge base
+├── scripts/                # Automation and operational scripts
+├── operations/             # Delivery manifests, verification, recovery
+├── supabase/               # Migrations, edge functions, config
+├── .planning/              # Roadmaps, plans, session checkpoint
+├── .scgs/                  # SCGS governance subsystem
+├── fly/                    # Fly.io configuration
+├── config/                 # Shared configuration (EGS, environment)
+└── reports/ + artifacts/   # Generated outputs
+```
+
+Target topology (in progress):
+
+```text
+partspeddle-fe/
+├── apps/
+│   └── web/                # Next.js application (from src/app, src/components)
+├── packages/               # Shared UI, types, contracts, config
+├── backend/
+│   └── modules/            # Modular monolith (search, listing, seller, ...)
+├── platform/               # CI, deployment, scripts, tooling
+├── governance/             # Planning, certification, architecture decisions, SCGS
+├── docs/                   # Knowledge base
+├── tests/                  # Test taxonomy
+└── artifacts/              # Generated reports and deployment records
+```
+
+The migration is tracked in `.planning/platform-repository-evolution.md`.
+
+---
+
+## Navigation by concern
+
+### I want to run the app locally
+
+1. `README.md` — prerequisites and quick start.
+2. `.env.example` — variables to copy into `.env.local`.
+3. `package.json` — scripts.
+
+### I want to understand the architecture
+
+1. `ARCHITECTURE.md` — high-level structure and convergence target.
+2. `src/backend/modules/search/` — canonical module architecture reference.
+3. `docs/NEXT_APP_ROUTER_ARCHITECTURE.md` — App Router decisions.
+
+### I want to contribute code
+
+1. `CONTRIBUTING.md` — branch model, commits, verification commands.
+2. `AGENTS.md` — rules for agent-assisted work.
+3. `TESTING.md` — where to add tests.
+
+### I want to deploy or operate the system
+
+1. `docs/DEPLOYMENT_RUNBOOK.md` — full deployment procedure.
+2. `docs/operations/delivery-audit.md` — current CI/CD audit.
+3. `docs/operations/deployment-observability.md` — deployment artifacts.
+4. `docs/operations/secret-governance.md` — where secrets live.
+5. `operations/delivery/manifests/delivery.manifest.json` — canonical delivery descriptor.
+
+### I want to understand governance
+
+1. `GOVERNANCE.md` — glossary and interaction map.
+2. `.planning/platform-repository-evolution.md` — platform migration plan.
+3. `docs/PRC.md` — Production Readiness Certification checklist.
+4. `.scgs/` — SCGS subsystem code and policies.
+
+### I want to understand security
+
+1. `docs/engineering/security.md` — CSP and application security.
+2. `docs/API_SECURITY.md` — API security baseline.
+3. `docs/operations/secret-governance.md` — secret storage policy.
+
+---
+
+## Directory reference
+
+| Directory           | Current purpose                                       | Future home (target)                                   |
+| ------------------- | ----------------------------------------------------- | ------------------------------------------------------ |
+| `src/app/`          | Next.js App Router pages and API routes               | `apps/web/src/app/`                                    |
+| `src/components/`   | React components (247+)                               | `apps/web/src/components/` + `packages/ui/`            |
+| `src/backend/`      | Backend modules (`search`, future modules)            | `backend/modules/`                                     |
+| `src/domain/`       | Domain types and logic                                | Inside each `backend/modules/<domain>/domain/`         |
+| `src/projection/`   | Read models for UI pages                              | `apps/web/src/projection/` or `packages/shared/`       |
+| `src/repositories/` | Data access layer                                     | Inside each `backend/modules/<domain>/infrastructure/` |
+| `src/services/`     | Legacy service layer                                  | Migrated into backend modules                          |
+| `src/lib/`          | Shared utilities and helpers                          | `packages/shared/`                                     |
+| `src/hooks/`        | React hooks                                           | `apps/web/src/hooks/` + `packages/shared/`             |
+| `src/types/`        | Cross-cutting TypeScript types                        | `packages/types/`                                      |
+| `src/store/`        | Client state management                               | `apps/web/src/store/`                                  |
+| `tests/`            | Branch, certification, security, and governance tests | `tests/` (taxonomy reorganized)                        |
+| `docs/`             | Knowledge base                                        | `docs/` (information architecture reorganized)         |
+| `scripts/`          | Automation, seeding, CI helpers                       | `platform/scripts/`                                    |
+| `.github/`          | GitHub Actions workflows                              | `platform/ci/`                                         |
+| `fly/`              | Fly.io configuration                                  | `platform/deployment/fly/`                             |
+| `operations/`       | Delivery manifests and verification specs             | `platform/operations/`                                 |
+| `.planning/`        | Roadmaps, plans, session checkpoint                   | `governance/planning/`                                 |
+| `.scgs/`            | SCGS governance subsystem                             | `governance/scgs/`                                     |
+| `reports/`          | Generated audit and certification reports             | `artifacts/reports/`                                   |
+| `artifacts/`        | Deployment artifacts and benchmarks                   | `artifacts/`                                           |
+
+---
+
+## Canonical files
+
+| File                                                       | Why it matters                                    |
+| ---------------------------------------------------------- | ------------------------------------------------- |
+| `AGENTS.md`                                                | Operating rules for agent-assisted development.   |
+| `.planning/platform-repository-evolution.md`               | Platform migration plan and target topology.      |
+| `.planning/session-checkpoint.md`                          | Current session state and next steps.             |
+| `operations/delivery/manifests/delivery.manifest.json`     | Canonical delivery descriptor.                    |
+| `config/environment/schema.ts`                             | Single source of truth for environment variables. |
+| `artifacts/delivery/production-deployment-2026-07-11.json` | Record of first production promotion.             |
+
+---
+
+## Status of platform migration
+
+- [x] Prep 1 — nonce-based CSP implemented and merged.
+- [x] Prep 2 — documentation synchronized with delivery certification.
+- [ ] Phase 0 — navigation documents (this phase).
+- [ ] Phase 1 — workspace scaffolding and directory creation.
+- [ ] Phase 2+ — application extraction, module migration, governance promotion.
