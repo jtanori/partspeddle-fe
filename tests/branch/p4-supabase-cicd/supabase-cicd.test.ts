@@ -42,7 +42,10 @@ describe('P4.1 Supabase CI/CD', () => {
     });
 
     it('gates Supabase deploy on the test and configure jobs', () => {
-      expect(workflow).toMatch(/deploy-supabase:[\s\S]*?needs:\s*\[test,\s*configure\]/m);
+      const sectionStart = workflow.indexOf('deploy-supabase:');
+      const sectionEnd = workflow.indexOf('smoke-tests:', sectionStart);
+      const section = workflow.slice(sectionStart, sectionEnd > sectionStart ? sectionEnd : undefined);
+      expect(section).toContain('needs: [test, configure]');
     });
 
     it('supports manual dry-run dispatch', () => {
