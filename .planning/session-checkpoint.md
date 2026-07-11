@@ -18,11 +18,11 @@ Remaining P7 items in this branch:
 
 1. ✅ **P7.7 Phase 5 — Workspace Layout System** already implemented in prior work (`src/components/workspace/`, `tests/branch/p5-design-system/workspace-layout.test.tsx`).
 
-2. **P7.7 Phase 11 — Live Search Command Palette**
-   - Command-palette-style dropdown with sections: Parts, Categories, Manufacturers, Vehicles, Popular/Recent/Trending.
-   - Keyboard navigation, recent searches, trending suggestions.
-   - Reusable across marketplace header and workspace top navigation.
-   - Branch tests.
+2. ✅ **P7.7 Phase 11 — Live Search Command Palette**
+   - `SearchCommandPalette` modal component using existing search projection.
+   - Global `Cmd/Ctrl+K` shortcut via `useCommandPalette` hook.
+   - Integrated into `PublicShell` (marketplace) and seller workspace `TopNavigation`.
+   - Branch tests added.
 
 ## Next Steps
 
