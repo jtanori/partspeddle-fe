@@ -97,13 +97,10 @@ describe('P7.7 Phase 11 — Live Search Command Palette', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('calls onClose when the backdrop is clicked', () => {
+  it('calls onClose when the close button is clicked', () => {
     const onClose = vi.fn();
     render(<SearchCommandPalette open onClose={onClose} onSelect={vi.fn()} />);
-    const backdrop = screen.getByRole('dialog').parentElement?.previousSibling;
-    if (backdrop && backdrop instanceof Element) {
-      fireEvent.click(backdrop);
-    }
+    fireEvent.click(screen.getByLabelText('Close command palette'));
     expect(onClose).toHaveBeenCalled();
   });
 
