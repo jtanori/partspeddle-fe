@@ -483,13 +483,16 @@ Evidence and automated tests for the security gate introduced in P5.
 
 Verify:
 
-- [ ] CSP present and production CSP omits `'unsafe-inline'` for scripts — evidence: `tests/security/headers.spec.ts`
+- [ ] CSP present and production CSP omits `'unsafe-inline'` for scripts via a per-request nonce — evidence: `src/middleware.ts`, `src/lib/security-headers.ts`, `tests/security/headers.spec.ts`
 - [ ] HSTS `max-age=63072000; includeSubDomains; preload` — evidence: `src/lib/security-headers.ts`
 - [ ] X-Frame-Options `DENY`
 - [ ] X-Content-Type-Options `nosniff`
 - [ ] Referrer-Policy and Permissions-Policy present
 
-Automated test: `pnpm test -- tests/security/headers.spec.ts`
+Automated tests:
+
+- `pnpm test -- tests/security/headers.spec.ts`
+- `pnpm test -- tests/branch/p5-6-frontend-client-security/frontend-security.test.ts`
 
 ---
 

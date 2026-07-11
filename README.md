@@ -49,6 +49,15 @@
 | `pnpm deploy:staging`       | Deploy to Fly.io staging                     |
 | `pnpm deploy:production`    | Deploy to Fly.io production                  |
 
+## Documentation
+
+- `docs/DEPLOYMENT_RUNBOOK.md` — full deployment procedure.
+- `docs/operations/delivery-audit.md` — current delivery pipeline audit.
+- `docs/operations/deployment-observability.md` — deployment artifact format and records.
+- `docs/operations/secret-governance.md` — secret storage policy.
+- `docs/engineering/security.md` — CSP and application security.
+- `.planning/platform-repository-evolution.md` — platform evolution plan.
+
 ## Deployment
 
 Deployments run against Fly.io. Always deploy **staging** from `develop` and **production** from `main`:
