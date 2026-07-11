@@ -7,7 +7,12 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useSupportConversation } from '@/hooks/useSupportConversation';
 
-const SupportMessenger = dynamic(() => import('./SupportMessenger'), { ssr: false });
+const SupportMessenger = dynamic(
+  () => import('./SupportMessenger').then((mod) => mod.SupportMessenger),
+  {
+    ssr: false,
+  },
+);
 
 export interface SupportLauncherProps {
   className?: string;

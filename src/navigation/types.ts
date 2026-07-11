@@ -31,6 +31,7 @@ export type RouteHref<TParams extends Record<string, string>> = keyof TParams ex
 export interface BuiltRoute<TParams extends Record<string, string> = Record<string, string>> {
   id: string;
   name: string;
+  path: string;
   href: RouteHref<TParams>;
   title: string;
   description?: string;

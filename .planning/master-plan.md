@@ -1091,8 +1091,8 @@ Final cross-cutting milestones to close the remediation effort.
 | P7         | P7.1 UX polish, P7.2 link audit, P7.3 IPS, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 PPDS phases 1–4 / 6–9, P5.10 Storybook | P7.7 Phase 5 workspace layout, P7.7 Phase 11 live search command palette |
 | Completion | Final verification                                                                                                                                     | CI/CD consolidation, Final `develop → main` merge                        |
 
-**Total completed:** ~58 items  
-**Total pending:** ~12 items (P5.10, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
+**Total completed:** ~62 items  
+**Total pending:** ~8 items (P7.7 Phase 5, P7.7 Phase 11, P6 production, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 

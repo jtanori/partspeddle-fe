@@ -43,6 +43,7 @@ export function buildRoute<TParams extends Record<string, string> = Record<strin
   const built = {
     id: definition.id,
     name: definition.name,
+    path: definition.path,
     href: buildHref(definition.path),
     title: definition.title,
     description: definition.description,

@@ -16,7 +16,7 @@ export interface EditorialPageShellProps {
   title: string;
   description?: string;
   breadcrumb: BreadcrumbItem[];
-  children: React.ReactNode;
+  children?: React.ReactNode;
   cta?: React.ReactNode;
   className?: string;
 }
@@ -41,9 +41,11 @@ export function EditorialPageShell({
         <InformationPageHeader eyebrow={eyebrow} title={title} description={description} />
       </Content>
 
-      <Section spacing="lg" className="bg-surface-secondary">
-        <Content>{children}</Content>
-      </Section>
+      {children && (
+        <Section spacing="lg" className="bg-surface-secondary">
+          <Content>{children}</Content>
+        </Section>
+      )}
 
       {cta ?? <EditorialCTA />}
     </div>

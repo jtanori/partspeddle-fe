@@ -111,7 +111,7 @@ export function SupportMessenger({
       conversation.id,
       (newMessage) => {
         setServerMessages((prev) => {
-          const message = newMessage as SupportMessage;
+          const message = newMessage as unknown as SupportMessage;
           // Avoid duplicating optimistic messages.
           if (
             message.sender_type === 'user' &&

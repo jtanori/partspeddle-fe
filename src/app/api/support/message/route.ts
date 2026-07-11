@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (conversation.status === 'closed') {
-      return safeErrorResponse('Cannot add messages to a closed conversation.', 409);
+      return safeErrorResponse('Cannot add messages to a closed conversation.', 400);
     }
 
     const { data, error } = await supabase
