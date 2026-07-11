@@ -55,6 +55,28 @@ jobs:
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
           ALGOLIA_SEARCH_INDEX_NAME: ${{ secrets.ALGOLIA_SEARCH_INDEX_NAME }}
 
+  storybook:
+    name: Storybook Build
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Storybook
+        run: pnpm storybook:build
+
   security:
     name: Security Tests
     needs: test
