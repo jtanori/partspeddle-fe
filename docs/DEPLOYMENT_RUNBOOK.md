@@ -144,14 +144,20 @@ The Supabase deploy jobs depend on the `test` job, so they only run if tests, li
 To preview what would be deployed without applying changes:
 
 ```bash
-# Local
+# Local (uses the currently linked project)
 pnpm db:deploy:dry-run
+
+# Staging (links, previews, restores previous link)
+STAGING_SUPABASE_PROJECT_ID=<ref> SUPABASE_ACCESS_TOKEN=<token> pnpm db:dry-run:staging
+
+# Production (links, previews, restores previous link)
+PRODUCTION_SUPABASE_PROJECT_ID=<ref> SUPABASE_ACCESS_TOKEN=<token> pnpm db:dry-run:production
 
 # CI (manual)
 # Go to Actions → VinTrack CI → Run workflow → select branch → check "dry-run"
 ```
 
-In dry-run mode the workflow runs `supabase db push --dry-run` and skips Edge Function deployment.
+In dry-run mode the workflow runs `supabase db push --dry-run` and skips Edge Function deployment. The `db:dry-run:*` scripts are the safest way to preview migrations against a specific environment because they restore the previously linked project after the preview.
 
 ## Rollback
 

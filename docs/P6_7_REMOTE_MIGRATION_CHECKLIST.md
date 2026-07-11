@@ -34,10 +34,11 @@ Use this checklist when applying the P6 remediation migration stack to the live 
   ```bash
   supabase link --project-ref $STAGING_SUPABASE_PROJECT_ID
   ```
-- [ ] Dry-run the migration push:
+- [ ] Dry-run the migration push (preview without applying):
   ```bash
-  supabase db push --dry-run
+  pnpm db:dry-run:staging
   ```
+  This links to staging, runs `supabase db push --dry-run`, prints the migrations that would be applied, and restores the previous linked project.
 - [ ] Apply the migrations:
   ```bash
   supabase db push --yes
