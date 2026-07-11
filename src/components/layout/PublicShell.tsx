@@ -11,6 +11,7 @@ import {
 } from '@/store/hooks';
 import Navbar from '../navbar/Navbar';
 import Footer from '../Footer';
+import { SupportLauncher } from '../support';
 
 interface PublicShellProps {
   children: React.ReactNode;
@@ -64,6 +65,8 @@ export const PublicShell = ({ children, showFooter = true }: PublicShellProps) =
       <div className="flex-grow transition-opacity duration-300 pb-16 md:pb-0">{children}</div>
 
       {showFooter && <Footer />}
+
+      <SupportLauncher />
     </div>
   );
 };

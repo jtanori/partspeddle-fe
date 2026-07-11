@@ -1,17 +1,11 @@
 import { publicInfoMetadata } from '@/components/layout/PublicInfoPage';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Content } from '@/components/layout/design-system/Content';
-import { Section } from '@/components/layout/design-system/Section';
 import {
-  InformationPageHeader,
-  InformationLayout,
-  StickySidebar,
+  DocumentationLayout,
   EditorialSection,
   TableOfContents,
   SupportCard,
   RelatedLinksCard,
   InfoCallout,
-  EditorialCTA,
 } from '@/components/information-pages';
 import { HelpCircle } from 'lucide-react';
 
@@ -95,8 +89,8 @@ const sectionNodes = (
     <EditorialSection title="Children">
       <p>
         PartsPeddle is not intended for children under 18. We do not knowingly collect personal
-        information from children. If you believe a child has provided us with personal data,
-        please contact us so we can delete it.
+        information from children. If you believe a child has provided us with personal data, please
+        contact us so we can delete it.
       </p>
     </EditorialSection>
 
@@ -126,52 +120,39 @@ const sectionNodes = (
 
 export default function PrivacyPage() {
   return (
-    <>
-      <Content>
-        <Breadcrumb
-          items={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]}
-          className="py-6"
-        />
-        <InformationPageHeader
-          eyebrow="Legal"
-          title="Privacy Policy"
-          description="Last updated: July 2026"
-        />
-      </Content>
-
-      <Section spacing="lg" className="bg-surface-secondary">
-        <Content>
+    <DocumentationLayout
+      eyebrow="Legal"
+      title="Privacy Policy"
+      description="Last updated: July 2026"
+      breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]}
+      main={
+        <>
           <InfoCallout className="mb-8" variant="success" title="Your privacy matters">
             PartsPeddle is committed to protecting your personal information and being transparent
             about how we use it.
           </InfoCallout>
-
-          <InformationLayout
-            main={<article>{sectionNodes}</article>}
-            sidebar={
-              <StickySidebar>
-                <TableOfContents>{sectionNodes}</TableOfContents>
-                <SupportCard
-                  icon={<HelpCircle className="h-6 w-6" />}
-                  title="Privacy questions?"
-                  description="Contact our privacy team for data requests or policy questions."
-                  cta={{ label: 'Contact support', href: '/contact' }}
-                />
-                <RelatedLinksCard
-                  title="Related pages"
-                  links={[
-                    { label: 'Terms of Service', href: '/terms' },
-                    { label: 'Trust & Verification', href: '/trust-verification' },
-                    { label: 'Salvage Network', href: '/salvage-network' },
-                  ]}
-                />
-              </StickySidebar>
-            }
+          {sectionNodes}
+        </>
+      }
+      sidebar={
+        <>
+          <TableOfContents>{sectionNodes}</TableOfContents>
+          <SupportCard
+            icon={<HelpCircle className="h-6 w-6" />}
+            title="Privacy questions?"
+            description="Contact our privacy team for data requests or policy questions."
+            cta={{ label: 'Contact support', href: '/contact' }}
           />
-        </Content>
-      </Section>
-
-      <EditorialCTA />
-    </>
+          <RelatedLinksCard
+            title="Related pages"
+            links={[
+              { label: 'Terms of Service', href: '/terms' },
+              { label: 'Trust & Verification', href: '/trust-verification' },
+              { label: 'Salvage Network', href: '/salvage-network' },
+            ]}
+          />
+        </>
+      }
+    />
   );
 }

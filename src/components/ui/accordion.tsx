@@ -5,7 +5,7 @@ import { Accordion as AccordionPrimitive } from '@base-ui/react/accordion';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface AccordionItem {
+export interface AccordionItem {
   id: string;
   title: React.ReactNode;
   content: React.ReactNode;

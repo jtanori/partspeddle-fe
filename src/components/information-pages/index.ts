@@ -12,3 +12,4 @@ export { SupportCard } from './SupportCard';
 export { TableOfContents } from './TableOfContents';
 export { TrustFeatureCard } from './TrustFeatureCard';
 export { VerificationProcessTimeline } from './VerificationProcessTimeline';
+export * from './archetypes';

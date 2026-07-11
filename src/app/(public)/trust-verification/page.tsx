@@ -1,14 +1,9 @@
 import { publicInfoMetadata } from '@/components/layout/PublicInfoPage';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Content } from '@/components/layout/design-system/Content';
-import { Section } from '@/components/layout/design-system/Section';
-import { Accordion } from '@/components/ui/accordion';
 import {
-  InformationPageHeader,
+  FeatureExplanationLayout,
   TrustFeatureCard,
   VerificationProcessTimeline,
   NetworkStatisticCard,
-  EditorialCTA,
 } from '@/components/information-pages';
 import {
   UserCheck,
@@ -111,61 +106,40 @@ const faqItems = [
 
 export default function TrustVerificationPage() {
   return (
-    <>
-      <Content>
-        <Breadcrumb
-          items={[{ label: 'Home', href: '/' }, { label: 'Trust & Verification' }]}
-          className="py-6"
+    <FeatureExplanationLayout
+      eyebrow="Trust"
+      title="Trust & Verification"
+      description="How we keep the marketplace safe for buyers and sellers."
+      breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Trust & Verification' }]}
+      features={trustFeatures.map((feature) => (
+        <TrustFeatureCard
+          key={feature.title}
+          icon={feature.icon}
+          title={feature.title}
+          description={feature.description}
         />
-        <InformationPageHeader
-          eyebrow="Trust"
-          title="Trust & Verification"
-          description="How we keep the marketplace safe for buyers and sellers."
+      ))}
+      timeline={
+        <VerificationProcessTimeline
+          heading="The verification process"
+          description="Every seller in our network goes through the same transparent review."
+          steps={verificationSteps}
         />
-      </Content>
-
-      <Section spacing="lg" className="bg-surface-secondary">
-        <Content>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {trustFeatures.map((feature) => (
-              <TrustFeatureCard
-                key={feature.title}
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-              />
-            ))}
+      }
+      metrics={
+        <div>
+          <h2 className="font-display text-section font-bold uppercase tracking-tight text-foreground-primary">
+            Trust by the numbers
+          </h2>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <NetworkStatisticCard metric="350+" description="Verified sellers" />
+            <NetworkStatisticCard metric="98%" description="Buyer satisfaction" />
+            <NetworkStatisticCard metric="24/7" description="Fraud monitoring" />
+            <NetworkStatisticCard metric="<4hrs" description="Avg. response time" />
           </div>
-
-          <VerificationProcessTimeline
-            className="mt-10"
-            heading="The verification process"
-            description="Every seller in our network goes through the same transparent review."
-            steps={verificationSteps}
-          />
-
-          <div className="mt-10">
-            <h2 className="font-display text-section font-bold uppercase tracking-tight text-foreground-primary">
-              Trust by the numbers
-            </h2>
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <NetworkStatisticCard metric="350+" description="Verified sellers" />
-              <NetworkStatisticCard metric="98%" description="Buyer satisfaction" />
-              <NetworkStatisticCard metric="24/7" description="Fraud monitoring" />
-              <NetworkStatisticCard metric="&lt;4hrs" description="Avg. response time" />
-            </div>
-          </div>
-
-          <div className="mt-12">
-            <h2 className="mb-6 font-display text-section font-bold uppercase tracking-tight text-foreground-primary">
-              Frequently asked questions
-            </h2>
-            <Accordion items={faqItems} />
-          </div>
-        </Content>
-      </Section>
-
-      <EditorialCTA />
-    </>
+        </div>
+      }
+      faqItems={faqItems}
+    />
   );
 }

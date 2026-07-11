@@ -1,17 +1,11 @@
 import { publicInfoMetadata } from '@/components/layout/PublicInfoPage';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Content } from '@/components/layout/design-system/Content';
-import { Section } from '@/components/layout/design-system/Section';
 import {
-  InformationPageHeader,
-  InformationLayout,
-  StickySidebar,
+  DocumentationLayout,
   EditorialSection,
   TableOfContents,
   SupportCard,
   RelatedLinksCard,
   InfoCallout,
-  EditorialCTA,
 } from '@/components/information-pages';
 import { HelpCircle } from 'lucide-react';
 
@@ -159,52 +153,39 @@ const sectionNodes = (
 
 export default function TermsPage() {
   return (
-    <>
-      <Content>
-        <Breadcrumb
-          items={[{ label: 'Home', href: '/' }, { label: 'Terms of Service' }]}
-          className="py-6"
-        />
-        <InformationPageHeader
-          eyebrow="Legal"
-          title="Terms of Service"
-          description="Last updated: July 2026"
-        />
-      </Content>
-
-      <Section spacing="lg" className="bg-surface-secondary">
-        <Content>
+    <DocumentationLayout
+      eyebrow="Legal"
+      title="Terms of Service"
+      description="Last updated: July 2026"
+      breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Terms of Service' }]}
+      main={
+        <>
           <InfoCallout className="mb-8" title="Legal notice">
             This page describes the rules that apply to your use of PartsPeddle. Please read it
             carefully. If you do not agree, you may not use the platform.
           </InfoCallout>
-
-          <InformationLayout
-            main={<article>{sectionNodes}</article>}
-            sidebar={
-              <StickySidebar>
-                <TableOfContents>{sectionNodes}</TableOfContents>
-                <SupportCard
-                  icon={<HelpCircle className="h-6 w-6" />}
-                  title="Questions about these terms?"
-                  description="Our support team can help clarify policies and answer account questions."
-                  cta={{ label: 'Contact support', href: '/contact' }}
-                />
-                <RelatedLinksCard
-                  title="Related pages"
-                  links={[
-                    { label: 'Privacy Policy', href: '/privacy' },
-                    { label: 'Trust & Verification', href: '/trust-verification' },
-                    { label: 'Salvage Network', href: '/salvage-network' },
-                  ]}
-                />
-              </StickySidebar>
-            }
+          {sectionNodes}
+        </>
+      }
+      sidebar={
+        <>
+          <TableOfContents>{sectionNodes}</TableOfContents>
+          <SupportCard
+            icon={<HelpCircle className="h-6 w-6" />}
+            title="Questions about these terms?"
+            description="Our support team can help clarify policies and answer account questions."
+            cta={{ label: 'Contact support', href: '/contact' }}
           />
-        </Content>
-      </Section>
-
-      <EditorialCTA />
-    </>
+          <RelatedLinksCard
+            title="Related pages"
+            links={[
+              { label: 'Privacy Policy', href: '/privacy' },
+              { label: 'Trust & Verification', href: '/trust-verification' },
+              { label: 'Salvage Network', href: '/salvage-network' },
+            ]}
+          />
+        </>
+      }
+    />
   );
 }
