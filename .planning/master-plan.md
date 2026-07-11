@@ -578,7 +578,7 @@ Status markers:
 **Why:** Public and authenticated APIs lack consistent validation, rate limits, and safe error surfaces (P3.4 partially addresses search).  
 **Files:** `src/app/api/**`, shared `src/lib/api/` helpers (new), `next.config.ts`.  
 **Status:** ✅ Completed in PR #78 (`feat/p5-3-to-p5-8-security-hardening` → `develop`) — Zod validation, safe error envelopes, rate limiting, payload-size checks, and graceful search degradation are implemented and tested.  
-**Action:
+\*\*Action:
 
 - Input validation with Zod (or equivalent) on every Route Handler body/query; standard error envelope (`4xx` client / `5xx` infra).
 - Method allowlists per route; payload size limits (uploads, search query, Gemini images).
@@ -1078,18 +1078,18 @@ Final cross-cutting milestones to close the remediation effort.
 
 ## Current Status Summary
 
-| Phase      | Completed                            | Pending                                                                                                                     |
-| ---------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| Pre-P0     | Pre-P0.1                             | —                                                                                                                           |
-| P0         | P0.1–P0.6                            | —                                                                                                                           |
-| P1         | P1.1–P1.10                           | —                                                                                                                           |
-| P2         | P2.1–P2.10                           | —                                                                                                                           |
-| P3         | P3.1–P3.7                            | —                                                                                                                           |
-| P4         | P4.1–P4.6                            | —                                                                                                                           |
-| P5         | P5.1–P5.8                            | — (P5.10 moved to P7)                                                                                                       |
-| P6         | P6.1–P6.7 (code/docs)                | Remote application + JWT rotation (operator execution)                                                                      |
-| P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases, P5.10 Storybook |
-| Completion | Final verification                   | CI/CD consolidation, Final `develop → main` merge                                                                           |
+| Phase      | Completed                               | Pending                                                                                                                                      |
+| ---------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pre-P0     | Pre-P0.1                                | —                                                                                                                                            |
+| P0         | P0.1–P0.6                               | —                                                                                                                                            |
+| P1         | P1.1–P1.10                              | —                                                                                                                                            |
+| P2         | P2.1–P2.10                              | —                                                                                                                                            |
+| P3         | P3.1–P3.7                               | —                                                                                                                                            |
+| P4         | P4.1–P4.6                               | —                                                                                                                                            |
+| P5         | P5.1–P5.8                               | — (P5.10 moved to P7)                                                                                                                        |
+| P6         | P6.1–P6.7 staging applied & JWT rotated | Production application + JWT rotation (operator execution)                                                                                   |
+| P7         | P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8    | P7.1 UX polish, P7.2 link audit, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases, P5.10 Storybook |
+| Completion | Final verification                      | CI/CD consolidation, Final `develop → main` merge                                                                                            |
 
 **Total completed:** ~58 items  
 **Total pending:** ~12 items (P5.10, P7.1, P7.2, P7.4–P7.7 remaining phases, CI/CD consolidation, Final `develop → main` merge)
