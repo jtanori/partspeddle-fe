@@ -1,39 +1,42 @@
-# Session Checkpoint — P6 Staging Complete, Production + Final Merge Remaining
+# Session Checkpoint — D0 Delivery Infrastructure Stabilization
 
 **Date:** 2026-07-11
 **Branch:** `develop` (up-to-date with `origin/develop`)
-**Status:** P7 fully merged. P6 code/docs in `develop`; staging remediation (drift check, backup, dry-run, migration apply, Edge Function redeploy, legacy-trigger verification, smoke tests, JWT rotation) completed. Production application + final `develop → main` merge remain.
+**Status:** Previous master plan archived. D0 plan created and ready for review. Execution paused until user approval and requested artifacts are provided.
 
 ## Completed Work
 
-- Merged PR #82 (P7.1/P7.2 verification) into `develop`.
-- Merged PR #83 (P7.4, P7.5, P7.6, P7.7 Phase 4/9, P5.10) into `develop`.
-- Merged PR #84 (P7.7 Phase 5 Workspace Layout + Phase 11 Live Search Command Palette) into `develop`.
-- Updated `.planning/master-plan.md` to mark P5, P7, and P6 staging complete.
-- Deleted stale P6 source branches (`feat/p6-7-dry-run-scripts`, `fix/p6-staging-migration-follow-up`).
+- Merged PR #85 (`ci: consolidate CI/CD`) into `develop`.
+- Merged PR #86 (planning docs update) into `develop`.
+- Verified `develop` CI run `29148261143` is fully green:
+  - Test & Lint ✅
+  - Security Tests ✅
+  - Storybook Build ✅
+  - Deploy Staging to Fly.io ✅
+  - Deploy Supabase to Staging ✅
+  - Staging Smoke Tests ✅
+- Created `ci-test/pipeline-hardening` branch and modified `.github/workflows/ci.yml` to trigger staging deploys from `ci-test/**` branches.
+- Verified CI run `29150731664` on `ci-test/pipeline-hardening` is fully green, confirming the staging deploy path works from a non-`develop` branch.
+- Archived `.planning/master-plan.md` to `.planning/archive/master-plan-2026-07-11.md`.
+- Created `.planning/d0-delivery-infrastructure-stabilization.md` with workstreams A–H, deliverables, acceptance criteria, and data requirements.
 
 ## Active Work
 
-Prepare for final production cutover and `develop → main` merge.
+Review the D0 plan and gather required artifacts before execution.
 
-## Remaining Final Tasks
+## Next Steps
 
-1. **P6 production application**
-   - Back up production schema/data.
-   - Run `pnpm db:dry-run:production`.
-   - Apply P6 migrations to production with `supabase db push --include-all --yes`.
-   - Redeploy Edge Functions to production.
-   - Verify legacy triggers are gone.
-   - Rotate production service-role JWT.
-   - Update Fly.io (`vintrack-prod`) and GitHub production environment secrets.
-   - Run production health check and smoke tests.
+1. User reviews `.planning/d0-delivery-infrastructure-stabilization.md`.
+2. User provides (or authorizes me to gather):
+   - Confirmation that current `Dockerfile` is final.
+   - Local command outputs (`node -v`, `npm -v`, `git --version`, `time npx lint-staged --debug`, `time pnpm lint`, `time pnpm typecheck`).
+   - Fly.io configuration outputs (`flyctl auth whoami`, `flyctl apps list`, `flyctl status`, `flyctl secrets list` for staging and production, values redacted).
+   - Optional: `docker build .` output.
+3. After review/approval, begin Workstream A (Repository Audit).
 
-2. **CI/CD consolidation** ✅
-   - ✅ Verify `develop` deploys cleanly to staging via GitHub Actions (run `29148261143`).
-   - ⏳ Verify `main` deploys cleanly to production (after final merge).
-   - ✅ Confirm `docs/DEPLOYMENT_RUNBOOK.md` reflects the canonical CI path.
+## Blocked
 
-3. **Final `develop → main` merge**
-   - Open merge PR from `develop` to `main`.
-   - Run full CI suite and staging smoke tests.
-   - Merge and tag the release.
+- P6 production migration and JWT rotation.
+- Final `develop → main` merge.
+
+Both are blocked until D0 acceptance criteria are met.
