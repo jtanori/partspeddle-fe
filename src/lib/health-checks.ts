@@ -1,11 +1,11 @@
-import { validateRuntime } from "../../config/environment/validate";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { validateRuntime } from '../../config/environment/validate';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import {
   algoliaClient,
   SEARCH_INDEX_NAME,
-} from "@/backend/modules/search/infrastructure/algolia-client";
+} from '@/backend/modules/search/infrastructure/algolia-client';
 
-export type DependencyStatus = "ok" | "error";
+export type DependencyStatus = 'ok' | 'error';
 
 export interface DependencyCheckResult {
   status: DependencyStatus;
@@ -14,7 +14,7 @@ export interface DependencyCheckResult {
 }
 
 export interface HealthCheckReport {
-  status: "ok" | "degraded";
+  status: 'ok' | 'degraded';
   version: string;
   environment: string;
   checks: {
@@ -30,11 +30,11 @@ export interface HealthCheckReport {
 }
 
 function getAppVersion(): string {
-  return process.env.NEXT_PUBLIC_APP_VERSION || process.env.npm_package_version || "0.0.0";
+  return process.env.NEXT_PUBLIC_APP_VERSION || process.env.npm_package_version || '0.0.0';
 }
 
 function getEnvironmentName(): string {
-  return process.env.NEXT_PUBLIC_ENVIRONMENT || process.env.NODE_ENV || "unknown";
+  return process.env.NEXT_PUBLIC_ENVIRONMENT || process.env.NODE_ENV || 'unknown';
 }
 
 async function checkEnvironment(): Promise<DependencyCheckResult> {
@@ -44,20 +44,20 @@ async function checkEnvironment(): Promise<DependencyCheckResult> {
     const result = validateRuntime({ includeOptional: true, strict: true });
     if (result.success) {
       return {
-        status: "ok",
+        status: 'ok',
         latencyMs: Math.round(performance.now() - startedAt),
       };
     }
     return {
-      status: "error",
+      status: 'error',
       latencyMs: Math.round(performance.now() - startedAt),
-      message: result.errors.map((e) => `${e.name}: ${e.message}`).join("; "),
+      message: result.errors.map((e) => `${e.name}: ${e.message}`).join('; '),
     };
   } catch (error) {
     return {
-      status: "error",
+      status: 'error',
       latencyMs: Math.round(performance.now() - startedAt),
-      message: error instanceof Error ? error.message : "Environment validation failed",
+      message: error instanceof Error ? error.message : 'Environment validation failed',
     };
   }
 }
@@ -67,26 +67,26 @@ async function checkSupabase(): Promise<DependencyCheckResult> {
 
   try {
     const { error } = await supabaseAdmin
-      .from("categories")
-      .select("id", { head: true, count: "exact" });
+      .from('categories')
+      .select('id', { head: true, count: 'exact' });
 
     if (error) {
       return {
-        status: "error",
+        status: 'error',
         latencyMs: Math.round(performance.now() - startedAt),
         message: error.message,
       };
     }
 
     return {
-      status: "ok",
+      status: 'ok',
       latencyMs: Math.round(performance.now() - startedAt),
     };
   } catch (error) {
     return {
-      status: "error",
+      status: 'error',
       latencyMs: Math.round(performance.now() - startedAt),
-      message: error instanceof Error ? error.message : "Supabase check failed",
+      message: error instanceof Error ? error.message : 'Supabase check failed',
     };
   }
 }
@@ -98,14 +98,29 @@ async function checkAlgolia(): Promise<DependencyCheckResult> {
     await algoliaClient.getSettings({ indexName: SEARCH_INDEX_NAME });
 
     return {
-      status: "ok",
+      status: 'ok',
       latencyMs: Math.round(performance.now() - startedAt),
     };
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Algolia check failed';
+
+    // A brand-new Algolia app has no indices until the first object is
+    // indexed. The search service is reachable, so treat a missing index as
+    // healthy rather than block the entire deployment. The index will be
+    // created automatically when listings are published.
+    if (message.toLowerCase().includes('index does not exist')) {
+      return {
+        status: 'ok',
+        latencyMs: Math.round(performance.now() - startedAt),
+        message:
+          'Index does not exist yet; search will return empty results until listings are indexed',
+      };
+    }
+
     return {
-      status: "error",
+      status: 'error',
       latencyMs: Math.round(performance.now() - startedAt),
-      message: error instanceof Error ? error.message : "Algolia check failed",
+      message,
     };
   }
 }
@@ -118,11 +133,12 @@ export async function runHealthChecks(): Promise<HealthCheckReport> {
   ]);
 
   const isHealthy =
-    environment.status === "ok" && supabase.status === "ok" && algolia.status === "ok";
+    environment.status === 'ok' && supabase.status === 'ok' && algolia.status === 'ok';
 
-  const build: HealthCheckReport["build"] = {};
+  const build: HealthCheckReport['build'] = {};
   if (process.env.NEXT_PUBLIC_BUILD_SHA) build.sha = process.env.NEXT_PUBLIC_BUILD_SHA;
-  if (process.env.NEXT_PUBLIC_BUILD_TIMESTAMP) build.timestamp = process.env.NEXT_PUBLIC_BUILD_TIMESTAMP;
+  if (process.env.NEXT_PUBLIC_BUILD_TIMESTAMP)
+    build.timestamp = process.env.NEXT_PUBLIC_BUILD_TIMESTAMP;
   if (process.env.NEXT_PUBLIC_BUILD_IMAGE) build.image = process.env.NEXT_PUBLIC_BUILD_IMAGE;
 
   // prettier-ignore
