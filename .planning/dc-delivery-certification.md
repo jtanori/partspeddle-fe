@@ -18,6 +18,21 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 ## Certification Gates
 
+### DC-0 — Delivery Baseline / Toolchain Certification
+
+**Acceptance Criteria:**
+
+- [ ] All toolchain versions are recorded and pinned where possible (Node, pnpm, Docker, Flyctl, Supabase CLI, GitHub CLI, Git).
+- [ ] A clean clone can install dependencies and run key scripts without environment-specific workarounds.
+- [ ] Baseline is stored in `docs/operations/delivery-baseline.md`.
+
+**Evidence Required:**
+
+- Output of `.planning/temp/benchmark-delivery.sh` (toolchain section).
+- `package.json#engines` and `packageManager` field review.
+
+---
+
 ### DC-1 — Local development workflow is deterministic
 
 **Acceptance Criteria:**
@@ -29,6 +44,8 @@ This initiative treats delivery readiness as a formal certification effort, simi
 **Evidence Required:**
 
 - Output of `docker build .`.
+
+**Status:** Functional behavior verified; pending performance validation on a cold dependency install.
 
 ---
 
@@ -43,7 +60,9 @@ This initiative treats delivery readiness as a formal certification effort, simi
 **Evidence Required:**
 
 - Output of `time git commit --allow-empty -m "perf: husky benchmark"` (or equivalent small staged change).
-- Breakdown of where time is spent.
+- Independent timings for `npx lint-staged`, `npx eslint`, `npx prettier`, and `git add`.
+
+**Working Hypothesis:** ESLint and Prettier stages complete quickly; latency appears to live in lint-staged startup / child-process orchestration. Final root cause pending benchmark script results.
 
 ---
 
@@ -114,21 +133,26 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 ---
 
-### DC-7 — Secrets and environment configuration are governed and validated
+### DC-7 — Environment Governance System (EGS)
 
 **Acceptance Criteria:**
 
 - [ ] A single source of truth documents every environment variable.
 - [ ] Each variable is classified: required/optional, secret/public, environment scope.
-- [ ] A validation script fails fast if required variables are missing.
-- [ ] Secret storage policy is documented and followed.
+- [ ] A TypeScript schema defines all variables.
+- [ ] A validator fails fast at startup and in CI if required variables are missing or malformed.
+- [ ] Secret storage policy is documented and followed (repo vs. environment vs. Fly secrets).
+- [ ] Generated docs stay in sync with the schema.
 
 **Evidence Required:**
 
-- `config/environment/required-env.md` and per-environment docs.
 - `config/environment/schema.ts` and `validate.ts`.
+- `config/environment/classify.ts`.
+- `config/environment/README.md`.
+- Generated `config/environment/generated/{required,public,secrets}.md`.
 - `docs/operations/secret-governance.md`.
 - Fly.io secret lists for `vintrack-stage` and `vintrack-prod` (values redacted).
+- CI integration of `pnpm env:validate`.
 
 ---
 
@@ -150,50 +174,57 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 ## Execution Phases
 
+Revised order: **DC-4 → DC-7 → DC-6 → DC-8 → DC-5**, with **DC-0** captured in parallel and **DC-2** addressed only after benchmark evidence identifies the true bottleneck.
+
+### Phase 0 — Toolchain Baseline (DC-0)
+
+Record pinned toolchain versions and clean-clone behavior. No production changes.
+
 ### Phase 1 — Baseline Evidence (current)
 
-No code changes. Gather evidence for DC-1, DC-2, DC-3, DC-4.
+No code changes. Gather evidence for DC-1, DC-2, DC-3, DC-4 using `.planning/temp/benchmark-delivery.sh`.
 
-### Phase 2 — Environment & Secret Governance
+### Phase 2 — Environment Governance System (DC-7)
 
-Implement DC-7: schema, validator, docs, secret policy.
+Implement EGS: schema, validator, classification, generated docs, secret policy, CI integration.
 
-### Phase 3 — Deployment Verification
+### Phase 3 — Deployment Verification (DC-6)
 
-Implement DC-6: health checks, migration verification, rollback runbook.
+Add health checks, migration verification, rollback runbook. Depends on DC-7 because "healthy" must be defined by the environment schema.
 
-### Phase 4 — Observability
+### Phase 4 — Observability (DC-8)
 
-Implement DC-8: deployment records and reporting.
+Add machine-readable deployment records and reporting. Depends on DC-6/DC-7.
 
-### Phase 5 — Production Certification
+### Phase 5 — Production Certification (DC-5)
 
-Implement DC-5: certify production deployment path.
+Certify production deployment path. Blocked until DC-4 through DC-8 are complete and operator explicitly approves.
 
-### Phase 6 — Husky Optimization (if measurements justify it)
+### Phase 6 — Husky Optimization (DC-2)
 
-Implement DC-2: only after evidence shows where time is spent.
+Address only after benchmark evidence shows where the latency truly lives.
 
 ---
 
 ## Evidence Log
 
-| Gate | Evidence                                         | Status      | Notes                                                                                                                                                                                                                                                                   |
-| ---- | ------------------------------------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| DC-1 | `docker build .` output                          | In progress | Build timed out after 600 s during `pnpm install --frozen-lockfile` (step #15). No `.env` references in Dockerfile. Build was progressing normally but slowly due to cold package downloads. Re-run with longer timeout or warm cache needed for final pass.            |
-| DC-2 | Husky timing output                              | Measured    | `time git commit` for one TS file: **real 1 m 17.3 s, user 31.9 s, sys 13.5 s**. ESLint/Prettier completed quickly; total time dominated by lint-staged startup and cold caches. A transient hang on first attempt resolved on retry. Target <5 s is not currently met. |
-| DC-3 | Dockerfile + .dockerignore review + docker build | Measured    | Dockerfile contains no `.env` references and is environment-agnostic. `.dockerignore` excludes `.env*`. Build-in-progress confirms image can build without local env files.                                                                                             |
-| DC-4 | Latest `develop` GitHub Actions run              | Passed      | Run `29151750670` conclusion `success`. Deploy Staging to Fly.io ✅, Deploy Supabase to Staging ✅, Staging Smoke Tests ✅. One non-fatal Fly proxy warning noted for later review.                                                                                     |
-| DC-5 | Latest `main` GitHub Actions run                 | Not started | Blocked until DC-4 is certified and operator approves production touch.                                                                                                                                                                                                 |
-| DC-6 | CI verification jobs + recovery runbook          | Not started |                                                                                                                                                                                                                                                                         |
-| DC-7 | Environment schema + validator + secret policy   | Not started |                                                                                                                                                                                                                                                                         |
-| DC-8 | Deployment records + observability docs          | Not started |                                                                                                                                                                                                                                                                         |
+| Gate | Evidence                                         | Status        | Notes                                                                                                                                                                               |
+| ---- | ------------------------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| DC-0 | Toolchain versions + clean-clone behavior        | In progress   | Benchmark script `.planning/temp/benchmark-delivery.sh` prepared; awaiting operator run results.                                                                                    |
+| DC-1 | `docker build .` output                          | Functional ✅ | Build timed out after 600 s during cold `pnpm install`. No `.env` references; image is environment-agnostic. Pending **performance validation** on warm cache.                      |
+| DC-2 | Husky timing output                              | Measured      | `time git commit` for one TS file: **real 1 m 17.3 s**. ESLint/Prettier stages fast; latency likely in lint-staged orchestration. Final root cause pending benchmark script.        |
+| DC-3 | Dockerfile + .dockerignore review + docker build | Measured      | Dockerfile contains no `.env` references and is environment-agnostic. `.dockerignore` excludes `.env*`.                                                                             |
+| DC-4 | Latest `develop` GitHub Actions run              | Passed        | Run `29151750670` conclusion `success`. Deploy Staging to Fly.io ✅, Deploy Supabase to Staging ✅, Staging Smoke Tests ✅. One non-fatal Fly proxy warning noted for later review. |
+| DC-5 | Latest `main` GitHub Actions run                 | Not started   | Blocked until DC-4 through DC-8 are complete and operator approves production touch.                                                                                                |
+| DC-6 | CI verification jobs + recovery runbook          | Not started   | Depends on DC-7.                                                                                                                                                                    |     |
+| DC-7 | Environment schema + validator + secret policy   | Not started   | Reframed as **Environment Governance System (EGS)**.                                                                                                                                |     |
+| DC-8 | Deployment records + observability docs          | Not started   | Depends on DC-6/DC-7.                                                                                                                                                               |     |
 
 ---
 
 ## Relationship to Other Work
 
-- **P6 production migration** remains blocked until DC-4 and DC-5 are certified.
+- **P6 production migration** remains blocked until DC-4 through DC-8 and DC-5 are certified.
 - **Final `develop → main` merge** remains blocked until DC-5 is certified.
 - **A0 architecture convergence** remains deferred until DC-8 is certified.
 
@@ -201,5 +232,6 @@ Implement DC-2: only after evidence shows where time is spent.
 
 ## Notes
 
-- No production changes until DC-4 is certified and operator explicitly approves.
+- No production changes until DC-4 through DC-8 are certified and operator explicitly approves.
 - The `ci-test/pipeline-hardening` branch can be used to validate CI changes without polluting `develop`.
+- **DC-7 is the next implementation milestone** (Environment Governance System).

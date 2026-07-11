@@ -17,19 +17,31 @@
 
 ## Active Work
 
-Phase 1 evidence gathering for DC-1, DC-2, DC-3, DC-4. Evidence has been recorded in `.planning/dc-delivery-certification.md` Evidence Log.
+- Phase 1 evidence gathering is complete enough to proceed.
+- `.planning/temp/benchmark-delivery.sh` prepared for operator-run deep benchmarking (DC-0, DC-1, DC-2).
+- DC plan updated with **DC-0 (Toolchain Baseline)** and **DC-7 reframed as Environment Governance System (EGS)**.
+- Revised execution order: **DC-4 → DC-7 → DC-6 → DC-8 → DC-5**.
 
 ## Evidence Summary
 
-- **DC-1 / DC-3 (Docker):** `docker build . --tag partspeddle-fe:dc-evidence` timed out at 600 s during cold `pnpm install`. Dockerfile is confirmed environment-agnostic (no `.env` references); `.dockerignore` excludes env files. Re-run with longer timeout or warm cache required.
-- **DC-2 (Husky):** One-file TS commit took **77.3 s** (cold). ESLint/Prettier stages completed quickly; lint-staged startup dominates. A one-time hang on first attempt did not reproduce.
+- **DC-0 (Toolchain):** Benchmark script ready; awaiting operator results.
+- **DC-1 / DC-3 (Docker):** Functional behavior verified; timed out at 600 s on cold `pnpm install`. No `.env` dependency.
+- **DC-2 (Husky):** One-file TS commit took **77.3 s** (cold). ESLint/Prettier fast; lint-staged orchestration suspected. Final root cause pending benchmark script.
 - **DC-4 (Staging deploy):** GitHub Actions run `29151750670` passed all staging deploy and smoke-test jobs.
 
 ## Next Steps
 
-1. Re-run Docker build to completion (operator can extend timeout or use warm cache).
-2. Decide which certification gate to implement first. Recommended order: **DC-7** (environment/secret governance) → **DC-6** (deployment verification) → **DC-8** (observability) → **DC-2** (Husky optimization if still warranted) → **DC-5** (production certification).
-3. Await user direction before writing any code.
+1. Operator runs `.planning/temp/benchmark-delivery.sh` and shares the log.
+2. Implement **DC-7 — Environment Governance System (EGS)** on `feat/d0-workstream-a-audit`:
+   - `config/environment/schema.ts`
+   - `config/environment/validate.ts`
+   - `config/environment/classify.ts`
+   - `config/environment/README.md`
+   - generated `config/environment/generated/{required,public,secrets}.md`
+   - `docs/operations/secret-governance.md`
+   - `package.json` scripts `env:validate` and `env:report`
+   - CI integration of `pnpm env:validate`
+3. After EGS is complete, move to **DC-6 (Deployment Verification)**.
 
 ## Blocked
 
