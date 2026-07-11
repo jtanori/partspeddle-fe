@@ -96,8 +96,7 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
   describe('CI workflow', () => {
     it('uses environment-scoped deployments', () => {
       const source = readSource('.github/workflows/ci.yml');
-      expect(source).toContain('environment: staging');
-      expect(source).toContain('environment: production');
+      expect(source).toMatch(/environment:\s*\$\{\{\s*needs\.configure\.outputs\.environment\s*\}\}/);
       expect(source).toContain('FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}');
     });
   });

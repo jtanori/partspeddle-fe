@@ -28,8 +28,8 @@ describe('P4.1 Supabase CI/CD', () => {
 
     it('links staging and production projects', () => {
       expect(workflow).toContain('supabase link --project-ref');
-      expect(workflow).toContain('secrets.STAGING_SUPABASE_PROJECT_ID');
-      expect(workflow).toContain('secrets.PRODUCTION_SUPABASE_PROJECT_ID');
+      expect(workflow).toContain('STAGING_SUPABASE_PROJECT_ID');
+      expect(workflow).toContain('PRODUCTION_SUPABASE_PROJECT_ID');
     });
 
     it('deploys database migrations', () => {
@@ -41,9 +41,8 @@ describe('P4.1 Supabase CI/CD', () => {
       expect(workflow).toContain('--use-api');
     });
 
-    it('gates Supabase deploy on the test job', () => {
-      expect(workflow).toMatch(/deploy-supabase-staging:[\s\S]*?needs:\s*test/m);
-      expect(workflow).toMatch(/deploy-supabase-production:[\s\S]*?needs:\s*test/m);
+    it('gates Supabase deploy on the test and configure jobs', () => {
+      expect(workflow).toMatch(/deploy-supabase:[\s\S]*?needs:\s*\[test,\s*configure\]/m);
     });
 
     it('supports manual dry-run dispatch', () => {
