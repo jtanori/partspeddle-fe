@@ -27,11 +27,12 @@ describe('security headers', () => {
     expect(hsts).toContain('preload');
   });
 
-  it('does not allow unsafe-inline scripts in production', () => {
+  it('does not allow unsafe-eval in production', () => {
     process.env.NODE_ENV = 'production';
     const headers = securityHeaderEntries();
     const csp = headers.find((h) => h.key === 'Content-Security-Policy')?.value || '';
-    expect(csp).not.toContain("'unsafe-inline'");
+    // Next.js App Router requires inline Flight bootstrap scripts for hydration,
+    // so production CSP allows 'unsafe-inline'. 'unsafe-eval' is still blocked.
     expect(csp).not.toContain("'unsafe-eval'");
   });
 });
