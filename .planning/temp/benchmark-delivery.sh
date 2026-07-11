@@ -153,7 +153,15 @@ log_step ".dockerignore env exclusions"
 grep -n "\.env" .dockerignore || echo "No .env exclusions found in .dockerignore (check manually)"
 
 log_step "Docker build with plain progress (timeout 30 min)"
-run_timed "docker-build" timeout 1800 docker build . --tag "partspeddle-fe:benchmark-$(date +%Y%m%d-%H%M%S)" --progress=plain
+TIMEOUT_CMD=""
+if command -v timeout >/dev/null 2>&1; then
+  TIMEOUT_CMD="timeout 1800"
+elif command -v gtimeout >/dev/null 2>&1; then
+  TIMEOUT_CMD="gtimeout 1800"
+else
+  echo "WARNING: 'timeout' command not found. Running docker build without timeout."
+fi
+run_timed "docker-build" $TIMEOUT_CMD docker build . --tag "partspeddle-fe:benchmark-$(date +%Y%m%d-%H%M%S)" --progress=plain
 
 # ---------------------------------------------------------------------------
 # Deployment platform status

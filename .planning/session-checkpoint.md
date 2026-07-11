@@ -55,12 +55,12 @@
 
 ## Evidence Summary
 
-- **DC-0 (Toolchain):** Benchmark script ready; awaiting operator results.
-- **DC-1 / DC-3 (Docker):** Functional behavior verified; timed out at 600 s on cold `pnpm install`. No `.env` dependency.
-- **DC-2 (Husky):** One-file TS commit took **77.3 s** (cold). ESLint/Prettier fast; lint-staged orchestration suspected. Final root cause pending benchmark script.
-- **DC-4 (Staging deploy):** GitHub Actions run `29151750670` passed all staging deploy and smoke-test jobs.
+- **DC-0 (Toolchain):** Benchmark run complete. Toolchain captured: Node v24.14.1, pnpm 9.15.0, Docker 25.0.5, Flyctl v0.4.63, Supabase CLI 2.109.1, gh 2.88.1. Results archived in `artifacts/delivery/benchmark-2026-07-11/summary.json`.
+- **DC-1 / DC-3 (Docker):** Functional behavior verified; no `.env` dependency. Docker build benchmark could not run on macOS due to missing `timeout` command; script updated.
+- **DC-2 (Husky):** Benchmark: `git commit` with Husky = **47 s**; without Husky = **9 s**. lint-staged alone = **39 s**; ESLint single file = **15 s**; full `src/` ESLint = **68 s**. Root cause is lint-staged startup/git orchestration, not ESLint/Prettier rules.
+- **DC-4 (Staging deploy):** GitHub Actions run `29151750670` passed all staging deploy and smoke-test jobs. Fly staging status: deployed with 1 started machine (passing checks).
 - **DC-6 (Deployment Verification):** Implemented; needs a CI run to confirm health endpoint integration works.
-- **DC-7 (EGS):** Implemented; pending operator typecheck/test verification.
+- **DC-7 (EGS):** Implemented and typecheck/test verified.
 - **DC-7.1 (Drift):** Matrix generated; automated comparison against Fly/GitHub secrets pending.
 
 ## Next Steps
