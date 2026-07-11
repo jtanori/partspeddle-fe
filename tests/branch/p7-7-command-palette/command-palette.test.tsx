@@ -1,7 +1,51 @@
+import * as React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { SearchCommandPalette } from '@/components/search/SearchCommandPalette';
 import { useCommandPalette } from '@/hooks/useCommandPalette';
+
+vi.mock('@/components/search/SearchDropdownController', () => ({
+  SearchDropdownController: ({ query, onResults }: any) => {
+    React.useEffect(() => {
+      if (!query) return;
+      const id = setTimeout(() => {
+        onResults({
+          metadata: { totalHits: 1, query, generatedAt: Date.now() },
+          products: {
+            hits: [{ id: 'p1', type: 'product', label: 'Alternator' }],
+            total: 1,
+          },
+          vehicles: { hits: [], total: 0 },
+          taxonomy: { hits: [], total: 0 },
+          manufacturers: { hits: [], total: 0 },
+        });
+      }, 0);
+      return () => clearTimeout(id);
+    }, [query, onResults]);
+    return null;
+  },
+}));
+
+vi.mock('@/components/search/SearchResultsDropdown', () => ({
+  SearchResultsDropdown: ({ onSelect, onViewAll, query, onClose }: any) => (
+    <div data-testid="results-dropdown">
+      <span data-testid="results-query">{query}</span>
+      <button
+        type="button"
+        data-testid="select-result"
+        onClick={() => onSelect({ id: 'p1', type: 'product', label: 'Alternator' })}
+      >
+        Select
+      </button>
+      <button type="button" data-testid="view-all" onClick={onViewAll}>
+        View all
+      </button>
+      <button type="button" data-testid="results-close" onClick={onClose}>
+        Close
+      </button>
+    </div>
+  ),
+}));
 
 function CommandPaletteWrapper() {
   const { open, setOpen } = useCommandPalette();
@@ -75,5 +119,26 @@ describe('P7.7 Phase 11 — Live Search Command Palette', () => {
     await waitFor(() => {
       expect(input).toHaveValue('alternator');
     });
+  });
+
+  it('calls onSelect when a result is chosen and closes the palette', async () => {
+    const onSelect = vi.fn();
+    const onClose = vi.fn();
+    render(<SearchCommandPalette open onClose={onClose} onSelect={onSelect} />);
+
+    const input = screen.getByPlaceholderText('Search parts, vehicles, categories, sellers...');
+    fireEvent.change(input, { target: { value: 'alternator' } });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('results-dropdown')).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByTestId('select-result'));
+    expect(onSelect).toHaveBeenCalledWith({
+      id: 'p1',
+      type: 'product',
+      label: 'Alternator',
+    });
+    expect(onClose).toHaveBeenCalled();
   });
 });
