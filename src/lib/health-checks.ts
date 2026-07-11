@@ -105,8 +105,9 @@ export async function runHealthChecks(): Promise<HealthCheckReport> {
   const isHealthy =
     environment.status === 'ok' && supabase.status === 'ok' && algolia.status === 'ok';
 
+  // prettier-ignore
   return {
-    status: isHealthy ? 'ok' : 'degraded',
+    status: isHealthy ? "ok" : "degraded",
     checks: { environment, supabase, algolia },
   };
 }
