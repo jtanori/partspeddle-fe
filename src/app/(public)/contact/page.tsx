@@ -1,19 +1,21 @@
 import { publicInfoMetadata } from '@/components/layout/PublicInfoPage';
-import { Breadcrumb } from '@/components/ui/breadcrumb';
-import { Content } from '@/components/layout/design-system/Content';
-import { Section } from '@/components/layout/design-system/Section';
-import { Accordion } from '@/components/ui/accordion';
 import {
-  InformationPageHeader,
-  InformationLayout,
-  StickySidebar,
+  SupportCenterLayout,
   ContactMethodCard,
   ContactForm,
   SupportCard,
   RelatedLinksCard,
-  EditorialCTA,
 } from '@/components/information-pages';
-import { Zap, Phone, Mail, MessageCircle, MapPin, Briefcase, ShieldCheck, Flag } from 'lucide-react';
+import {
+  Zap,
+  Phone,
+  Mail,
+  MessageCircle,
+  MapPin,
+  Briefcase,
+  ShieldCheck,
+  Flag,
+} from 'lucide-react';
 
 export const metadata = publicInfoMetadata(
   'Contact Us',
@@ -49,96 +51,73 @@ const faqItems = [
 
 export default function ContactPage() {
   return (
-    <>
-      <Content>
-        <Breadcrumb
-          items={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
-          className="py-6"
-        />
-        <InformationPageHeader
-          eyebrow="Support"
-          title="We're here to help."
-          description="Have a question about an order, listing, seller account, or partnership? Our team is ready to connect you with the right people."
-        />
-      </Content>
-
-      <Section spacing="lg" className="bg-surface-secondary">
-        <Content>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <ContactMethodCard
-              icon={<Zap className="h-5 w-5" />}
-              title="Fast Support"
-              value="support@partspeddle.com"
-              description="Response within one business day."
-              cta={{ label: 'Email us', href: 'mailto:support@partspeddle.com' }}
-            />
-            <ContactMethodCard
-              icon={<Phone className="h-5 w-5" />}
-              title="Phone"
-              value="+1 (800) 555-0199"
-              description="Mon–Fri, 8am–6pm ET."
-              cta={{ label: 'Call now', href: 'tel:+18005550199' }}
-            />
-            <ContactMethodCard
-              icon={<Mail className="h-5 w-5" />}
-              title="Email"
-              value="support@partspeddle.com"
-              description="For order and listing questions."
-              cta={{ label: 'Send email', href: 'mailto:support@partspeddle.com' }}
-            />
-            <ContactMethodCard
-              icon={<MessageCircle className="h-5 w-5" />}
-              title="Live Chat"
-              value="Available weekdays"
-              description="Chat with our team in real time."
-              cta={{ label: 'Start chat', href: '/contact' }}
-            />
-          </div>
-
-          <div className="mt-10">
-            <InformationLayout
-              main={<ContactForm />}
-              sidebar={
-                <StickySidebar>
-                  <SupportCard
-                    icon={<MapPin className="h-6 w-6" />}
-                    title="Mailing address"
-                    description="PartsPeddle Headquarters, 123 Industrial Blvd, Suite 400, Charlotte, NC 28206, USA."
-                    cta={{ label: 'Get directions', href: '#' }}
-                  />
-                  <SupportCard
-                    icon={<Briefcase className="h-6 w-6" />}
-                    title="Partnerships"
-                    description="Interested in integrating, sponsoring, or working together? Reach our partnerships team."
-                    cta={{ label: 'Email partnerships', href: 'mailto:partnerships@partspeddle.com' }}
-                  />
-                  <SupportCard
-                    icon={<ShieldCheck className="h-6 w-6" />}
-                    title="Trust & safety"
-                    description="Report fraud, suspicious listings, or verification concerns to our trust team."
-                    cta={{ label: 'Learn more', href: '/trust-verification' }}
-                  />
-                  <SupportCard
-                    icon={<Flag className="h-6 w-6" />}
-                    title="Report a listing"
-                    description="See something inaccurate or prohibited? Flag it and we will review it quickly."
-                    cta={{ label: 'Report listing', href: '/contact?subject=Report%20listing' }}
-                  />
-                </StickySidebar>
-              }
-            />
-          </div>
-
-          <div className="mt-12">
-            <h2 className="mb-6 font-display text-section font-bold uppercase tracking-tight text-foreground-primary">
-              Frequently asked questions
-            </h2>
-            <Accordion items={faqItems} />
-          </div>
-        </Content>
-      </Section>
-
-      <EditorialCTA />
-    </>
+    <SupportCenterLayout
+      eyebrow="Support"
+      title="We're here to help."
+      description="Have a question about an order, listing, seller account, or partnership? Our team is ready to connect you with the right people."
+      breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
+      contactCards={
+        <>
+          <ContactMethodCard
+            icon={<Zap className="h-5 w-5" />}
+            title="Fast Support"
+            value="support@partspeddle.com"
+            description="Response within one business day."
+            cta={{ label: 'Email us', href: 'mailto:support@partspeddle.com' }}
+          />
+          <ContactMethodCard
+            icon={<Phone className="h-5 w-5" />}
+            title="Phone"
+            value="+1 (800) 555-0199"
+            description="Mon–Fri, 8am–6pm ET."
+            cta={{ label: 'Call now', href: 'tel:+18005550199' }}
+          />
+          <ContactMethodCard
+            icon={<Mail className="h-5 w-5" />}
+            title="Email"
+            value="support@partspeddle.com"
+            description="For order and listing questions."
+            cta={{ label: 'Send email', href: 'mailto:support@partspeddle.com' }}
+          />
+          <ContactMethodCard
+            icon={<MessageCircle className="h-5 w-5" />}
+            title="Live Chat"
+            value="Available weekdays"
+            description="Chat with our team in real time."
+            cta={{ label: 'Start chat', href: '/contact' }}
+          />
+        </>
+      }
+      main={<ContactForm />}
+      sidebar={
+        <>
+          <SupportCard
+            icon={<MapPin className="h-6 w-6" />}
+            title="Mailing address"
+            description="PartsPeddle Headquarters, 123 Industrial Blvd, Suite 400, Charlotte, NC 28206, USA."
+            cta={{ label: 'Get directions', href: '#' }}
+          />
+          <SupportCard
+            icon={<Briefcase className="h-6 w-6" />}
+            title="Partnerships"
+            description="Interested in integrating, sponsoring, or working together? Reach our partnerships team."
+            cta={{ label: 'Email partnerships', href: 'mailto:partnerships@partspeddle.com' }}
+          />
+          <SupportCard
+            icon={<ShieldCheck className="h-6 w-6" />}
+            title="Trust & safety"
+            description="Report fraud, suspicious listings, or verification concerns to our trust team."
+            cta={{ label: 'Learn more', href: '/trust-verification' }}
+          />
+          <SupportCard
+            icon={<Flag className="h-6 w-6" />}
+            title="Report a listing"
+            description="See something inaccurate or prohibited? Flag it and we will review it quickly."
+            cta={{ label: 'Report listing', href: '/contact?subject=Report%20listing' }}
+          />
+        </>
+      }
+      faqItems={faqItems}
+    />
   );
 }
