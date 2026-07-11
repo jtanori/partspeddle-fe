@@ -64,9 +64,9 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
   });
 
-  describe('.planning/master-plan.md', () => {
+  describe('.planning/archive/master-plan-2026-07-11.md', () => {
     it('marks P5.0 Phase 3 as done', () => {
-      const source = readSource('.planning/master-plan.md');
+      const source = readSource('.planning/archive/master-plan-2026-07-11.md');
       const phase3Section = source.substring(
         source.indexOf('3. **Marketplace page convergence**'),
         source.indexOf('4. **PPDS documentation & Storybook**'),
@@ -76,7 +76,7 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
 
     it('marks P5.0 Phase 6 as done', () => {
-      const source = readSource('.planning/master-plan.md');
+      const source = readSource('.planning/archive/master-plan-2026-07-11.md');
       const phase6Section = source.substring(
         source.indexOf('6. **Seller workspace shell**'),
         source.indexOf('7. **Deploy & environment secrets review**'),
@@ -86,7 +86,7 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
 
     it('includes a deploy & environment secrets review phase', () => {
-      const source = readSource('.planning/master-plan.md');
+      const source = readSource('.planning/archive/master-plan-2026-07-11.md');
       expect(source).toContain('7. **Deploy & environment secrets review**');
       expect(source).toContain('vintrack-stage');
       expect(source).toContain('vintrack-prod');
