@@ -1,102 +1,186 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Loader2 } from 'lucide-react';
-import StageOneMedia from '../wizard/stages/StageOneMedia';
-import { StageTwoTaxonomy } from '../wizard/stages/StageTwoTaxonomy';
-import { StageThreeLogistics } from '../wizard/stages/StageThreeLogistics';
-import { analyzeListingImage } from '../../services/ai-vision';
-import { supabase } from '../../lib/supabase';
-import { useAppStore } from '../../store/useAppStore';
-import { useInventoryWizard } from '../../context/InventoryWizardContext';
-import { useIngestionSessionLock } from '../../hooks/useIngestionSessionLock';
-import { compressImage } from '../../lib/image-utils';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tabs } from '@/components/ui/tabs';
+import { useListingDraft } from '@/hooks/useListingDraft';
+import { scoreCompletion } from '@/lib/listing-completion';
+import { DraftIdentification } from './draft/DraftIdentification';
+import { DraftMedia } from './draft/DraftMedia';
+import { DraftFitment } from './draft/DraftFitment';
+import { DraftPricing } from './draft/DraftPricing';
+import { DraftShipping } from './draft/DraftShipping';
+import { DraftSEO } from './draft/DraftSEO';
+import { DraftInspector } from './draft/DraftInspector';
+import type { DraftModule, DraftPayload } from '@/domain/types/listing-draft';
 
 interface ListingWizardProps {
   onClose: () => void;
 }
 
-export const ListingWizard: React.FC<ListingWizardProps> = ({ onClose }) => {
-  const { user } = useAppStore();
-  const { setIsTerminalLocked } = useInventoryWizard();
-  const [step, setStep] = useState(1);
-  const [mode, setMode] = useState<'vehicle' | 'component'>('component');
-  const [isScanning, setIsScanning] = useState(false);
-  const [formData, setFormData] = useState<any>({
-      system: '', category: '', title: '', brand: '', model: '',
-      oem_part_number: '', price_mxn: 0, stock_number: '', description: '', condition: 'Used OEM'
-  });
-  const [uploadedFiles, setUploadedFiles] = useState<{ id: string; file: File; previewUrl: string }[]>([]);
-  const [fitmentArray, setFitmentArray] = useState<string[]>([]);
-  const [aiResult, setAiResult] = useState<any>(null);
+const MODULE_TABS: { value: DraftModule; label: string }[] = [
+  { value: 'identification', label: 'Identification' },
+  { value: 'media', label: 'Media' },
+  { value: 'fitment', label: 'Fitment' },
+  { value: 'pricing', label: 'Pricing' },
+  { value: 'shipping', label: 'Shipping' },
+  { value: 'seo', label: 'SEO' },
+];
 
-  const isDirty = uploadedFiles.length > 0 || formData.title !== '';
-  
-  React.useEffect(() => {
-      setIsTerminalLocked(isDirty);
-  }, [isDirty, setIsTerminalLocked]);
+export function ListingWizard({ onClose }: ListingWizardProps) {
+  const { draft, loading, saveStatus, updateModule, updateMarketSignals, publish } = useListingDraft();
+  const [activeModule, setActiveModule] = useState<DraftModule>('identification');
+  const [publishing, setPublishing] = useState(false);
 
-  useIngestionSessionLock(isDirty);
-
-  const handleUpload = async (file: File) => {
-    if (!user) return;
-    const compressedBlob = await compressImage(file);
-    const fileName = `${user.id}/${Math.random()}.jpg`;
-    await supabase.storage.from('yard-assets').upload(fileName, compressedBlob);
-    const { data: publicUrlData } = supabase.storage.from('yard-assets').getPublicUrl(fileName);
-    
-    setUploadedFiles(prev => [...prev, { id: fileName, file, previewUrl: publicUrlData.publicUrl }]);
+  const payload: DraftPayload = draft?.payload ?? {
+    identification: {
+      title: '',
+      description: '',
+      system: '',
+      category: '',
+      partType: '',
+      brand: '',
+      model: '',
+      oemPartNumber: '',
+      stockNumber: '',
+    },
+    media: { images: [], mode: 'component', aiData: null },
+    fitment: { vehicles: [] },
+    pricing: { priceMXN: 0, condition: 'USED_GOOD' },
+    shipping: { method: '', costEstimateMXN: null, notes: '' },
+    seo: { searchableText: '', tags: [] },
+    aiData: null,
   };
 
-  const handleScan = async () => {
-    if (uploadedFiles.length === 0) return;
-    setIsScanning(true);
-    const result = await analyzeListingImage(uploadedFiles[0].file, mode);
-    setAiResult(result);
-    setFormData((prev: any) => ({ ...prev, ...result }));
-    setIsScanning(false);
-    setStep(2);
+  const completion = scoreCompletion(payload);
+
+  const handleAIResult = (result: Record<string, unknown>) => {
+    updateModule('identification', {
+      title: typeof result.title === 'string' ? result.title : payload.identification.title,
+      description: typeof result.description === 'string' ? result.description : payload.identification.description,
+      system: typeof result.system === 'string' ? result.system : payload.identification.system,
+      category: typeof result.category === 'string' ? result.category : payload.identification.category,
+      partType: typeof result.partType === 'string' ? result.partType : payload.identification.partType,
+      brand: typeof result.brand === 'string' ? result.brand : payload.identification.brand,
+      model: typeof result.model === 'string' ? result.model : payload.identification.model,
+      oemPartNumber: typeof result.oemPartNumber === 'string' ? result.oemPartNumber : payload.identification.oemPartNumber,
+    });
+
+    updateModule('media', {
+      aiData: result as Record<string, unknown>,
+    });
+
+    // Derive rough market signals from AI confidence if present.
+    const confidence = (result.confidenceScores as Record<string, number> | undefined)?.partTypeAccuracy;
+    if (typeof confidence === 'number') {
+      const base = payload.pricing.priceMXN || 1000;
+      updateMarketSignals({
+        marketValueEstimate: Math.round(base * (1 + confidence)),
+        suggestedPrice: Math.round(base * (1 + confidence * 0.9)),
+      });
+    }
   };
 
-  const commitListing = async () => {
-      try {
-        const payload = {
-          listing: { ...formData, seller_id: user?.id },
-          assets: uploadedFiles.map(file => ({ url: file.id, is_primary: true })),
-          fitment: fitmentArray.map(id => ({ vehicle_variant_id: id }))
-        };
-
-        const { error } = await supabase.rpc('commit_inventory_package', payload);
-
-        if (error) throw error;
-
-        onClose();
-      } catch (error) {
-        console.error("Critical failure during inventory commit:", error);
-        alert("Failed to commit listing to inventory. Please try again.");
-      }
+  const handlePublish = async () => {
+    setPublishing(true);
+    try {
+      await publish();
+      onClose();
+    } catch (err) {
+      console.error('Publish failed:', err);
+    } finally {
+      setPublishing(false);
+    }
   };
+
+  const saveLabel =
+    saveStatus === 'saving'
+      ? 'Saving…'
+      : saveStatus === 'saved'
+        ? 'Saved'
+        : saveStatus === 'error'
+          ? 'Save failed'
+          : null;
+
+  const inspector = draft ? (
+    <DraftInspector
+      draft={draft}
+      completion={completion}
+      onPublish={handlePublish}
+      publishing={publishing}
+    />
+  ) : null;
+
+  if (loading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
+      </div>
+    );
+  }
 
   return (
-    <div className="terminal-panel p-6">
-      <div className="flex justify-between items-center border-b border-border-default pb-4 mb-6">
-        <h2 className="font-heading text-xs font-black uppercase tracking-widest text-accent-amber border-l-2 border-accent-amber pl-3">
-          Ingestion Terminal — Stage {step} of 3
-        </h2>
-        <button onClick={onClose}><X className="w-4 h-4" /></button>
+    <div className="flex min-h-0 flex-1 gap-6">
+      <div className="min-w-0 flex-1 space-y-6">
+        <div className="sticky top-0 z-10 -mx-4 bg-surface-secondary px-4 py-3 sm:mx-0 sm:bg-transparent sm:px-0 sm:py-0">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" onClick={onClose}>
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+              Back to Inventory
+            </Button>
+            {saveLabel && (
+              <span
+                className={`text-meta font-bold uppercase tracking-wider ${
+                  saveStatus === 'error' ? 'text-destructive' : 'text-foreground-muted'
+                }`}
+              >
+                {saveLabel}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <Tabs
+          value={activeModule}
+          onChange={(v) => setActiveModule(v as DraftModule)}
+          tabs={MODULE_TABS.map((tab) => ({
+            id: tab.value,
+            label: tab.label,
+            content: (
+              <div className="rounded-xl border border-stroke-subtle bg-surface-primary p-5 sm:p-6">
+                {tab.value === 'identification' && (
+                  <DraftIdentification
+                    value={payload.identification}
+                    onChange={(partial) => updateModule('identification', partial)}
+                  />
+                )}
+                {tab.value === 'media' && (
+                  <DraftMedia
+                    value={payload.media}
+                    onChange={(partial) => updateModule('media', partial)}
+                    onAIResult={handleAIResult}
+                  />
+                )}
+                {tab.value === 'fitment' && (
+                  <DraftFitment value={payload.fitment} onChange={(partial) => updateModule('fitment', partial)} />
+                )}
+                {tab.value === 'pricing' && (
+                  <DraftPricing value={payload.pricing} onChange={(partial) => updateModule('pricing', partial)} />
+                )}
+                {tab.value === 'shipping' && (
+                  <DraftShipping value={payload.shipping} onChange={(partial) => updateModule('shipping', partial)} />
+                )}
+                {tab.value === 'seo' && (
+                  <DraftSEO value={payload.seo} onChange={(partial) => updateModule('seo', partial)} />
+                )}
+              </div>
+            ),
+          }))}
+        />
       </div>
 
-      {step === 1 && <StageOneMedia mode={mode} setMode={setMode} uploadedFiles={uploadedFiles} onUpload={handleUpload} onRemove={(id) => setUploadedFiles(uploadedFiles.filter(item => item.id !== id))} onScan={handleScan} isScanning={isScanning} />}
-      {step === 2 && <StageTwoTaxonomy formData={formData} setFormData={setFormData} aiResult={aiResult} />}
-      {step === 3 && <StageThreeLogistics formData={formData} setFormData={setFormData} fitmentArray={fitmentArray} setFitmentArray={setFitmentArray} />}
-      
-      <div className="flex justify-between mt-6 pt-6 border-t border-border-default">
-        <button onClick={() => setStep(prev => Math.max(1, prev - 1))} disabled={step === 1} className="px-6 py-2 border border-border-default text-[10px] font-bold uppercase">← Back</button>
-        <button 
-            onClick={() => step === 3 ? commitListing() : setStep(prev => Math.min(3, prev + 1))}
-            className="px-8 py-2 bg-accent-amber text-neutral-950 text-[10px] font-black uppercase tracking-widest"
-        >
-            {step === 3 ? 'COMMIT TO INVENTORY →' : 'Next Stage →'}
-        </button>
+      <div className="hidden shrink-0 lg:block">
+        {inspector}
       </div>
     </div>
   );
-};
+}

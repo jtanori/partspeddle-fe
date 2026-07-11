@@ -1,6 +1,5 @@
 import { ReplayStore } from '../../src/domain/specification/scgs/replay/store';
 import { ReplayValidator } from '../../src/domain/specification/scgs/replay/validator';
-import { SnapshotStore } from '../../src/domain/specification/scgs/snapshot.store';
 
 async function main() {
     const traceId = process.env.TRACE_ID;

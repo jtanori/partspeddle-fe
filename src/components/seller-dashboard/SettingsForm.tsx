@@ -1,6 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useAppStore } from '../../store/useAppStore';
-import { User, MapPin, Mail, Phone, Camera, ShieldCheck, Check, Upload, ImageIcon, Loader2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { useAuthStore } from '@/store/hooks';
+import type { SellerProfile } from '@/store/slices/authSlice';
+import {
+  User,
+  MapPin,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Check,
+  Upload,
+  ImageIcon,
+  Loader2,
+} from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '../../lib/supabase';
 
 export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialLogoUrl }) => {
@@ -17,7 +29,9 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
     setUploadError(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) throw new Error('No active authentication window context detected.');
 
       const uploadPayload = new FormData();
@@ -26,11 +40,10 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
       const response = await fetch('/api/seller/upload-logo', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: uploadPayload,
       });
-
 
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Upload error');
@@ -44,17 +57,21 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
   };
 
   return (
-    <div className="border border-border-strong bg-shell-canvas/30 rounded-sm p-5 flex items-center gap-6 max-w-2xl shadow-panel">
+    <div className="border border-border-strong bg-shell-canvas/30 rounded-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 max-w-2xl shadow-panel w-full">
       <div className="relative w-20 h-20 rounded-sm border border-border-strong bg-shell-sidebar flex items-center justify-center overflow-hidden shrink-0 group shadow-inner transition-colors hover:border-accent-amber/30">
         {logoUrl ? (
-          <img src={logoUrl} alt="Yard Master Identity" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+          <img
+            src={logoUrl}
+            alt="Yard Master Identity"
+            className="w-full h-full object-cover transition-transform group-hover:scale-110"
+          />
         ) : (
           <ImageIcon className="w-8 h-8 text-text-muted opacity-40" />
         )}
-        
+
         {isUploading && (
           <div className="absolute inset-0 bg-shell-sidebar/80 flex items-center justify-center backdrop-blur-xs">
-            <Loader2 className="w-5 h-5 text-accent-amber animate-spin" />
+            <Skeleton className="h-6 w-32 rounded-full" />
           </div>
         )}
       </div>
@@ -66,18 +83,18 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
         <p className="text-xs text-text-muted font-sans leading-relaxed">
           Upload official commercial yard branding. JPG, PNG, WEBP formats up to 5MB.
         </p>
-        
+
         {uploadError && (
           <p className="text-[10px] text-danger font-mono mt-1 animate-pulse">⚠️ {uploadError}</p>
         )}
 
         <div className="pt-2">
-          <input 
-            type="file" 
+          <input
+            type="file"
             ref={fileInputRef}
             onChange={handleFileChange}
-            accept="image/png, image/jpeg, image/webp" 
-            className="hidden" 
+            accept="image/png, image/jpeg, image/webp"
+            className="hidden"
           />
           <button
             type="button"
@@ -95,19 +112,69 @@ export const LogoUploadZone: React.FC<{ initialLogoUrl?: string }> = ({ initialL
 };
 
 export const SettingsForm: React.FC = () => {
-  const { profile, setProfile } = useAppStore();
-  const [localProfile, setLocalProfile] = useState(profile);
+  const { profile, setProfile } = useAuthStore();
+  const [localProfile, setLocalProfile] = useState<SellerProfile | null>(profile);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [syncedProfile, setSyncedProfile] = useState(profile);
 
-  useEffect(() => {
+  if (profile !== syncedProfile) {
+    setSyncedProfile(profile);
     if (profile) setLocalProfile(profile);
-  }, [profile]);
+  }
 
   if (!localProfile) {
     return (
-      <div className="terminal-panel p-24 flex flex-col items-center justify-center gap-6">
-        <div className="w-10 h-10 border-4 border-accent-amber/20 border-t-accent-amber rounded-full animate-spin"></div>
-        <span className="text-xs font-heading font-black text-text-muted uppercase tracking-[0.25em]">Loading profile settings...</span>
+      <div className="terminal-panel overflow-hidden">
+        <div className="bg-shell-canvas/50 p-4 sm:p-6 md:p-10 border-b border-border-default">
+          <div className="flex flex-col md:flex-row md:items-center gap-10">
+            <div className="border border-border-strong bg-shell-canvas/30 rounded-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 max-w-2xl shadow-panel w-full">
+              <Skeleton className="w-20 h-20 shrink-0 rounded-sm" />
+              <div className="flex-1 space-y-3">
+                <Skeleton className="h-3 w-48" />
+                <Skeleton className="h-3 w-3/4" />
+                <Skeleton className="h-8 w-40" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-56" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 bg-shell-workspace/30">
+          <div className="space-y-8">
+            <Skeleton className="h-4 w-40" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-32" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-36" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <Skeleton className="h-4 w-32" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-36" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 pt-8 flex justify-end border-t border-border-subtle mt-4">
+            <Skeleton className="h-12 w-52" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -115,23 +182,24 @@ export const SettingsForm: React.FC = () => {
   const handleSave = async () => {
     setSaveStatus('saving');
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) throw new Error('No active authentication context.');
 
       const response = await fetch('/api/seller/profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           yardName: localProfile.name,
           whatsappNumber: localProfile.whatsapp,
           location: localProfile.location,
-          email: localProfile.email
+          email: localProfile.email,
         }),
       });
-
 
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Update failed');
@@ -147,51 +215,64 @@ export const SettingsForm: React.FC = () => {
 
   return (
     <div className="terminal-panel overflow-hidden">
-      <div className="bg-shell-canvas/50 p-10 border-b border-border-default">
+      <div className="bg-shell-canvas/50 p-4 sm:p-6 md:p-10 border-b border-border-default">
         <div className="flex flex-col md:flex-row md:items-center gap-10">
           <LogoUploadZone initialLogoUrl={localProfile.logoUrl} />
           <div className="space-y-2">
-            <h2 className="text-3xl font-heading font-black uppercase tracking-tight text-text-primary">{localProfile.name || 'Yard Profile'}</h2>
+            <h2 className="text-3xl font-heading font-black uppercase tracking-tight text-text-primary">
+              {localProfile.name || localProfile.business_name || 'Yard Profile'}
+            </h2>
             <div className="flex items-center gap-2.5">
-              <div className={`p-1 rounded-sm ${localProfile.verificationStatus === 'verified' ? 'bg-success/10' : 'bg-warning/10'}`}>
-                <ShieldCheck className={`w-4 h-4 ${localProfile.verificationStatus === 'verified' ? 'text-success' : 'text-warning'}`} />
+              <div
+                className={`p-1 rounded-sm ${(localProfile.verificationStatus || localProfile.verification_status) === 'verified' ? 'bg-success/10' : 'bg-warning/10'}`}
+              >
+                <ShieldCheck
+                  className={`w-4 h-4 ${(localProfile.verificationStatus || localProfile.verification_status) === 'verified' ? 'text-success' : 'text-warning'}`}
+                />
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${localProfile.verificationStatus === 'verified' ? 'text-success' : 'text-warning'}`}>
-                {localProfile.verificationStatus || 'Unverified'} Registry Node
+              <span
+                className={`text-[10px] font-black uppercase tracking-[0.2em] ${(localProfile.verificationStatus || localProfile.verification_status) === 'verified' ? 'text-success' : 'text-warning'}`}
+              >
+                {localProfile.verificationStatus ||
+                  localProfile.verification_status ||
+                  'Unverified'}{' '}
+                Registry Node
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-12 bg-shell-workspace/30">
+      <div className="p-4 sm:p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 bg-shell-workspace/30">
         <div className="space-y-8">
           <div className="flex items-center gap-3 border-b border-border-subtle pb-2">
             <span className="w-1.5 h-1.5 rounded-full bg-accent-amber" />
-            <h3 className="text-xs font-heading font-black uppercase tracking-[0.2em] text-text-primary">Yard Infrastructure</h3>
+            <h3 className="text-xs font-heading font-black uppercase tracking-[0.2em] text-text-primary">
+              Yard Infrastructure
+            </h3>
           </div>
-          
+
           <div className="space-y-6">
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-mono font-bold text-text-muted tracking-widest flex items-center gap-2">
                 <User className="w-3.5 h-3.5" /> Registry Identity
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={localProfile.name || ''}
-                onChange={(e) => setLocalProfile({...localProfile, name: e.target.value})}
+                onChange={(e) => setLocalProfile({ ...localProfile, name: e.target.value })}
                 className="w-full bg-shell-canvas border border-border-default rounded-sm p-3.5 text-xs text-text-primary outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/10 transition-all font-sans shadow-inner"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-mono font-bold text-text-muted tracking-widest flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5" /> Geospatial Coordinate
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={localProfile.location || ''}
-                onChange={(e) => setLocalProfile({...localProfile, location: e.target.value})}
+                onChange={(e) => setLocalProfile({ ...localProfile, location: e.target.value })}
                 placeholder="Region, Province, District"
                 className="w-full bg-shell-canvas border border-border-default rounded-sm p-3.5 text-xs text-text-primary outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/10 transition-all font-sans shadow-inner"
               />
@@ -202,18 +283,20 @@ export const SettingsForm: React.FC = () => {
         <div className="space-y-8">
           <div className="flex items-center gap-3 border-b border-border-subtle pb-2">
             <span className="w-1.5 h-1.5 rounded-full bg-accent-amber" />
-            <h3 className="text-xs font-heading font-black uppercase tracking-[0.2em] text-text-primary">Comms Dispatch</h3>
+            <h3 className="text-xs font-heading font-black uppercase tracking-[0.2em] text-text-primary">
+              Comms Dispatch
+            </h3>
           </div>
-          
+
           <div className="space-y-6">
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-mono font-bold text-text-muted tracking-widest flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5" /> Network Email
               </label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={localProfile.email || ''}
-                onChange={(e) => setLocalProfile({...localProfile, email: e.target.value})}
+                onChange={(e) => setLocalProfile({ ...localProfile, email: e.target.value })}
                 className="w-full bg-shell-canvas border border-border-default rounded-sm p-3.5 text-xs text-text-primary outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/10 transition-all font-sans shadow-inner"
               />
             </div>
@@ -222,10 +305,10 @@ export const SettingsForm: React.FC = () => {
               <label className="text-[10px] uppercase font-mono font-bold text-text-muted tracking-widest flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5" /> Encrypted Comms Link
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={localProfile.whatsapp || ''}
-                onChange={(e) => setLocalProfile({...localProfile, whatsapp: e.target.value})}
+                onChange={(e) => setLocalProfile({ ...localProfile, whatsapp: e.target.value })}
                 placeholder="+XX (XXX) XXX-XXXX"
                 className="w-full bg-shell-canvas border border-border-default rounded-sm p-3.5 text-xs text-text-primary outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/10 transition-all font-sans shadow-inner"
               />
@@ -234,16 +317,22 @@ export const SettingsForm: React.FC = () => {
         </div>
 
         <div className="md:col-span-2 pt-8 flex justify-end border-t border-border-subtle mt-4">
-          <button 
+          <button
             onClick={handleSave}
             disabled={saveStatus !== 'idle'}
             className={`min-w-[200px] flex items-center justify-center gap-3 py-3.5 px-10 rounded-sm font-heading font-black uppercase text-[11px] tracking-[0.2em] transition-all shadow-elevated active:translate-y-0.5 ${
-              saveStatus === 'saved' ? 'bg-success text-neutral-950' : 'bg-gradient-to-r from-amber-400 to-orange-500 text-neutral-950'
+              saveStatus === 'saved'
+                ? 'bg-success text-neutral-950'
+                : 'bg-gradient-to-r from-amber-400 to-orange-500 text-neutral-950'
             }`}
           >
             {saveStatus === 'saving' && <Loader2 className="w-4 h-4 animate-spin" />}
             {saveStatus === 'saved' && <Check className="w-4 h-4" />}
-            {saveStatus === 'idle' ? 'Synchronize Profile Node' : saveStatus === 'saving' ? 'Syncing...' : 'Parameters Committed'}
+            {saveStatus === 'idle'
+              ? 'Synchronize Profile Node'
+              : saveStatus === 'saving'
+                ? 'Syncing...'
+                : 'Parameters Committed'}
           </button>
         </div>
       </div>

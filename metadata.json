@@ -1,6 +1,0 @@
-{
-  "name": "PartsPeddle",
-  "description": "Used OEM Auto Parts Marketplace with Algolia-powered Search, Supabase Auth, and a massive component library showcase.",
-  "requestFramePermissions": ["camera"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

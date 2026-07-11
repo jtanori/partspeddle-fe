@@ -1,15 +1,20 @@
-import { CompiledSpecificationSet } from '../services/specification.compiler';
+import { CompiledSpecificationSet } from '../../services/specification.compiler';
 import { GroupDiff, FacetDiff } from './types';
 
 // Simple deep equal for production use
-export function deepEqual(a: any, b: any): boolean {
+export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
-  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
-  const keysA = Object.keys(a);
-  const keysB = Object.keys(b);
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+    return false;
+  }
+
+  const recordA = a as Record<string, unknown>;
+  const recordB = b as Record<string, unknown>;
+  const keysA = Object.keys(recordA);
+  const keysB = Object.keys(recordB);
   if (keysA.length !== keysB.length) return false;
   for (const key of keysA) {
-    if (!keysB.includes(key) || !deepEqual(a[key], b[key])) return false;
+    if (!keysB.includes(key) || !deepEqual(recordA[key], recordB[key])) return false;
   }
   return true;
 }
@@ -44,8 +49,8 @@ export function diffGroups(
 }
 
 export function diffFacets(
-  prev: Record<string, any>,
-  next: Record<string, any>
+  prev: Record<string, string | number | boolean>,
+  next: Record<string, string | number | boolean>,
 ): FacetDiff[] {
   const keys = new Set([...Object.keys(prev), ...Object.keys(next)]);
   const diffs: FacetDiff[] = [];

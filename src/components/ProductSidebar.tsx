@@ -1,9 +1,10 @@
-import React from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { SearchFilters, PartCondition } from "../types";
-import { SYSTEMS_TAXONOMY } from "../services/taxonomy";
-
-const SYSTEMS_LIST = Object.keys(SYSTEMS_TAXONOMY);
+import React from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { SearchFilters, PartCondition } from '../types';
+import { useTaxonomy } from '../hooks/useTaxonomy';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ProductSidebarProps {
   filters: SearchFilters;
@@ -15,7 +16,7 @@ interface ProductSidebarProps {
   setSortBy: (sort: string) => void;
   getSystemPartCount: (sys: string) => string;
   getConditionCount: (cond: PartCondition) => number;
-  getSellerTypeCount: (type: "all" | "trusted") => number;
+  getSellerTypeCount: (type: 'all' | 'trusted') => number;
   togglePartType: (type: string) => void;
   toggleCondition: (cond: PartCondition) => void;
   handlePriceChange: (index: number, val: number) => void;
@@ -40,39 +41,59 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
   setAndSyncFilters,
   isDisabled = false,
 }) => {
-  const categories = filters.system
-    ? Object.keys(SYSTEMS_TAXONOMY[filters.system]?.assemblies || {})
+  const { taxonomy, loading } = useTaxonomy();
+
+  const selectedSystem = filters.system || '';
+  const selectedCategorySlug = filters.category || '';
+
+  const categories = selectedSystem ? taxonomy?.categoriesBySystem[selectedSystem] || [] : [];
+
+  const selectedCategory = selectedCategorySlug
+    ? taxonomy?.categoryBySlug[selectedCategorySlug]
+    : undefined;
+
+  const partTypes = selectedCategory
+    ? taxonomy?.partTypesByCategory[selectedCategory.id] || []
     : [];
-  const partTypes =
-    filters.category && filters.system
-      ? SYSTEMS_TAXONOMY[filters.system].assemblies[filters.category]
-      : [];
 
-  const themeClasses = isDisabled
-    ? "bg-zinc-50 border-zinc-200 text-zinc-900"
-    : "bg-[#1A1A1A] border-stone-800 text-zinc-300";
+  const checkboxClass = 'h-4 w-4 rounded accent-brand-primary';
 
-  const headerTextClasses = isDisabled ? "text-zinc-500" : "text-rust-copper";
-  const sectionTextClasses = isDisabled ? "text-zinc-900" : "text-warm-gray";
+  const selectClass =
+    'w-full rounded border border-stroke-subtle bg-surface-primary p-2 text-sm text-foreground-primary outline-none focus:border-brand-primary';
+
+  if (loading) {
+    return (
+      <div
+        className="relative space-y-6 rounded-xl border border-stroke-subtle bg-surface-primary p-5 shadow-sm"
+        id="unified-filters-card"
+      >
+        <Skeleton className="h-5 w-3/4" />
+        <Skeleton.Text lines={6} />
+        <Skeleton className="h-5 w-1/2" />
+        <Skeleton.Text lines={4} />
+      </div>
+    );
+  }
 
   return (
     <div
-      className={`border rounded-xl p-5 space-y-6 relative shadow-sm ${themeClasses}`}
+      className={cn(
+        'relative space-y-6 rounded-xl border border-stroke-subtle bg-surface-primary p-4 sm:p-5 shadow-sm',
+        isDisabled && 'opacity-60',
+      )}
       id="unified-filters-card"
     >
       {/* FILTER BY Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3 pb-1">
-          <h2
-            className={`font-display font-black text-[11px] uppercase tracking-widest select-none ${headerTextClasses}`}
-          >
+          <h2 className="select-none font-display text-[11px] font-black uppercase tracking-widest text-brand-primary">
             FILTER BY
           </h2>
-          <div className="flex-grow h-px bg-zinc-200" />
+          <div className="h-px flex-grow bg-stroke-subtle" />
         </div>
         <button
           onClick={clearAllFilters}
-          className="text-[10px] font-bold uppercase text-zinc-500 hover:text-rust-copper transition-colors cursor-pointer bg-transparent border-none"
+          className="border-none bg-transparent text-[10px] font-bold uppercase text-foreground-muted transition-colors hover:text-brand-primary"
         >
           Clear All
         </button>
@@ -81,8 +102,8 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
       {/* Filter Sections */}
       {[
         {
-          id: "fitment",
-          title: "Fitment",
+          id: 'fitment',
+          title: 'Fitment',
           content: (
             <div className="space-y-2">
               <select
@@ -91,10 +112,10 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                   setAndSyncFilters((p) => ({
                     ...p,
                     fitmentMake: e.target.value,
-                    fitmentModel: "All Models",
+                    fitmentModel: 'All Models',
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               >
                 <option value="All Makes">All Makes</option>
                 {facets.make &&
@@ -112,8 +133,8 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                     fitmentModel: e.target.value,
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
-                disabled={filters.fitmentMake === "All Makes"}
+                className={selectClass}
+                disabled={filters.fitmentMake === 'All Makes'}
               >
                 <option value="All Models">All Models</option>
                 {facets.model &&
@@ -131,7 +152,7 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                     fitmentYear: e.target.value,
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               >
                 <option value="All Years">All Years</option>
                 {facets.year &&
@@ -147,35 +168,36 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           ),
         },
         {
-          id: "manufacturer",
-          title: "Manufacturer",
+          id: 'manufacturer',
+          title: 'Manufacturer',
           content: (
-            <div className="space-y-1 max-h-40 overflow-y-auto">
+            <div className="max-h-40 space-y-1 overflow-y-auto">
               {facets.make &&
                 Object.keys(facets.make).map((make) => (
-                  <div
+                  <label
                     key={make}
-                    className="flex items-center gap-2 text-sm cursor-pointer"
-                    onClick={() =>
-                      setAndSyncFilters((p) => ({
-                        ...p,
-                        fitmentMake:
-                          p.fitmentMake === make ? "All Makes" : make,
-                      }))
-                    }
+                    className="flex cursor-pointer items-center gap-2 text-sm text-foreground-secondary"
                   >
-                    <div
-                      className={`w-4 h-4 rounded border ${filters.fitmentMake === make ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
-                    ></div>
+                    <input
+                      type="checkbox"
+                      checked={filters.fitmentMake === make}
+                      onChange={() =>
+                        setAndSyncFilters((p) => ({
+                          ...p,
+                          fitmentMake: p.fitmentMake === make ? 'All Makes' : make,
+                        }))
+                      }
+                      className={checkboxClass}
+                    />
                     {make} ({facets.make[make]})
-                  </div>
+                  </label>
                 ))}
             </div>
           ),
         },
         {
-          id: "category",
-          title: "Category",
+          id: 'category',
+          title: 'Category',
           content: (
             <div className="space-y-2">
               <select
@@ -184,14 +206,14 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                   setAndSyncFilters((p) => ({
                     ...p,
                     system: e.target.value,
-                    category: "",
+                    category: '',
                     partTypes: [],
                   }))
                 }
-                className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               >
                 <option value="">All Systems</option>
-                {SYSTEMS_LIST.map((sys) => (
+                {taxonomy?.systems.map((sys: string) => (
                   <option key={sys} value={sys}>
                     {sys}
                   </option>
@@ -207,12 +229,12 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                       partTypes: [],
                     }))
                   }
-                  className="w-full bg-white border border-zinc-300 rounded p-2 text-sm"
+                  className={selectClass}
                 >
                   <option value="">All Assemblies</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
+                  {categories.map((cat: any) => (
+                    <option key={cat.slug_en} value={cat.slug_en}>
+                      {cat.name_en || cat.name}
                     </option>
                   ))}
                 </select>
@@ -221,56 +243,54 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
           ),
         },
         {
-          id: "partType",
-          title: "Part Type",
+          id: 'partType',
+          title: 'Part Type',
           content: (
-            <div className="space-y-1 max-h-40 overflow-y-auto">
-              {partTypes.map((type) => (
-                <div
-                  key={type}
-                  className="flex items-center gap-2 text-sm cursor-pointer"
-                  onClick={() => togglePartType(type)}
+            <div className="max-h-40 space-y-1 overflow-y-auto">
+              {partTypes.map((type: any) => (
+                <label
+                  key={type.slug_en}
+                  className="flex cursor-pointer items-center gap-2 text-sm text-foreground-secondary"
                 >
-                  <div
-                    className={`w-4 h-4 rounded border ${filters.partTypes.includes(type) ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
-                  ></div>
-                  {type}
-                </div>
+                  <input
+                    type="checkbox"
+                    checked={filters.partTypes.includes(type.slug_en)}
+                    onChange={() => togglePartType(type.slug_en)}
+                    className={checkboxClass}
+                  />
+                  {type.name_en || type.name}
+                </label>
               ))}
             </div>
           ),
         },
         {
-          id: "condition",
-          title: "Condition",
+          id: 'condition',
+          title: 'Condition',
           content: (
             <div className="space-y-1">
-              {(
-                [
-                  "Used OEM",
-                  "OEM Original",
-                  "Excellent",
-                  "Good",
-                  "For Parts",
-                ] as any[]
-              ).map((cond) => (
-                <div
-                  key={cond}
-                  className="flex items-center gap-2 text-sm cursor-pointer"
-                  onClick={() => toggleCondition(cond)}
-                >
-                  <div
-                    className={`w-4 h-4 rounded border ${filters.conditions.includes(cond) ? "bg-rust-copper border-rust-copper" : "border-zinc-300"}`}
-                  ></div>
-                  {cond} ({getConditionCount(cond)})
-                </div>
-              ))}
+              {(['Used OEM', 'OEM Original', 'Excellent', 'Good', 'For Parts'] as any[]).map(
+                (cond) => (
+                  <label
+                    key={cond}
+                    className="flex cursor-pointer items-center gap-2 text-sm text-foreground-secondary"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.conditions.includes(cond)}
+                      onChange={() => toggleCondition(cond)}
+                      className={checkboxClass}
+                    />
+                    {cond} ({getConditionCount(cond)})
+                  </label>
+                ),
+              )}
             </div>
           ),
         },
         {
-          id: "price",
-          title: "Price Range",
+          id: 'price',
+          title: 'Price Range',
           content: (
             <div className="flex items-center gap-2">
               <input
@@ -278,15 +298,15 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
                 placeholder="$ Min"
                 value={filters.priceRange[0]}
                 onChange={(e) => handlePriceChange(0, parseInt(e.target.value))}
-                className="w-full border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               />
-              <span className="text-zinc-400">-</span>
+              <span className="text-foreground-muted">-</span>
               <input
                 type="number"
                 placeholder="$ Max"
                 value={filters.priceRange[1]}
                 onChange={(e) => handlePriceChange(1, parseInt(e.target.value))}
-                className="w-full border border-zinc-300 rounded p-2 text-sm"
+                className={selectClass}
               />
             </div>
           ),
@@ -295,17 +315,15 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
         <div key={section.id} className="space-y-2">
           <div
             onClick={() => toggleSection(section.id)}
-            className="flex items-center justify-between cursor-pointer pb-2 border-b border-zinc-200"
+            className="flex cursor-pointer items-center justify-between border-b border-stroke-subtle pb-2"
           >
-            <span
-              className={`font-display text-sm uppercase tracking-wider ${sectionTextClasses}`}
-            >
+            <span className="font-display text-sm uppercase tracking-wider text-foreground-primary">
               {section.title}
             </span>
             {collapsedSections[section.id] ? (
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="h-4 w-4 text-foreground-muted" />
             ) : (
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="h-4 w-4 text-foreground-muted" />
             )}
           </div>
           {!collapsedSections[section.id] && section.content}
@@ -313,9 +331,9 @@ export const ProductSidebar: React.FC<ProductSidebarProps> = ({
       ))}
 
       {/* Apply Filters Button */}
-      <button className="w-full bg-rust-copper text-white font-black uppercase tracking-widest py-3 rounded-sm text-xs hover:bg-bronze transition-colors">
+      <Button className="w-full font-display text-xs font-black uppercase tracking-widest">
         Apply Filters
-      </button>
+      </Button>
     </div>
   );
 };

@@ -1,0 +1,41 @@
+import { RouteDefinition } from '../types';
+
+export const supportRoutes = {
+  contact: {
+    id: 'contact',
+    name: 'Contact',
+    path: '/contact',
+    title: 'Contact Us',
+    description: 'Get in touch with PartsPeddle support.',
+    section: 'support',
+    visibility: 'public',
+    layout: 'editorial',
+    navPosition: ['footer'],
+    sitemap: true,
+  },
+  chat: {
+    id: 'chat',
+    name: 'Messages',
+    path: '/chat',
+    title: 'Messages',
+    description: 'Your buyer and seller conversations.',
+    section: 'buyer',
+    visibility: 'authenticated',
+    layout: 'public',
+    navPosition: ['main'],
+    sitemap: false,
+  },
+  helpCenter: {
+    id: 'help-center',
+    name: 'Help Center',
+    path: '/help',
+    title: 'Help Center',
+    description: 'Find answers and get support.',
+    section: 'support',
+    visibility: 'public',
+    layout: 'editorial',
+    featureFlag: 'helpCenter',
+    navPosition: ['footer'],
+    sitemap: true,
+  },
+} satisfies Record<string, RouteDefinition>;

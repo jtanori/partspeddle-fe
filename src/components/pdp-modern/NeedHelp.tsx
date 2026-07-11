@@ -1,15 +1,71 @@
+'use client';
+
 import React from 'react';
+import Link from 'next/link';
 import { MessageCircle, Phone, Mail, Clock } from 'lucide-react';
 
 export default function NeedHelp() {
   return (
-    <div className="bg-white border border-zinc-250 rounded p-6 shadow-sm space-y-4">
-      <h3 className="font-display font-bold uppercase text-sm">Need Help?</h3>
-      <div className="space-y-3 text-sm">
-        <div className="flex items-center gap-3"><MessageCircle className="w-4 h-4" /> <span>Live Chat</span></div>
-        <div className="flex items-center gap-3"><Phone className="w-4 h-4" /> <span>Call Us</span></div>
-        <div className="flex items-center gap-3"><Mail className="w-4 h-4" /> <span>Email Us</span></div>
-        <div className="flex items-center gap-3"><Clock className="w-4 h-4" /> <span>Hours</span></div>
+    <div className="bg-surface-primary border border-stroke-subtle rounded-xl p-6 shadow-card space-y-6">
+      <h3 className="font-display font-black uppercase text-xs tracking-widest text-foreground-muted">
+        Need Help?
+      </h3>
+      <div className="space-y-4">
+        <Link href="/chat" className="flex items-center gap-4 w-full group">
+          <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center text-foreground-muted group-hover:text-brand-primary group-hover:bg-brand-primary/10 transition-colors">
+            <MessageCircle className="w-4 h-4" />
+          </div>
+          <div className="text-left">
+            <p className="text-[11px] font-black uppercase tracking-tight text-foreground-primary group-hover:text-brand-primary transition-colors">
+              Live Chat
+            </p>
+            <p className="text-[10px] font-bold text-status-success uppercase">
+              We&apos;re online now
+            </p>
+          </div>
+        </Link>
+
+        <a href="tel:+18005550199" className="flex items-center gap-4 w-full group">
+          <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center text-foreground-muted group-hover:text-brand-primary group-hover:bg-brand-primary/10 transition-colors">
+            <Phone className="w-4 h-4" />
+          </div>
+          <div className="text-left">
+            <p className="text-[11px] font-black uppercase tracking-tight text-foreground-primary group-hover:text-brand-primary transition-colors">
+              Call Us
+            </p>
+            <p className="text-[10px] font-bold text-foreground-muted uppercase">
+              +1 (800) 555-0199
+            </p>
+          </div>
+        </a>
+
+        <a href="mailto:support@partspeddle.com" className="flex items-center gap-4 w-full group">
+          <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center text-foreground-muted group-hover:text-brand-primary group-hover:bg-brand-primary/10 transition-colors">
+            <Mail className="w-4 h-4" />
+          </div>
+          <div className="text-left">
+            <p className="text-[11px] font-black uppercase tracking-tight text-foreground-primary group-hover:text-brand-primary transition-colors">
+              Email Us
+            </p>
+            <p className="text-[10px] font-bold text-foreground-muted uppercase">
+              support@partspeddle.com
+            </p>
+          </div>
+        </a>
+
+        <div className="flex items-center gap-4 w-full pt-2">
+          <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center text-foreground-muted">
+            <Clock className="w-4 h-4" />
+          </div>
+          <div className="text-left">
+            <p className="text-[11px] font-black uppercase tracking-tight text-foreground-primary">
+              Hours
+            </p>
+            <p className="text-[10px] font-bold text-foreground-muted uppercase">
+              Mon - Fri: 8AM - 6PM EST
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

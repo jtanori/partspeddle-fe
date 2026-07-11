@@ -1,4 +1,6 @@
-import { CompiledSpecificationSet } from '../services/specification.compiler';
+import type { SpecGroup } from '../../services/specification.compiler';
+import { CompiledSpecificationSet } from '../../services/specification.compiler';
+export type { CompiledSpecificationSet };
 
 export interface CompiledSemanticArtifact {
   listingId: string;
@@ -15,15 +17,15 @@ export interface CompiledSemanticArtifact {
 export interface GroupDiff {
   groupName: string;
   changeType: "ADDED" | "REMOVED" | "ORDER_CHANGED" | "MODIFIED";
-  before?: any;
-  after?: any;
+  before?: SpecGroup;
+  after?: SpecGroup;
 }
 
 export interface FacetDiff {
   key: string;
   type: "ADDED" | "REMOVED" | "MODIFIED";
-  before?: any;
-  after?: any;
+  before?: string | number | boolean;
+  after?: string | number | boolean;
 }
 
 export interface ConsistencyReport {
@@ -51,6 +53,17 @@ export interface GovernancePolicy {
 export interface GovernanceResult {
   status: "PASS" | "BLOCK" | "REVIEW";
   violations: string[];
+}
+
+export interface SCGSCIVerdict {
+  status: "PASS" | "WARN" | "BLOCK";
+  violations?: string[];
+  reasonCodes?: string[];
+}
+
+export interface PTSVector {
+  driftScore: number;
+  highDrift: boolean;
 }
 
 export type SystemState = 

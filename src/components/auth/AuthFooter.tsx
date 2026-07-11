@@ -1,54 +1,42 @@
-import React from "react";
+'use client';
 
-interface AuthFooterProps {
-  onCancel: () => void;
-}
+import React from 'react';
+import Link from 'next/link';
 
-export const AuthFooter: React.FC<AuthFooterProps> = ({ onCancel }) => {
+export const AuthFooter: React.FC = () => {
   const links = [
-    { label: "Back to Store", onClick: onCancel },
-    { label: "Terms of Use", onClick: () => (window.location.href = "/terms") },
-    {
-      label: "Privacy Policy",
-      onClick: () => (window.location.href = "/privacy"),
-    },
-    {
-      label: "Support Desk",
-      onClick: () => (window.location.href = "/support"),
-    },
+    { label: 'Terms of Use', href: '/terms' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Support Desk', href: '/contact' },
   ];
 
   return (
-    <div className="w-full border-t border-zinc-200/50 p-6 flex flex-col items-center gap-3 bg-zinc-50/20 flex-shrink-0">
+    <div className="w-full shrink-0 border-t border-stroke-subtle bg-surface-secondary/20 p-6 flex flex-col items-center gap-3">
       {/* Desktop/Tablet Horizontal layout */}
-      <div className="hidden md:flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs font-sans text-zinc-500 font-medium">
+      <div className="hidden md:flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-sans text-xs font-medium text-foreground-muted">
         {links.map((link, i) => (
           <React.Fragment key={link.label}>
-            <button
-              type="button"
-              onClick={link.onClick}
-              className="hover:text-[#B87333] transition-colors cursor-pointer text-zinc-600 hover:underline px-2 py-1 flex items-center"
+            <Link
+              href={link.href}
+              className="flex cursor-pointer items-center px-2 py-1 text-foreground-secondary transition-colors hover:text-brand-primary hover:underline"
             >
               {link.label}
-            </button>
-            {i < links.length - 1 && (
-              <span className="text-zinc-300 select-none">•</span>
-            )}
+            </Link>
+            {i < links.length - 1 && <span className="select-none text-foreground-muted">•</span>}
           </React.Fragment>
         ))}
       </div>
 
       {/* Mobile Vertical stack */}
-      <div className="md:hidden w-full flex flex-col divide-y divide-zinc-200/40 border border-zinc-200/60 rounded-sm overflow-hidden bg-zinc-50/50 text-xs font-bold tracking-wide uppercase text-zinc-600 select-none">
+      <div className="md:hidden w-full flex flex-col divide-y divide-stroke-subtle overflow-hidden rounded-sm border border-stroke-subtle bg-surface-secondary/50 text-xs font-bold uppercase tracking-wide text-foreground-secondary select-none">
         {links.map((link) => (
-          <button
+          <Link
             key={link.label}
-            type="button"
-            onClick={link.onClick}
-            className="w-full min-h-[44px] flex items-center justify-center hover:bg-[#B87333]/5 text-[#B87333] transition-colors cursor-pointer text-center"
+            href={link.href}
+            className="flex h-11 w-full cursor-pointer items-center justify-center text-center text-brand-primary transition-colors hover:bg-brand-primary/5"
           >
             {link.label}
-          </button>
+          </Link>
         ))}
       </div>
     </div>

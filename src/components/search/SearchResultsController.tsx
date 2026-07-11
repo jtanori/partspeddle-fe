@@ -1,62 +1,102 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { supabaseDb } from "@/services/supabase-db";
-import { Part } from "@/types";
+import React, { useEffect, useRef, useState } from "react";
 import { buildSearchResultCard } from "@/projection/search";
 import { SearchResultCardModel } from "@/domain/view-models/search";
+import { SearchFilters } from "@/types";
 
 export const SearchResultsController: React.FC<{
   query: string;
-  filters: any;
+  filters: SearchFilters;
   sortBy: string;
   currentPage: number;
+  requestKey: string;
+  skipInitialFetch?: boolean;
   onLoading?: (loading: boolean) => void;
+  onError?: (error: string | null) => void;
   onResults: (
     cards: SearchResultCardModel[],
-    facets: any,
+    facets: Record<string, unknown>,
     meta: { totalPages: number; page: number; totalHits: number },
   ) => void;
-}> = ({ query, filters, sortBy, currentPage, onLoading, onResults }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+}> = ({
+  query,
+  filters,
+  sortBy,
+  currentPage,
+  requestKey,
+  skipInitialFetch = false,
+  onLoading,
+  onError,
+  onResults,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const skippedInitialRef = useRef(skipInitialFetch);
 
   useEffect(() => {
-    if (onLoading) onLoading(loading);
+    onLoading?.(loading);
   }, [loading, onLoading]);
 
   useEffect(() => {
+    onError?.(null);
+  }, [requestKey, onError]);
+
+  useEffect(() => {
+    if (skippedInitialRef.current) {
+      skippedInitialRef.current = false;
+      return;
+    }
+
+    const controller = new AbortController();
+
     const fetchResults = async () => {
       setLoading(true);
-      setError(null);
+      onError?.(null);
       try {
         const apiFilters = {
           ...filters,
           query,
           sortBy,
-          page: currentPage - 1, // Algolia is 0-indexed
+          page: currentPage - 1,
         };
-        
-        const { hits, facets, page, totalPages, totalHits } =
-          await supabaseDb.searchParts(apiFilters as any);
 
-        // Project to SearchViewModel contract
-        const cardModels = (hits as Part[]).map(buildSearchResultCard);
-        
-        onResults(cardModels, facets, { page, totalPages, totalHits });
-      } catch (err: any) {
-        setError(err.message);
+        const response = await fetch("/api/search/parts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(apiFilters),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to search parts");
+        }
+
+        const data = await response.json();
+        const cardModels = (data.hits ?? []).map((hit: Record<string, unknown>) =>
+          buildSearchResultCard(hit),
+        );
+
+        onResults(cardModels, data.facets || {}, {
+          page: data.page ?? 0,
+          totalPages: data.totalPages ?? 1,
+          totalHits: data.totalHits ?? 0,
+        });
+      } catch (err: unknown) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          return;
+        }
+        onError?.(err instanceof Error ? err.message : "Search failed");
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchResults();
-  }, [query, filters, sortBy, currentPage]);
 
-  if (loading) return <div className="p-8 text-center">Buscando partes...</div>;
-  if (error)
-    return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+    return () => controller.abort();
+  }, [requestKey]);
 
   return null;
 };

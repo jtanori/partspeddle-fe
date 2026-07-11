@@ -5,11 +5,13 @@ export type SemanticReplayEvent =
   | { type: "FACET_CHANGE"; step: number; detail: FacetDiff; snapshotBefore: string; snapshotAfter: string; }
   | { type: "ORDER_CHANGE"; step: number; groupKey: string; beforeOrder: string[]; afterOrder: string[]; snapshotBefore: string; snapshotAfter: string; }
   | { type: "COMPILER_RUN"; step: number; inputHash: string; outputArtifactHash: string; durationMs: number; }
-  | { type: "PTS_VECTOR"; step: number; driftScore: number; groupDrift: number; facetDrift: number; orderDrift: number; snapshotId: string; }
-  | { type: "CI_VERDICT"; step: number; verdict: "PASS" | "WARN" | "BLOCK"; reasonCodes: string[]; ptsScoreAtDecision: number; };
+  | { type: "PTS_SHIFT"; step: number; driftScore: number; wasHighDrift: boolean; snapshotBefore: string; snapshotAfter: string; }
+  | { type: "CI_VERDICT"; step: number; verdict: "PASS" | "WARN" | "BLOCK"; reasonCodes: string[]; ptsScoreAtDecision: number; snapshotBefore: string; snapshotAfter: string; };
 
 export interface SemanticReplayTrace {
   traceId: string;
+  version: string;
+  listingId: string;
   categoryId: string;
   compilerVersion: string;
   snapshots: { snapshotId: string; timestamp: string; compiledArtifactHash: string; storageUri: string; }[];

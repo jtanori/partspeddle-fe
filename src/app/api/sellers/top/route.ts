@@ -1,24 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { z } from 'zod';
+import { createRepositories } from '@/repositories/factory';
+import { validateQuery } from '@/lib/api/validation';
+import { safeErrorResponse } from '@/lib/api/errors';
+import { rateLimit } from '@/lib/api/rate-limit';
+import { logger } from '@/lib/logger';
+
+const querySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(50).optional().default(4),
+});
 
 export async function GET(req: NextRequest) {
+  const rateLimited = rateLimit(req, {
+    keyPrefix: 'public:sellers:top',
+    limit: 30,
+    windowSeconds: 60,
+  });
+  if (rateLimited) {
+    return rateLimited;
+  }
+
+  const validated = validateQuery(querySchema, req.nextUrl.searchParams);
+  if (!validated.success) {
+    return validated.response;
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get('limit') || '4', 10);
-    
-    const { data, error } = await supabaseAdmin
-      .from('seller_profiles')
-      .select('id, business_name, location, whatsapp, verification_status, created_at, users(avatar_url)')
-      .order('created_at', { ascending: false })
-      .limit(limit);
-    
-    if (error) {
-      console.error("API Error (/api/sellers/top):", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    const { seller } = createRepositories('public');
+    const data = await seller.findTopSellers(validated.data.limit ?? 4);
     return NextResponse.json(data);
-  } catch (err: any) {
-    console.error("API Exception (/api/sellers/top):", err);
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    logger.error('API Exception (/api/sellers/top)', { error: message });
+    return safeErrorResponse('Failed to load sellers.', 500);
   }
 }

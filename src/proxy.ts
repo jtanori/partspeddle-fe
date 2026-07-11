@@ -1,111 +1,123 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
-import { tracer } from "@/lib/observability";
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
+import { tracer } from '@/lib/observability';
+import { getUserRole, type UserRole } from '@/lib/user-roles';
 
 export async function proxy(request: NextRequest) {
   const start = Date.now();
-  if (request.nextUrl.pathname === "/") {
+  if (request.nextUrl.pathname === '/') {
     console.log(`[PERF] Request started: ${request.nextUrl.pathname}`);
   }
 
-  const responsePromise = tracer.startActiveSpan(
-    "middleware-proxy",
-    async (span) => {
-      let response = NextResponse.next({
-        request: {
-          headers: request.headers,
-        },
-      });
+  const responsePromise = tracer.startActiveSpan('proxy', async (span) => {
+    let response = NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    });
 
-      const supabaseUrl = process.env.SUPABASE_URL || "";
-      const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
+    const supabaseUrl = process.env.SUPABASE_URL || '';
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
 
-      const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-        cookies: {
-          getAll: () => request.cookies.getAll(),
-          setAll: (cookiesToSet) => {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              request.cookies.set(name, value);
-              response.cookies.set(name, value, options);
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'lax',
+              path: '/',
             });
-          },
+          });
         },
-      });
+      },
+    });
 
-      const url = request.nextUrl.clone();
-      const isPublicRoute =
-        url.pathname === "/" ||
-        url.pathname.startsWith("/search") ||
-        url.pathname.startsWith("/listing");
-      const isHealthCheck = url.pathname === "/api/health";
+    const url = request.nextUrl.clone();
+    const isHealthCheck = url.pathname === '/api/health';
 
-      // Skip session check for health checks and non-protected public routes to save ~500ms
-      if (isHealthCheck) {
-        span.end();
-        return response;
-      }
-
-      // Refresh session if expired - required for Server Components
-      // We only do this for protected routes or if we are not on a public route that we want to be ultra-fast
-      let session = null;
-      if (
-        !isPublicRoute ||
-        url.pathname.startsWith("/dashboard") ||
-        url.pathname.startsWith("/seller") ||
-        url.pathname.startsWith("/admin")
-      ) {
-        const {
-          data: { session: currentSession },
-        } = await supabase.auth.getSession();
-        session = currentSession;
-      }
-
-      // Protected routes
-      if (!session) {
-        if (
-          url.pathname.startsWith("/dashboard") ||
-          url.pathname.startsWith("/seller") ||
-          url.pathname.startsWith("/admin")
-        ) {
-          url.pathname = "/login";
-          span.end();
-          return NextResponse.redirect(url);
-        }
-      } else {
-        // Role based protection
-        const role = session.user.user_metadata.role || "buyer";
-
-        if (url.pathname.startsWith("/seller") && role !== "seller") {
-          url.pathname = "/dashboard";
-          span.end();
-          return NextResponse.redirect(url);
-        }
-
-        if (url.pathname.startsWith("/admin") && role !== "admin") {
-          url.pathname = "/dashboard";
-          span.end();
-          return NextResponse.redirect(url);
-        }
-
-        // Redirect logged in users away from auth pages
-        if (
-          url.pathname.startsWith("/login") ||
-          url.pathname.startsWith("/register")
-        ) {
-          url.pathname = role === "seller" ? "/seller" : "/dashboard";
-          span.end();
-          return NextResponse.redirect(url);
-        }
-      }
-
+    if (isHealthCheck) {
       span.end();
       return response;
-    },
-  );
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    const isAuthenticated = !userError && !!user;
+
+    const isApiSellerRoute = url.pathname.startsWith('/api/seller/');
+    const isApiAdminRoute = url.pathname.startsWith('/api/admin/');
+
+    const isProtectedRoute =
+      url.pathname.startsWith('/dashboard') ||
+      url.pathname.startsWith('/seller') ||
+      url.pathname.startsWith('/admin');
+
+    const isAuthPage =
+      url.pathname.startsWith('/login') ||
+      url.pathname.startsWith('/register') ||
+      url.pathname === '/auth';
+
+    // Protected API routes return JSON errors instead of page redirects.
+    if ((isApiSellerRoute || isApiAdminRoute) && !isAuthenticated) {
+      span.end();
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Protected page routes require an authenticated user
+    if (isProtectedRoute && !isAuthenticated) {
+      url.pathname = '/login';
+      span.end();
+      return NextResponse.redirect(url);
+    }
+
+    if (isAuthenticated) {
+      const role: UserRole = await getUserRole(supabase, user.id);
+
+      if (isApiSellerRoute && role !== 'seller') {
+        span.end();
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+
+      if (isApiAdminRoute && role !== 'admin') {
+        span.end();
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+
+      if (url.pathname.startsWith('/seller') && role !== 'seller') {
+        url.pathname = '/dashboard';
+        span.end();
+        return NextResponse.redirect(url);
+      }
+
+      if (url.pathname.startsWith('/admin') && role !== 'admin') {
+        url.pathname = '/dashboard';
+        span.end();
+        return NextResponse.redirect(url);
+      }
+
+      // Redirect logged in users away from auth pages
+      if (isAuthPage) {
+        url.pathname = role === 'seller' ? '/seller' : '/dashboard';
+        span.end();
+        return NextResponse.redirect(url);
+      }
+    }
+
+    span.end();
+    return response;
+  });
 
   const response = await responsePromise;
 
-  if (request.nextUrl.pathname === "/") {
+  if (request.nextUrl.pathname === '/') {
     console.log(
       `[PERF] Request finished: ${request.nextUrl.pathname} took ${Date.now() - start}ms`,
     );
@@ -115,11 +127,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/seller/:path*",
-    "/admin/:path*",
-    "/login",
-    "/register",
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };

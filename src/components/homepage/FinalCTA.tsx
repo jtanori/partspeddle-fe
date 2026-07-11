@@ -1,25 +1,45 @@
 import React from 'react';
+import Link from 'next/link';
+import { Section } from '../layout/design-system/Section';
+import { Content } from '../layout/design-system/Content';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export const FinalCTA: React.FC = () => {
   return (
-    <section className="py-24 bg-zinc-900 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-[#B87333]/10 -skew-x-12 translate-x-1/2"></div>
-      <div className="pp-container text-center space-y-8 relative z-10">
-        <h2 className="text-4xl md:text-5xl font-display font-black text-white uppercase leading-tight">
-          Ready to get your <span className="text-[#B87333]">Project Back on the Road?</span>
-        </h2>
-        <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-          Join thousands of mechanics and restorers sourcing authentic OEM parts directly from the source.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button className="w-full sm:w-auto bg-[#B87333] hover:bg-[#A35D1F] text-white px-10 py-4 rounded-sm font-display font-bold uppercase tracking-wide transition-all shadow-lg shadow-[#B87333]/20">
-            Start Searching
-          </button>
-          <button className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-4 rounded-sm font-display font-bold uppercase tracking-wide transition-all">
-            Yard Registry Signup
-          </button>
+    <Section className="relative overflow-hidden bg-foreground-primary">
+      <div className="absolute right-0 top-0 h-full w-1/3 -skew-x-12 translate-x-1/2 bg-brand-primary/10" />
+      <Content className="relative z-10 text-center">
+        <div className="space-y-8">
+          <h2 className="font-display text-4xl font-black uppercase leading-tight text-foreground-inverse md:text-5xl">
+            Ready to get your <span className="text-brand-primary">Project Back on the Road?</span>
+          </h2>
+          <p className="mx-auto max-w-2xl font-sans text-lg text-foreground-muted">
+            Join thousands of mechanics and restorers sourcing authentic OEM parts directly from the
+            source.
+          </p>
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/search"
+              className={cn(
+                buttonVariants({ variant: 'default' }),
+                'w-full px-10 py-4 font-display text-sm font-black uppercase tracking-wide shadow-lg shadow-brand-primary/20 sm:w-auto',
+              )}
+            >
+              Start Searching
+            </Link>
+            <Link
+              href="/register?role=seller"
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'w-full border-foreground-inverse bg-transparent px-10 py-4 font-display text-sm font-black uppercase tracking-wide text-foreground-inverse hover:bg-foreground-inverse hover:text-foreground-primary sm:w-auto',
+              )}
+            >
+              Yard Registry Signup
+            </Link>
+          </div>
         </div>
-      </div>
-    </section>
+      </Content>
+    </Section>
   );
 };

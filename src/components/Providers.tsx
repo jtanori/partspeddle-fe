@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useAppStore } from "@/store/useAppStore";
-import { supabase } from "@/lib/supabase";
-
+import React from "react";
 import { AuthProvider } from "./providers/AuthProvider";
+import { ToastProvider } from "./ui/toast";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <AuthProvider>{children}</AuthProvider>;
+  return (
+    <ToastProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </ToastProvider>
+  );
 }

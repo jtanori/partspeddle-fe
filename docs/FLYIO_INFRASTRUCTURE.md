@@ -4,10 +4,13 @@
 
 - **Provider**: Fly.io
 - **Application Names**:
-  - `vintrack-search-staging`
-  - `vintrack-search-prod`
-- **Region**: `ewr` (default)
-- **Health Check**: `GET /health`
+  - `vintrack-stage` (staging)
+  - `vintrack-prod` (production)
+- **Region**: `sjc`
+- **Health Check**: `GET /api/health`
+- **Configuration Files**:
+  - Staging: `fly/fly.stage.toml`
+  - Production: `fly/fly.prod.toml`
 
 ## 2. Database Layer
 
@@ -33,6 +36,54 @@
 | **Algolia**    | `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, `ALGOLIA_SEARCH_KEY`      |
 | **Monitoring** | `SENTRY_DSN`                                                     |
 
-## 5. Configuration (`fly.toml`)
+## 5. Deployment
 
-_(Ensure `fly.toml` in the repository root is kept in sync with the machine requirements for the respective production/staging Fly apps.)_
+Deployments are triggered automatically by `.github/workflows/ci.yml` on pushes to `develop` (staging) and `main` (production).
+
+Local fallback commands:
+
+```bash
+# Staging
+pnpm deploy:staging
+# or
+bash scripts/ops/deploy.sh staging
+
+# Production
+pnpm deploy:production
+# or
+bash scripts/ops/deploy.sh production
+```
+
+_(Always deploy production from the `main` branch and staging from the `develop` branch.)_
+
+The app is containerized with the `Dockerfile` at the repository root; Fly.io detects and uses it automatically.
+
+## 6. Custom Domains
+
+| Environment | Fly.io App       | Domain                |
+| :---------- | :--------------- | :-------------------- |
+| Staging     | `vintrack-stage` | `stage.partspeddle.com` |
+| Production  | `vintrack-prod`  | `partspeddle.com`     |
+
+### DNS Records
+
+Add the following records at your DNS provider:
+
+**Staging — `stage.partspeddle.com`**
+```
+A     stage.partspeddle.com      66.241.124.238
+AAAA  stage.partspeddle.com      2a09:8280:1::13a:3cf3:0
+```
+
+**Production — `partspeddle.com`**
+```
+A     partspeddle.com            66.241.124.237
+AAAA  partspeddle.com            2a09:8280:1::13a:7b9a:0
+```
+
+After adding the records, verify certificate issuance with:
+
+```bash
+flyctl certs check stage.partspeddle.com --config fly/fly.stage.toml
+flyctl certs check partspeddle.com --config fly/fly.prod.toml
+```

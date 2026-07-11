@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useUiStore } from '@/store/hooks';
 
 export const TrustBanner: React.FC = () => {
-  const { setTourActive } = useAppStore();
+  const { setTourActive } = useUiStore();
 
   return (
     <section className="bg-gradient-to-r from-[#1E1E1E] via-[#2D2D2D] to-[#3D3632] text-white p-8 rounded border border-zinc-800 flex flex-col md:flex-row items-center justify-between gap-6 max-w-7xl mx-auto select-none mb-12" id="tour-cta">
@@ -11,7 +11,7 @@ export const TrustBanner: React.FC = () => {
           Vetted Builder Guarantee index
         </h3>
         <p className="font-sans text-sm text-zinc-350 max-w-xl">
-          We hold payments for 30 days. If the part doesn't fit standard vehicle parameters indicated inside our fitment catalog, get a full refund including shipping.
+          We hold payments for 30 days. If the part doesn&apos;t fit standard vehicle parameters indicated inside our fitment catalog, get a full refund including shipping.
         </p>
       </div>
       <button 

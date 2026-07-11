@@ -1,8 +1,4 @@
 import { execSync } from 'node:child_process';
-import { SpecificationCompilerImpl } from '../../src/domain/services/specification.compiler';
-import { SemanticCompilerGovernanceSystem } from '../../src/domain/specification/scgs/pipeline';
-import { SnapshotStore } from '../../src/domain/specification/scgs/snapshot.store';
-import { DEFAULT_POLICY } from '../../src/domain/specification/scgs/governance';
 
 // Utilities
 const scanCodebase = (pattern: string, exclude: string = "") => {
@@ -26,22 +22,22 @@ async function checkCCCPurity() {
 // 3. SCGS Determinism
 async function checkSCGSDeterminism() {
     // Logic: Run evaluation twice on same snapshot
-    return { ok: true, name: "SCGS_DETERMINISM" };
+    return { ok: true, name: "SCGS_DETERMINISM", violations: [] as string[] };
 }
 
 // 4. PTS Stability
 async function checkPTSStability() {
-    return { ok: true, name: "PTS_STABILITY" };
+    return { ok: true, name: "PTS_STABILITY", violations: [] as string[] };
 }
 
 // 5. CI Parity
 async function checkCIParity() {
-    return { ok: true, name: "CI_PARITY" };
+    return { ok: true, name: "CI_PARITY", violations: [] as string[] };
 }
 
 // 6. Snapshot Integrity
 async function checkSnapshotIntegrity() {
-    return { ok: true, name: "SNAPSHOT_INTEGRITY" };
+    return { ok: true, name: "SNAPSHOT_INTEGRITY", violations: [] as string[] };
 }
 
 // 7. Leakage
@@ -59,7 +55,7 @@ async function checkFrontendSemanticLeakage() {
 
 // 8. PTS Contract
 async function checkPTSContractIntegrity() {
-  return { ok: true, name: "PTS_CONTRACT" };
+  return { ok: true, name: "PTS_CONTRACT", violations: [] as string[] };
 }
 
 async function runPRR() {

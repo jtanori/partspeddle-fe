@@ -40,7 +40,6 @@ export interface SearchViewModel {
   meta: {
     source: "ALGOLIA" | "SCGS";
     queryMs?: number;
-    driftScore?: number;
   };
 }
 

@@ -10,8 +10,13 @@ export interface SearchDocument {
   model: string;
   year: number | null;
 
+  // Fitment signatures: each value is "makeId:modelId:year" for exact tuple matching.
+  fitment_signatures: string[];
+
   category: string;
+  category_label: string;
   part_type: string;
+  part_type_label: string;
 
   condition: string;
 

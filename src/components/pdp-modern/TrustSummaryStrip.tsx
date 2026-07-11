@@ -3,11 +3,25 @@ import { Star, Truck, Calendar, RefreshCw } from 'lucide-react';
 
 export default function TrustSummaryStrip() {
   return (
-    <div className="grid grid-cols-4 gap-4 p-4 border-y border-zinc-200 text-xs text-zinc-600">
-      <div className="flex items-center gap-2"><Star className="w-4 h-4" /> <span>Seller Rating</span></div>
-      <div className="flex items-center gap-2"><Truck className="w-4 h-4" /> <span>Ships From</span></div>
-      <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> <span>Delivery ETA</span></div>
-      <div className="flex items-center gap-2"><RefreshCw className="w-4 h-4" /> <span>Returns</span></div>
+    <div className="bg-surface-primary border border-stroke-subtle rounded-xl py-6 px-10 shadow-card">
+      <div className="grid grid-cols-4 gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-foreground-muted">
+        <div className="flex flex-col items-center gap-2 border-r border-stroke-subtle last:border-0">
+          <Star className="w-5 h-5 text-brand-primary mb-1" /> 
+          <span className="text-foreground-secondary">Seller Rating</span>
+        </div>
+        <div className="flex flex-col items-center gap-2 border-r border-stroke-subtle last:border-0">
+          <Truck className="w-5 h-5 text-brand-primary mb-1" /> 
+          <span className="text-foreground-secondary">Ships From NC, USA</span>
+        </div>
+        <div className="flex flex-col items-center gap-2 border-r border-stroke-subtle last:border-0">
+          <Calendar className="w-5 h-5 text-brand-primary mb-1" /> 
+          <span className="text-foreground-secondary">Est. Delivery Jun 5-9</span>
+        </div>
+        <div className="flex flex-col items-center gap-2 border-r border-stroke-subtle last:border-0">
+          <RefreshCw className="w-5 h-5 text-brand-primary mb-1" /> 
+          <span className="text-foreground-secondary">30-Day Returns</span>
+        </div>
+      </div>
     </div>
   );
 }

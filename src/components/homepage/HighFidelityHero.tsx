@@ -2,18 +2,21 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
-import { useAppStore } from '../../store/useAppStore';
+import { Search, Check } from 'lucide-react';
+import { useAuthStore } from '@/store/hooks';
 import Image from 'next/image';
 import heroImage from '../../assets/images/heor_1_b.png';
+import { Button } from '@/components/ui/button';
 
 export const HighFidelityHero: React.FC = () => {
   const router = useRouter();
-  const { user, setUserRole, setActiveSellerTab } = useAppStore();
+  const { user } = useAuthStore();
 
   return (
-    <section className="relative bg-[#0E0E0E] text-white -mt-16 pt-24 pb-6 md:pt-32 md:pb-8 overflow-hidden" id="hero-banner">
-      
+    <section
+      className="relative -mt-16 overflow-hidden bg-foreground-primary pb-6 pt-24 text-foreground-inverse md:pb-8 md:pt-32"
+      id="hero-banner"
+    >
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -23,61 +26,56 @@ export const HighFidelityHero: React.FC = () => {
           priority
           className="object-cover opacity-70"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 via-[35%] to-transparent z-10" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-foreground-primary via-foreground-primary/60 via-[35%] to-transparent" />
       </div>
 
-      <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 w-full">
+      <div className="relative z-20 mx-auto w-full max-w-[var(--content-max)] px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl space-y-6">
           <div className="space-y-4">
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-white tracking-tight leading-none text-left">
-              KEEP EQUIPMENT WORKING.<br />
-              <span className="text-[#C4A882]">BUY. SELL. TRADE PARTS LOCALLY.</span>
+            <h1 className="text-left font-display text-3xl font-black uppercase leading-none tracking-tight text-foreground-inverse sm:text-4xl lg:text-5xl">
+              KEEP EQUIPMENT WORKING.
+              <br />
+              <span className="text-brand-primary">BUY. SELL. TRADE PARTS LOCALLY.</span>
             </h1>
-            <p className="font-sans text-sm sm:text-base text-zinc-400 max-w-xl leading-relaxed text-left">
-              The marketplace for auto and farm parts — built for mechanics, enthusiasts, farmers, salvage yards, and independent sellers.
+            <p className="max-w-xl text-left font-sans text-sm leading-relaxed text-foreground-muted sm:text-base">
+              The marketplace for auto and farm parts — built for mechanics, enthusiasts, farmers,
+              salvage yards, and independent sellers.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-4 pt-1">
-            <button 
-              onClick={() => router.push('/search')} 
-              className="bg-[#B87333] hover:bg-[#A66222] text-white px-5 py-2.5 rounded font-bold font-sans text-sm tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+            <Button
+              onClick={() => router.push('/search')}
+              className="flex h-11 items-center gap-2 px-5 font-display text-sm font-black uppercase tracking-wider"
               aria-label="Search parts inventory"
             >
-              <Search className="w-4 h-4" />
+              <Search className="h-4 w-4" />
               <span>SEARCH INVENTORY</span>
-            </button>
+            </Button>
 
-            <button
+            <Button
+              variant="outline"
               onClick={() => {
                 if (user) {
-                  setUserRole('seller');
-                  setActiveSellerTab('listings');
-                  router.push('/dashboard');
+                  router.push('/seller/create');
                 } else {
                   router.push('/register?role=seller');
                 }
               }}
-              className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white px-5 py-2.5 rounded font-bold font-sans text-sm tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+              className="flex h-11 items-center gap-2 border-foreground-inverse bg-transparent px-5 font-display text-sm font-black uppercase tracking-wider text-foreground-inverse hover:bg-foreground-inverse hover:text-foreground-primary"
               aria-label="Start selling parts"
             >
               <span>SELL PARTS</span>
-            </button>
+            </Button>
           </div>
 
           <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
-            <div className="flex items-center gap-1.5 text-zinc-500">
-              <span className="text-[#B87333] opacity-80">✓</span>
-              <span className="text-[9px] font-bold uppercase tracking-widest">Verified Sellers</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-zinc-500">
-              <span className="text-[#B87333] opacity-80">✓</span>
-              <span className="text-[9px] font-bold uppercase tracking-widest">Buyer Protection</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-zinc-500">
-              <span className="text-[#B87333] opacity-80">✓</span>
-              <span className="text-[9px] font-bold uppercase tracking-widest">Nationwide Shipping</span>
-            </div>
+            {['Verified Sellers', 'Buyer Protection', 'Nationwide Shipping'].map((item) => (
+              <div key={item} className="flex items-center gap-1.5 text-foreground-muted">
+                <Check className="h-3 w-3 text-brand-primary" />
+                <span className="text-[9px] font-bold uppercase tracking-widest">{item}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -81,39 +81,22 @@ export default function GuidedTour({ onClose, onHighlightElement }: GuidedTourPr
     onHighlightElement(tourData.elementId);
 
     // If step is 1, let's highlight both navigation search and hero search widget
-    const elIds = tourData.elementId === 'tour-search' 
-      ? ['tour-search', 'tour-search-hero'] 
+    const elIds = tourData.elementId === 'tour-search'
+      ? ['tour-search', 'tour-search-hero']
       : [tourData.elementId];
 
-    const cleanups: (() => void)[] = [];
+    const highlighted: HTMLElement[] = [];
 
     elIds.forEach((id) => {
       const el = document.getElementById(id);
-      if (el) {
-        // Save original styles
-        const originalBoxShadow = el.style.boxShadow;
-        const originalBorderColor = el.style.borderColor;
-        const originalTransition = el.style.transition;
-        const originalPosition = el.style.position;
-        const originalZIndex = el.style.zIndex;
-
-        // Apply gold/amber pulse outline matching mockup
-        el.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
-        el.style.boxShadow = '0 0 0 3px rgba(212, 140, 67, 0.25), 0 0 20px 8px rgba(212, 140, 67, 0.55)';
-        el.style.borderColor = '#d48c43';
-
-        cleanups.push(() => {
-          el.style.boxShadow = originalBoxShadow;
-          el.style.borderColor = originalBorderColor;
-          el.style.transition = originalTransition;
-          el.style.position = originalPosition;
-          el.style.zIndex = originalZIndex;
-        });
+      if (el && el instanceof HTMLElement) {
+        el.classList.add('tour-highlight');
+        highlighted.push(el);
       }
     });
 
     return () => {
-      cleanups.forEach((cleanup) => cleanup());
+      highlighted.forEach((el) => el.classList.remove('tour-highlight'));
     };
   }, [currentStep, tourData, onHighlightElement]);
 
@@ -288,16 +271,25 @@ export default function GuidedTour({ onClose, onHighlightElement }: GuidedTourPr
         </svg>
       ))}
 
+      {/* Highlight stylesheet: guarantees cleanup on unmount/dismiss */}
+      <style>{`
+        .tour-highlight {
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          box-shadow: 0 0 0 3px rgba(212, 140, 67, 0.25), 0 0 20px 8px rgba(212, 140, 67, 0.55) !important;
+          border-color: #d48c43 !important;
+        }
+      `}</style>
+
       {/* Main Dim Backdrop */}
-      <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 transition-all animate-fade-in">
-        
-        {/* Horizontally oriented card, radius approx 12px, padded to 0 so the video occupies full modal width */}
-        <div 
+      <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center z-[9999] p-0 sm:p-4 transition-all animate-fade-in">
+
+        {/* Responsive dialog: full-height sheet on portrait phones, constrained card on larger screens */}
+        <div
           id="guided-tour-dialog"
-          className="bg-[#161617] border border-[#242426] rounded-xl max-w-[720px] w-full text-white shadow-[0_20px_40px_rgba(0,0,0,0.5)] relative overflow-hidden flex flex-col p-0 font-sans"
+          className="bg-[#161617] border border-[#242426] rounded-none sm:rounded-xl w-full sm:max-w-[720px] h-full sm:h-auto sm:max-h-[90dvh] text-white shadow-[0_20px_40px_rgba(0,0,0,0.5)] relative overflow-hidden flex flex-col p-0 font-sans"
         >
           {/* Close button top right */}
-          <button 
+          <button
             onClick={handleSkip}
             className="absolute top-4 right-4 z-20 p-1.5 rounded-full bg-zinc-900/65 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer border border-zinc-800/40"
           >
@@ -305,7 +297,7 @@ export default function GuidedTour({ onClose, onHighlightElement }: GuidedTourPr
           </button>
 
           {/* ACTIVE WORK: FULL-WIDTH VIDEO CONTAINER (Has no border, bottom corner radius is 0) */}
-          <div className="relative w-full aspect-[16/10] bg-black overflow-hidden border-none rounded-t-xl rounded-b-none group">
+          <div className="relative w-full aspect-video sm:aspect-[16/10] bg-black overflow-hidden border-none sm:rounded-t-xl rounded-b-none group shrink-0">
             
             {/* Actual HTML5 Video playing high-quality engine preview clip to showcase play capabilities */}
             <video
@@ -406,60 +398,6 @@ export default function GuidedTour({ onClose, onHighlightElement }: GuidedTourPr
             </div>
 
           </div>
-
-          {/* 
-            ==================================================================
-            COMMENTED COPYS & SIDEBARS CODE FOR POTENTIAL FUTURE COMPONENT REUSE 
-            ==================================================================
-
-            {/* 
-            <div className="md:w-1/2 flex flex-col justify-between p-6">
-              <label className="flex items-center gap-2 text-zinc-405 hover:text-zinc-300 text-xs mt-4 cursor-pointer select-none group">
-                <input 
-                  type="checkbox" 
-                  checked={dontShowAgain}
-                  onChange={(e) => setDontShowAgain(e.target.checked)}
-                  className="sr-only"
-                />
-                <div className={`w-4 h-4 rounded-sm flex items-center justify-center border transition-all ${
-                  dontShowAgain ? 'bg-[#d48c43] border-[#d48c43] text-white' : 'border-zinc-750 bg-zinc-900 group-hover:border-zinc-550'
-                }`}>
-                  <svg className="w-2.5 h-2.5 stroke-[3]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Don't show this tour again</span>
-              </label>
-            </div>
-            
-            <div className="md:w-1/2 flex flex-col justify-between p-6">
-              <div className="flex flex-col">
-                <div className="flex flex-col mb-3">
-                  <span className="text-[13px] text-zinc-401 font-medium">Welcome to PartsPeddle</span>
-                  <span className="text-xs text-zinc-501 mt-0.5 font-mono">{currentStep} of 5</span>
-                </div>
-                <h1 className="text-[26px] font-bold text-white tracking-tight leading-none mb-2">
-                  Hey, I’m <span className="text-[#d48c43]">Jess</span>.
-                </h1>
-                <p className="text-sm text-zinc-401 leading-normal mb-5 font-sans">
-                  I'll show you around and help you find the parts you need faster and easier.
-                </p>
-                <div className="border border-[#d48c43]/40 bg-[#d48c43]/[0.03] rounded-lg p-4 flex gap-3.5 items-start">
-                  <div className="w-8 h-8 rounded-full border border-[#d48c43] bg-zinc-950 flex items-center justify-center shrink-0">
-                    <Search className="w-4 h-4 text-[#d48c43]" />
-                  </div>
-                  <div>
-                    <h3 className="text-white text-sm font-semibold mb-1 leading-snug">
-                      {StepGuide.title}
-                    </h3>
-                    <p className="text-zinc-401 text-xs leading-normal">
-                      {StepGuide.text}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            */}
 
         </div>
 

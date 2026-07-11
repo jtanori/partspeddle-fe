@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import { ThumbsUp, Star, Camera } from "lucide-react";
-import { PARTS_FALLBACK_IMAGE } from "@/types";
-import { useRouter } from "next/navigation";
 import { ImageModal } from "../ImageModal";
 import { SearchResultCardModel } from "@/domain/view-models/search";
+import { DEFAULT_PART_IMAGE, resolvePartImageUrl } from "@/lib/part-images";
 
 interface ProductGridCardProps {
   card: SearchResultCardModel;
@@ -36,10 +36,10 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
   toggleFavorite,
   onSelectPart,
 }) => {
-  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const hasImage = !!card.imageUrl;
-  const imageUrl = card.imageUrl || PARTS_FALLBACK_IMAGE;
+  const [imageError, setImageError] = useState(false);
+  const imageUrl = resolvePartImageUrl(card.imageUrl);
+  const useFallback = !card.imageUrl || imageError;
 
   return (
     <>
@@ -48,26 +48,20 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
         className="bg-white border border-zinc-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col cursor-pointer overflow-hidden"
       >
         <div className="aspect-square relative bg-zinc-100 flex items-center justify-center">
-          {hasImage ? (
-            <img
-              src={imageUrl}
-              alt={card.title}
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <img
-              src={PARTS_FALLBACK_IMAGE}
-              alt="Placeholder"
-              className="w-full h-full object-cover"
-            />
-          )}
+          <Image
+            src={useFallback ? DEFAULT_PART_IMAGE : imageUrl}
+            alt={card.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            className="object-cover"
+            onError={() => setImageError(true)}
+          />
           <button
             onClick={(e) => {
               e.stopPropagation();
               toggleFavorite(card.id);
             }}
-            className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full border border-zinc-200 hover:text-blue-500 transition-colors"
+            className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full border border-zinc-200 hover:text-blue-500 transition-colors z-10"
           >
             <ThumbsUp
               className={`w-4 h-4 ${isFavorite ? "fill-blue-500 text-blue-500" : "text-zinc-500"}`}
@@ -78,7 +72,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({
               e.stopPropagation();
               setIsModalOpen(true);
             }}
-            className="absolute bottom-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+            className="absolute bottom-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10"
           >
             <Camera className="w-4 h-4" />
           </button>

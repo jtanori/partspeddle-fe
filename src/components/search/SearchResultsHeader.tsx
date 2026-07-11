@@ -1,6 +1,6 @@
-import React from "react";
-import { SearchFilters } from "@/types";
-import { composeSearchHeader } from "./utils/header-utils";
+import React from 'react';
+import { SearchFilters } from '@/types';
+import { composeSearchHeader } from './utils/header-utils';
 
 interface SearchResultsHeaderProps {
   filters: SearchFilters;
@@ -13,20 +13,16 @@ export const SearchResultsHeader: React.FC<SearchResultsHeaderProps> = ({
   filters,
   totalCount,
   isLoading,
-  className = "",
+  className = '',
 }) => {
-  const { title, subtitle } = composeSearchHeader(
-    filters,
-    totalCount,
-    isLoading,
-  );
+  const { title, subtitle } = composeSearchHeader(filters, totalCount, isLoading);
 
   return (
     <div className={className}>
-      <h1 className="text-2xl font-bold uppercase tracking-tight text-zinc-900">
+      <h1 className="font-display text-2xl font-bold uppercase tracking-tight text-foreground-primary">
         {title}
       </h1>
-      <p className="text-base text-zinc-500 mt-1">{subtitle}</p>
+      <p className="mt-1 font-sans text-base text-foreground-muted">{subtitle}</p>
     </div>
   );
 };

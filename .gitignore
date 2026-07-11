@@ -4,6 +4,7 @@ dist/
 coverage/
 .next/
 .DS_Store
+.cursor/
 *.log
 *.out
 .env*
@@ -12,4 +13,8 @@ supabase/.temp/
 test-results/
 reports/*.json
 logs/
-tsconfig.tsbuildinfo
+*.tsbuildinfo
+.eslintcache
+.prettiercache
+storybook-static/
+backups/

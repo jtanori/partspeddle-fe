@@ -1,7 +1,6 @@
 
 import { supabaseAdmin } from '../src/lib/supabase-admin';
 import { logger } from '../src/lib/logger';
-import fs from 'fs';
 
 async function verifySchema() {
     logger.info('Verifying database schema...');

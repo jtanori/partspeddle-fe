@@ -33,8 +33,13 @@ async function configureIndex() {
           "seller_verified",
           "location",
           "year",
+          "filterOnly(fitment_signatures)",
         ],
-        customRanking: [],
+        customRanking: [
+          "desc(listing_quality_score)",
+          "desc(seller_trust_score)",
+          "desc(created_at)",
+        ],
         ranking: [
           "typo",
           "geo",

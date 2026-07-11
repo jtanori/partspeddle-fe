@@ -4,6 +4,9 @@ export interface SearchFilters {
   yearMin?: number;
   yearMax?: number;
 
+  // Exact fitment tuple signatures (makeId:modelId:year). Used instead of post-fetch JS filtering.
+  fitmentSignatures?: string[];
+
   categoryIds?: string[];
   partTypeIds?: string[];
 

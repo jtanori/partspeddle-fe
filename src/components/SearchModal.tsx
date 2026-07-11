@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { supabase } from "@/lib/supabase";
 import {
   Search,
   X,
@@ -14,8 +13,11 @@ import {
   Clock,
   Trash2,
 } from "lucide-react";
-import { Part, PARTS_FALLBACK_IMAGE } from "../types";
+import { Part } from "../types";
 import { saveRecentSearch } from "./search/utils/recent-searches";
+import { useInstantSearch } from "@/hooks/useInstantSearch";
+import { getConditionColor } from "./search/utils/condition-utils";
+import { DEFAULT_PART_IMAGE, resolvePartImageUrl } from "@/lib/part-images";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -53,41 +55,6 @@ const getSystemIcon = (sysId: string) => {
   }
 };
 
-const PART_THUMBNAILS: Record<string, string> = {
-  "1100428":
-    "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=300",
-  "1100429":
-    "https://images.unsplash.com/photo-1518364538800-6bcb3f25da49?auto=format&fit=crop&q=80&w=300",
-  "1100430":
-    "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=300",
-  "1100431":
-    "https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&q=80&w=300",
-  "1100432":
-    "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=300",
-  "th400-trans":
-    "https://images.unsplash.com/photo-1504222014244-63be825126f5?auto=format&fit=crop&q=80&w=300",
-  "holley-4160":
-    "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=300",
-  "f150-door":
-    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=300",
-  "ford9-rearend":
-    "https://images.unsplash.com/photo-1530047625168-4b18fa65f242?auto=format&fit=crop&q=80&w=300",
-  "brembo-caliper-red":
-    "https://images.unsplash.com/photo-1606577924006-27d39b132af2?auto=format&fit=crop&q=80&w=300",
-  "eibach-springs-sports":
-    "https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&q=80&w=300",
-  "wilwood-disc-rotors":
-    "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=300",
-  "bilstein-b6-strut":
-    "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=300",
-  "custom-steering-wheel":
-    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=300",
-  "edelbrock-manifold":
-    "https://images.unsplash.com/photo-1551524559-8af4e6624178?auto=format&fit=crop&q=80&w=300",
-  "msd-ignition-box":
-    "https://images.unsplash.com/photo-1532585078488-03b0ff297fea?auto=format&fit=crop&q=80&w=300",
-};
-
 export default function SearchModal({
   isOpen,
   onClose,
@@ -97,9 +64,14 @@ export default function SearchModal({
 }: SearchModalProps) {
   const [query, setQuery] = useState(initialQuery);
   const [selectedSystem, setSelectedSystem] = useState<string>("");
-  const [matchingParts, setMatchingParts] = useState<Part[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { parts: matchingParts, loading: searchLoading } = useInstantSearch(query, {
+    minLength: 3,
+    limit: 10,
+    system: selectedSystem,
+    enabled: isOpen,
+  });
 
   // Swipe-down to close gestures (mobile sheet)
   const [translateY, setTranslateY] = useState(0);
@@ -144,36 +116,6 @@ export default function SearchModal({
     }
   }, [isOpen, initialQuery]);
 
-  // Compute live search results based on query and subsystem
-  useEffect(() => {
-    const fetchResults = async () => {
-      const trimmed = query.toLowerCase().trim();
-
-      if (trimmed.length < 3 && !selectedSystem) {
-        setMatchingParts([]);
-        return;
-      }
-
-      let dbQuery = supabase.from("parts").select("*");
-      if (selectedSystem) dbQuery = dbQuery.eq("system", selectedSystem);
-      if (trimmed.length >= 3) dbQuery = dbQuery.textSearch("title", trimmed);
-
-      const { data, error } = await dbQuery.limit(10);
-
-      if (error) {
-        console.error("Search query error:", error);
-        setMatchingParts([]);
-      } else if (data) {
-        setMatchingParts(data as unknown as Part[]);
-      } else {
-        setMatchingParts([]);
-      }
-    };
-
-    const debounceTimer = setTimeout(fetchResults, 300);
-    return () => clearTimeout(debounceTimer);
-  }, [query, selectedSystem]);
-
   if (!isOpen) return null;
 
   const saveSearchTerm = (term: string) => {
@@ -187,24 +129,6 @@ export default function SearchModal({
     } catch (e) {
       console.error(e);
     }
-  };
-
-  const getConditionColor = (cond: string) => {
-    const c = cond.toLowerCase();
-    if (
-      c.includes("new") ||
-      c.includes("oem original") ||
-      c.includes("original")
-    ) {
-      return "bg-[#B87333] text-zinc-950 font-black";
-    }
-    if (c.includes("excellent")) {
-      return "bg-[#7A8B6F] text-zinc-950 font-black";
-    }
-    if (c.includes("good")) {
-      return "bg-[#E9DEC1] text-zinc-950 font-bold";
-    }
-    return "bg-[#8B6239] text-[#FCFAF8] font-semibold";
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -253,16 +177,12 @@ export default function SearchModal({
       {/* Main container: Fullscreen on mobile (< 768px), beautiful centered dialogue on desktop */}
       <div
         className="bg-[#1A1A1A] md:bg-white text-white md:text-zinc-900 w-full md:w-[75%] md:min-w-[700px] md:max-w-[75%] h-full md:h-[85vh] md:max-h-[85vh] rounded-none md:rounded-2xl z-20 flex flex-col shadow-[0_-15px_45px_rgba(0,0,0,0.5)] md:shadow-[0_20px_60px_rgba(0,0,0,0.2)] md:border md:border-zinc-200 overflow-hidden select-none"
-        style={
-          typeof window !== "undefined" && window.innerWidth >= 768
-            ? {}
-            : {
-                transform: `translateY(${translateY}px)`,
-                transition: isDragging
-                  ? "none"
-                  : "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)",
-              }
-        }
+        style={{
+          transform: `translateY(${translateY}px)`,
+          transition: isDragging
+            ? "none"
+            : "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
         id="search-overlay-container"
       >
         {/* Mobile-only draggable handlebar */}
@@ -425,7 +345,9 @@ export default function SearchModal({
             <div className="space-y-3">
               <div className="text-[10px] uppercase tracking-wider font-mono font-bold text-zinc-500 border-b border-zinc-800/80 md:border-zinc-100 pb-2 mb-3">
                 <span>
-                  Matching Live Inventory ({matchingParts.length} parts found)
+                  {searchLoading
+                    ? "Searching live inventory..."
+                    : `Matching Live Inventory (${matchingParts.length} parts found)`}
                 </span>
               </div>
 
@@ -434,8 +356,7 @@ export default function SearchModal({
                 id="search-modal-results-list"
               >
                 {matchingParts.map((part) => {
-                  const thumb =
-                    PART_THUMBNAILS[part.id] || PARTS_FALLBACK_IMAGE;
+                  const thumb = resolvePartImageUrl(part.images?.[0]);
                   const cleanedTitle = (part.title || "").replace(
                     /^\d{4}\s+/,
                     "",
@@ -467,7 +388,7 @@ export default function SearchModal({
                           referrerPolicy="no-referrer"
                           onError={(e) => {
                             e.currentTarget.onerror = null;
-                            e.currentTarget.src = PARTS_FALLBACK_IMAGE;
+                            e.currentTarget.src = DEFAULT_PART_IMAGE;
                           }}
                         />
 

@@ -7,9 +7,10 @@ interface SidebarLinkProps {
   to: string;
   label: string;
   icon: React.ElementType;
+  onNavigate?: () => void;
 }
 
-export const SidebarLink: React.FC<SidebarLinkProps> = ({ to, label, icon: Icon }) => {
+export const SidebarLink: React.FC<SidebarLinkProps> = ({ to, label, icon: Icon, onNavigate }) => {
   const { isTerminalLocked, triggerAbortWarning } = useInventoryWizard();
   const router = useRouter();
 
@@ -17,9 +18,12 @@ export const SidebarLink: React.FC<SidebarLinkProps> = ({ to, label, icon: Icon 
     if (isTerminalLocked) {
       e.preventDefault();
       triggerAbortWarning(() => {
+        onNavigate?.();
         router.push(to);
       });
+      return;
     }
+    onNavigate?.();
   };
 
   return (

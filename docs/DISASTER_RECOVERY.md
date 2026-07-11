@@ -29,7 +29,7 @@
 
 ### Application Rollback
 
-- Use `flyctl deploy --image <previous-image-tag>` or `flyctl rollback`.
+- Use `flyctl deploy --config fly/fly.prod.toml --image <previous-image-tag>` or `flyctl rollback --config fly/fly.prod.toml`.
 
 ### Database Rollback
 

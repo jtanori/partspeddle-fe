@@ -6,11 +6,11 @@
 | ------------------ | ---------------------------------- |
 | Project            | VinTrack                           |
 | Certification Type | Production Readiness Certification |
-| Version            | __________                         |
-| Branch             | __________                         |
+| Version            | \***\*\_\_\*\***                   |
+| Branch             | \***\*\_\_\*\***                   |
 | Environment        | Staging                            |
-| Auditor            | __________                         |
-| Date               | __________                         |
+| Auditor            | \***\*\_\_\*\***                   |
+| Date               | \***\*\_\_\*\***                   |
 | Result             | ☐ PASS ☐ CONDITIONAL PASS ☐ FAIL   |
 
 ---
@@ -21,17 +21,17 @@
 
 Verify that VinTrack is production ready across:
 
-* Architecture
-* Routing
-* Security
-* Search
-* Database
-* Performance
-* Reliability
-* Observability
-* Deployment
-* Disaster Recovery
-* Operational Readiness
+- Architecture
+- Routing
+- Security
+- Search
+- Database
+- Performance
+- Reliability
+- Observability
+- Deployment
+- Disaster Recovery
+- Operational Readiness
 
 ---
 
@@ -77,9 +77,9 @@ src/hooks
 
 ### Pass Criteria
 
-* [ ] Consistent structure
-* [ ] No dead directories
-* [ ] No duplicate systems
+- [ ] Consistent structure
+- [ ] No dead directories
+- [ ] No duplicate systems
 
 ---
 
@@ -94,8 +94,8 @@ npm outdated
 
 ### Pass Criteria
 
-* [ ] No critical vulnerabilities
-* [ ] No abandoned dependencies
+- [ ] No critical vulnerabilities
+- [ ] No abandoned dependencies
 
 ---
 
@@ -107,9 +107,9 @@ npm run build
 
 ### Pass Criteria
 
-* [ ] Build succeeds
-* [ ] No route failures
-* [ ] No hydration failures
+- [ ] Build succeeds
+- [ ] No route failures
+- [ ] No hydration failures
 
 ---
 
@@ -174,10 +174,10 @@ All outcomes must pass.
 
 Verify:
 
-* [ ] Valid login
-* [ ] Invalid login
-* [ ] Expired session
-* [ ] Session refresh
+- [ ] Valid login
+- [ ] Invalid login
+- [ ] Expired session
+- [ ] Session refresh
 
 ---
 
@@ -185,9 +185,9 @@ Verify:
 
 Verify:
 
-* [ ] Registration
-* [ ] Duplicate account handling
-* [ ] Email verification
+- [ ] Registration
+- [ ] Duplicate account handling
+- [ ] Email verification
 
 ---
 
@@ -195,9 +195,9 @@ Verify:
 
 Verify:
 
-* [ ] Request reset
-* [ ] Reset token validation
-* [ ] Password update
+- [ ] Request reset
+- [ ] Reset token validation
+- [ ] Password update
 
 ---
 
@@ -228,7 +228,7 @@ anonymous → seller
 
 ### Pass Criteria
 
-* [ ] All blocked
+- [ ] All blocked
 
 ---
 
@@ -335,9 +335,9 @@ search_audit_log
 
 Verify:
 
-* [ ] FK constraints
-* [ ] Indexes
-* [ ] Unique constraints
+- [ ] FK constraints
+- [ ] Indexes
+- [ ] Unique constraints
 
 ---
 
@@ -357,10 +357,10 @@ npm run analyze
 
 Verify:
 
-* [ ] Home page
-* [ ] Search page
-* [ ] Listing page
-* [ ] Dashboard
+- [ ] Home page
+- [ ] Search page
+- [ ] Listing page
+- [ ] Dashboard
 
 ---
 
@@ -388,9 +388,9 @@ Error Rate < 0.5%
 
 Verify:
 
-* [ ] API logging
-* [ ] Search logging
-* [ ] Error logging
+- [ ] API logging
+- [ ] Search logging
+- [ ] Error logging
 
 ---
 
@@ -398,9 +398,9 @@ Verify:
 
 Verify:
 
-* [ ] Request metrics
-* [ ] Search metrics
-* [ ] Queue metrics
+- [ ] Request metrics
+- [ ] Search metrics
+- [ ] Queue metrics
 
 ---
 
@@ -408,9 +408,9 @@ Verify:
 
 Verify:
 
-* [ ] Search failures
-* [ ] Sync failures
-* [ ] Error spikes
+- [ ] Search failures
+- [ ] Sync failures
+- [ ] Error spikes
 
 ---
 
@@ -420,9 +420,9 @@ Verify:
 
 Verify:
 
-* [ ] fly.toml
-* [ ] Health checks
-* [ ] Secrets documented
+- [ ] `fly/fly.stage.toml` and `fly/fly.prod.toml`
+- [ ] Health checks (`GET /api/health`)
+- [ ] Secrets documented
 
 ---
 
@@ -431,8 +431,7 @@ Verify:
 Verify:
 
 ```http
-GET /health
-GET /ready
+GET /api/health
 ```
 
 ---
@@ -442,7 +441,7 @@ GET /ready
 Execute:
 
 ```bash
-fly deploy --build-only
+flyctl deploy --config fly/fly.stage.toml --build-only
 ```
 
 ---
@@ -453,8 +452,8 @@ fly deploy --build-only
 
 Verify:
 
-* [ ] Backup exists
-* [ ] Restore procedure documented
+- [ ] Backup exists
+- [ ] Restore procedure documented
 
 ---
 
@@ -462,8 +461,8 @@ Verify:
 
 Verify:
 
-* [ ] Full reindex works
-* [ ] Partial reindex works
+- [ ] Full reindex works
+- [ ] Partial reindex works
 
 ---
 
@@ -471,30 +470,54 @@ Verify:
 
 Verify:
 
-* [ ] Deployment rollback documented
-* [ ] Tested successfully
+- [ ] Deployment rollback documented
+- [ ] Tested successfully
 
 ---
 
 # SECTION 11 — SECURITY CERTIFICATION
 
+Evidence and automated tests for the security gate introduced in P5.
+
 ## Headers
 
 Verify:
 
-* [ ] CSP
-* [ ] HSTS
-* [ ] X-Frame-Options
+- [ ] CSP present and production CSP omits `'unsafe-inline'` for scripts — evidence: `tests/security/headers.spec.ts`
+- [ ] HSTS `max-age=63072000; includeSubDomains; preload` — evidence: `src/lib/security-headers.ts`
+- [ ] X-Frame-Options `DENY`
+- [ ] X-Content-Type-Options `nosniff`
+- [ ] Referrer-Policy and Permissions-Policy present
+
+Automated test: `pnpm test -- tests/security/headers.spec.ts`
 
 ---
 
-## Secrets
+## Authentication & Authorization
 
 Verify:
 
-* [ ] No secrets in repository
-* [ ] No secrets in logs
-* [ ] No exposed service keys
+- [ ] Anonymous users are redirected from `/dashboard`, `/seller`, `/admin` to `/login`
+- [ ] Buyers cannot access `/seller` routes
+- [ ] Non-admins cannot access `/admin` routes
+- [ ] Seller/admin APIs return `401`/`403` for unauthenticated or wrong-role requests
+
+Automated tests:
+
+- `tests/security/rbac.spec.ts`
+- `tests/security/api-auth.spec.ts`
+- `tests/branch/p5-2-routing-proxy-session-security/proxy-session-security.test.ts`
+
+---
+
+## Secrets & Sensitive Data
+
+Verify:
+
+- [ ] No secrets in repository
+- [ ] Logger redacts tokens, API keys, and PII — evidence: `tests/security/secrets.spec.ts`, `src/lib/logger.ts`
+- [ ] Client bundle audit passes — evidence: `pnpm security:bundle-audit`
+- [ ] API error responses do not leak internal details — evidence: `src/lib/api/errors.ts`
 
 ---
 
@@ -503,7 +526,7 @@ Verify:
 Execute:
 
 ```bash
-npm audit --production
+pnpm audit --production --audit-level high
 ```
 
 Pass:
@@ -513,16 +536,24 @@ Pass:
 0 high
 ```
 
+CI gate: `.github/workflows/ci.yml` runs `pnpm audit --production --audit-level high`.
+
+---
+
+## Manual Spot Checks
+
+Use `docs/SECURITY_MANUAL_CHECKS.md` and attach evidence to the checklist.
+
 ---
 
 # SECTION 12 — DOCUMENTATION CERTIFICATION
 
 Required:
 
-* [ ] DEPLOYMENT_RUNBOOK.md
-* [ ] FLYIO_INFRASTRUCTURE.md
-* [ ] DISASTER_RECOVERY.md
-* [ ] NEXT_APP_ROUTER_ARCHITECTURE.md
+- [ ] DEPLOYMENT_RUNBOOK.md
+- [ ] FLYIO_INFRASTRUCTURE.md
+- [ ] DISASTER_RECOVERY.md
+- [ ] NEXT_APP_ROUTER_ARCHITECTURE.md
 
 ---
 
@@ -620,17 +651,17 @@ Result:
 
 Automatic certification failure if any of the following are true:
 
-* Build fails
-* Authentication bypass exists
-* Authorization bypass exists
-* Admin escalation possible
-* Search drift detected
-* Migration drift detected
-* Critical vulnerability present
-* Load testing thresholds violated
-* Outbox recovery fails
-* Evidence artifacts missing
-* Backup recovery cannot be executed
+- Build fails
+- Authentication bypass exists
+- Authorization bypass exists
+- Admin escalation possible
+- Search drift detected
+- Migration drift detected
+- Critical vulnerability present
+- Load testing thresholds violated
+- Outbox recovery fails
+- Evidence artifacts missing
+- Backup recovery cannot be executed
 
 If any item above fails:
 

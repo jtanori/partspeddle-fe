@@ -11,12 +11,12 @@ export default function PDPLayoutEngine({ children }: PDPLayoutEngineProps) {
   return (
     <div 
       data-testid="layout-container" 
-      className="max-w-[1280px] mx-auto px-pp-pad py-pp-pad grid grid-cols-1 lg:grid-cols-12 gap-pp-gap"
+      className="max-w-[var(--content-max)] mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-8"
     >
-      <div className="lg:col-span-8 space-y-pp-gap">
+      <div className="lg:col-span-8 space-y-8">
         {childrenArray[0]}
       </div>
-      <aside className="lg:col-span-4 space-y-pp-pad">
+      <aside className="lg:col-span-4 space-y-6">
         {childrenArray[1]}
       </aside>
     </div>

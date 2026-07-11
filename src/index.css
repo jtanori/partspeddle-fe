@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "@fontsource-variable/geist";
+@import 'tailwindcss';
+@import '@fontsource-variable/geist';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,21 +10,21 @@
   --font-mono: var(--font-mono), monospace;
   --font-display: var(--font-display), sans-serif;
 
-  /* Industrial Graphite Tokens */
+  /* Industrial Graphite Tokens (dashboard shell) */
   --color-shell-sidebar: #111315;
   --color-shell-canvas: #171a1e;
   --color-shell-workspace: #1b2025;
   --color-shell-surface: #1f252b;
   --color-shell-elevated: #272d34;
 
-  /* Public Theme Tokens */
-  --color-base-cream: #FCFAF7;
-  --color-steel-black: #1E1E1E;
-  --color-charcoal: #2D2D2D;
-  --color-oil-dark: #3A3A3A;
-  --color-rust-copper: #B87333;
-  --color-warm-sand: #C4A882;
-  --color-warm-gray: #8A8A8A;
+  /* Legacy Public Theme Tokens — kept for backward compatibility during P5 migration */
+  --color-base-cream: #fcfaf7;
+  --color-steel-black: #1e1e1e;
+  --color-charcoal: #2d2d2d;
+  --color-oil-dark: #3a3a3a;
+  --color-rust-copper: #b87333;
+  --color-warm-sand: #c4a882;
+  --color-warm-gray: #8a8a8a;
 
   --color-border-subtle: #2a3037;
   --color-border-default: #343a42;
@@ -43,22 +43,135 @@
   --color-danger: #ef4444;
   --color-info: #3b82f6;
 
-  --shadow-panel: 0 8px 24px rgba(0,0,0,.35);
-  --shadow-elevated: 0 12px 32px rgba(0,0,0,.45);
+  --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-elevated: 0 12px 32px rgba(0, 0, 0, 0.45);
+
+  /* ───────────────────────────────────────────────────────────────
+     P5.0 Design System Tokens
+     Systematic tokens for the public marketplace UI convergence.
+     ─────────────────────────────────────────────────────────────── */
+
+  /* Layout */
+  --container-max: 1440px;
+  --content-max: 1280px;
+  --grid-columns: 12;
+  --grid-gutter: 24px;
+
+  /* Spacing scale (8px base) — overrides Tailwind defaults 5-9 intentionally */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
+  --spacing-7: 48px;
+  --spacing-8: 64px;
+  --spacing-9: 96px;
+
+  /* Border radius scale */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 999px;
+
+  /* Typography scale */
+  --text-display: 48px;
+  --text-display-l: 40px;
+  --text-display-m: 32px;
+  --text-hero: 36px;
+  --text-section: 28px;
+  --text-card-title: 22px;
+  --text-body: 16px;
+  --text-caption: 14px;
+  --text-meta: 12px;
+
+  /* Brand colors */
+  --color-brand-primary: #b87333;
+  --color-brand-primary-hover: #a35d1f;
+  --color-brand-cream: #fcfaf7;
+  --color-brand-sand: #c4a882;
+  --color-brand-black: #1e1e1e;
+  --color-brand-charcoal: #2d2d2d;
+
+  /* Surface colors */
+  --color-surface-primary: #ffffff;
+  --color-surface-secondary: #f5f0eb;
+  --color-surface-muted: #f0ebe5;
+
+  /* Stroke (border) colors — public pages; distinct from dashboard border tokens */
+  --color-stroke-subtle: #e5e0da;
+  --color-stroke-default: #d4cfc8;
+  --color-stroke-strong: #b8b3ad;
+
+  /* Foreground (text) colors — public pages; distinct from dashboard text tokens */
+  --color-foreground-primary: #1e1e1e;
+  --color-foreground-secondary: #4a4a4a;
+  --color-foreground-muted: #8a8a8a;
+  --color-foreground-inverse: #ffffff;
+
+  /* Status colors */
+  --color-status-success: #22c55e;
+  --color-status-success-soft: rgba(34, 197, 94, 0.12);
+  --color-status-warning: #f59e0b;
+  --color-status-warning-soft: rgba(245, 158, 11, 0.12);
+  --color-status-danger: #ef4444;
+  --color-status-danger-soft: rgba(239, 68, 68, 0.12);
+  --color-status-info: #3b82f6;
+  --color-status-info-soft: rgba(59, 130, 246, 0.12);
+
+  /* Shadows — public pages; distinct from dashboard shadow tokens */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-floating: 0 8px 24px rgba(0, 0, 0, 0.14);
+
+  /* Animation */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Semantic aliases for shadcn/ui-compatible components */
+  --color-background: var(--color-surface-secondary);
+  --color-foreground: var(--color-foreground-primary);
+  --color-primary: var(--color-brand-primary);
+  --color-primary-foreground: var(--color-foreground-inverse);
+  --color-secondary: var(--color-surface-secondary);
+  --color-secondary-foreground: var(--color-foreground-primary);
+  --color-muted: var(--color-surface-muted);
+  --color-muted-foreground: var(--color-foreground-muted);
+  --color-accent: var(--color-brand-cream);
+  --color-accent-foreground: var(--color-foreground-primary);
+  --color-destructive: var(--color-status-danger);
+  --color-destructive-foreground: var(--color-foreground-inverse);
+  --color-border: var(--color-stroke-default);
+  --color-input: var(--color-stroke-default);
+  --color-ring: var(--color-brand-primary);
 }
 
 @layer utilities {
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  .animate-fade-in { animation: fade-in 0.5s ease-in-out; }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-in-out;
+  }
 
   @keyframes slide-in-right {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
   }
-  .animate-slide-in-right { animation: slide-in-right 0.3s ease-out; }
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
 }
 
 @layer components {
@@ -92,23 +205,25 @@
   }
 
   .dashboard-shell::before {
-    content: "";
+    content: '';
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
-    opacity: .25;
+    opacity: 0.25;
     z-index: 50;
   }
-  
+
   .hero-texture {
-    background-image: linear-gradient(to bottom, rgba(139, 98, 57, 0.95), rgba(92, 62, 33, 0.98)), url("data:image/svg+xml,%3Csvg viewBox='0 0 200 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='brushed'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.12 0.03' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0 0 0 0'/%3E%3C/filter%3E%3Cfilter id='rust'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23brushed)' opacity='0.45'/%3E%3Crect width='100%25' height='100%25' filter='url(%23rust)' opacity='0.35' mix-blend-mode='color-burn'/%3E%3C/svg%3E");
+    background-image:
+      linear-gradient(to bottom, rgba(139, 98, 57, 0.95), rgba(92, 62, 33, 0.98)),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='brushed'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.12 0.03' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0 0 0 0'/%3E%3C/filter%3E%3Cfilter id='rust'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4 0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23brushed)' opacity='0.45'/%3E%3Crect width='100%25' height='100%25' filter='url(%23rust)' opacity='0.35' mix-blend-mode='color-burn'/%3E%3C/svg%3E");
     background-blend-mode: overlay;
   }
-  
+
   .dashboard-shell * {
     border-color: var(--color-border-default);
   }
