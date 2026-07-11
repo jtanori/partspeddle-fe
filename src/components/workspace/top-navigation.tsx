@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, Bell, Mail, CheckSquare, User } from 'lucide-react';
+import { Menu, Bell, Mail, CheckSquare, User, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SearchInput } from '@/components/ui/search-input';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 interface TopNavigationProps extends React.HTMLAttributes<HTMLElement> {
   onMenuToggle?: () => void;
   onSearch?: (value: string) => void;
+  onOpenCommandPalette?: () => void;
   notifications?: number;
   messages?: number;
   tasks?: number;
@@ -23,6 +24,7 @@ interface TopNavigationProps extends React.HTMLAttributes<HTMLElement> {
 export function TopNavigation({
   onMenuToggle,
   onSearch,
+  onOpenCommandPalette,
   notifications,
   messages,
   tasks,
@@ -53,6 +55,17 @@ export function TopNavigation({
         <div className="hidden max-w-md flex-1 sm:block">
           <SearchInput onSubmit={onSearch} placeholder="Search inventory, listings, orders..." />
         </div>
+        {onOpenCommandPalette && (
+          <button
+            type="button"
+            onClick={onOpenCommandPalette}
+            className="hidden items-center gap-2 rounded-md border border-stroke-subtle bg-surface-secondary px-2.5 py-1.5 text-meta text-foreground-muted transition-colors hover:text-foreground-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:flex"
+            aria-label="Open command palette"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>⌘K</span>
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-1">

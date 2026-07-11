@@ -1078,21 +1078,21 @@ Final cross-cutting milestones to close the remediation effort.
 
 ## Current Status Summary
 
-| Phase      | Completed                                                                                                                                              | Pending                                                                  |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| Pre-P0     | Pre-P0.1                                                                                                                                               | —                                                                        |
-| P0         | P0.1–P0.6                                                                                                                                              | —                                                                        |
-| P1         | P1.1–P1.10                                                                                                                                             | —                                                                        |
-| P2         | P2.1–P2.10                                                                                                                                             | —                                                                        |
-| P3         | P3.1–P3.7                                                                                                                                              | —                                                                        |
-| P4         | P4.1–P4.6                                                                                                                                              | —                                                                        |
-| P5         | P5.1–P5.8                                                                                                                                              | — (P5.10 moved to P7)                                                    |
-| P6         | P6.1–P6.7 staging applied & JWT rotated                                                                                                                | Production application + JWT rotation (operator execution)               |
-| P7         | P7.1 UX polish, P7.2 link audit, P7.3 IPS, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 PPDS phases 1–4 / 6–9, P5.10 Storybook | P7.7 Phase 5 workspace layout, P7.7 Phase 11 live search command palette |
-| Completion | Final verification                                                                                                                                     | CI/CD consolidation, Final `develop → main` merge                        |
+| Phase      | Completed                                                                                                                                                   | Pending                                                    |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Pre-P0     | Pre-P0.1                                                                                                                                                    | —                                                          |
+| P0         | P0.1–P0.6                                                                                                                                                   | —                                                          |
+| P1         | P1.1–P1.10                                                                                                                                                  | —                                                          |
+| P2         | P2.1–P2.10                                                                                                                                                  | —                                                          |
+| P3         | P3.1–P3.7                                                                                                                                                   | —                                                          |
+| P4         | P4.1–P4.6                                                                                                                                                   | —                                                          |
+| P5         | P5.1–P5.8                                                                                                                                                   | — (P5.10 moved to P7)                                      |
+| P6         | P6.1–P6.7 staging applied & JWT rotated                                                                                                                     | Production application + JWT rotation (operator execution) |
+| P7         | P7.1 UX polish, P7.2 link audit, P7.3 IPS, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 PPDS phases 1–4 / 5 / 6–11, P5.10 Storybook | —                                                          |
+| Completion | Final verification                                                                                                                                          | CI/CD consolidation, Final `develop → main` merge          |
 
-**Total completed:** ~62 items  
-**Total pending:** ~8 items (P7.7 Phase 5, P7.7 Phase 11, P6 production, CI/CD consolidation, Final `develop → main` merge)
+**Total completed:** ~64 items  
+**Total pending:** ~6 items (P6 production, CI/CD consolidation, Final `develop → main` merge)
 
 ---
 

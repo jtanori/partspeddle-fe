@@ -12,6 +12,9 @@ import {
 import Navbar from '../navbar/Navbar';
 import Footer from '../Footer';
 import { SupportLauncher } from '../support';
+import { SearchCommandPalette } from '../search/SearchCommandPalette';
+import { useSearchCommandRegistry } from '../search/utils/search-command-registry';
+import { useCommandPalette } from '@/hooks/useCommandPalette';
 
 interface PublicShellProps {
   children: React.ReactNode;
@@ -21,12 +24,14 @@ interface PublicShellProps {
 export const PublicShell = ({ children, showFooter = true }: PublicShellProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { executeCommand } = useSearchCommandRegistry();
+  const { open: commandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPalette();
 
   const { user, userRole, setUserRole, logout, profile } = useAuthStore();
   const { cart, setIsCartOpen } = useCartStore();
   const { searchQueryText, setSearchQueryText, setSearchCategory } = useSearchStore();
   const { activeSellerTab, setActiveSellerTab, setPendingSnapImages } = useSellerNavStore();
-  const { setSearchModalOpen, setInfoModalType, setTourActive } = useUiStore();
+  const { setInfoModalType, setTourActive } = useUiStore();
 
   const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -39,7 +44,7 @@ export const PublicShell = ({ children, showFooter = true }: PublicShellProps) =
           setSearchCategory('All Parts');
           router.push('/search');
         }}
-        onOpenSearchModal={() => setSearchModalOpen(true)}
+        onOpenSearchModal={() => setCommandPaletteOpen(true)}
         cartCount={totalItemsCount}
         user={user}
         onLogout={async () => {
@@ -65,6 +70,12 @@ export const PublicShell = ({ children, showFooter = true }: PublicShellProps) =
       <div className="flex-grow transition-opacity duration-300 pb-16 md:pb-0">{children}</div>
 
       {showFooter && <Footer />}
+
+      <SearchCommandPalette
+        open={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onSelect={executeCommand}
+      />
 
       <SupportLauncher />
     </div>
