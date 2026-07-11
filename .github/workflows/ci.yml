@@ -10,6 +10,7 @@ on:
       - develop
       - ci-test/pipeline-hardening
       - 'feat/**'
+      - 'ci-test/**'
   pull_request:
     branches:
       - main
@@ -274,4 +275,3 @@ jobs:
           STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
-
