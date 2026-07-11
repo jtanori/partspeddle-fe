@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { runHealthChecks } from "@/lib/health-checks";
-import { HEALTH_CONTRACT_VERSION } from "../../../operations/kernel/contracts/health.contract";
+import { HEALTH_CONTRACT_VERSION } from "../../../../operations/kernel/contracts/health.contract";
 
 export async function GET() {
   const report = await runHealthChecks();
