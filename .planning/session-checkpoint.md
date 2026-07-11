@@ -28,10 +28,10 @@ Prepare for final production cutover and `develop → main` merge.
    - Update Fly.io (`vintrack-prod`) and GitHub production environment secrets.
    - Run production health check and smoke tests.
 
-2. **CI/CD consolidation**
-   - Verify `develop` deploys cleanly to staging via GitHub Actions.
-   - Verify `main` deploys cleanly to production.
-   - Confirm `docs/DEPLOYMENT_RUNBOOK.md` reflects the canonical CI path.
+2. **CI/CD consolidation** ✅
+   - ✅ Verify `develop` deploys cleanly to staging via GitHub Actions (run `29148261143`).
+   - ⏳ Verify `main` deploys cleanly to production (after final merge).
+   - ✅ Confirm `docs/DEPLOYMENT_RUNBOOK.md` reflects the canonical CI path.
 
 3. **Final `develop → main` merge**
    - Open merge PR from `develop` to `main`.
