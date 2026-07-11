@@ -178,16 +178,16 @@ Implement DC-2: only after evidence shows where time is spent.
 
 ## Evidence Log
 
-| Gate | Evidence                                         | Status      | Notes                       |
-| ---- | ------------------------------------------------ | ----------- | --------------------------- |
-| DC-1 | `docker build .` output                          | Pending     |                             |
-| DC-2 | Husky timing output                              | Pending     |                             |
-| DC-3 | Dockerfile + .dockerignore review + docker build | Pending     | Current Dockerfile is clean |
-| DC-4 | Latest `develop` GitHub Actions run              | Pending     |                             |
-| DC-5 | Latest `main` GitHub Actions run                 | Pending     | Blocked until DC-4          |
-| DC-6 | CI verification jobs + recovery runbook          | Not started |                             |
-| DC-7 | Environment schema + validator + secret policy   | Not started |                             |
-| DC-8 | Deployment records + observability docs          | Not started |                             |
+| Gate | Evidence                                         | Status      | Notes                                                                                                                                                                                                                                                                   |
+| ---- | ------------------------------------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DC-1 | `docker build .` output                          | In progress | Build timed out after 600 s during `pnpm install --frozen-lockfile` (step #15). No `.env` references in Dockerfile. Build was progressing normally but slowly due to cold package downloads. Re-run with longer timeout or warm cache needed for final pass.            |
+| DC-2 | Husky timing output                              | Measured    | `time git commit` for one TS file: **real 1 m 17.3 s, user 31.9 s, sys 13.5 s**. ESLint/Prettier completed quickly; total time dominated by lint-staged startup and cold caches. A transient hang on first attempt resolved on retry. Target <5 s is not currently met. |
+| DC-3 | Dockerfile + .dockerignore review + docker build | Measured    | Dockerfile contains no `.env` references and is environment-agnostic. `.dockerignore` excludes `.env*`. Build-in-progress confirms image can build without local env files.                                                                                             |
+| DC-4 | Latest `develop` GitHub Actions run              | Passed      | Run `29151750670` conclusion `success`. Deploy Staging to Fly.io ✅, Deploy Supabase to Staging ✅, Staging Smoke Tests ✅. One non-fatal Fly proxy warning noted for later review.                                                                                     |
+| DC-5 | Latest `main` GitHub Actions run                 | Not started | Blocked until DC-4 is certified and operator approves production touch.                                                                                                                                                                                                 |
+| DC-6 | CI verification jobs + recovery runbook          | Not started |                                                                                                                                                                                                                                                                         |
+| DC-7 | Environment schema + validator + secret policy   | Not started |                                                                                                                                                                                                                                                                         |
+| DC-8 | Deployment records + observability docs          | Not started |                                                                                                                                                                                                                                                                         |
 
 ---
 
