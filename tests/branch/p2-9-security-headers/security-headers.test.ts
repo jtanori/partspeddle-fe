@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import {
   SECURITY_HEADERS,
   securityHeaderEntries,
+  buildContentSecurityPolicy,
 } from '@/lib/security-headers';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,7 +17,6 @@ function read(relativePath: string): string {
 
 describe('P2.9 security headers', () => {
   it('exports baseline security headers required by PRC certification', () => {
-    expect(SECURITY_HEADERS['Content-Security-Policy']).toBeTruthy();
     expect(SECURITY_HEADERS['Strict-Transport-Security']).toContain('max-age=');
     expect(SECURITY_HEADERS['X-Frame-Options']).toBe('DENY');
     expect(SECURITY_HEADERS['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
@@ -28,7 +28,7 @@ describe('P2.9 security headers', () => {
   });
 
   it('allows required third-party origins in the CSP', () => {
-    const csp = SECURITY_HEADERS['Content-Security-Policy'];
+    const csp = buildContentSecurityPolicy('test-nonce');
     expect(csp).toContain("default-src 'self'");
     expect(csp).toContain("style-src 'self' 'unsafe-inline'");
     expect(csp).toContain('https://*.supabase.co');
@@ -39,11 +39,10 @@ describe('P2.9 security headers', () => {
     expect(csp).toContain("frame-ancestors 'none'");
   });
 
-  it('maps headers into Next.js header entry objects', () => {
+  it('maps static headers into Next.js header entry objects', () => {
     const entries = securityHeaderEntries();
     expect(entries).toEqual(
       expect.arrayContaining([
-        { key: 'Content-Security-Policy', value: SECURITY_HEADERS['Content-Security-Policy'] },
         { key: 'Strict-Transport-Security', value: SECURITY_HEADERS['Strict-Transport-Security'] },
       ]),
     );
