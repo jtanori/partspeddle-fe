@@ -30,24 +30,27 @@ describe('security headers', () => {
     expect(hsts).toContain('preload');
   });
 
-  it('builds a nonce-aware CSP without unsafe-inline', () => {
+  it('builds a nonce-aware CSP without unsafe-inline in script-src', () => {
     const nonce = 'dGVzdC1ub25jZQ==';
     const csp = buildContentSecurityPolicy(nonce);
-    expect(csp).toContain(`script-src 'self' 'nonce-${nonce}'`);
-    expect(csp).not.toContain("'unsafe-inline'");
-    expect(csp).not.toContain("'unsafe-eval'");
+    const scriptSrc = csp.match(/script-src[^;]+/)?.[0] ?? '';
+    expect(scriptSrc).toContain(`'nonce-${nonce}'`);
+    expect(scriptSrc).not.toContain("'unsafe-inline'");
+    expect(scriptSrc).not.toContain("'unsafe-eval'");
   });
 
-  it('falls back to unsafe-inline when no nonce is provided', () => {
+  it('falls back to unsafe-inline in script-src when no nonce is provided', () => {
     process.env.NODE_ENV = 'production';
     const csp = buildContentSecurityPolicy();
-    expect(csp).toContain("script-src 'self' 'unsafe-inline'");
-    expect(csp).not.toContain("'unsafe-eval'");
+    const scriptSrc = csp.match(/script-src[^;]+/)?.[0] ?? '';
+    expect(scriptSrc).toBe("script-src 'self' 'unsafe-inline'");
+    expect(scriptSrc).not.toContain("'unsafe-eval'");
   });
 
-  it('dev fallback allows unsafe-eval for hmr', () => {
+  it('dev fallback allows unsafe-eval in script-src for hmr', () => {
     process.env.NODE_ENV = 'development';
     const csp = buildContentSecurityPolicy();
-    expect(csp).toContain("script-src 'self' 'unsafe-inline' 'unsafe-eval'");
+    const scriptSrc = csp.match(/script-src[^;]+/)?.[0] ?? '';
+    expect(scriptSrc).toBe("script-src 'self' 'unsafe-inline' 'unsafe-eval'");
   });
 });

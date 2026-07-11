@@ -52,7 +52,7 @@ describe('P2.9 security headers', () => {
   it('wires headers() in next.config.ts for all routes', () => {
     const config = read('next.config.ts');
     expect(config).toContain('async headers()');
-    expect(config).toContain('source: "/:path*"');
+    expect(config).toContain("source: '/:path*'");
     expect(config).toContain('securityHeaderEntries');
     expect(config).toContain('./src/lib/security-headers');
   });

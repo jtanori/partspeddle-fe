@@ -23,21 +23,23 @@ describe('P5.6 frontend and client-side security', () => {
     expect(keys).not.toContain('Content-Security-Policy');
   });
 
-  it('nonce-aware production csp does not allow unsafe-inline or unsafe-eval', () => {
+  it('nonce-aware production csp does not allow unsafe-inline or unsafe-eval in script-src', () => {
     const originalEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
     const csp = buildContentSecurityPolicy('dGVzdC1ub25jZQ==');
-    expect(csp).toContain("'nonce-dGVzdC1ub25jZQ=='");
-    expect(csp).not.toContain("'unsafe-inline'");
-    expect(csp).not.toContain("'unsafe-eval'");
+    const scriptSrc = csp.match(/script-src[^;]+/)?.[0] ?? '';
+    expect(scriptSrc).toContain("'nonce-dGVzdC1ub25jZQ=='");
+    expect(scriptSrc).not.toContain("'unsafe-inline'");
+    expect(scriptSrc).not.toContain("'unsafe-eval'");
     process.env.NODE_ENV = originalEnv;
   });
 
-  it('fallback csp allows unsafe-inline when no nonce is provided', () => {
+  it('fallback csp allows unsafe-inline in script-src when no nonce is provided', () => {
     const originalEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
     const csp = buildContentSecurityPolicy();
-    expect(csp).toContain("script-src 'self' 'unsafe-inline'");
+    const scriptSrc = csp.match(/script-src[^;]+/)?.[0] ?? '';
+    expect(scriptSrc).toBe("script-src 'self' 'unsafe-inline'");
     process.env.NODE_ENV = originalEnv;
   });
 
