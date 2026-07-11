@@ -14,20 +14,7 @@ END $$;
 
 -- 2. Revoke excessive function privileges from anon/authenticated.
 -- Internal trigger/utility functions should only be executable by postgres/service_role.
-DO $$
-DECLARE
-  fn text;
-BEGIN
-  FOR fn IN
-    SELECT p.proname
-    FROM pg_proc p
-    JOIN pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname = 'public'
-      AND p.prokind = 'f'
-  LOOP
-    EXECUTE format('REVOKE ALL ON FUNCTION %I.%I() FROM "anon", "authenticated"', 'public', fn);
-  END LOOP;
-END $$;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA "public" FROM "anon", "authenticated";
 
 -- 3. Reset default privileges so future objects do not inherit ALL for anon/authenticated.
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public"

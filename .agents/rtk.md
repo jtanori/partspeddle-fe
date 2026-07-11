@@ -1,8 +1,16 @@
-# RTK Shell Optimization
+# RTK Shell Command Mappings
 
-Shell commands in this project are routed through `rtk`, a high-performance CLI proxy that compresses verbose output by 60-90%.
+This project uses RTK to compress verbose shell output. Prefix supported commands with `rtk` as shown below.
 
-## Common Mappings
+## Detection
+
+```bash
+which rtk && rtk --version
+```
+
+If RTK is not installed, fall back to raw shell commands.
+
+## Mappings
 
 | Raw Command                  | RTK Equivalent                |
 | ---------------------------- | ----------------------------- |
@@ -27,17 +35,38 @@ Shell commands in this project are routed through `rtk`, a high-performance CLI 
 | `env`                        | `rtk env`                     |
 | `aws ...`                    | `rtk aws ...`                 |
 
+## Commands That Stay Raw
+
+| Raw Command                        | Why Raw                                  |
+| ---------------------------------- | ---------------------------------------- |
+| `ps`, `top`, `htop`                | No RTK filter exists                     |
+| `df`, `free`, `du`                 | Already minimal output                   |
+| `mkdir`, `touch`, `rm`, `mv`, `cp` | No output or trivial output              |
+| `echo`, `printf`                   | Already minimal                          |
+| `chmod`, `chown`                   | No output or trivial output              |
+| `npm install`, `pnpm install`      | Progress bars; low value to compress     |
+| short custom scripts               | Custom one-liners without verbose output |
+
 ## Aggressive Compression
 
-For very large outputs:
+Use for very large outputs (>200 lines), explicit token-minimization requests, or large generated files:
 
 ```bash
+# Code files: signatures only, strip bodies
 rtk read file.ts -l aggressive
+
+# Smart 2-line summary of a file
 rtk smart file.ts
+
+# Ultra-compact output (ASCII icons, inline)
 rtk ls . -u
 rtk git status -u
 ```
 
-## Fallback Rule
+## Error Handling
 
-If an `rtk`-prefixed command fails with an RTK-specific error, retry without the `rtk` prefix and note the fallback.
+If an `rtk`-prefixed command fails with an RTK-specific error:
+
+1. Retry the same command without the `rtk` prefix.
+2. Log the fallback for diagnostics.
+3. Do not let RTK failures block critical operations.
