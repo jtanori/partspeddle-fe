@@ -14,7 +14,7 @@ describe('P6.2 restrict grants and default privileges', () => {
   it('has a migration that revokes excessive grants', () => {
     const migration = read('supabase/migrations/20260711000000_restrict_grants.sql');
     expect(migration).toContain('REVOKE ALL ON TABLE');
-    expect(migration).toContain('REVOKE ALL ON FUNCTION');
+    expect(migration).toContain('REVOKE ALL ON ALL FUNCTIONS IN SCHEMA "public"');
     expect(migration).toContain('REVOKE ALL ON TABLES FROM "anon", "authenticated"');
     expect(migration).toContain('REVOKE ALL ON FUNCTIONS FROM "anon", "authenticated"');
     expect(migration).toContain('REVOKE ALL ON SEQUENCES FROM "anon", "authenticated"');
