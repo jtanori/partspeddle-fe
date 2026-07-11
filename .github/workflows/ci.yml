@@ -174,9 +174,28 @@ jobs:
     if: github.event_name == 'push' && needs.configure.outputs.is-delivery-branch == 'true'
     runs-on: ubuntu-latest
     environment: ${{ needs.configure.outputs.environment }}
+    env:
+      ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+      ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
+      ALGOLIA_SEARCH_INDEX_NAME: ${{ secrets.ALGOLIA_SEARCH_INDEX_NAME }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Configure Algolia indices
+        run: pnpm algolia:config
 
       - name: Setup Flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
@@ -224,7 +243,7 @@ jobs:
         run: supabase link --project-ref ${{ secrets[needs.configure.outputs.supabase-project-id-secret] }}
 
       - name: Push Migrations
-        run: supabase db push ${{ github.event.inputs.dry-run == 'true' && '--dry-run' || '--yes' }}
+        run: supabase db push ${{ github.event.inputs.dry-run == 'true' && '--dry-run' || '--yes' }} --include-all
 
       - name: Deploy Edge Functions
         if: ${{ github.event.inputs.dry-run != 'true' }}
