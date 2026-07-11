@@ -90,7 +90,7 @@ describe('P7.6 PPDS Navigation Registry', () => {
 
   describe('breadcrumbs', () => {
     it('generates breadcrumbs with home and parent chain', () => {
-      const crumbs = navigation.breadcrumbs('part-fitment');
+      const crumbs = navigation.breadcrumbs('partFitment');
       expect(crumbs[0]).toEqual({ label: 'Home', href: '/' });
       expect(crumbs[crumbs.length - 1]).toEqual({ label: 'Part Fitment' });
     });

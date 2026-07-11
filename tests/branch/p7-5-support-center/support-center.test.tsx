@@ -78,8 +78,12 @@ describe('P7.5 PartsPeddle Support Center', () => {
     it('SupportMessenger integrates realtime support channel', () => {
       const source = readSource('src/components/support/SupportMessenger.tsx');
       expect(source).toContain('subscribeToSupportConversation');
-      expect(source).toContain('/api/support/conversation');
       expect(source).toContain('/api/support/message');
+    });
+
+    it('useSupportConversation starts conversations via API', () => {
+      const source = readSource('src/hooks/useSupportConversation.ts');
+      expect(source).toContain('/api/support/conversation');
     });
 
     it('has a dedicated support realtime channel', () => {
