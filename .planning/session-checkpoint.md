@@ -1,25 +1,16 @@
-# Session Checkpoint — P6 Staging Complete; P7 Public Experience in Progress
+# Session Checkpoint — P7 Public Experience Continuation
 
 **Date:** 2026-07-11
-**Branch:** `feat/p7-public-experience` (work in progress)
-**Status:** P6 staging application and JWT rotation complete; production remains pending. P7 public-experience work started.
+**Branch:** `feat/p7-remaining-public-experience` (work in progress)
+**Status:** PR #82 merged into `develop`. P7.1 and P7.2 verified complete. Proceeding with remaining P7 items in a single branch.
 
 ## Completed Work
 
-- Merged PR #80 (`feat/p6-7-dry-run-scripts`) into `develop`.
-- Merged PR #81 (`fix/p6-staging-migration-follow-up`) into `develop`.
-- Applied P6 remediation migrations to staging:
-  - P6.1 — Tightened overly permissive RLS policies.
-  - P6.2 — Restricted grants and default privileges (fixed per-function revoke bug during apply).
-  - P6.3 — Removed unused Postgres extensions.
-  - P6.4 — Replaced service-role usage in public/analytics routes.
-  - P6.5 — Added replay protection to webhook signatures.
-  - P6.6 — Verified legacy trigger removal for exposed staging service-role JWT.
-  - P6.7 — Applied remediation migrations to staging remote-first database.
-- Verified legacy triggers are gone in staging (`0` remaining).
-- Redeployed Edge Functions to staging.
-- Rotated staging Supabase service-role JWT and updated Fly.io + GitHub Actions secrets.
-- Staging smoke tests (`pnpm ci:smoke:staging`) and health check PASS.
+- Merged PR #82 (`docs(tests): verify p7.1 ux polish and p7.2 link audit`) into `develop`.
+- Verified P7.1 (UX polish) already implemented in prior work.
+- Verified P7.2 (link audit) already implemented; added focused regression test.
+- P7.3 (Information Page System) already implemented in prior work.
+- P7.7 PPDS phases 1–3, 6–8 already implemented/merged in prior work.
 
 ## Current Master-Plan Status (high level)
 
@@ -32,23 +23,25 @@
 | P3         | P3.1–P3.7                                                             | —                                                                                                           |
 | P4         | P4.1–P4.6                                                             | —                                                                                                           |
 | P5         | P5.1–P5.8                                                             | P5.10 (moved to end of P7)                                                                                  |
-| P6         | P6.1–P6.7 staging applied & JWT rotated                               | Production application + JWT rotation                                                                       |
+| P6         | P6.1–P6.7 staging applied & JWT rotated                               | Production application + JWT rotation (operator execution)                                                  |
 | P7         | P7.1 UX polish, P7.2 link audit, P7.3 IPS, P7.7 PPDS phases 1–3 / 6–8 | P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 remaining PPDS phases, P5.10 Storybook |
 | Completion | Final verification                                                    | CI/CD consolidation, Final `develop → main` merge                                                           |
 
 ## Active Work
 
-Branch `feat/p7-public-experience` checked out from latest `develop`.
+Branch `feat/p7-remaining-public-experience` checked out from latest `develop`.
 
-Planned P7 items in this branch:
+Planned items in this branch (smaller commits per item):
 
-1. **P7.1 — UX Polish** ✅ Already implemented in prior work; existing branch test passes.
-2. **P7.2 — Link Audit** ✅ Already implemented in prior work; added `tests/branch/p7-2-link-audit/link-audit.test.tsx` to verify fixes.
-
-Future P7 items (P7.4–P7.7, P5.10) will follow in subsequent branches or after this branch is merged.
+1. **P7.4 — Editorial Page Archetypes** Canonical layout compositions for future editorial pages.
+2. **P7.5 — PartsPeddle Support Center (PSC)** Lightweight support conversation domain + UI.
+3. **P7.6 — PPDS Navigation Registry (PNR)** Typed route registry generating menus, breadcrumbs, sitemaps.
+4. **P7.7 — Remaining PPDS phases** Phases 4 (docs/Storybook), 5 (workspace layout), 9 (SEO/a11y), 10 (live search), 11 (command palette).
+5. **P5.10 — Storybook** CI build gate, canonical PDPRoot story, branch tests.
 
 ## Next Steps
 
-1. Push the `feat/p7-public-experience` branch and open a PR.
-2. Wait for CI verification (tests, lint, typecheck, build) to pass.
-3. Merge into `develop` once verified.
+1. Read existing P7 planning artifacts for P7.4, P7.5, P7.6, P7.7, P5.10.
+2. Implement P7.4 first; add branch tests and commit.
+3. Proceed sequentially through P7.5, P7.6, P7.7 remaining phases, and P5.10.
+4. Open a PR once all items are implemented and CI passes.
