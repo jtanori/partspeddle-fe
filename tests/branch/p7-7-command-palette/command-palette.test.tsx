@@ -4,6 +4,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { SearchCommandPalette } from '@/components/search/SearchCommandPalette';
 import { useCommandPalette } from '@/hooks/useCommandPalette';
 
+vi.mock('@base-ui/react/dialog', () => {
+  const Root = ({ open, children }: any) => (open ? children : null);
+  const Portal = ({ children }: any) => children;
+  const Backdrop = ({ children, onClick }: any) =>
+    React.createElement('div', { onClick }, children);
+  const Popup = ({ children }: any) =>
+    React.createElement('div', { role: 'dialog' }, children);
+  const Dialog = { Root, Portal, Backdrop, Popup };
+  return { Dialog, Root, Portal, Backdrop, Popup };
+});
+
 vi.mock('@/components/search/SearchDropdownController', () => ({
   SearchDropdownController: ({ query, onResults }: any) => {
     React.useEffect(() => {

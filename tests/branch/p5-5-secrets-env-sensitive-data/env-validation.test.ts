@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
+import { validateEnv } from '@/lib/env';
 
 describe('P5.5 environment validation', () => {
-  it('throws in production when required variables are missing', { timeout: 20000 }, async () => {
+  it('throws in production when required variables are missing', () => {
     const originalEnv = { ...process.env };
-    vi.resetModules();
     process.env.NODE_ENV = 'production';
     process.env.SUPABASE_URL = '';
     process.env.SUPABASE_ANON_KEY = '';
@@ -14,14 +14,13 @@ describe('P5.5 environment validation', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = '';
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = '';
 
-    await expect(import('@/lib/env')).rejects.toThrow();
+    expect(validateEnv).toThrow();
 
     process.env = originalEnv;
   });
 
-  it('warns but does not throw in development when variables are missing', { timeout: 20000 }, async () => {
+  it('warns but does not throw in development when variables are missing', () => {
     const originalEnv = { ...process.env };
-    vi.resetModules();
     process.env.NODE_ENV = 'development';
     process.env.SUPABASE_URL = '';
     process.env.SUPABASE_ANON_KEY = '';
@@ -34,7 +33,7 @@ describe('P5.5 environment validation', () => {
 
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    await expect(import('@/lib/env')).resolves.toBeDefined();
+    expect(validateEnv).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
 
     warnSpy.mockRestore();

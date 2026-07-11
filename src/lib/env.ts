@@ -26,7 +26,7 @@ function buildShape(entries: typeof ENVIRONMENT_VARIABLES) {
 const serverSchema = z.object(buildShape(serverEntries));
 const publicSchema = z.object(buildShape(publicEntries));
 
-function validateEnv() {
+export function validateEnv() {
   const isProduction = process.env.NODE_ENV === 'production';
 
   const serverResult = serverSchema.safeParse(process.env);

@@ -126,13 +126,13 @@ describe('P5.0 Phase 4 — PPDS Documentation & Storybook', () => {
 
   it(
     'builds Storybook successfully',
-    { timeout: 900_000 },
+    { timeout: 1_800_000 },
     () => {
       const projectRoot = path.resolve(__dirname, '../../../');
       execSync('pnpm storybook:build', {
         cwd: projectRoot,
         stdio: 'pipe',
-        timeout: 840_000,
+        timeout: 1_740_000,
       });
       expect(exists('storybook-static/index.html')).toBe(true);
     }

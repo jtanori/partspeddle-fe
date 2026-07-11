@@ -53,6 +53,21 @@ vi.mock('@/components/ui/toast', () => ({
   useToast: () => ({ addToast: vi.fn(), dismissToast: vi.fn(), toasts: [] }),
 }));
 
+vi.mock('@base-ui/react/dialog', () => {
+  const Root = ({ open, children }: any) => (open ? children : null);
+  const Portal = ({ children }: any) => children;
+  const Backdrop = ({ children, onClick }: any) =>
+    React.createElement('div', { onClick }, children);
+  const Popup = ({ children }: any) =>
+    React.createElement('div', { role: 'dialog' }, children);
+  const Dialog = { Root, Portal, Backdrop, Popup };
+  return { Dialog, Root, Portal, Backdrop, Popup };
+});
+
+vi.mock('@/components/support', () => ({
+  SupportLauncher: () => null,
+}));
+
 describe('P3.7 layout standardization', () => {
   beforeEach(() => {
     vi.clearAllMocks();

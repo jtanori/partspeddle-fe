@@ -27,6 +27,38 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
+vi.mock('@/assets/images/logo_solid.png', () => ({
+  default: '/mock-logo.png',
+}));
+
+vi.mock('@/store/hooks', () => ({
+  useAuthStore: () => ({ user: null, setProfile: vi.fn(), logout: vi.fn() }),
+}));
+
+vi.mock('@/hooks/useSellerProfile', () => ({
+  useSellerProfile: () => ({ profile: null, loading: false }),
+}));
+
+vi.mock('@/context/InventoryWizardContext', () => ({
+  InventoryWizardProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('@/components/drawers/YardControlCore', () => ({
+  YardControlCore: () => null,
+}));
+
+vi.mock('@/components/search/SearchCommandPalette', () => ({
+  SearchCommandPalette: () => null,
+}));
+
+vi.mock('@/components/search/utils/search-command-registry', () => ({
+  useSearchCommandRegistry: () => ({ executeCommand: vi.fn() }),
+}));
+
+vi.mock('@/hooks/useCommandPalette', () => ({
+  useCommandPalette: () => ({ open: false, setOpen: vi.fn() }),
+}));
+
 function readSource(relativePath: string) {
   return readFileSync(resolve(process.cwd(), relativePath), 'utf-8');
 }
