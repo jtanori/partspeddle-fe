@@ -12,7 +12,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src scripts",
+    "lint": "eslint --cache src scripts",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next dist",
     "deploy:staging": "flyctl deploy --config fly/fly.stage.toml",
@@ -135,11 +135,11 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "eslint --cache --fix",
+      "prettier --cache --write"
     ],
     "*.{json,md,css}": [
-      "prettier --write"
+      "prettier --cache --write"
     ]
   }
 }

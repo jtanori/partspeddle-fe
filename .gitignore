@@ -15,5 +15,6 @@ reports/*.json
 logs/
 *.tsbuildinfo
 .eslintcache
+.prettiercache
 storybook-static/
 backups/
