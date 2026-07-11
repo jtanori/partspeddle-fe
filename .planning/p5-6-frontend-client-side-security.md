@@ -93,6 +93,26 @@ Under `tests/branch/p5-6-frontend-client-security/`:
 - `xss-prevention.test.ts` — scan source files for `dangerouslySetInnerHTML` and fail if found.
 - `upload-validation.test.ts` — assert upload helpers reject invalid MIME types and oversized files.
 
+### 8. Replace temporary `'unsafe-inline'` CSP with nonce-based App Router CSP (follow-up)
+
+During the first production promotion (2026-07-11), CSP was temporarily relaxed to `script-src 'self' 'unsafe-inline'` because `script-src 'self'` blocked Next.js App Router Flight bootstrap scripts and prevented hydration. This work item removes that temporary relaxation.
+
+**Implementation:**
+
+- Generate a unique nonce per request in middleware (`middleware.ts`) or in a root layout.
+- Apply the nonce to the `Content-Security-Policy` header.
+- Thread the nonce through Next.js so all inline bootstrap scripts receive `nonce="..."`.
+- Update `src/lib/security-headers.ts` to remove `'unsafe-inline'` from `script-src` in production.
+- Keep `'unsafe-inline'` for `style-src` only if Next.js still requires it; otherwise migrate styles to hashes/nonces as well.
+
+**Acceptance criteria:**
+
+- Production CSP does not contain `'unsafe-inline'` for `script-src`.
+- Every page hydrates correctly in Chrome, Firefox, and Safari.
+- `tests/security/headers.spec.ts` and `tests/branch/p5-6-frontend-client-side-security/frontend-security.test.ts` assert the absence of `'unsafe-inline'` for scripts.
+- Browser security scan (e.g., Lighthouse or Mozilla Observatory) reports no CSP downgrade.
+- Smoke tests pass after the change.
+
 ---
 
 ## Acceptance Criteria
