@@ -287,6 +287,7 @@ export const ENVIRONMENT_VARIABLES: readonly EnvVarDefinition[] = [
   {
     name: 'E2E_BASE_URL',
     description: 'Base URL for local Playwright end-to-end tests.',
+    provider: EnvProvider.LOCAL_ENV,
     scope: EnvScope.DEVELOPMENT,
     secret: false,
     required: false,

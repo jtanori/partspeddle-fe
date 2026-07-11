@@ -102,7 +102,7 @@ function generateProviders(): string {
 }
 
 function generateDriftMatrix(): string {
-  const runtimeScopes = [EnvScope.SERVER_RUNTIME, EnvScope.PUBLIC_RUNTIME];
+  const runtimeScopes: EnvScope[] = [EnvScope.SERVER_RUNTIME, EnvScope.PUBLIC_RUNTIME];
   const runtimeVars = ENVIRONMENT_VARIABLES.filter((v) => runtimeScopes.includes(v.scope));
 
   const lines: string[] = [
