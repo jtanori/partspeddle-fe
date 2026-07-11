@@ -231,7 +231,7 @@ jobs:
 
   smoke-tests:
     name: Smoke Tests
-    needs: [deploy-fly, deploy-supabase]
+    needs: [configure, deploy-fly, deploy-supabase]
     if: github.event_name == 'push' && needs.configure.outputs.is-delivery-branch == 'true'
     runs-on: ubuntu-latest
     environment: ${{ needs.configure.outputs.environment }}
