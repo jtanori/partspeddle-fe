@@ -711,7 +711,7 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Why:** Before the local Supabase initiative the team followed a remote-first strategy: schema changes were applied directly on the Supabase dashboard or via ad-hoc scripts, and the repo did not have a migration history. The rebaseline migration and trigger-cleanup fixes now exist in `supabase/migrations/`, but they have not yet been applied to the live staging/production projects. We need a one-time checklist to safely introduce migration-driven deployments and apply the P6.6 remediation.  
 **Files/scope:** Supabase staging/production projects, `supabase/migrations/20260704000000_rebaseline_public_schema.sql`, `docs/DEPLOYMENT_RUNBOOK.md`, `.github/workflows/ci.yml`.  
-**Status:** ✅ Code/docs complete — `docs/P6_7_REMOTE_MIGRATION_CHECKLIST.md`, `scripts/db/verify-remote-drift.ts`, and the `db:verify:remote-drift` package script are in place, with branch tests in `tests/branch/p6-7-apply-remediation-migrations-to-remote-databases/`. The actual remote application to staging/production and the physical service-role JWT rotation remain pending operator execution.  
+**Status:** ✅ Code/docs complete; staging application complete — drift check, backup, dry-run, migration apply, Edge Function redeploy, legacy-trigger verification, smoke tests, and service-role JWT rotation have all been executed on staging. Production application + JWT rotation remain pending operator execution.  
 **Action:**
 
 1. **Choose the migration strategy** and document it in `docs/DEPLOYMENT_RUNBOOK.md`:
@@ -1087,7 +1087,7 @@ Final cross-cutting milestones to close the remediation effort.
 | P3         | P3.1–P3.7                                                                                                                                                   | —                                                          |
 | P4         | P4.1–P4.6                                                                                                                                                   | —                                                          |
 | P5         | P5.1–P5.8, P5.10 Storybook (P5.9 tracked as P3.5)                                                                                                         | —                                                          |
-| P6         | P6.1–P6.7 staging applied & JWT rotated                                                                                                                     | Production application + JWT rotation (operator execution) |
+| P6         | P6.1–P6.7 code/docs; staging applied & JWT rotated                                                                                                          | Production application + JWT rotation (operator execution) |
 | P7         | P7.1 UX polish, P7.2 link audit, P7.3 IPS, P7.4 archetypes, P7.5 support center, P7.6 navigation registry, P7.7 PPDS phases 1–11                           | —                                                          |
 | Completion | Final verification                                                                                                                                          | CI/CD consolidation, Final `develop → main` merge          |
 
