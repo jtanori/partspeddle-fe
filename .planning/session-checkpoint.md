@@ -21,6 +21,7 @@
 - **DC-7.1 — Environment Drift Certification** drift matrix generated.
 - **DC-6 — Deployment Verification** implemented using Option D (runtime secrets validated inside the deployed container, health endpoint as CI contract).
 - `.planning/temp/benchmark-delivery.sh` prepared for operator-run deep benchmarking (DC-0, DC-1, DC-2).
+- Awaiting operator verification (`pnpm typecheck`, `pnpm test`, benchmark script, CI run).
 
 ## EGS Deliverables Completed
 
