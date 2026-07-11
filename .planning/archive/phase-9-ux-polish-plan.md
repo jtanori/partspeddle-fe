@@ -10,15 +10,16 @@
 
 Current spinner usage:
 
-| File | Current | Replacement |
-|------|---------|-------------|
-| `src/app/(public)/loading.tsx` | `MainLoadingIndicator` | Marketplace shell skeleton (header placeholder + hero skeleton + grid skeletons) |
-| `src/app/(public)/search/loading.tsx` | `InlineLoadingIndicator` | `Skeleton.SearchResult` list + filter sidebar skeleton |
-| `src/components/providers/AuthProvider.tsx` | `MainLoadingIndicator` | Minimal centered skeleton or fade-in (avoid full page spinner) |
-| `src/components/ProductSidebar.tsx` | `InlineLoadingIndicator` | Filter card skeleton using `Skeleton.Text` and `Skeleton` blocks |
+| File                                                 | Current                  | Replacement                                                                            |
+| ---------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------- |
+| `src/app/(public)/loading.tsx`                       | `MainLoadingIndicator`   | Marketplace shell skeleton (header placeholder + hero skeleton + grid skeletons)       |
+| `src/app/(public)/search/loading.tsx`                | `InlineLoadingIndicator` | `Skeleton.SearchResult` list + filter sidebar skeleton                                 |
+| `src/components/providers/AuthProvider.tsx`          | `MainLoadingIndicator`   | Minimal centered skeleton or fade-in (avoid full page spinner)                         |
+| `src/components/ProductSidebar.tsx`                  | `InlineLoadingIndicator` | Filter card skeleton using `Skeleton.Text` and `Skeleton` blocks                       |
 | `src/components/catalog/detail/NegotiationModal.tsx` | `InlineLoadingIndicator` | Keep spinner for transient modal action, OR replace with inline skeleton in modal body |
 
 **Decisions needed:**
+
 - Keep `Loader2` for button loading states and inline actions (skeletons are for content, not actions).
 - Delete `InlineLoadingIndicator.tsx` and `MainLoadingIndicator.tsx` once no longer imported.
 
@@ -27,10 +28,12 @@ Current spinner usage:
 ## 2. Add sticky action/filter panels
 
 **Search page (`src/components/search/SearchPageClient.tsx`):**
+
 - Make the results header (count, sort, view toggle) sticky on scroll.
 - Keep filter sidebar naturally sticky or make it `sticky top-0` within its column.
 
 **Seller pages:**
+
 - `src/app/(seller)/seller/inventory/page.tsx` — make the toolbar/filter bar sticky.
 - `src/app/(seller)/seller/create/page.tsx` — make the publish/back toolbar sticky on mobile.
 
@@ -41,6 +44,7 @@ Current spinner usage:
 ## 3. Improve empty/error/responsive states
 
 **Empty states:**
+
 - Replace one-off empty markup with the existing `EmptyState` component where appropriate.
 - Update `EmptyState` to use the canonical `Button` component instead of a raw `<button>`.
 - Add empty states for:
@@ -49,6 +53,7 @@ Current spinner usage:
   - Search results (replace/extend `SearchNoResults`)
 
 **Error states:**
+
 - Add a reusable `ErrorState` component in `src/components/common/ErrorState.tsx`.
 - Use it in:
   - `SearchPageClient` when `searchError` is set
@@ -56,6 +61,7 @@ Current spinner usage:
   - Seller inventory fetch failures
 
 **Responsive states:**
+
 - Audit `SearchPageClient` for mobile layout gaps.
 - Ensure seller workspace pages collapse correctly on tablet/mobile.
 
@@ -64,10 +70,12 @@ Current spinner usage:
 ## 4. Implement unified notification center
 
 **Current state:**
+
 - `src/components/ui/toast.tsx` has a `Toast` component but `ToastProvider` is a no-op.
 - `src/components/navbar/Navbar.tsx` has its own local `showToast` used only in navbar actions.
 
 **Plan:**
+
 1. Implement a real `ToastProvider` in `src/components/ui/toast.tsx`:
    - In-memory toast queue.
    - `useToast()` hook to add/dismiss toasts.
@@ -131,6 +139,7 @@ Create `tests/branch/p5-ux-polish/ux-polish.test.tsx` covering:
 **Status:** Reserved for the next phase; detailed plan will be created once Phase 9 is complete.
 
 **Surfaces to review:**
+
 - Footer
 - Navigation (navbar / sidebar / mobile nav)
 - Homepage
