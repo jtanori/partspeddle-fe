@@ -1,16 +1,16 @@
 {
-  "sha": "f67ce749e6efb806d435b9f3983cf92afc8dd01d",
+  "sha": "9b3d3bcfc018b86c94eabfcc7f9d1bee1b0a6cbf",
   "branch": "main",
   "environment": "production",
   "appUrl": "https://partspeddle.com",
-  "runUrl": "https://github.com/jtanori/partspeddle-fe/actions/runs/29169063648",
-  "runId": 29169063648,
-  "runNumber": 403,
-  "startedAt": "2026-07-11T21:35:35Z",
-  "completedAt": "2026-07-11T21:41:45Z",
-  "pipelineDurationSeconds": 370,
-  "deployDurationSeconds": 64,
-  "verificationDurationSeconds": 24,
+  "runUrl": "https://github.com/jtanori/partspeddle-fe/actions/runs/29169472375",
+  "runId": 29169472375,
+  "runNumber": 409,
+  "startedAt": "2026-07-11T21:50:06Z",
+  "completedAt": "2026-07-11T21:55:42Z",
+  "pipelineDurationSeconds": 336,
+  "deployDurationSeconds": 93,
+  "verificationDurationSeconds": 23,
   "health": "healthy",
   "contractVersion": "1.0.0",
   "deployedServices": {
@@ -24,5 +24,9 @@
     "deploySupabase": "success",
     "deployFly": "success",
     "smokeTests": "success"
-  }
+  },
+  "notes": [
+    "Final production deployment with strict Algolia health check.",
+    "Production Algolia index was created via pnpm algolia:config using the production credentials."
+  ]
 }
