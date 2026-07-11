@@ -17,13 +17,11 @@
 
 ## Active Work
 
-- **DC-7 — Environment Governance System (EGS)** implemented.
-- **DC-7.1 — Environment Drift Certification** drift matrix generated.
-- **DC-6 — Deployment Verification** implemented using Option D (runtime secrets validated inside the deployed container, health endpoint as CI contract).
-- **Operational Manifest (OMF)** introduced: `operations/delivery/manifests/delivery.manifest.json` is now the canonical descriptor for environments, deployment topology, verification sequence, recovery, and certification gates.
-- `.planning/temp/benchmark-delivery.sh` prepared for operator-run deep benchmarking (DC-0, DC-1, DC-2).
-- Opened PR #91 to `ci-test/pipeline-hardening` for CI validation.
-- Awaiting operator verification (`pnpm typecheck`, `pnpm test`, benchmark script, CI run on PR #91).
+- **Delivery Integration Branch (B+)** in progress: `ci-test/pipeline-hardening` is being formalized as the delivery integration branch.
+- `.github/workflows/ci.yml` refactored to read branch config from `operations/delivery/branches.json` and run the full deployment pipeline on delivery branches.
+- **DC-6.5 — Delivery Contract Certification** implemented: `/api/health` exposes a stable contract; `verify-deployment.ts` validates it.
+- **DC-4.1 — Production Access Certification** implemented: `pnpm delivery:verify:production-access` verifies Fly production access without deploying.
+- Awaiting CI validation on `ci-test/pipeline-hardening` (PR #91).
 
 ## EGS Deliverables Completed
 
@@ -43,8 +41,25 @@
 - `src/lib/health-checks.ts` now includes an `environment` check powered by EGS `validateRuntime`.
 - `scripts/ops/verify-deployment.ts` polls `/api/health` with retries and timeouts; reads environment URL from the Operational Manifest.
 - `package.json` scripts `deploy:verify` and `ci:verify:staging`.
-- `.github/workflows/ci.yml` smoke-staging job now runs `pnpm ci:verify:staging` before smoke tests.
+- `.github/workflows/ci.yml` smoke-staging job now runs deployment verification before smoke tests.
 - `scripts/ops/validate-delivery-manifest.ts` validates the manifest in CI.
+
+## DC-6.5 Deliverables Completed
+
+- `/api/health` response now includes `status`, `version`, `environment`, `checks`, and optional `build`.
+- `scripts/ops/verify-deployment.ts` validates the health response contract before accepting deployment success.
+- `operations/delivery/manifests/delivery.manifest.json` documents the health contract.
+
+## DC-4.1 Deliverables Completed
+
+- `scripts/ops/verify-production-access.ts` verifies Fly production access without deploying.
+- `package.json` script `delivery:verify:production-access`.
+
+## B+ Delivery Integration Branch Deliverables Completed
+
+- `operations/delivery/branches.json` defines delivery branches, production branch, staging branch, and delivery integration branch.
+- `.github/workflows/ci.yml` uses a `configure` job to read `branches.json` and resolve environment, app URL, fly config, and Supabase project ID secret.
+- `ci-test/pipeline-hardening` added to workflow triggers so it runs the full deployment pipeline.
 
 ## Operational Manifest (OMF) Deliverables Completed
 

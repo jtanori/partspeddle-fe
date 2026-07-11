@@ -31,6 +31,7 @@
     "env:validate": "tsx scripts/ops/env-validate.ts",
     "env:report": "tsx scripts/ops/env-report.ts",
     "delivery:manifest:validate": "tsx scripts/ops/validate-delivery-manifest.ts",
+    "delivery:verify:production-access": "tsx scripts/ops/verify-production-access.ts",
     "db:seed": "tsx scripts/seed/seed-staging.ts",
     "db:seed:staging": "tsx scripts/seed/seed-staging.ts",
     "db:seed:users": "tsx scripts/seed/seed-users.ts",

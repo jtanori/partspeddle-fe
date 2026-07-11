@@ -36,7 +36,7 @@
       },
       {
         "name": "deployment-health",
-        "description": "Poll the application health endpoint until all checks pass.",
+        "description": "Poll the application health endpoint until all checks pass and the contract is valid.",
         "command": "pnpm deploy:verify {appUrl}"
       },
       {
@@ -46,7 +46,13 @@
       }
     ],
     "requiredHealthChecks": ["environment", "supabase", "algolia"],
-    "postDeployChecks": ["deployment-health", "smoke-tests"]
+    "postDeployChecks": ["deployment-health", "smoke-tests"],
+    "healthContract": {
+      "requiredFields": ["status", "version", "environment", "checks"],
+      "requiredChecks": ["environment", "supabase", "algolia"],
+      "statusValues": ["ok", "degraded"],
+      "checkStatusValues": ["ok", "error"]
+    }
   },
   "observability": {
     "deploymentRecordsDir": "artifacts/deployments",

@@ -1,9 +1,9 @@
 /**
- * Deployment Verification (DC-6)
+ * Deployment Verification (DC-6 + DC-6.5)
  *
  * Polls the application's health endpoint until all checks pass or a timeout
- * is reached. This script is intended to run after a Fly.io deployment from
- * GitHub Actions.
+ * is reached. Validates the health response contract (status, version,
+ * environment, checks, build metadata).
  *
  * Usage:
  *   tsx scripts/ops/verify-deployment.ts https://stage.partspeddle.com
@@ -21,8 +21,15 @@ interface DependencyCheckResult {
 
 interface HealthReport {
   status: 'ok' | 'degraded';
+  version: string;
+  environment: string;
   message?: string;
   checks: Record<string, DependencyCheckResult>;
+  build?: {
+    sha?: string;
+    timestamp?: string;
+    image?: string;
+  };
 }
 
 function resolveBaseUrl(): string {
@@ -53,10 +60,47 @@ function resolveBaseUrl(): string {
 const baseUrl = resolveBaseUrl();
 const timeoutMs = Number(process.env.VERIFY_TIMEOUT_MS || '120000');
 const intervalMs = Number(process.env.VERIFY_INTERVAL_MS || '5000');
+const requiredChecks = (process.env.VERIFY_REQUIRED_CHECKS || 'environment,supabase,algolia').split(',');
 const healthUrl = `${baseUrl.replace(/\/$/, '')}/api/health`;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function validateContract(report: unknown): HealthReport {
+  if (typeof report !== 'object' || report === null) {
+    throw new Error('Health endpoint returned non-object response');
+  }
+
+  const r = report as Partial<HealthReport>;
+
+  if (r.status !== 'ok' && r.status !== 'degraded') {
+    throw new Error(`Invalid health status: ${String(r.status)}`);
+  }
+  if (typeof r.version !== 'string' || r.version.length === 0) {
+    throw new Error('Missing or invalid health response version');
+  }
+  if (typeof r.environment !== 'string' || r.environment.length === 0) {
+    throw new Error('Missing or invalid health response environment');
+  }
+  if (typeof r.checks !== 'object' || r.checks === null) {
+    throw new Error('Missing or invalid health response checks');
+  }
+
+  for (const checkName of requiredChecks) {
+    const check = r.checks[checkName];
+    if (!check || typeof check !== 'object') {
+      throw new Error(`Required health check "${checkName}" is missing`);
+    }
+    if (check.status !== 'ok' && check.status !== 'error') {
+      throw new Error(`Invalid status for health check "${checkName}": ${String(check.status)}`);
+    }
+    if (typeof check.latencyMs !== 'number') {
+      throw new Error(`Invalid latency for health check "${checkName}"`);
+    }
+  }
+
+  return r as HealthReport;
 }
 
 async function fetchHealth(): Promise<HealthReport> {
@@ -68,7 +112,7 @@ async function fetchHealth(): Promise<HealthReport> {
     throw new Error(`Health endpoint returned HTTP ${response.status}`);
   }
 
-  return (await response.json()) as HealthReport;
+  return validateContract(await response.json());
 }
 
 async function verifyDeployment(): Promise<void> {
@@ -78,6 +122,8 @@ async function verifyDeployment(): Promise<void> {
     try {
       const report = await fetchHealth();
       console.log(`Health status: ${report.status}`);
+      console.log(`  version: ${report.version}`);
+      console.log(`  environment: ${report.environment}`);
 
       for (const [name, check] of Object.entries(report.checks)) {
         const indicator = check.status === 'ok' ? '✓' : '✗';

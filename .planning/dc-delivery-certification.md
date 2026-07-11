@@ -99,6 +99,22 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 ---
 
+### DC-4.1 — Production access is verified before any production touch
+
+**Acceptance Criteria:**
+
+- [ ] Operator can authenticate to Fly.io.
+- [ ] Operator can list apps and confirm `vintrack-prod` exists.
+- [ ] Operator can read `flyctl status` for `vintrack-prod`.
+- [ ] Operator can read `flyctl secrets list` for `vintrack-prod`.
+- [ ] No deployment is required for this certification.
+
+**Evidence Required:**
+
+- Output of `pnpm delivery:verify:production-access`.
+
+---
+
 ### DC-5 — Production deployment is fully automated
 
 **Acceptance Criteria:**
@@ -156,6 +172,23 @@ Deployment Success
 
 ---
 
+### DC-6.5 — Delivery Contract Certification
+
+**Acceptance Criteria:**
+
+- [ ] `/api/health` exposes a stable operational contract: `status`, `version`, `environment`, `checks`, optional `build`.
+- [ ] Required checks (`environment`, `supabase`, `algolia`) are present and each has `status`, `latencyMs`, optional `message`.
+- [ ] The deployment verification script validates the contract schema, not just HTTP 200.
+- [ ] The contract is documented in `operations/delivery/manifests/delivery.manifest.json`.
+
+**Evidence Required:**
+
+- `src/lib/health-checks.ts` with contract fields.
+- `scripts/ops/verify-deployment.ts` with `validateContract`.
+- `operations/delivery/manifests/delivery.manifest.json#verification.healthContract`.
+
+---
+
 ### DC-7 — Environment Governance System (EGS)
 
 **Acceptance Criteria:**
@@ -195,12 +228,15 @@ Deployment Success
 
 ---
 
-### DC-8 — Delivery pipeline is observable and reproducible
+### DC-8 — Operational Observability
 
 **Acceptance Criteria:**
 
-- [ ] Every deployment produces a machine-readable record.
-- [ ] Record contains: commit SHA, branch, environment, image digest, duration, health-check result, smoke-test result, migration result.
+- [ ] **Delivery Observability**: build, deploy, verification, and rollback durations are recorded.
+- [ ] **Runtime Observability**: health, readiness, dependency status, and environment validity are exposed via `/api/health`.
+- [ ] **Operational Observability**: deployment history, release history, rollback history, and environment drift are recorded.
+- [ ] **Engineering Observability**: Husky latency, CI duration, Docker build duration, test duration, and cache effectiveness are captured.
+- [ ] Every deployment produces a machine-readable record containing: commit SHA, branch, environment, image digest, duration, health-check result, smoke-test result, migration result.
 - [ ] Records can be queried without GitHub UI access.
 
 **Evidence Required:**
@@ -208,38 +244,47 @@ Deployment Success
 - `scripts/ops/record-deployment.ts`.
 - `artifacts/deployments/` structure and sample records.
 - `docs/operations/deployment-observability.md`.
+- Integration with benchmark artifacts in `artifacts/delivery/`.
 
 ---
 
 ## Execution Phases
 
-Revised order: **DC-4 → DC-7 → DC-7.1 → DC-6 → DC-8 → DC-5**, with **DC-0** captured in parallel and **DC-2** addressed only after benchmark evidence identifies the true bottleneck.
+Revised order: **DC-4 → DC-7 → DC-7.1 → DC-6 → DC-6.5 → DC-4.1 → DC-8 → DC-5**, with **DC-0** captured in parallel and **DC-2** addressed only after benchmark evidence identifies the true bottleneck.
 
 ### Phase 0 — Toolchain Baseline (DC-0)
 
 Record pinned toolchain versions and clean-clone behavior. No production changes.
 
-### Phase 1 — Baseline Evidence (current)
+### Phase 1 — Baseline Evidence (DC-1, DC-2, DC-3, DC-4)
 
-No code changes. Gather evidence for DC-1, DC-2, DC-3, DC-4 using `.planning/temp/benchmark-delivery.sh`.
+No code changes. Gather evidence using `.planning/temp/benchmark-delivery.sh`.
 
-### Phase 2 — Environment Governance System (DC-7 + DC-7.1)
+### Phase 2 — Delivery Integration Branch (B+)
+
+Formalize `ci-test/pipeline-hardening` as the delivery integration branch. Update `.github/workflows/ci.yml` to read branch configuration from `operations/delivery/branches.json` and run the full deployment pipeline on that branch.
+
+### Phase 3 — Environment Governance System (DC-7 + DC-7.1)
 
 Implement EGS: schema, validator, classification, generated docs, secret policy, drift matrix.
 
-### Phase 3 — Deployment Verification (DC-6)
+### Phase 4 — Deployment Verification (DC-6 + DC-6.5)
 
-Add runtime environment check to `/api/health`, deployment verification script, and CI integration. Depends on DC-7 because "healthy" must be defined by the environment schema.
+Add runtime environment check to `/api/health`, deployment verification script with contract validation, and CI integration. Depends on DC-7 because "healthy" must be defined by the environment schema.
 
-### Phase 4 — Observability (DC-8)
+### Phase 5 — Production Access Certification (DC-4.1)
 
-Add machine-readable deployment records and reporting. Depends on DC-6/DC-7.
+Verify production Fly.io access (auth, apps list, status, secrets) without deploying. Must pass before any production touch.
 
-### Phase 5 — Production Certification (DC-5)
+### Phase 6 — Operational Observability (DC-8)
 
-Certify production deployment path. Blocked until DC-4 through DC-8 are complete and operator explicitly approves.
+Add machine-readable deployment records and reporting across delivery, runtime, operational, and engineering pillars. Depends on DC-6/DC-7.
 
-### Phase 6 — Husky Optimization (DC-2)
+### Phase 7 — Production Certification (DC-5)
+
+Certify production deployment path. Blocked until DC-0 through DC-8, plus DC-4.1, are complete and operator explicitly approves.
+
+### Phase 8 — Husky Optimization (DC-2)
 
 Address only after benchmark evidence shows where the latency truly lives.
 
@@ -256,11 +301,13 @@ PR #91 (`feat/d0-workstream-a-audit` → `ci-test/pipeline-hardening`) opened fo
 | DC-2   | Husky timing output                              | Measured      | Benchmark: `git commit` with Husky = **47 s**; without Husky = **9 s**. lint-staged alone = **39 s**; ESLint single file = **15 s**; full `src/` ESLint = **68 s**. Root cause: lint-staged startup/git orchestration dominates. |
 | DC-3   | Dockerfile + .dockerignore review + docker build | Measured      | Dockerfile contains no `.env` references and is environment-agnostic. `.dockerignore` excludes `.env*`.                                                                                                                      |
 | DC-4   | Latest `develop` GitHub Actions run              | Passed        | Run `29151750670` conclusion `success`. Deploy Staging to Fly.io ✅, Deploy Supabase to Staging ✅, Staging Smoke Tests ✅. One non-fatal Fly proxy warning noted for later review.                                          |
-| DC-5   | Latest `main` GitHub Actions run                 | Not started   | Blocked until DC-4 through DC-8 are complete and operator approves production touch.                                                                                                                                         |
-| DC-6   | CI verification jobs + recovery runbook          | Implemented   | Runtime env check in `/api/health`; `scripts/ops/verify-deployment.ts` reads from delivery manifest; CI smoke-staging job runs `pnpm ci:verify:staging` before smoke tests; recovery runbook created. Pending CI validation. |
+| DC-4.1 | Production Fly access verification               | Implemented   | `scripts/ops/verify-production-access.ts` and `pnpm delivery:verify:production-access` created. Run before any production touch.                                                                                              |
+| DC-5   | Latest `main` GitHub Actions run                 | Not started   | Blocked until DC-0 through DC-8 and DC-4.1 are complete and operator approves production touch.                                                                                                                              |
+| DC-6   | CI verification jobs + recovery runbook          | Implemented   | Runtime env check in `/api/health`; `scripts/ops/verify-deployment.ts` reads from delivery manifest; CI smoke-staging job runs deployment verification before smoke tests; recovery runbook created. Pending CI validation. |
+| DC-6.5 | Delivery contract certification                  | Implemented   | `/api/health` exposes `status`, `version`, `environment`, `checks`, optional `build`. `verify-deployment.ts` validates contract. Manifest documents health contract. Pending CI validation.                                  |
 | DC-7   | Environment schema + validator + secret policy   | Implemented   | EGS implemented: schema with `provider` metadata, classify, validate, generated docs, secret-governance.md. Smoke-test validation in CI. Operational Manifest introduced for delivery platform metadata.                     |
 | DC-7.1 | Environment drift matrix                         | In progress   | `config/environment/generated/drift-matrix.md` generated. Automated drift check against Fly/GitHub secrets pending.                                                                                                          |
-| DC-8   | Deployment records + observability docs          | Not started   | Depends on DC-6/DC-7.                                                                                                                                                                                                        |
+| DC-8   | Operational Observability                        | Not started   | Defined as four pillars: delivery, runtime, operational, engineering. Depends on DC-6/DC-7/DC-6.5.                                                                                                                          |
 
 ---
 

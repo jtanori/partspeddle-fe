@@ -61,7 +61,17 @@
           }
         },
         "requiredHealthChecks": { "type": "array", "items": { "type": "string" } },
-        "postDeployChecks": { "type": "array", "items": { "type": "string" } }
+        "postDeployChecks": { "type": "array", "items": { "type": "string" } },
+        "healthContract": {
+          "type": "object",
+          "required": ["requiredFields", "requiredChecks", "statusValues", "checkStatusValues"],
+          "properties": {
+            "requiredFields": { "type": "array", "items": { "type": "string" } },
+            "requiredChecks": { "type": "array", "items": { "type": "string" } },
+            "statusValues": { "type": "array", "items": { "type": "string" } },
+            "checkStatusValues": { "type": "array", "items": { "type": "string" } }
+          }
+        }
       }
     },
     "observability": {

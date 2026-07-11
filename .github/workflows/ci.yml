@@ -1,5 +1,4 @@
-# .github/workflows/ci.yml
-name: VinTrack CI
+# VinTrack CI
 
 env:
   HUSKY: 0
@@ -9,11 +8,13 @@ on:
     branches:
       - main
       - develop
+      - ci-test/pipeline-hardening
       - 'feat/**'
   pull_request:
     branches:
       - main
       - develop
+      - ci-test/pipeline-hardening
   workflow_dispatch:
     inputs:
       dry-run:
@@ -23,6 +24,61 @@ on:
         type: boolean
 
 jobs:
+  configure:
+    name: Configure Delivery
+    runs-on: ubuntu-latest
+    outputs:
+      is-delivery-branch: ${{ steps.config.outputs.is-delivery-branch }}
+      environment: ${{ steps.config.outputs.environment }}
+      app-url: ${{ steps.config.outputs.app-url }}
+      fly-config: ${{ steps.config.outputs.fly-config }}
+      supabase-project-id-secret: ${{ steps.config.outputs.supabase-project-id-secret }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read branch configuration
+        id: branches
+        run: |
+          echo "delivery-branches=$(jq -c '.deliveryBranches' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+          echo "production-branch=$(jq -r '.productionBranch' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+          echo "staging-branch=$(jq -r '.stagingBranch' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+          echo "delivery-integration-branch=$(jq -r '.deliveryIntegrationBranch // .stagingBranch' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve delivery environment
+        id: config
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          PRODUCTION_BRANCH="${{ steps.branches.outputs.production-branch }}"
+          STAGING_BRANCH="${{ steps.branches.outputs.staging-branch }}"
+          DELIVERY_INTEGRATION_BRANCH="${{ steps.branches.outputs.delivery-integration-branch }}"
+
+          IS_DELIVERY=false
+          ENVIRONMENT=""
+          APP_URL=""
+          FLY_CONFIG=""
+          SUPABASE_PROJECT_ID_SECRET=""
+
+          if [ "$BRANCH" = "$PRODUCTION_BRANCH" ]; then
+            IS_DELIVERY=true
+            ENVIRONMENT="production"
+            APP_URL="https://partspeddle.com"
+            FLY_CONFIG="fly/fly.prod.toml"
+            SUPABASE_PROJECT_ID_SECRET="PRODUCTION_SUPABASE_PROJECT_ID"
+          elif [ "$BRANCH" = "$STAGING_BRANCH" ] || [ "$BRANCH" = "$DELIVERY_INTEGRATION_BRANCH" ]; then
+            IS_DELIVERY=true
+            ENVIRONMENT="staging"
+            APP_URL="https://stage.partspeddle.com"
+            FLY_CONFIG="fly/fly.stage.toml"
+            SUPABASE_PROJECT_ID_SECRET="STAGING_SUPABASE_PROJECT_ID"
+          fi
+
+          echo "is-delivery-branch=$IS_DELIVERY" >> "$GITHUB_OUTPUT"
+          echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+          echo "app-url=$APP_URL" >> "$GITHUB_OUTPUT"
+          echo "fly-config=$FLY_CONFIG" >> "$GITHUB_OUTPUT"
+          echo "supabase-project-id-secret=$SUPABASE_PROJECT_ID_SECRET" >> "$GITHUB_OUTPUT"
+
   test:
     name: Test & Lint
     runs-on: ubuntu-latest
@@ -111,12 +167,12 @@ jobs:
       - name: Run bundle audit
         run: pnpm build && pnpm security:bundle-audit
 
-  deploy-staging:
-    name: Deploy Staging to Fly.io
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+  deploy-fly:
+    name: Deploy to Fly.io
+    needs: [test, configure]
+    if: github.event_name == 'push' && needs.configure.outputs.is-delivery-branch == 'true'
     runs-on: ubuntu-latest
-    environment: staging
+    environment: ${{ needs.configure.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -124,37 +180,19 @@ jobs:
       - name: Setup Flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Deploy Staging
-        run: flyctl deploy --config fly/fly.stage.toml
+      - name: Deploy
+        run: flyctl deploy --config ${{ needs.configure.outputs.fly-config }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-  deploy-production:
-    name: Deploy Production to Fly.io
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy Production
-        run: flyctl deploy --config fly/fly.prod.toml
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
-  deploy-supabase-staging:
-    name: Deploy Supabase to Staging
-    needs: test
+  deploy-supabase:
+    name: Deploy Supabase
+    needs: [test, configure]
     if: |
-      github.ref == 'refs/heads/develop' &&
+      needs.configure.outputs.is-delivery-branch == 'true' &&
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
-    environment: staging
+    environment: ${{ needs.configure.outputs.environment }}
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
     steps:
@@ -181,66 +219,22 @@ jobs:
       - name: Login to Supabase
         run: supabase login --token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-      - name: Link Staging Project
-        run: supabase link --project-ref ${{ secrets.STAGING_SUPABASE_PROJECT_ID }}
+      - name: Link Project
+        run: supabase link --project-ref ${{ secrets[needs.configure.outputs.supabase-project-id-secret] }}
 
       - name: Push Migrations
         run: supabase db push ${{ github.event.inputs.dry-run == 'true' && '--dry-run' || '--yes' }}
 
       - name: Deploy Edge Functions
         if: ${{ github.event.inputs.dry-run != 'true' }}
-        run: supabase functions deploy --use-api --project-ref ${{ secrets.STAGING_SUPABASE_PROJECT_ID }}
+        run: supabase functions deploy --use-api --project-ref ${{ secrets[needs.configure.outputs.supabase-project-id-secret] }}
 
-  deploy-supabase-production:
-    name: Deploy Supabase to Production
-    needs: test
-    if: |
-      github.ref == 'refs/heads/main' &&
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+  smoke-tests:
+    name: Smoke Tests
+    needs: [deploy-fly, deploy-supabase]
+    if: github.event_name == 'push' && needs.configure.outputs.is-delivery-branch == 'true'
     runs-on: ubuntu-latest
-    environment: production
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: 2.109.0
-
-      - name: Login to Supabase
-        run: supabase login --token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Link Production Project
-        run: supabase link --project-ref ${{ secrets.PRODUCTION_SUPABASE_PROJECT_ID }}
-
-      - name: Push Migrations
-        run: supabase db push ${{ github.event.inputs.dry-run == 'true' && '--dry-run' || '--yes' }}
-
-      - name: Deploy Edge Functions
-        if: ${{ github.event.inputs.dry-run != 'true' }}
-        run: supabase functions deploy --use-api --project-ref ${{ secrets.PRODUCTION_SUPABASE_PROJECT_ID }}
-
-  smoke-staging:
-    name: Staging Smoke Tests
-    needs: [deploy-staging, deploy-supabase-staging]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    environment: staging
+    environment: ${{ needs.configure.outputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -258,6 +252,7 @@ jobs:
         run: pnpm install
 
       - name: Validate smoke-test environment
+        if: needs.configure.outputs.environment == 'staging'
         run: pnpm env:validate smoke-test
         env:
           STAGING_URL: https://stage.partspeddle.com
@@ -266,15 +261,17 @@ jobs:
           STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
 
       - name: Verify deployment health
-        run: pnpm ci:verify:staging
+        run: pnpm deploy:verify ${{ needs.configure.outputs.app-url }}
         env:
           VERIFY_TIMEOUT_MS: 120000
           VERIFY_INTERVAL_MS: 5000
 
-      - name: Run staging smoke tests
+      - name: Run smoke tests
+        if: needs.configure.outputs.environment == 'staging'
         run: pnpm ci:smoke:staging
         env:
           STAGING_URL: https://stage.partspeddle.com
           STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+
