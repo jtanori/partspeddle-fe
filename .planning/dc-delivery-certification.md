@@ -209,16 +209,16 @@ Address only after benchmark evidence shows where the latency truly lives.
 ## Evidence Log
 
 | Gate | Evidence                                         | Status        | Notes                                                                                                                                                                               |
-| ---- | ------------------------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| ---- | ------------------------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | DC-0 | Toolchain versions + clean-clone behavior        | In progress   | Benchmark script `.planning/temp/benchmark-delivery.sh` prepared; awaiting operator run results.                                                                                    |
 | DC-1 | `docker build .` output                          | Functional ✅ | Build timed out after 600 s during cold `pnpm install`. No `.env` references; image is environment-agnostic. Pending **performance validation** on warm cache.                      |
 | DC-2 | Husky timing output                              | Measured      | `time git commit` for one TS file: **real 1 m 17.3 s**. ESLint/Prettier stages fast; latency likely in lint-staged orchestration. Final root cause pending benchmark script.        |
 | DC-3 | Dockerfile + .dockerignore review + docker build | Measured      | Dockerfile contains no `.env` references and is environment-agnostic. `.dockerignore` excludes `.env*`.                                                                             |
 | DC-4 | Latest `develop` GitHub Actions run              | Passed        | Run `29151750670` conclusion `success`. Deploy Staging to Fly.io ✅, Deploy Supabase to Staging ✅, Staging Smoke Tests ✅. One non-fatal Fly proxy warning noted for later review. |
 | DC-5 | Latest `main` GitHub Actions run                 | Not started   | Blocked until DC-4 through DC-8 are complete and operator approves production touch.                                                                                                |
-| DC-6 | CI verification jobs + recovery runbook          | Not started   | Depends on DC-7.                                                                                                                                                                    |     |
-| DC-7 | Environment schema + validator + secret policy   | Not started   | Reframed as **Environment Governance System (EGS)**.                                                                                                                                |     |
-| DC-8 | Deployment records + observability docs          | Not started   | Depends on DC-6/DC-7.                                                                                                                                                               |     |
+| DC-6 | CI verification jobs + recovery runbook          | Not started   | Depends on DC-7.                                                                                                                                                                    |
+| DC-7 | Environment schema + validator + secret policy   | In progress   | EGS implemented: schema, classify, validate, generated docs, secret-governance.md. Smoke-test validation added to CI. Runtime validation in CI pending secret alignment.            |
+| DC-8 | Deployment records + observability docs          | Not started   | Depends on DC-6/DC-7.                                                                                                                                                               |
 
 ---
 

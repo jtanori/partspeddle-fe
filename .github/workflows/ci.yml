@@ -254,6 +254,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Validate smoke-test environment
+        run: pnpm env:validate smoke-test
+        env:
+          STAGING_URL: https://stage.partspeddle.com
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+
       - name: Run staging smoke tests
         run: pnpm ci:smoke:staging
         env:
