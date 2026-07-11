@@ -67,6 +67,8 @@ See `docs/OPERATIONS_ENV_MAPPING.md` for the full mapping.
 - [ ] Dry-run the migration push (preview without applying):
   ```bash
   pnpm db:dry-run:staging
+  # Equivalent raw command:
+  # supabase db push --dry-run
   ```
   Because the project transitioned from remote-first to migration-driven, the CLI may request `--include-all`. That is expected.
 - [ ] Apply the migrations:
@@ -126,6 +128,8 @@ Repeat the staging sequence during a scheduled maintenance window.
 - [ ] Dry-run:
   ```bash
   pnpm db:dry-run:production
+  # Equivalent raw command:
+  # supabase db push --dry-run
   ```
 - [ ] Apply migrations:
   ```bash
