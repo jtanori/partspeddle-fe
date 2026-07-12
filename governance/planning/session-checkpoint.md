@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/scgs-spec-plan`
-**Status:** Creating SCGS specification implementation plan from `/Users/dev/Documents/SCGS/` specs.
+**Branch:** `feat/scgs-phase-0-1-canonical-foundation`
+**Status:** Implementing Phase 0 + Phase 1 of SCGS specification plan: canonical module migration + compiler artifact model.
 
 ---
 
@@ -120,20 +120,33 @@ backend/modules/<name>/
 
 ---
 
+## Completed
+
+3. **SCGS Phase 0 + Phase 1 — Canonical Foundation**
+   - Branch: `feat/scgs-phase-0-1-canonical-foundation`
+   - Plan: `governance/planning/scgs-spec-implementation-plan.md`
+   - Phase 0: Migrated SCGS to canonical backend module `apps/web/src/backend/modules/scgs/`;
+     created `README.md` and canonical spec documents in `docs/specifications/`;
+     added backward-compatible shims at legacy paths.
+   - Phase 1: Added `LineageId`, `SemanticSpecification`, and `RankedArtifact` types;
+     refactored `SpecificationCompilerImpl` to return `CompiledSemanticArtifact` with
+     deterministic `lineageId`/`checksum`; expanded ranking signals with normalized
+     contributions and explanations; created `compileListing` and `rankArtifacts`
+     application use cases; added module-owned tests in
+     `apps/web/src/backend/modules/scgs/tests/`.
+
+---
+
 ## In Progress
 
-1. **SCGS Specification Implementation Plan**
-   - Branch: `feat/scgs-spec-plan`
-   - Goal: Convert the SCGS / PSPS / MSM specification documents into an actionable implementation plan aligned with the current SCGS codebase.
-   - Source specs: `/Users/dev/Documents/SCGS/1.0 SCGS Search Platform Specification.md`, `/Users/dev/Documents/SCGS/2.0 PartsPeddle Semantic Platform Specification (PSPS).md`, `/Users/dev/Documents/SCGS/3.0 Marketplace Semantic Model (MSM).md`.
+_None._
 
 ---
 
 ## Next Steps
 
-1. **Approve SCGS implementation plan** — review `governance/planning/scgs-spec-implementation-plan.md`.
-2. **Implement first SCGS phase** — create branch and execute the approved initial phase.
-3. **Product roadmap** — continue marketplace feature work in parallel where possible.
+1. **Open PR for SCGS Phase 0+1** and merge to `develop`.
+2. **Product roadmap** — continue marketplace feature work after Phase 0+1 merges.
 
 ---
 

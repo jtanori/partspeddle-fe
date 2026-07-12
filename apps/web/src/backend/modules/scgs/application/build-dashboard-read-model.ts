@@ -1,0 +1,47 @@
+import { CompiledSemanticArtifact, SCGSCIVerdict, PTSVector } from '../domain/compiled-semantic-artifact';
+import { SemanticReplayTrace, SemanticReplayEvent } from '../domain/replay/types';
+
+export interface SCGSReadModel {
+  category: string;
+  latestVerdict: SCGSCIVerdict;
+  stabilityIndex: number;
+  driftTrend: {
+    labels: string[];
+    scores: number[];
+  };
+  recentViolations: Array<{
+    version: string;
+    violations: string[];
+    timestamp: string;
+  }>;
+}
+
+export const buildDashboardReadModel = (
+  category: string,
+  artifacts: CompiledSemanticArtifact[],
+  traces: SemanticReplayTrace[],
+  ptsVectors: PTSVector[],
+  latestVerdict: SCGSCIVerdict
+): SCGSReadModel => {
+  // Pure projection: Aggregation only, NO domain logic.
+  return {
+    category,
+    latestVerdict,
+    stabilityIndex: 100 - (ptsVectors.at(-1)?.driftScore || 0),
+    driftTrend: {
+      labels: artifacts.map(a => a.version),
+      scores: ptsVectors.map(v => v.driftScore)
+    },
+    recentViolations: traces.flatMap(t =>
+      t.events
+        .filter((e): e is Extract<SemanticReplayEvent, { type: "CI_VERDICT" }> =>
+          e.type === "CI_VERDICT" && e.verdict === "BLOCK"
+        )
+        .map(e => ({
+          version: t.version,
+          violations: e.reasonCodes,
+          timestamp: t.metadata.createdAt
+        }))
+    )
+  };
+};

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createAnonServerClient } from '@/lib/supabase-server';
 import PDPRoot from '@/components/pdp-modern/PDPRoot';
-import { SpecificationCompilerImpl } from '@/domain/services/specification.compiler';
+import { SpecificationCompilerImpl } from '@/backend/modules/scgs';
 import { buildPDPView } from '@/projection/pdp';
 import { SpecificationRepository } from '@/backend/modules/catalog/domain/specification-repository';
 import { CatalogRepository, SupabaseCatalogRepository } from '@/backend/modules/catalog';
@@ -42,11 +42,11 @@ export default async function ListingDetailPage({ params }: Props) {
 
   // New projection flow
   const compiler = new SpecificationCompilerImpl(specRepo, catRepo, listingRepo);
-  const compiled = await compiler.compile({
+  const artifact = await compiler.compile({
     listingId: id,
     categoryId: (part as any).category_id,
   });
-  const viewModel = buildPDPView(part as any, seller, compiled);
+  const viewModel = buildPDPView(part as any, seller, artifact.compiled);
 
   return (
     <div className="bg-surface-secondary min-h-screen">

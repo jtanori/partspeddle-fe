@@ -1,23 +1,6 @@
-export interface RankingFeatureFactors {
-  listingQualityScore: number;
-  sellerTrustScore: number;
-  recencyScore: number;
-}
-
-export interface RankingContribution {
-  factor: string;
-  rawValue: number;
-  weight: number;
-  contribution: number;
-}
-
-export interface RankingExplanation {
-  finalScore: number;
-  contributions: RankingContribution[];
-}
-
-export interface RankedResult {
-  listingId: string;
-  score: number;
-  explanation: RankingExplanation;
-}
+/**
+ * @deprecated SCGS has moved to the canonical backend module at
+ * `apps/web/src/backend/modules/scgs`. Import from `@/backend/modules/scgs`
+ * instead. This shim will be removed in a future cleanup pass.
+ */
+export * from '../../../../backend/modules/scgs/infrastructure/ranking-types';
