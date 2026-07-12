@@ -16,7 +16,7 @@ interface Part {
 }
 
 async function runOutboxRecoveryTest() {
-  const reportPath = "reports/outbox-recovery-report.md";
+  const reportPath = "governance/certification/reports/outbox-recovery-report.md";
   const reportLines: string[] = [
     "# Stage 5: Outbox Recovery Validation Report",
   ];
@@ -38,7 +38,7 @@ async function runOutboxRecoveryTest() {
       : "❌ FAIL";
   reportLines.push("", `## Overall Test Suite Verdict: ${finalVerdict}`);
 
-  if (!fs.existsSync("reports")) fs.mkdirSync("reports");
+  if (!fs.existsSync("governance/certification/reports")) fs.mkdirSync("governance/certification/reports", { recursive: true });
   fs.writeFileSync(reportPath, reportLines.join("\n"));
   logger.info(`Report generated at ${reportPath}`);
 }

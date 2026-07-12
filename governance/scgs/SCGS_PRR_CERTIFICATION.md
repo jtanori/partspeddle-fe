@@ -28,7 +28,7 @@
 
 *   **Silent Drift**: Prevented by SCG parity tests + snapshot diffing (C.0.8, C.0.9).
 *   **Snapshot Desync**: Prevented by CI-enforced artifact versioning + read-only snapshot access in CI jobs.
-*   **Compiler Bypass**: Prevented by strict boundary rules in `docs/SCGS_ARCHITECTURE_GOVERNANCE.md`.
+*   **Compiler Bypass**: Prevented by strict boundary rules in `governance/scgs/SCGS_ARCHITECTURE_GOVERNANCE.md`.
 *   **Interpretation Leakage**: Prevented by pure projection layer constraint (CCC).
 
 ## 3. Determinism Audit

@@ -100,7 +100,7 @@ The repository needs an explicit organizational layer that separates:
 └── artifacts/
     ├── coverage/
     ├── certification/
-    ├── reports/
+    ├── governance/certification/reports/
     └── benchmarks/
 ```
 
@@ -161,7 +161,7 @@ These two items must land before the large-scale repository reorganization begin
 - Update `config/environment/README.md` if production secret provisioning changed.
 - Update `docs/operations/secret-governance.md` to document the GitHub `production` environment Algolia secrets.
 - Add a note about the temporary CSP relaxation and the nonce-based target to `docs/engineering/security.md` (or create it).
-- Update root `README.md` if it references stale paths like `.planning/master-plan.md`.
+- Update root `README.md` if it references stale paths like `governance/planning/master-plan.md`.
 - Ensure `docs/PRC.md` Section 11 links to current security test locations.
 
 **Acceptance criteria:**
@@ -244,8 +244,8 @@ These two items must land before the large-scale repository reorganization begin
 
 **Goal:** Move governance subsystems under `governance/`.
 
-- [ ] Move `.scgs/` → `governance/scgs/`.
-- [ ] Move `.planning/` (active + archived) → `governance/planning/`.
+- [ ] Move `governance/scgs/` → `governance/scgs/`.
+- [ ] Move `governance/planning/` (active + archived) → `governance/planning/`.
 - [ ] Move certification evidence and artifacts → `governance/certification/`.
 - [ ] Move architecture docs and ADRs → `governance/architecture/` and `governance/decisions/`.
 - [ ] Update any hard-coded paths in scripts or CI.
@@ -255,7 +255,7 @@ These two items must land before the large-scale repository reorganization begin
 **Goal:** Turn `docs/` into a structured knowledge base.
 
 - [ ] Split `docs/` into:
-  - `docs/architecture/`
+  - `governance/architecture/`
   - `docs/product/`
   - `docs/engineering/`
   - `docs/operations/`
@@ -346,7 +346,7 @@ These two items must land before the large-scale repository reorganization begin
 - **CI path updates are error-prone.** Audit every script and workflow after each phase.
 - **Import aliases may break.** Use automated refactor tools or codemods.
 - **Documentation links rot.** Run a link checker after docs restructure.
-- **SCGS and governance tools may have hard-coded paths.** Search for `.scgs/`, `.planning/`, `scripts/`, `docs/` references before moving.
+- **SCGS and governance tools may have hard-coded paths.** Search for `governance/scgs/`, `governance/planning/`, `scripts/`, `docs/` references before moving.
 
 ---
 

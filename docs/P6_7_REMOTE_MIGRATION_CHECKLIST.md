@@ -185,7 +185,7 @@ If the migration push fails:
 
 Record and link:
 
-- Pre-migration remote drift report (`reports/remote-drift-report.md` or CI output).
+- Pre-migration remote drift report (`governance/certification/reports/remote-drift-report.md` or CI output).
 - Staging and production `supabase db push` CI run URLs.
 - JWT rotation timestamp and secret-update confirmations.
 - Post-migration smoke-test results.

@@ -14,7 +14,7 @@ Certify the deterministic behavior of the `RankingEngine` before integration int
 
 ## 3. Methodology
 1. Execute `RankingEngine.rank()` using the fixed query corpus.
-2. Compare outputs against the `reports/search-parity-baseline.json` captured during the shadow-read phase.
+2. Compare outputs against the `governance/certification/reports/search-parity-baseline.json` captured during the shadow-read phase.
 3. Verify that `RankingExplanation` fields match the expected contribution patterns for top-ranked items.
 
 ## 4. Stability Guarantees

@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/phase-4-platform-consolidation`
-**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction merged to develop via PR #106. Phase 3 backend modularization merged to develop via PR #107. Phase 4 platform consolidation plan approved; implementation in progress.
+**Branch:** `feat/phase-5-governance-consolidation`
+**Status:** Prep 1 and Prep 2 complete. Phases 0–4 merged to develop. Phase 5 governance consolidation approved; implementation in progress.
 
 ---
 
@@ -55,17 +55,18 @@
 - PR #105 — `Phase 1: workspace scaffolding`
 - PR #106 — `Phase 2: application extraction to apps/web`
 - PR #107 — `feat(phase-3): modularize backend repositories and ai service`
+- PR #108 — `feat(phase-4): consolidate platform tooling under platform/`
 
 ### Planning Cleanup
 
-- Archived completed delivery plans in `.planning/archive/`.
-- Archived completed P5/P6 security and phase plans in `.planning/archive/`.
-- Created platform repository evolution plan: `.planning/platform-repository-evolution.md`.
-- Created Phase 0 implementation plan: `.planning/phase-0-implementation-plan.md`.
-- Created Phase 1 implementation plan: `.planning/phase-1-implementation-plan.md`.
-- Created Phase 2 implementation plan: `.planning/phase-2-implementation-plan.md`.
-- Created Phase 3 implementation plan: `.planning/phase-3-implementation-plan.md`.
-- Created Phase 4 implementation plan: `.planning/phase-4-implementation-plan.md`.
+- Archived completed delivery plans in `governance/planning/archive/`.
+- Archived completed P5/P6 security and phase plans in `governance/planning/archive/`.
+- Created platform repository evolution plan: `governance/planning/platform-repository-evolution.md`.
+- Created Phase 0 implementation plan: `governance/planning/phase-0-implementation-plan.md`.
+- Created Phase 1 implementation plan: `governance/planning/phase-1-implementation-plan.md`.
+- Created Phase 2 implementation plan: `governance/planning/phase-2-implementation-plan.md`.
+- Created Phase 3 implementation plan: `governance/planning/phase-3-implementation-plan.md`.
+- Created Phase 4 implementation plan: `governance/planning/phase-4-implementation-plan.md`.
 
 ---
 
@@ -93,7 +94,7 @@ Target structure:
 └── artifacts/
 ```
 
-See `.planning/platform-repository-evolution.md` for the full phased migration plan.
+See `governance/planning/platform-repository-evolution.md` for the full phased migration plan.
 
 ### 3. `backend/modules/search` is the canonical module architecture
 
@@ -115,32 +116,37 @@ backend/modules/<name>/
 1. **Phase 1 — Workspace scaffolding** (merged via PR #105)
    - Branch: `feat/phase-1-workspace-scaffolding`
    - Deliverables: updated `pnpm-workspace.yaml`, empty target directories with READMEs, `packages/config`, updated root `package.json`
-   - Plan: `.planning/phase-1-implementation-plan.md`
+   - Plan: `governance/planning/phase-1-implementation-plan.md`
 
 2. **Phase 2 — Application extraction to `apps/web/`** (merged via PR #106)
    - Branch: `feat/phase-2-app-extraction`
    - Deliverables: Next.js application moved to `apps/web/`, root converted to workspace orchestrator, config/scripts/docs/Dockerfile updated
-   - Plan: `.planning/phase-2-implementation-plan.md`
+   - Plan: `governance/planning/phase-2-implementation-plan.md`
 
 3. **Phase 3 — Backend modularization** (merged via PR #107)
    - Branch: `feat/phase-3-backend-modularization`
    - Deliverables: backend modules for `catalog`, `listing`, `seller`, `ai`, and `shared`; repository interfaces moved to `domain/`, implementations to `infrastructure/`; backward-compatible shims at legacy paths; updated consumers and contract tests; `docs/engineering/backend-modules.md`
-   - Plan: `.planning/phase-3-implementation-plan.md`
+   - Plan: `governance/planning/phase-3-implementation-plan.md`
+
+4. **Phase 4 — Platform consolidation** (merged via PR #108)
+   - Branch: `feat/phase-4-platform-consolidation`
+   - Deliverables: `scripts/` → `platform/scripts/`, `operations/` → `platform/operations/`, `fly/` + `Dockerfile` → `platform/deployment/` + `platform/docker/`, lint-staged/husky configs extracted to `platform/tooling/`, CI and docs updated.
+   - Plan: `governance/planning/phase-4-implementation-plan.md`
 
 ---
 
 ## In Progress
 
-1. **Phase 4 — Platform consolidation**
-   - Branch: `feat/phase-4-platform-consolidation`
-   - Status: Implemented. Scoped checks pass (lint, typecheck, relevant branch/security tests, build, storybook build, delivery manifest validation). Ready to commit, push, and open PR #108.
-   - Plan: `.planning/phase-4-implementation-plan.md`
+1. **Phase 5 — Governance consolidation**
+   - Branch: `feat/phase-5-governance-consolidation`
+   - Status: Implemented. Scoped checks pass (lint, typecheck, branch/security tests, build, storybook build, delivery manifest validation). Ready to commit, push, and open PR.
+   - Plan: `governance/planning/phase-5-implementation-plan.md`
 
 ---
 
 ## Next Steps
 
-1. **Commit, push, and open PR #108** for Phase 4.
+1. **Complete Phase 5 implementation** and open PR.
 2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
 3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
@@ -155,9 +161,10 @@ backend/modules/<name>/
 
 ## Still Relevant
 
-- `.planning/platform-repository-evolution.md` — active planning document.
-- `.planning/phase-1-implementation-plan.md` — active implementation plan.
-- `.planning/phase-2-implementation-plan.md` — active implementation plan.
-- `.planning/phase-3-implementation-plan.md` — active implementation plan.
-- `.planning/phase-4-implementation-plan.md` — active implementation plan.
+- `governance/planning/platform-repository-evolution.md` — active planning document (will move during this phase).
+- `governance/planning/phase-1-implementation-plan.md` — active implementation plan (will move during this phase).
+- `governance/planning/phase-2-implementation-plan.md` — active implementation plan (will move during this phase).
+- `governance/planning/phase-3-implementation-plan.md` — active implementation plan (will move during this phase).
+- `governance/planning/phase-4-implementation-plan.md` — active implementation plan (will move during this phase).
+- `governance/planning/phase-5-implementation-plan.md` — active implementation plan.
 - `artifacts/delivery/production-deployment-2026-07-11.json` — canonical DC-8 record.

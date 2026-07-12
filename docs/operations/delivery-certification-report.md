@@ -37,7 +37,7 @@ Current assessment: **approximately 85–90% complete**. The remaining work is c
 
 ## Toolchain Baseline (DC-0)
 
-Recorded from `.planning/temp/benchmark-delivery.sh`:
+Recorded from `governance/planning/temp/benchmark-delivery.sh`:
 
 | Tool        | Version   |
 | ----------- | --------- |
@@ -191,7 +191,7 @@ No merge to `develop` is authorized until this report is updated to show all gat
 
 ## Evidence References
 
-- `.planning/dc-delivery-certification.md` — detailed certification plan and evidence log.
+- `governance/planning/dc-delivery-certification.md` — detailed certification plan and evidence log.
 - `docs/operations/delivery-audit.md` — original delivery audit baseline.
 - `docs/operations/recovery-runbook.md` — rollback and incident response procedures.
 - `docs/operations/secret-governance.md` — secret ownership and storage policy.

@@ -2,12 +2,10 @@
 
 Technical planning documents for the PartsPeddle platform.
 
-## Future contents
+## Contents
 
-- Roadmaps.
-- Phase implementation plans.
-- Session checkpoints.
-
-## Status
-
-Phase 1 scaffolding only. Content will migrate here from `.planning/` in Phase 5.
+- `platform-repository-evolution.md` — target repository topology and phased migration plan.
+- `session-checkpoint.md` — current session state and next steps.
+- `phase-*-implementation-plan.md` — per-phase implementation plans.
+- `archive/` — completed and historical plans.
+- `temp/` — ephemeral working notes.

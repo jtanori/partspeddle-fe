@@ -21,4 +21,4 @@ Shell commands are RTK-optimized. See `.agents/rtk.md` for mappings.
 
 ## Planning Artifacts
 
-All session plans, checkpoints, and planning documents must be saved in the `.planning/` directory at the project root.
+All session plans, checkpoints, and planning documents must be saved in the `governance/planning/` directory at the project root.

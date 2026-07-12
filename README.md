@@ -56,7 +56,7 @@
 - `docs/operations/deployment-observability.md` — deployment artifact format and records.
 - `docs/operations/secret-governance.md` — secret storage policy.
 - `docs/engineering/security.md` — CSP and application security.
-- `.planning/platform-repository-evolution.md` — platform evolution plan.
+- `governance/planning/platform-repository-evolution.md` — platform evolution plan.
 
 ## Deployment
 

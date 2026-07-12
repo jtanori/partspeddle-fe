@@ -26,7 +26,7 @@
 
 ## 3. Architecture Certification (GATE A.5 - Search)
 - **Hardcoding Check**: The projection engine performs zero `if(category == ...)` checks.
-- **Contract Parity**: Generated document matches `docs/certification/SEARCH_DOCUMENT_V1.md` schema.
+- **Contract Parity**: Generated document matches `governance/certification/evidence/SEARCH_DOCUMENT_V1.md` schema.
 
 ---
 **Verdict**: GATE A.5 (Search Projection) Requirements Met.

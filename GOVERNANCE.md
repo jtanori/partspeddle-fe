@@ -14,7 +14,7 @@ PartsPeddle has several overlapping governance concepts. They exist because the 
 - **Certification** proves the system is ready for production.
 - **Contracts** encode operational guarantees between subsystems.
 
-If you only remember one thing: **the canonical plan is in `.planning/`, the canonical checklist is `docs/PRC.md`, and the canonical delivery descriptor is `operations/delivery/manifests/delivery.manifest.json`.**
+If you only remember one thing: **the canonical plan is in `governance/planning/`, the canonical checklist is `docs/PRC.md`, and the canonical delivery descriptor is `platform/operations/delivery/manifests/delivery.manifest.json`.**
 
 ---
 
@@ -32,7 +32,7 @@ If you only remember one thing: **the canonical plan is in `.planning/`, the can
 - Ranking telemetry
 - Diff engine
 
-**Where it lives:** `.scgs/` today; target home is `governance/scgs/`.
+**Where it lives:** `governance/scgs/`.
 
 **When to care:** When you rename a public API, change a search ranking rule, or modify a domain type that is replayed or projected.
 
@@ -63,7 +63,7 @@ If you only remember one thing: **the canonical plan is in `.planning/`, the can
 
 - Checklist: `docs/PRC.md`
 - Audit: `docs/operations/delivery-audit.md`
-- Evidence: `docs/evidence/`, `reports/`, `artifacts/`
+- Evidence: `governance/certification/evidence/`, `governance/certification/reports/`, `artifacts/`
 
 **When to care:** Before every `develop → main` promotion and after any infrastructure change.
 
@@ -71,13 +71,13 @@ If you only remember one thing: **the canonical plan is in `.planning/`, the can
 
 **Purpose:** Long-term and near-term technical planning.
 
-**Where it lives:** `.planning/`.
+**Where it lives:** `governance/planning/`.
 
 Key files:
 
-- `.planning/platform-repository-evolution.md` — platform migration plan.
-- `.planning/phase-0-implementation-plan.md` — current phase plan.
-- `.planning/session-checkpoint.md` — current session state and next steps.
+- `governance/planning/platform-repository-evolution.md` — platform migration plan.
+- `governance/planning/phase-0-implementation-plan.md` — current phase plan.
+- `governance/planning/session-checkpoint.md` — current session state and next steps.
 
 **When to care:** When starting a new initiative or proposing a large refactor.
 
@@ -105,7 +105,7 @@ Key files:
 
 **Purpose:** Re-run historical inputs through a changed system to prove behavior is preserved.
 
-**Where it lives:** `.scgs/replay/` and `scripts/scgs/replay-validate.ts`.
+**Where it lives:** `governance/scgs/replay/` and `platform/scripts/scgs/replay-validate.ts`.
 
 **When to care:** When refactoring search ranking, pricing logic, or any deterministic transformation with historical inputs.
 
@@ -113,7 +113,7 @@ Key files:
 
 **Purpose:** Score and order search results according to business rules.
 
-**Where it lives:** `src/backend/modules/search/domain/ranking/` and `.scgs/ranking/`.
+**Where it lives:** `apps/web/src/backend/modules/search/domain/ranking/` and `apps/web/src/domain/specification/scgs/ranking/`.
 
 **When to care:** When changing how listings appear in search.
 
@@ -122,11 +122,11 @@ Key files:
 ## How governance interacts in a release
 
 ```text
-Planning (.planning/)
+Planning (governance/planning/)
   ↓
 Implementation (src/)
   ↓
-SCGS validation (.scgs/, replay, diff)
+SCGS validation (governance/scgs/, replay, diff)
   ↓
 Test & certification (tests/, docs/PRC.md)
   ↓
@@ -147,11 +147,11 @@ Not every change triggers every gate. A small bug fix goes through tests and PR 
 
 | Decision type           | Canonical source                                                                      |
 | ----------------------- | ------------------------------------------------------------------------------------- |
-| What to build next      | `.planning/platform-repository-evolution.md`                                          |
+| What to build next      | `governance/planning/platform-repository-evolution.md`                                          |
 | How to structure code   | `ARCHITECTURE.md` + `src/backend/modules/search/`                                     |
 | Is it production ready? | `docs/PRC.md` + `docs/operations/delivery-audit.md`                                   |
 | Where do secrets go?    | `docs/operations/secret-governance.md`                                                |
-| How to deploy           | `docs/DEPLOYMENT_RUNBOOK.md` + `operations/delivery/manifests/delivery.manifest.json` |
+| How to deploy           | `docs/DEPLOYMENT_RUNBOOK.md` + `platform/operations/delivery/manifests/delivery.manifest.json` |
 | What tests must pass    | `TESTING.md` + `tests/certification/`                                                 |
 | Agent rules             | `AGENTS.md`                                                                           |
 
@@ -159,8 +159,8 @@ Not every change triggers every gate. A small bug fix goes through tests and PR 
 
 ## Contributing to governance
 
-- Propose planning changes by editing or adding a document in `.planning/` and opening a PR.
-- Propose architecture changes by adding an ADR in `docs/adr/`.
+- Propose planning changes by editing or adding a document in `governance/planning/` and opening a PR.
+- Propose architecture changes by adding an ADR in `governance/decisions/`.
 - Update `docs/PRC.md` when a certification gate changes.
 - Update `docs/operations/delivery-audit.md` when the CI/CD pipeline changes.
 

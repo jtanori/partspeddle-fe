@@ -6,7 +6,7 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { loadDeliveryManifest } from '../../operations/delivery/manifests/manifest';
+import { loadDeliveryManifest } from '@operations/delivery/manifests/manifest';
 
 function validate(): void {
   const manifest = loadDeliveryManifest();

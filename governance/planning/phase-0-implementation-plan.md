@@ -8,7 +8,7 @@
 
 ## 1. Context
 
-The PartsPeddle repository has grown from a single Next.js application into an engineering platform. Documentation, tests, automation, and governance now outweigh the application code. Phase 0 does not move any files; it creates the navigation layer (root READMEs and maps) that explains the repository as it exists today and the target topology from `.planning/platform-repository-evolution.md`.
+The PartsPeddle repository has grown from a single Next.js application into an engineering platform. Documentation, tests, automation, and governance now outweigh the application code. Phase 0 does not move any files; it creates the navigation layer (root READMEs and maps) that explains the repository as it exists today and the target topology from `governance/planning/platform-repository-evolution.md`.
 
 ---
 
@@ -29,7 +29,7 @@ The PartsPeddle repository has grown from a single Next.js application into an e
   - `docs/` (knowledge base)
 - Map of current directories to their future home (for directories that will move).
 - Quick links to canonical files:
-  - `.planning/platform-repository-evolution.md`
+  - `governance/planning/platform-repository-evolution.md`
   - `docs/operations/delivery-audit.md`
   - `docs/engineering/security.md`
   - `docs/operations/secret-governance.md`
@@ -98,7 +98,7 @@ The PartsPeddle repository has grown from a single Next.js application into an e
   - SCGS
   - PRR / PTS
   - Certification (PRC, DC gates)
-  - Planning (`.planning/`)
+  - Planning (`governance/planning/`)
   - TMIG / Contracts
   - Replay / Ranking
 - Where each subsystem lives in the repository.
@@ -166,7 +166,7 @@ Order rationale: Map first, then the architecture it references, then how to tes
 ## 5. Risks & Dependencies
 
 - **Risk:** Documents become stale as soon as files move in later phases.
-  - Mitigation: Phase 0 documents will explicitly mention that they describe the _current_ state and the _target_ topology from `.planning/platform-repository-evolution.md`.
+  - Mitigation: Phase 0 documents will explicitly mention that they describe the _current_ state and the _target_ topology from `governance/planning/platform-repository-evolution.md`.
 - **Dependency:** `PROJECT_MAP.md` references directories that do not exist yet (e.g., `apps/`, `packages/`).
   - Mitigation: Label them as "target" directories and explain they will be created in Phase 1.
 
