@@ -139,18 +139,25 @@ backend/modules/<name>/
 
 ## In Progress
 
-1. **Phase 6 — Documentation restructure**
+_None. Phase 6 is merged to `develop`._
+
+---
+
+## Completed
+
+6. **Phase 6 — Documentation restructure** (merged via PR #112)
    - Branch: `feat/phase-6-docs-restructure`
-   - Status: Implemented. Docs reorganized into `engineering/`, `operations/`, `product/`, `reference/`, `guides/`, `decisions/`, and `onboarding/`. Certification artifacts moved to `governance/certification/evidence/`. Branch tests and navigation documents updated. Ready for scoped verification and PR.
+   - Deliverables: docs reorganized into `engineering/`, `operations/`, `product/`, `reference/`, `guides/`, `decisions/`, and `onboarding/`; certification artifacts moved to `governance/certification/evidence/`; navigation documents and branch tests updated.
    - Plan: `governance/planning/phase-6-implementation-plan.md`
 
 ---
 
 ## Next Steps
 
-1. **Complete Phase 6 implementation** and open PR.
-2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
-3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+1. **Phase 7 — Test taxonomy** — reorganize `tests/` by intent (unit, integration, e2e, certification, governance, regression, fixtures, helpers).
+2. **Phase 8 — Engineering Manual** — create `docs/onboarding/ENGINEERING_MANUAL.md`.
+3. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
+4. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
 ---
 
