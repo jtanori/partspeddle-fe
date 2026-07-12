@@ -233,7 +233,7 @@ SCGS (Semantic Change Governance System) is a cross-cutting governance layer. It
 - Ranking telemetry
 - Diff engine
 
-It lives in `.scgs/` today and will move to `governance/scgs/` during platform evolution. SCGS is treated as converging architecture, not a refactoring target.
+It lives in `governance/scgs/` today and will move to `governance/scgs/` during platform evolution. SCGS is treated as converging architecture, not a refactoring target.
 
 ---
 
@@ -250,7 +250,7 @@ It lives in `.scgs/` today and will move to `governance/scgs/` during platform e
 
 Deployment topology and verification are defined in:
 
-- `operations/delivery/manifests/delivery.manifest.json`
+- `platform/operations/delivery/manifests/delivery.manifest.json`
 - `docs/operations/delivery-audit.md`
 - `docs/operations/deployment-observability.md`
 
@@ -260,5 +260,5 @@ Deployment topology and verification are defined in:
 
 - `PROJECT_MAP.md` — repository table of contents.
 - `docs/NEXT_APP_ROUTER_ARCHITECTURE.md` — App Router-specific decisions.
-- `.planning/platform-repository-evolution.md` — phased migration plan.
+- `governance/planning/platform-repository-evolution.md` — phased migration plan.
 - `src/backend/modules/search/` — canonical module reference.

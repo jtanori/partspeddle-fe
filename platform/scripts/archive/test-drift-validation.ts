@@ -16,7 +16,7 @@ interface Part {
 }
 
 async function runDriftValidationTest() {
-  const reportPath = "reports/drift-validation-report.md";
+  const reportPath = "governance/certification/reports/drift-validation-report.md";
   const reportLines: string[] = [
     "# Stage 5: Search Drift Validation Report",
     "",
@@ -48,7 +48,7 @@ async function runDriftValidationTest() {
       : "❌ FAIL";
   reportLines.push("", `## Overall Test Suite Verdict: ${finalVerdict}`);
 
-  if (!fs.existsSync("reports")) fs.mkdirSync("reports");
+  if (!fs.existsSync("governance/certification/reports")) fs.mkdirSync("governance/certification/reports", { recursive: true });
   fs.writeFileSync(reportPath, reportLines.join("\n"));
   logger.info(`Report generated at ${reportPath}`);
 }

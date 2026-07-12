@@ -16,7 +16,7 @@ import {
   REQUIRED_HEALTH_CHECKS,
   validateHealthContract,
 } from '../../operations/kernel/contracts/health.contract';
-import { getEnvironment } from '../../operations/delivery/manifests/manifest';
+import { getEnvironment } from '@operations/delivery/manifests/manifest';
 
 function resolveBaseUrl(): string {
   const args = process.argv.slice(2);

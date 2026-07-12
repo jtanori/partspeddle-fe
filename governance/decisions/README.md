@@ -2,11 +2,7 @@
 
 Architecture Decision Records (ADRs) for the PartsPeddle platform.
 
-## Future contents
+## Contents
 
-- Numbered ADRs following a standard template.
+- `ADR-001.md` through `ADR-005.md` (moved from `docs/adr/`).
 - Links to related planning and certification documents.
-
-## Status
-
-Phase 1 scaffolding only. Content will migrate here in Phase 5.

@@ -70,7 +70,7 @@ Status markers:
 
 - **`search/ranking-migration-prep`** (tip `870a74b`, not merged to `main` or `develop`):
   - Contains the PR #3 commits that are now in `develop`, **plus one critical follow-up commit**:
-    - `870a74b` — `fix(scgs): harden ranking engine, repair type imports, clean lint warnings`. Hardens `RankingEngine.score` to default missing `rankingFactors`, removes unsafe debug logs, fixes `CompiledSpecificationSet` import paths, and cleans up lint errors in `src/domain/specification/scgs/ranking/ranking.engine.ts` and `src/app/api/search.scgs/route.ts`. **Directly relevant to P1.3 (ranking cleanup) and should be cherry-picked into `develop` before `develop` merges to `main`.**
+    - `870a74b` — `fix(scgs): harden ranking engine, repair type imports, clean lint warnings`. Hardens `RankingEngine.score` to default missing `rankingFactors`, removes unsafe debug logs, fixes `CompiledSpecificationSet` import paths, and cleans up lint errors in `src/domain/specification/scgs/ranking/ranking.engine.ts` and `src/app/api/searchgovernance/scgs/route.ts`. **Directly relevant to P1.3 (ranking cleanup) and should be cherry-picked into `develop` before `develop` merges to `main`.**
   - Earlier commits include `8fbfcb0` (PDP layout), `c04e882` (specifications compiler), `a63d29a` (PDP catalog migrations), and a long chain of ranking-factor commits (`f8ebe59` through `1970482`). Most are already represented in `develop` via PR #3; the unique value is `870a74b`.
 
 - **`search/scgs-projection-foundation`** (3 commits beyond `main`):
@@ -195,7 +195,7 @@ Status markers:
 ### P1.3 Standardize search ranking and remove the broken SCGS route ✅
 
 **Why:** Ranking was already configured in Algolia, duplicated in `RankingEngine`, and misreported in debug output. The `/api/search.scgs` route used the wrong Algolia client signature and a broken recency formula.  
-**Files:** `src/app/api/search.scgs/route.ts` (already deleted), `src/domain/specification/scgs/ranking/ranking.engine.ts`, `src/domain/specification/scgs/pipeline.ts`, `src/backend/modules/search/domain/search-result.ts`, `src/backend/modules/search/infrastructure/algolia-search-repository.ts`, `src/domain/view-models/search.ts`, `scripts/scgs/compile.ts`, `scripts/scgs/search-parity.ts`.  
+**Files:** `src/app/api/searchgovernance/scgs/route.ts` (already deleted), `src/domain/specification/scgs/ranking/ranking.engine.ts`, `src/domain/specification/scgs/pipeline.ts`, `src/backend/modules/search/domain/search-result.ts`, `src/backend/modules/search/infrastructure/algolia-search-repository.ts`, `src/domain/view-models/search.ts`, `scripts/scgs/compile.ts`, `scripts/scgs/search-parity.ts`.  
 **Action:**
 
 - Deleted the broken `/api/search.scgs` route (done in P0.6), the unused `SemanticCompilerGovernanceSystem` pipeline, `RankingEngine`, `ranking.types`, and `SnapshotStore`.
@@ -696,7 +696,7 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Why:** The 2026-07-07 schema dump confirmed that staging still contains legacy `sync-algolia-webhook` and `notify-new-message` database triggers that call Edge Functions with a hard-coded service-role JWT. That token must be considered exposed.  
 **Files/scope:** Supabase staging project, `docs/DEPLOYMENT_RUNBOOK.md`.  
-**Status:** ✅ Completed in code — legacy triggers are dropped in the rebaseline migration and Edge Functions no longer trust the legacy bearer-token path. Branch tests in `tests/branch/p6-6-rotate-exposed-staging-service-role-jwt/` verify the drops and that the Edge Function no longer relies on an `Authorization` header. `docs/DEPLOYMENT_RUNBOOK.md` now includes a pre-rotation trigger-removal checklist. Physical JWT rotation is tracked in P6.7. A completion note is saved in `.planning/p6-6-rotate-exposed-staging-service-role-jwt.md`.  
+**Status:** ✅ Completed in code — legacy triggers are dropped in the rebaseline migration and Edge Functions no longer trust the legacy bearer-token path. Branch tests in `tests/branch/p6-6-rotate-exposed-staging-service-role-jwt/` verify the drops and that the Edge Function no longer relies on an `Authorization` header. `docs/DEPLOYMENT_RUNBOOK.md` now includes a pre-rotation trigger-removal checklist. Physical JWT rotation is tracked in P6.7. A completion note is saved in `governance/planning/p6-6-rotate-exposed-staging-service-role-jwt.md`.  
 **Action:**
 
 - Migration fix is in place in `supabase/migrations/20260704000000_rebaseline_public_schema.sql` (lines 763–764):
@@ -781,7 +781,7 @@ These gaps were identified during the P4.6 database security audit. They are not
 
 **Testing:** Create or update `tests/branch/p7-ux-polish/ux-polish.test.tsx`.
 
-**Artifacts:** `.planning/phase-9-ux-polish-plan.md`, `.planning/phase-9-toast-triggers.md`.
+**Artifacts:** `governance/planning/phase-9-ux-polish-plan.md`, `governance/planning/phase-9-toast-triggers.md`.
 
 ### P7.2 Phase 10 — Link Audit ✅
 
@@ -800,7 +800,7 @@ These gaps were identified during the P4.6 database security audit. They are not
 - **PDP:** fix category breadcrumb, wire compatible vehicles/parts and recently viewed routes, add live chat/tel:/mailto: actions, and link seller profile.
 - **Auth footer:** remove "Back to Store" and point support desk to `/contact`.
 
-**Artifacts:** `.planning/phase-10-link-audit.md`.
+**Artifacts:** `governance/planning/phase-10-link-audit.md`.
 
 ### P7.3 Phase 11 — Information Page System (IPS) ✅ IMPLEMENTED
 
@@ -810,7 +810,7 @@ Build reusable editorial components and refactor the six existing public pages.
 - **Pages refactored:** `/about`, `/contact`, `/terms`, `/privacy`, `/salvage-network`, `/trust-verification`.
 - **Artifacts:** Storybook stories, branch tests (`tests/branch/phase-11-information-page-system/`), updated `docs/design-system/06-component-library.md` and `docs/PPDS-AI-Design-Spec.md`.
 
-**Artifacts:** `.planning/archive/phase-11-information-page-system.md`.
+**Artifacts:** `governance/planning/archive/phase-11-information-page-system.md`.
 
 ### P7.4 Phase 11b — Editorial Page Archetypes ✅
 
@@ -821,7 +821,7 @@ Define canonical page compositions so future editorial pages derive from a layou
 - **Missing components to add:** `ComparisonTable`, `FAQSearch`, `KnowledgeBaseGrid`.
 - **Future pages mapped to archetypes:** Help Center (F), Buyer/Seller Guide (F), Returns (A), Shipping (A), Careers (A), Buyer Protection (D), Escrow (D), Authentication (D).
 
-**Artifacts:** `.planning/archive/phase-11b-editorial-page-archetypes.md`.
+**Artifacts:** `governance/planning/archive/phase-11b-editorial-page-archetypes.md`.
 
 ### P7.5 Phase 12 — PartsPeddle Support Center (PSC) ✅
 
@@ -833,7 +833,7 @@ Lightweight support system around a canonical **Support Conversation** domain.
 - **Rollout:** Phase 1 MVP (human chat + admin inbox) → Phase 2 AI assistant with Algolia retrieval → Phase 3 marketplace context (orders, listings, payments attached).
 - **API routes:** `POST /api/support/conversation`, `POST /api/support/message`, `GET /api/support/history`, `POST /api/support/close`.
 
-**Artifacts:** `.planning/archive/phase-12-support-center.md`.
+**Artifacts:** `governance/planning/archive/phase-12-support-center.md`.
 
 ### P7.6 Phase 13 — PPDS Navigation Registry (PNR) ✅
 
@@ -847,7 +847,7 @@ Replace hardcoded paths with a typed registry that generates URLs, menus, breadc
 
 **Depends on:** P5.1 (route-group structure stable before navigation registry consumes routes).
 
-**Artifacts:** `.planning/archive/phase-13-navigation-registry.md`.
+**Artifacts:** `governance/planning/archive/phase-13-navigation-registry.md`.
 
 ### P7.7 PPDS Expanded Plan
 

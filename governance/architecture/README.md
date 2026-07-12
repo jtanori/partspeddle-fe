@@ -1,13 +1,8 @@
 # governance/architecture
 
-Architecture models and decision records for the PartsPeddle platform.
+Architecture models and specifications for the PartsPeddle platform.
 
-## Future contents
+## Contents
 
-- Architecture Decision Records (ADRs).
-- Domain models.
-- System diagrams.
-
-## Status
-
-Phase 1 scaffolding only. Content will migrate here in Phase 5.
+- System and subsystem architecture documents (moved from `docs/architecture/`).
+- Domain models, system diagrams, and design matrices.

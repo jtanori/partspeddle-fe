@@ -2,8 +2,8 @@
  * Static database security audit.
  *
  * Reads the rebaseline schema/migrations and Edge Function sources, then writes
- * a JSON checklist (`reports/db-security-audit.json`) and a Markdown report
- * (`reports/db-security-audit.md`).
+ * a JSON checklist (`governance/certification/reports/db-security-audit.json`) and a Markdown report
+ * (`governance/certification/reports/db-security-audit.md`).
  *
  * The script does not connect to a running database; it is safe to run in CI.
  */
@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../..');
-const reportsDir = path.join(repoRoot, 'reports');
+const reportsDir = path.join(repoRoot, 'governance', 'certification', 'reports');
 
 interface Finding {
   category: string;
@@ -383,7 +383,7 @@ function main(): void {
   fs.writeFileSync(path.join(reportsDir, 'db-security-audit.md'), mdLines.join('\n'));
 
   console.log(`Audit complete: ${findings.length} findings (${critical} critical, ${high} high).`);
-  console.log(`Reports written to reports/db-security-audit.{json,md}`);
+  console.log(`Reports written to governance/certification/reports/db-security-audit.{json,md}`);
   if (critical > 0) {
     console.error('Critical findings remain.');
     process.exit(1);

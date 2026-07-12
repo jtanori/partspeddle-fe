@@ -1,7 +1,7 @@
 # DC — Delivery Certification
 
 **Status:** Completed. First `develop → main` production promotion succeeded and all certification gates are certified. CSP hardening is tracked as a follow-up in P5.6.  
-**Replaces:** `.planning/d0-delivery-infrastructure-stabilization.md` (superseded by this certification framing).  
+**Replaces:** `governance/planning/d0-delivery-infrastructure-stabilization.md` (superseded by this certification framing).  
 **Scope:** Certify that the delivery pipeline is deterministic, observable, and reproducible before resuming architectural work or production cutover.
 
 ---
@@ -28,7 +28,7 @@ This initiative treats delivery readiness as a formal certification effort, simi
 
 **Evidence Required:**
 
-- Output of `.planning/temp/benchmark-delivery.sh` (toolchain section).
+- Output of `governance/planning/temp/benchmark-delivery.sh` (toolchain section).
 - `package.json#engines` and `packageManager` field review.
 
 ---
@@ -258,7 +258,7 @@ Record pinned toolchain versions and clean-clone behavior. No production changes
 
 ### Phase 1 — Baseline Evidence (DC-1, DC-2, DC-3, DC-4)
 
-No code changes. Gather evidence using `.planning/temp/benchmark-delivery.sh`.
+No code changes. Gather evidence using `governance/planning/temp/benchmark-delivery.sh`.
 
 ### Phase 2 — Delivery Integration Branch (B+)
 

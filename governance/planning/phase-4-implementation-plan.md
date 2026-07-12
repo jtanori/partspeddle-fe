@@ -259,5 +259,5 @@ flyctl deploy --config platform/deployment/fly/fly.stage.toml --build-only
 
 - Moving `.github/workflows/` files themselves (GitHub requirement).
 - Moving `.husky/` directory itself (Git/husky requirement), but delegating hook content.
-- Moving `docs/`, `.scgs/`, `.planning/`, or `tests/` (those are Phases 5–7).
+- Moving `docs/`, `governance/scgs/`, `governance/planning/`, or `tests/` (those are Phases 5–7).
 - Renaming or refactoring script logic — only paths change.

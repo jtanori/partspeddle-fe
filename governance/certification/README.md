@@ -2,12 +2,7 @@
 
 Production readiness and delivery certification artifacts.
 
-## Future contents
+## Contents
 
-- PRC checklists.
-- DC gate evidence.
-- Certification reports.
-
-## Status
-
-Phase 1 scaffolding only. Content will migrate here from `docs/certification/` and `reports/` in Phase 5.
+- `evidence/` — certification matrices, audit evidence, and traceability documents (moved from `docs/certification/` and `docs/evidence/`).
+- `reports/` — generated audit and parity reports (moved from `reports/`).

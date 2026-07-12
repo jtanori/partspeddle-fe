@@ -53,7 +53,7 @@ function main(): void {
   console.error('❌ Remote drift detected. Remote schema does not match local migration target.');
   console.error(rawDiff);
 
-  const reportPath = path.join(REPO_ROOT, 'reports', 'remote-drift-report.md');
+  const reportPath = path.join(REPO_ROOT, 'governance', 'certification', 'reports', 'remote-drift-report.md');
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
   fs.writeFileSync(
     reportPath,

@@ -7,8 +7,8 @@
 # and DC-4 (Fly/Supabase status) without pushing anything or exposing secrets.
 #
 # Usage:
-#   chmod +x .planning/temp/benchmark-delivery.sh
-#   ./.planning/temp/benchmark-delivery.sh | tee benchmark-delivery-$(date +%Y%m%d-%H%M%S).log
+#   chmod +x governance/planning/temp/benchmark-delivery.sh
+#   ./governance/planning/temp/benchmark-delivery.sh | tee benchmark-delivery-$(date +%Y%m%d-%H%M%S).log
 
 set -euo pipefail
 

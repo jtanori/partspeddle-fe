@@ -5,7 +5,7 @@ async function main() {
     const traceId = process.env.TRACE_ID;
     if (!traceId) throw new Error("TRACE_ID required");
 
-    const replayStore = new ReplayStore('.scgs/replay');
+    const replayStore = new ReplayStore('governance/scgs/replay');
     
     console.log("Loading trace and validating integrity...");
     const trace = await replayStore.loadTrace(traceId);

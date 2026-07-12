@@ -1,7 +1,7 @@
 # D0 — Delivery Infrastructure Stabilization
 
 **Status:** Planning complete — awaiting review before execution.  
-**Previous plan:** `.planning/archive/master-plan-2026-07-11.md` (archived).  
+**Previous plan:** `governance/planning/archive/master-plan-2026-07-11.md` (archived).  
 **Scope:** Harding the CI/CD pipeline so that every commit to `develop`/`main` deploys to staging/production automatically, deterministically, and observably. P6 production application and the final `develop → main` merge are paused until D0 acceptance criteria are met.
 
 ---

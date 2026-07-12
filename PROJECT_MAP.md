@@ -24,10 +24,10 @@ partspeddle-fe/
 │   ├── ci/                 # CI helpers
 │   └── tooling/            # Husky and lint-staged configs
 ├── supabase/               # Migrations, edge functions, config
-├── .planning/              # Roadmaps, plans, session checkpoint
-├── .scgs/                  # SCGS governance subsystem
+├── governance/planning/              # Roadmaps, plans, session checkpoint
+├── governance/scgs/                  # SCGS governance subsystem
 ├── config/                 # Shared configuration (EGS, environment)
-└── reports/ + artifacts/   # Generated outputs
+└── governance/certification/reports/ + artifacts/   # Generated outputs
 ```
 
 Target topology (in progress):
@@ -46,7 +46,7 @@ partspeddle-fe/
 └── artifacts/              # Generated reports and deployment records
 ```
 
-The migration is tracked in `.planning/platform-repository-evolution.md`.
+The migration is tracked in `governance/planning/platform-repository-evolution.md`.
 
 ---
 
@@ -81,9 +81,9 @@ The migration is tracked in `.planning/platform-repository-evolution.md`.
 ### I want to understand governance
 
 1. `GOVERNANCE.md` — glossary and interaction map.
-2. `.planning/platform-repository-evolution.md` — platform migration plan.
+2. `governance/planning/platform-repository-evolution.md` — platform migration plan.
 3. `docs/PRC.md` — Production Readiness Certification checklist.
-4. `.scgs/` — SCGS subsystem code and policies.
+4. `governance/scgs/` — SCGS subsystem code and policies.
 
 ### I want to understand security
 
@@ -114,9 +114,12 @@ The migration is tracked in `.planning/platform-repository-evolution.md`.
 | `.github/workflows/`| GitHub Actions workflows (must stay at root)          | `.github/workflows/`                                   |
 | `platform/deployment/fly/` | Fly.io configuration                           | `platform/deployment/fly/`                             |
 | `platform/operations/` | Delivery manifests and verification specs          | `platform/operations/`                                 |
-| `.planning/`        | Roadmaps, plans, session checkpoint                   | `governance/planning/`                                 |
-| `.scgs/`            | SCGS governance subsystem                             | `governance/scgs/`                                     |
-| `reports/`          | Generated audit and certification reports             | `artifacts/reports/`                                   |
+| `governance/planning/`        | Roadmaps, plans, session checkpoint                   | `governance/planning/`                                 |
+| `governance/scgs/`            | SCGS governance subsystem                             | `governance/scgs/`                                     |
+| `governance/architecture/`    | Architecture models and specifications                | `governance/architecture/`                             |
+| `governance/decisions/`       | Architecture Decision Records (ADRs)                  | `governance/decisions/`                                |
+| `governance/certification/evidence/` | Certification evidence and matrices            | `governance/certification/evidence/`                   |
+| `governance/certification/reports/`  | Generated audit and certification reports      | `governance/certification/reports/`                    |
 | `artifacts/`        | Deployment artifacts and benchmarks                   | `artifacts/`                                           |
 
 ---
@@ -126,8 +129,8 @@ The migration is tracked in `.planning/platform-repository-evolution.md`.
 | File                                                       | Why it matters                                    |
 | ---------------------------------------------------------- | ------------------------------------------------- |
 | `AGENTS.md`                                                | Operating rules for agent-assisted development.   |
-| `.planning/platform-repository-evolution.md`               | Platform migration plan and target topology.      |
-| `.planning/session-checkpoint.md`                          | Current session state and next steps.             |
+| `governance/planning/platform-repository-evolution.md`               | Platform migration plan and target topology.      |
+| `governance/planning/session-checkpoint.md`                          | Current session state and next steps.             |
 | `platform/operations/delivery/manifests/delivery.manifest.json` | Canonical delivery descriptor.               |
 | `config/environment/schema.ts`                             | Single source of truth for environment variables. |
 | `artifacts/delivery/production-deployment-2026-07-11.json` | Record of first production promotion.             |

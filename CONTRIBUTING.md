@@ -163,9 +163,9 @@ See `TESTING.md` for the test taxonomy. In short:
 
 ## Planning and governance
 
-- Active plans live in `.planning/`.
-- Certification checklists live in `docs/PRC.md` and `docs/certification/`.
-- Architecture decisions should be recorded in `docs/adr/`.
+- Active plans live in `governance/planning/`.
+- Certification checklists live in `docs/PRC.md` and `governance/certification/evidence/`.
+- Architecture decisions should be recorded in `governance/decisions/`.
 
 If your change touches planning, certification, or governance, update the relevant document in the same PR.
 

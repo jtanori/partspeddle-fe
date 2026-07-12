@@ -3,7 +3,7 @@ import path from 'node:path';
 import { SemanticReplayTrace } from './types';
 
 export class ReplayStore {
-  constructor(private basePath: string = '.scgs/replay') {}
+  constructor(private basePath: string = 'governance/scgs/replay') {}
 
   async saveTrace(trace: SemanticReplayTrace) {
     const traceDir = path.join(this.basePath, 'traces');

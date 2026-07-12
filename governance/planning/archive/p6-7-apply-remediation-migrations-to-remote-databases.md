@@ -82,7 +82,7 @@ Acceptable if data loss in staging is acceptable. Restore seed data afterward wi
 1. Dump the remote schema before applying migrations.
 2. Diff against `supabase/baseline/remote_20260707_public.sql` plus repo migrations.
 3. Resolve drift caused by ad-hoc remote changes (extra indexes, columns, triggers, functions).
-4. Record the final drift report in `reports/`.
+4. Record the final drift report in `governance/certification/reports/`.
 
 ### 3. Apply the migration stack to staging
 
