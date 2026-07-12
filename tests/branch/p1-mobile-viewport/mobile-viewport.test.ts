@@ -12,7 +12,7 @@ function read(relativePath: string): string {
 
 describe('P1.7 mobile viewport, video tutorial, and focus artifacts', () => {
   it('exports an explicit viewport from layout.tsx', () => {
-    const layout = read('apps/web/src/app/layout.tsx');
+    const layout = read('src/app/layout.tsx');
     expect(layout).toContain('export const viewport');
     expect(layout).toContain("width: 'device-width'");
     expect(layout).toContain('initialScale: 1');
@@ -20,14 +20,14 @@ describe('P1.7 mobile viewport, video tutorial, and focus artifacts', () => {
   });
 
   it('mounts GuidedTour only in UIOverlays, not PublicShell', () => {
-    const publicShell = read('apps/web/src/components/layout/PublicShell.tsx');
-    const uiOverlays = read('apps/web/src/components/UIOverlays.tsx');
+    const publicShell = read('src/components/layout/PublicShell.tsx');
+    const uiOverlays = read('src/components/UIOverlays.tsx');
     expect(uiOverlays).toContain('<GuidedTour');
     expect(publicShell).not.toContain('<GuidedTour');
   });
 
   it('uses a CSS class for tour highlight cleanup instead of inline styles', () => {
-    const tour = read('apps/web/src/components/GuidedTour.tsx');
+    const tour = read('src/components/GuidedTour.tsx');
     expect(tour).toContain('.tour-highlight');
     expect(tour).toContain("el.classList.add('tour-highlight')");
     expect(tour).toContain("el.classList.remove('tour-highlight')");
@@ -35,7 +35,7 @@ describe('P1.7 mobile viewport, video tutorial, and focus artifacts', () => {
   });
 
   it('makes the GuidedTour dialog responsive for mobile', () => {
-    const tour = read('apps/web/src/components/GuidedTour.tsx');
+    const tour = read('src/components/GuidedTour.tsx');
     expect(tour).toContain('sm:max-w-[720px]');
     expect(tour).toContain('sm:aspect-[16/10]');
     expect(tour).toContain('aspect-video');
@@ -43,7 +43,7 @@ describe('P1.7 mobile viewport, video tutorial, and focus artifacts', () => {
   });
 
   it('hides the global help button while the tour is active and raises it on mobile', () => {
-    const overlays = read('apps/web/src/components/UIOverlays.tsx');
+    const overlays = read('src/components/UIOverlays.tsx');
     expect(overlays).toContain('!isTourActive');
     expect(overlays).toContain('bottom-24');
     expect(overlays).toContain('sm:bottom-8');

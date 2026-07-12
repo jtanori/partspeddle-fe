@@ -12,13 +12,13 @@ function read(relativePath: string): string {
 
 describe('P2.3 health check dependency verification', () => {
   it('runs shared Supabase and Algolia checks from the health route', () => {
-    const route = read('apps/web/src/app/api/health/route.ts');
+    const route = read('src/app/api/health/route.ts');
     expect(route).toContain('runHealthChecks');
     expect(route).toContain('503');
   });
 
   it('implements lightweight dependency probes', () => {
-    const checks = read('apps/web/src/lib/health-checks.ts');
+    const checks = read('src/lib/health-checks.ts');
     expect(checks).toContain('checkSupabase');
     expect(checks).toContain('checkAlgolia');
     expect(checks).toContain('supabaseAdmin');
@@ -27,14 +27,14 @@ describe('P2.3 health check dependency verification', () => {
   });
 
   it('returns degraded status when any critical dependency fails', () => {
-    const checks = read('apps/web/src/lib/health-checks.ts');
+    const checks = read('src/lib/health-checks.ts');
     expect(checks).toContain('status: isHealthy ? "ok" : "degraded"');
     expect(checks).toContain('Promise.all');
   });
 
   it('keeps Fly.io health probes pointed at /api/health', () => {
-    const stage = read('platform/deployment/fly/fly.stage.toml');
-    const prod = read('platform/deployment/fly/fly.prod.toml');
+    const stage = read('fly/fly.stage.toml');
+    const prod = read('fly/fly.prod.toml');
     expect(stage).toContain('path = "/api/health"');
     expect(prod).toContain('path = "/api/health"');
   });

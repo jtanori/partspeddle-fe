@@ -1,1 +1,1 @@
-bash platform/tooling/commit-msg.sh "$1"
+commitlint --edit $1

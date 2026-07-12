@@ -15,7 +15,7 @@ const getUserRoleMock = vi.mocked(getUserRole);
 const createServerClientMock = vi.mocked(createServerClient);
 
 async function loadAdminAuth() {
-  const mod = await import('../../../apps/web/src/lib/admin-auth');
+  const mod = await import('../../../src/lib/admin-auth');
   return mod.requireAdmin;
 }
 

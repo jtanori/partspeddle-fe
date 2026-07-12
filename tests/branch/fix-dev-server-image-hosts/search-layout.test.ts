@@ -12,7 +12,7 @@ function read(relativePath: string): string {
 
 describe('search page layout markup', () => {
   it('uses a single Content container for sidebar and results', () => {
-    const searchPage = read('apps/web/src/components/search/SearchPageClient.tsx');
+    const searchPage = read('src/components/search/SearchPageClient.tsx');
     expect(searchPage).toContain('<Content');
     expect(searchPage).toContain('aria-label="Search filters"');
     expect(searchPage).toContain('aria-label="Search results"');
@@ -21,12 +21,12 @@ describe('search page layout markup', () => {
   });
 
   it('avoids nesting another main inside the public route group layout', () => {
-    const publicLayout = read('apps/web/src/app/(public)/layout.tsx');
+    const publicLayout = read('src/app/(public)/layout.tsx');
     expect(publicLayout).not.toContain('<main');
   });
 
   it('matches the loading skeleton to the search page container structure', () => {
-    const loading = read('apps/web/src/app/(public)/search/loading.tsx');
+    const loading = read('src/app/(public)/search/loading.tsx');
     expect(loading).toContain('max-w-7xl');
     expect(loading).not.toContain('<main');
     expect(loading).not.toContain('container mx-auto');
@@ -34,8 +34,8 @@ describe('search page layout markup', () => {
   });
 
   it('uses Skeleton placeholders for client-side search fetches', () => {
-    const searchPage = read('apps/web/src/components/search/SearchPageClient.tsx');
-    const controller = read('apps/web/src/components/search/SearchResultsController.tsx');
+    const searchPage = read('src/components/search/SearchPageClient.tsx');
+    const controller = read('src/components/search/SearchResultsController.tsx');
     expect(searchPage).toContain('Skeleton');
     expect(searchPage).not.toContain('Searching...');
     expect(controller).not.toContain('Buscando partes');

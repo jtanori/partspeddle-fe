@@ -11,8 +11,7 @@ coverage/
 !.env.example
 supabase/.temp/
 test-results/
-governance/certification/reports/*.json
-governance/scgs/replay/
+reports/*.json
 logs/
 *.tsbuildinfo
 .eslintcache

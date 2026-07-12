@@ -33,7 +33,7 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
     });
 
     it('defines DraftModule union and ListingDraft interface', () => {
-      const source = readSource('apps/web/src/domain/types/listing-draft.ts');
+      const source = readSource('src/domain/types/listing-draft.ts');
       expect(source).toContain("export type DraftModule =");
       expect(source).toContain("'identification'");
       expect(source).toContain("'media'");
@@ -48,8 +48,8 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
 
   describe('API routes', () => {
     it('exposes the active draft route', () => {
-      expect(fileExists('apps/web/src/app/api/seller/drafts/active/route.ts')).toBe(true);
-      const source = readSource('apps/web/src/app/api/seller/drafts/active/route.ts');
+      expect(fileExists('src/app/api/seller/drafts/active/route.ts')).toBe(true);
+      const source = readSource('src/app/api/seller/drafts/active/route.ts');
       expect(source).toContain('export async function GET');
       expect(source).toContain('requireSeller');
       expect(source).toContain("from('listing_drafts')");
@@ -57,8 +57,8 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
     });
 
     it('exposes the draft upsert route', () => {
-      expect(fileExists('apps/web/src/app/api/seller/drafts/[id]/route.ts')).toBe(true);
-      const source = readSource('apps/web/src/app/api/seller/drafts/[id]/route.ts');
+      expect(fileExists('src/app/api/seller/drafts/[id]/route.ts')).toBe(true);
+      const source = readSource('src/app/api/seller/drafts/[id]/route.ts');
       expect(source).toContain('export async function GET');
       expect(source).toContain('export async function PATCH');
       expect(source).toContain('requireSeller');
@@ -66,8 +66,8 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
     });
 
     it('exposes the publish route backed by the publish_listing_draft RPC', () => {
-      expect(fileExists('apps/web/src/app/api/seller/drafts/[id]/publish/route.ts')).toBe(true);
-      const source = readSource('apps/web/src/app/api/seller/drafts/[id]/publish/route.ts');
+      expect(fileExists('src/app/api/seller/drafts/[id]/publish/route.ts')).toBe(true);
+      const source = readSource('src/app/api/seller/drafts/[id]/publish/route.ts');
       expect(source).toContain('export async function POST');
       expect(source).toContain('requireSeller');
       expect(source).toContain(".rpc('publish_listing_draft'");
@@ -75,8 +75,8 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
     });
 
     it('exposes the discard route', () => {
-      expect(fileExists('apps/web/src/app/api/seller/drafts/[id]/discard/route.ts')).toBe(true);
-      const source = readSource('apps/web/src/app/api/seller/drafts/[id]/discard/route.ts');
+      expect(fileExists('src/app/api/seller/drafts/[id]/discard/route.ts')).toBe(true);
+      const source = readSource('src/app/api/seller/drafts/[id]/discard/route.ts');
       expect(source).toContain('export async function POST');
       expect(source).toContain('requireSeller');
       expect(source).toContain("status: 'discarded'");
@@ -85,7 +85,7 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
 
   describe('data hooks', () => {
     it('uses the drafts API and exposes autosave helpers', () => {
-      const source = readSource('apps/web/src/hooks/useListingDraft.ts');
+      const source = readSource('src/hooks/useListingDraft.ts');
       expect(source).toContain('/api/seller/drafts/active');
       expect(source).toContain('/api/seller/drafts/');
       expect(source).toContain('updateModule');
@@ -97,7 +97,7 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
     });
 
     it('does not talk directly to Supabase from the hook', () => {
-      const source = readSource('apps/web/src/hooks/useListingDraft.ts');
+      const source = readSource('src/hooks/useListingDraft.ts');
       expect(source).not.toContain('supabase.from');
       expect(source).not.toContain('supabase.rpc');
       expect(source).not.toContain('supabase.storage');
@@ -106,7 +106,7 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
 
   describe('wizard refactor', () => {
     it('rewrites ListingWizard as a tabbed draft editor', () => {
-      const source = readSource('apps/web/src/components/seller-dashboard/ListingWizard.tsx');
+      const source = readSource('src/components/seller-dashboard/ListingWizard.tsx');
       expect(source).toContain('useListingDraft');
       expect(source).toContain("from '@/components/ui/tabs'");
       expect(source).toContain('MODULE_TABS');
@@ -116,7 +116,7 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
     });
 
     it('imports all draft module components', () => {
-      const source = readSource('apps/web/src/components/seller-dashboard/ListingWizard.tsx');
+      const source = readSource('src/components/seller-dashboard/ListingWizard.tsx');
       expect(source).toContain('DraftIdentification');
       expect(source).toContain('DraftMedia');
       expect(source).toContain('DraftFitment');
@@ -127,7 +127,7 @@ describe('P5.0 Listing Draft / AI-assisted Wizard', () => {
     });
 
     it('wires the create page to ListingWizard', () => {
-      const source = readSource('apps/web/src/app/(seller)/seller/create/page.tsx');
+      const source = readSource('src/app/(seller)/seller/create/page.tsx');
       expect(source).toContain('ListingWizard');
       expect(source).toContain('PageHeader');
     });

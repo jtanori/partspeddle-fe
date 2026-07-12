@@ -59,7 +59,7 @@ describe('P2.5 search drift and parity audits', () => {
   });
 
   it('includes all planned audit fields in the consistency script', () => {
-    const auditScript = read('platform/scripts/search/audit-search-consistency.ts');
+    const auditScript = read('scripts/search/audit-search-consistency.ts');
     for (const field of AUDIT_FIELD_NAMES) {
       expect(auditScript).toContain(field);
     }
@@ -89,9 +89,9 @@ describe('P2.5 search drift and parity audits', () => {
   it('adds search-parity to the platform audit script and nightly workflow', () => {
     const pkg = read('package.json');
     const nightly = read('.github/workflows/nightly-operational-validation.yml');
-    const parityScript = read('platform/scripts/search/search-parity.ts');
+    const parityScript = read('scripts/search/search-parity.ts');
 
-    expect(pkg).toContain('platform/scripts/search/search-parity.ts');
+    expect(pkg).toContain('scripts/search/search-parity.ts');
     expect(parityScript).toContain('computeFacetParityPercent');
     expect(parityScript).toContain('process.exitCode = 1');
     expect(nightly).toContain('pnpm audit:search-platform');

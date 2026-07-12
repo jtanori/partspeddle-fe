@@ -21,10 +21,6 @@ This directory is the single source of truth for all environment variables used 
 - **smoke-test** — Operational validation against staging or production.
 - **development** — Local development / test utilities only.
 
-## Production-specific notes
-
-The GitHub `production` environment now includes Algolia secrets (`ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, `ALGOLIA_SEARCH_INDEX_NAME`) so the production health check can validate the production Algolia index during deploy verification.
-
 ## Scripts
 
 ```bash

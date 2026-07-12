@@ -41,10 +41,10 @@ jobs:
       - name: Read branch configuration
         id: branches
         run: |
-          echo "delivery-branches=$(jq -c '.deliveryBranches' platform/operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
-          echo "production-branch=$(jq -r '.productionBranch' platform/operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
-          echo "staging-branch=$(jq -r '.stagingBranch' platform/operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
-          echo "delivery-integration-branch=$(jq -r '.deliveryIntegrationBranch // .stagingBranch' platform/operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+          echo "delivery-branches=$(jq -c '.deliveryBranches' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+          echo "production-branch=$(jq -r '.productionBranch' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+          echo "staging-branch=$(jq -r '.stagingBranch' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
+          echo "delivery-integration-branch=$(jq -r '.deliveryIntegrationBranch // .stagingBranch' operations/delivery/branches.json)" >> "$GITHUB_OUTPUT"
 
       - name: Resolve delivery environment
         id: config
@@ -201,7 +201,7 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy
-        run: flyctl deploy --config ${{ needs.configure.outputs.fly-config }} --dockerfile platform/docker/Dockerfile
+        run: flyctl deploy --config ${{ needs.configure.outputs.fly-config }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 

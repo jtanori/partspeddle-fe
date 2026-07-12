@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AlgoliaSearchRepository } from '../../../apps/web/src/backend/modules/search/infrastructure/algolia-search-repository';
-import { BuildSearchDocumentUseCase } from '../../../apps/web/src/backend/modules/search/application/build-search-document';
+import { AlgoliaSearchRepository } from '../../../src/backend/modules/search/infrastructure/algolia-search-repository';
+import { BuildSearchDocumentUseCase } from '../../../src/backend/modules/search/application/build-search-document';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { SearchFilters } from '../../../apps/web/src/backend/modules/search/domain/search-filters';
+import { SearchFilters } from '../../../src/backend/modules/search/domain/search-filters';
 
 vi.mock('@/lib/supabase-admin', () => ({
   supabaseAdmin: {

@@ -38,5 +38,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: operational-validation-reports
-          path: governance/certification/reports/
+          path: reports/
           retention-days: 90

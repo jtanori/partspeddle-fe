@@ -16,8 +16,8 @@ vi.mock('@/backend/modules/search/infrastructure/algolia-client', () => ({
   INDEX_NEWEST: 'parts_newest',
 }));
 
-import { RankingEngine } from '../../../apps/web/src/domain/specification/scgs/ranking/ranking.engine';
-import { GET } from '../../../apps/web/src/app/api/search/scgs/route';
+import { RankingEngine } from '../../../src/domain/specification/scgs/ranking/ranking.engine';
+import { GET } from '../../../src/app/api/search/scgs/route';
 
 describe('SCGS Ranking Engine resurrection', () => {
   it('is deterministic for identical inputs', () => {

@@ -1,3 +1,11 @@
-import config from './packages/config/prettier.config.js';
+/** @type {import('prettier').Config} */
+const config = {
+  semi: true,
+  singleQuote: true,
+  tabWidth: 2,
+  trailingComma: 'all',
+  printWidth: 100,
+  plugins: [],
+};
 
 export default config;

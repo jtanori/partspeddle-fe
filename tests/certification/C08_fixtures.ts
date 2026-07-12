@@ -1,4 +1,4 @@
-import { CompiledSpecificationSet } from '../apps/web/src/domain/services/specification.compiler';
+import { CompiledSpecificationSet } from '../src/domain/services/specification.compiler';
 
 export const createFixture = (listingId: string, categoryId: string, overrides: Partial<CompiledSpecificationSet> = {}): CompiledSpecificationSet => ({
   flat: [],

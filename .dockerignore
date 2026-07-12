@@ -9,14 +9,8 @@ node_modules
 reports
 tests
 docs
-platform/scripts/archive
+scripts/archive
 supabase/.temp
-.planning
-.governance
-artifacts
-backups
-storybook-static
-.test-results
 .vscode
 .idea
 .DS_Store

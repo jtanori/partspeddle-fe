@@ -29,7 +29,7 @@
 
 ### Application Rollback
 
-- Use `flyctl deploy --config platform/deployment/fly/fly.prod.toml --dockerfile platform/docker/Dockerfile --image <previous-image-tag>` or `flyctl rollback --config platform/deployment/fly/fly.prod.toml`.
+- Use `flyctl deploy --config fly/fly.prod.toml --image <previous-image-tag>` or `flyctl rollback --config fly/fly.prod.toml`.
 
 ### Database Rollback
 
@@ -38,4 +38,4 @@
 
 ### Search Configuration Rollback
 
-- Re-apply index settings from the previous version of `platform/scripts/algolia/configure-algolia-index.ts`.
+- Re-apply index settings from the previous version of `scripts/algolia/configure-algolia-index.ts`.
