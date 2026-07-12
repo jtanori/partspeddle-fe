@@ -29,6 +29,18 @@ export type {
 
 export type { SemanticSpecification } from './domain/semantic-specification';
 
+// Domain — specification framework (Phase 5)
+export type {
+  SpecificationType,
+  SpecificationValidationRule,
+  SpecificationDefinition,
+  SpecificationGroup,
+  CategoryTemplate,
+  SpecificationValue,
+  SpecificationFrameworkInput,
+} from './domain/specification-framework';
+export type { SpecificationFrameworkRepository } from './domain/specification-framework-repository';
+
 // Domain — semantic capabilities (Phase 4)
 export type {
   TrustProfile,
@@ -70,6 +82,13 @@ export {
   parseYearRange as parseCompatibilityYearRange,
 } from './infrastructure/compatibility-compiler';
 export { compileFitment } from './infrastructure/fitment-compiler';
+export {
+  mapSpecificationDefinition,
+  mapSpecificationGroups,
+  mapCategoryTemplate,
+  mapSpecificationValues,
+} from './infrastructure/specification-framework-mapper';
+export { CatalogSpecificationFrameworkRepository } from './infrastructure/catalog-specification-framework-repository';
 export { RankingEngine } from './infrastructure/ranking-engine';
 export type {
   RankingFeatureFactors,

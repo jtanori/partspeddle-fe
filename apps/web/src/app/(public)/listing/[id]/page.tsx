@@ -5,6 +5,7 @@ import {
   SpecificationCompilerImpl,
   buildPDPViewModel,
   PDPViewModelPresentation,
+  CatalogSpecificationFrameworkRepository,
 } from '@/backend/modules/scgs';
 import { SpecificationRepository } from '@/backend/modules/catalog/domain/specification-repository';
 import { CatalogRepository, SupabaseCatalogRepository } from '@/backend/modules/catalog';
@@ -96,7 +97,8 @@ export default async function ListingDetailPage({ params }: Props) {
   };
 
   // SCGS projection flow
-  const compiler = new SpecificationCompilerImpl(specRepo, catRepo, listingRepo);
+  const frameworkRepo = new CatalogSpecificationFrameworkRepository(catRepo, specRepo);
+  const compiler = new SpecificationCompilerImpl(frameworkRepo, listingRepo);
   const artifact = await compiler.compile({
     listingId: id,
     categoryId: part.categoryId,

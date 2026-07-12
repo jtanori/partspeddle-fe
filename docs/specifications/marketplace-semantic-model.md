@@ -42,6 +42,29 @@ interface CompiledSpecificationSet {
 }
 ```
 
+## Specification Framework
+
+Before compilation, each listing is interpreted through the SCGS Specification
+Framework:
+
+```ts
+interface CategoryTemplate {
+  categoryId: string;
+  groups: SpecificationGroup[];
+  inheritedDefinitions: SpecificationDefinition[];
+}
+
+interface SpecificationValue {
+  definition: SpecificationDefinition;
+  rawValue: unknown;
+  resolvedValue: string | number | boolean;
+}
+```
+
+The framework declares what specifications exist, how they are grouped, and how
+raw listing values are coerced into canonical semantic values. See
+`docs/specifications/scgs-specification-framework.md` for the full model.
+
 ## `ResolvedSpec`
 
 Each specification value is resolved against the category definition:

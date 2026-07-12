@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { SpecificationCompilerImpl } from '../infrastructure/specification-compiler';
+import { CatalogSpecificationFrameworkRepository } from '../infrastructure/catalog-specification-framework-repository';
 import { SpecificationRepository } from '@/repositories/specification.repository';
 import { CatalogRepository } from '@/backend/modules/catalog/domain/catalog-repository';
 import { ListingRepository } from '@/backend/modules/listing/domain/listing-repository';
@@ -21,20 +22,23 @@ const mockListing: MarketplaceListing = {
 };
 
 function createCompiler() {
-  return new SpecificationCompilerImpl(
-    {
-      findByListingId: async () => [],
-      getAllDefinitions: async () => [],
-    } satisfies SpecificationRepository,
-    {
-      getCategory: async () => null,
-      getSpecificationsForCategory: async () => [],
-      getDefinition: async () => null,
-    } satisfies CatalogRepository,
-    {
-      findById: async () => mockListing,
-    } satisfies ListingRepository
-  );
+  const specRepo = {
+    findByListingId: async () => [],
+    getAllDefinitions: async () => [],
+  } satisfies SpecificationRepository;
+
+  const catalogRepo = {
+    getCategory: async () => null,
+    getSpecificationsForCategory: async () => [],
+    getDefinition: async () => null,
+  } satisfies CatalogRepository;
+
+  const listingRepo = {
+    findById: async () => mockListing,
+  } satisfies ListingRepository;
+
+  const frameworkRepo = new CatalogSpecificationFrameworkRepository(catalogRepo, specRepo);
+  return new SpecificationCompilerImpl(frameworkRepo, listingRepo);
 }
 
 describe('SCGS lineage', () => {
