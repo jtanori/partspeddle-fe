@@ -55,8 +55,31 @@ export {
   getBehavioralResponse,
 } from './infrastructure/governance-controller';
 
+// Contract — projection schemas
+export {
+  searchResultCardSchema,
+  facetValueSchema,
+  facetViewModelSchema,
+  paginationSchema,
+  searchMetaSchema,
+  searchViewModelSchema,
+} from './contract/search-view-model.contract';
+export type {
+  SearchResultCardModel,
+  FacetValueModel,
+  FacetViewModel,
+  SearchPaginationModel,
+  SearchMetaModel,
+  SearchViewModel,
+} from './contract/search-view-model.contract';
+
 // Application — read models / projections
 export type { SCGSReadModel } from './application/build-dashboard-read-model';
 export { buildDashboardReadModel } from './application/build-dashboard-read-model';
 export { compileListing } from './application/compile-listing';
 export { rankArtifacts } from './application/rank-artifacts';
+export {
+  buildSearchViewModel,
+  type SearchResultPresentation,
+  type BuildSearchViewModelInput,
+} from './application/build-search-view-model';

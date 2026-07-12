@@ -16,7 +16,7 @@ vi.mock('@/backend/modules/search/infrastructure/algolia-client', () => ({
   INDEX_NEWEST: 'parts_newest',
 }));
 
-import { RankingEngine } from '../../../apps/web/src/domain/specification/scgs/ranking/ranking.engine';
+import { RankingEngine } from '../../../apps/web/src/backend/modules/scgs';
 import { GET } from '../../../apps/web/src/app/api/search/scgs/route';
 
 describe('SCGS Ranking Engine resurrection', () => {
@@ -49,7 +49,7 @@ describe('SCGS Ranking Engine resurrection', () => {
     expect(r1[0].listingId).toBe('1');
   });
 
-  it('GET /api/search/scgs returns a comparison payload', async () => {
+  it('GET /api/search/scgs returns a validated SCGS SearchViewModel', async () => {
     const now = Math.floor(Date.now() / 1000);
     searchMock.mockResolvedValue({
       results: [
@@ -84,12 +84,14 @@ describe('SCGS Ranking Engine resurrection', () => {
 
     expect(response.status).toBe(200);
     expect(body.meta.source).toBe('SCGS');
-    expect(body.comparison.algoliaTop10).toEqual(['part-a', 'part-b']);
-    expect(body.comparison.scgsTop10).toContain('part-a');
-    expect(body.comparison.scgsTop10).toContain('part-b');
-    expect(typeof body.comparison.top10Overlap).toBe('number');
-    expect(body.viewModel.meta.source).toBe('SCGS');
-    expect(body.scgsScores[0]).toHaveProperty('contributions');
+    expect(Array.isArray(body.results)).toBe(true);
+    expect(body.results.length).toBe(2);
+    expect(body.results[0]).toHaveProperty('id');
+    expect(body.results[0]).toHaveProperty('title');
+    expect(body.results[0]).toHaveProperty('badges');
+    expect(body.pagination.total).toBe(2);
+    expect(body.pagination.totalPages).toBe(1);
+    expect(Array.isArray(body.facets)).toBe(true);
   });
 
   it('handles Algolia errors with a 500 and no masked 200 empty response', async () => {
@@ -100,6 +102,6 @@ describe('SCGS Ranking Engine resurrection', () => {
     const body = await response.json();
 
     expect(response.status).toBe(500);
-    expect(body.error).toBe('SCGS ranking comparison failed');
+    expect(body.error).toBe('SCGS search view-model failed');
   });
 });

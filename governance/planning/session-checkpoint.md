@@ -139,7 +139,19 @@ backend/modules/<name>/
 
 ## In Progress
 
-_None._
+1. **SCGS Phase 2 — Search Projection Contract**
+   - Branch: `feat/scgs-phase-2-search-projection-contract`
+   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 2)
+   - Objective: Define Zod-based `SearchViewModel` contract owned by SCGS,
+     build it from `RankedArtifact[]`, and make `/api/search/scgs` return it
+     as the primary response.
+
+## Next Steps
+
+1. **Complete Phase 2** — implement `buildSearchViewModel`, contract tests,
+   update route, and merge to `develop`.
+2. **Product roadmap** — continue with Phase 3 (PDP Projection) or marketplace
+   feature work after Phase 2 merges._
 
 ---
 
