@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-11
-**Branch:** `feat/phase-1-workspace-scaffolding`
-**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding approved and in progress.
+**Branch:** `develop`
+**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop.
 
 ---
 
@@ -52,7 +52,7 @@
 - PR #102 — `docs(agents): allow agent to run verification when explicitly asked`
 - PR #103 — `docs(prep): synchronize docs with delivery certification and CSP changes`
 - PR #104 — `Phase 0: platform navigation documents`
-- PR #105 — `Phase 1: workspace scaffolding` (open)
+- PR #105 — `Phase 1: workspace scaffolding`
 
 ### Planning Cleanup
 
@@ -105,21 +105,26 @@ backend/modules/<name>/
 
 ---
 
-## In Progress
+## Completed
 
-1. **Phase 1 — Workspace scaffolding**
+1. **Phase 1 — Workspace scaffolding** (merged via PR #105)
    - Branch: `feat/phase-1-workspace-scaffolding`
    - Deliverables: updated `pnpm-workspace.yaml`, empty target directories with READMEs, `packages/config`, updated root `package.json`
    - Plan: `.planning/phase-1-implementation-plan.md`
 
 ---
 
+## In Progress
+
+None.
+
+---
+
 ## Next Steps
 
-1. **Complete Phase 1** — create workspace scaffolding and merge.
-2. **Phase 2** — move the Next.js application into `apps/web/`.
-3. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
-4. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+1. **Phase 2** — move the Next.js application into `apps/web/`.
+2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
+3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
 ---
 
