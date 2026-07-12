@@ -52,6 +52,7 @@
 - PR #102 — `docs(agents): allow agent to run verification when explicitly asked`
 - PR #103 — `docs(prep): synchronize docs with delivery certification and CSP changes`
 - PR #104 — `Phase 0: platform navigation documents`
+- PR #105 — `Phase 1: workspace scaffolding` (open)
 
 ### Planning Cleanup
 
