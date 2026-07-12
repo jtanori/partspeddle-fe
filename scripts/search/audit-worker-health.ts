@@ -1,6 +1,6 @@
 
-import { supabaseAdmin } from '../../src/lib/supabase-admin';
-import { logger } from '../../src/lib/logger';
+import { supabaseAdmin } from '../../apps/web/src/lib/supabase-admin';
+import { logger } from '../../apps/web/src/lib/logger';
 
 interface WorkerHealthResult {
   totalEventsInOutbox: number;

@@ -4,7 +4,7 @@ import {
   INDEX_PRICE_ASC,
   INDEX_PRICE_DESC,
   INDEX_NEWEST,
-} from '../../src/backend/modules/search/infrastructure/algolia-client';
+} from '../../apps/web/src/backend/modules/search/infrastructure/algolia-client';
 
 const INDEX_INITIALIZER_OBJECT_ID = '__index_initializer__';
 

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "../src/lib/supabase-admin";
+import { supabaseAdmin } from "../apps/web/src/lib/supabase-admin";
 import { algoliasearch } from "algoliasearch";
 import * as dotenv from "dotenv";
 dotenv.config();

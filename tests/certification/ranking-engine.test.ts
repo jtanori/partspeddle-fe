@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
-import { RankingEngine } from '../../src/domain/specification/scgs/ranking/ranking.engine';
-import { CompiledSpecificationSet } from '../../src/domain/services/specification.compiler';
+import { RankingEngine } from '../../apps/web/src/domain/specification/scgs/ranking/ranking.engine';
+import { CompiledSpecificationSet } from '../../apps/web/src/domain/services/specification.compiler';
 
 type RankingArtifact = {
   listingId: string;

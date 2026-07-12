@@ -1,9 +1,9 @@
-import { supabaseAdmin } from "../src/lib/supabase-admin";
+import { supabaseAdmin } from "../apps/web/src/lib/supabase-admin";
 import {
   algoliaClient,
   SEARCH_INDEX_NAME,
-} from "../src/backend/modules/search/infrastructure/algolia-client";
-import { logger } from "../src/lib/logger";
+} from "../apps/web/src/backend/modules/search/infrastructure/algolia-client";
+import { logger } from "../apps/web/src/lib/logger";
 import { faker } from "@faker-js/faker";
 import fs from "fs";
 import { exec } from "child_process";

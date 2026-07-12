@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../../src/lib/supabase-admin';
+import { supabaseAdmin } from '../../apps/web/src/lib/supabase-admin';
 
 async function seedExpansion() {
   console.log('🌱 Seeding P1E: 20-Category Catalog Expansion...');

@@ -6,7 +6,7 @@ import {
   INDEX_PRICE_ASC,
   INDEX_PRICE_DESC,
   SEARCH_INDEX_NAME,
-} from '../../src/backend/modules/search/infrastructure/algolia-client';
+} from '../../apps/web/src/backend/modules/search/infrastructure/algolia-client';
 
 // Forzar la carga de .env desde la raíz del proyecto
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });

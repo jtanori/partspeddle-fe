@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../src/lib/supabase-admin.ts';
+import { supabaseAdmin } from '../apps/web/src/lib/supabase-admin.ts';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 

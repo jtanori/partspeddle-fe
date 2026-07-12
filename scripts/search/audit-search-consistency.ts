@@ -1,9 +1,9 @@
-import { supabaseAdmin } from "../../src/lib/supabase-admin";
+import { supabaseAdmin } from "../../apps/web/src/lib/supabase-admin";
 import {
   algoliaClient,
   SEARCH_INDEX_NAME,
-} from "../../src/backend/modules/search/infrastructure/algolia-client";
-import { logger } from "../../src/lib/logger";
+} from "../../apps/web/src/backend/modules/search/infrastructure/algolia-client";
+import { logger } from "../../apps/web/src/lib/logger";
 import {
   AUDIT_FIELD_NAMES,
   AttributeMismatch,
@@ -11,7 +11,7 @@ import {
   DEFAULT_DRIFT_THRESHOLD_PERCENT,
   deriveExpectedIndexFields,
   DbPartAuditRow,
-} from "../../src/lib/audit/search-audit";
+} from "../../apps/web/src/lib/audit/search-audit";
 
 interface AuditResult {
   partsInDb: number;

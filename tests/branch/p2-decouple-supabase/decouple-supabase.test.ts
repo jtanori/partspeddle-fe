@@ -16,33 +16,33 @@ function fileExists(relativePath: string): boolean {
 
 describe('P2.6 decouple Supabase from presentation', () => {
   it('exposes taxonomy through a server API route', () => {
-    const route = read('src/app/api/taxonomy/route.ts');
+    const route = read('apps/web/src/app/api/taxonomy/route.ts');
     expect(route).toContain('createRepositories');
     expect(route).toContain('catalog.getTaxonomy');
   });
 
   it('routes useTaxonomy through the taxonomy API', () => {
-    const hook = read('src/hooks/useTaxonomy.ts');
+    const hook = read('apps/web/src/hooks/useTaxonomy.ts');
     expect(hook).toContain('/api/taxonomy');
     expect(hook).not.toContain('supabase.from');
   });
 
   it('adds seller profile and inventory API routes', () => {
-    expect(fileExists('src/app/api/seller/profile/route.ts')).toBe(true);
-    expect(fileExists('src/app/api/seller/inventory/route.ts')).toBe(true);
-    expect(fileExists('src/app/api/seller/inventory/commit/route.ts')).toBe(true);
-    expect(fileExists('src/app/api/seller/assets/upload/route.ts')).toBe(true);
+    expect(fileExists('apps/web/src/app/api/seller/profile/route.ts')).toBe(true);
+    expect(fileExists('apps/web/src/app/api/seller/inventory/route.ts')).toBe(true);
+    expect(fileExists('apps/web/src/app/api/seller/inventory/commit/route.ts')).toBe(true);
+    expect(fileExists('apps/web/src/app/api/seller/assets/upload/route.ts')).toBe(true);
 
-    const profileRoute = read('src/app/api/seller/profile/route.ts');
+    const profileRoute = read('apps/web/src/app/api/seller/profile/route.ts');
     expect(profileRoute).toContain('export async function GET');
     expect(profileRoute).toContain('requireSeller');
   });
 
   it('uses domain hooks instead of direct Supabase in seller presentation', () => {
-    const layout = read('src/app/(seller)/layout.tsx');
-    const inventory = read('src/components/seller-dashboard/InventoryTable.tsx');
-    const wizard = read('src/components/seller-dashboard/ListingWizard.tsx');
-    const draftHook = read('src/hooks/useListingDraft.ts');
+    const layout = read('apps/web/src/app/(seller)/layout.tsx');
+    const inventory = read('apps/web/src/components/seller-dashboard/InventoryTable.tsx');
+    const wizard = read('apps/web/src/components/seller-dashboard/ListingWizard.tsx');
+    const draftHook = read('apps/web/src/hooks/useListingDraft.ts');
 
     expect(layout).toContain('useSellerProfile');
     expect(layout).not.toContain('supabase.from');
@@ -60,9 +60,9 @@ describe('P2.6 decouple Supabase from presentation', () => {
   });
 
   it('uses homepage and seller hooks backed by public APIs', () => {
-    const homepage = read('src/components/Homepage.tsx');
-    const featuredSellers = read('src/components/homepage/FeaturedSellers.tsx');
-    const popularSellers = read('src/components/homepage/PopularSellersSection.tsx');
+    const homepage = read('apps/web/src/components/Homepage.tsx');
+    const featuredSellers = read('apps/web/src/components/homepage/FeaturedSellers.tsx');
+    const popularSellers = read('apps/web/src/components/homepage/PopularSellersSection.tsx');
 
     expect(homepage).toContain('useHomepageData');
     expect(homepage).not.toContain('supabaseDb');
@@ -75,14 +75,14 @@ describe('P2.6 decouple Supabase from presentation', () => {
   });
 
   it('routes dropdown search through the search API', () => {
-    const dropdown = read('src/components/search/SearchDropdownController.tsx');
+    const dropdown = read('apps/web/src/components/search/SearchDropdownController.tsx');
     expect(dropdown).toContain('/api/search/parts');
     expect(dropdown).not.toContain('supabaseDb');
   });
 
   it('centralizes realtime messaging in a dedicated module', () => {
-    const hook = read('src/hooks/useMessaging.ts');
-    const channel = read('src/lib/realtime/messaging-channel.ts');
+    const hook = read('apps/web/src/hooks/useMessaging.ts');
+    const channel = read('apps/web/src/lib/realtime/messaging-channel.ts');
 
     expect(hook).toContain('subscribeToConversation');
     expect(hook).not.toContain("supabase.channel");
@@ -90,9 +90,9 @@ describe('P2.6 decouple Supabase from presentation', () => {
   });
 
   it('shares API mappers between service and hook layers', () => {
-    const mappers = read('src/lib/api-mappers.ts');
-    const supabaseDb = read('src/services/supabase-db.ts');
-    const homepageHook = read('src/hooks/useHomepageData.ts');
+    const mappers = read('apps/web/src/lib/api-mappers.ts');
+    const supabaseDb = read('apps/web/src/services/supabase-db.ts');
+    const homepageHook = read('apps/web/src/hooks/useHomepageData.ts');
 
     expect(mappers).toContain('mapPartToPart');
     expect(mappers).toContain('mapSellerToSeller');

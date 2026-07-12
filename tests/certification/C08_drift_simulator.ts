@@ -1,4 +1,4 @@
-import { CompiledSpecificationSet } from '../src/domain/services/specification.compiler';
+import { CompiledSpecificationSet } from '../apps/web/src/domain/services/specification.compiler';
 
 export const driftSimulator = {
   swapGroupOrder: (compiled: CompiledSpecificationSet): CompiledSpecificationSet => ({

@@ -1,6 +1,6 @@
-import { algoliaClient, SEARCH_INDEX_NAME } from '../../src/backend/modules/search/infrastructure/algolia-client';
-import { supabaseAdmin } from '../../src/lib/supabase-admin';
-import { BuildSearchDocumentUseCase } from '../../src/backend/modules/search/application/build-search-document';
+import { algoliaClient, SEARCH_INDEX_NAME } from '../../apps/web/src/backend/modules/search/infrastructure/algolia-client';
+import { supabaseAdmin } from '../../apps/web/src/lib/supabase-admin';
+import { BuildSearchDocumentUseCase } from '../../apps/web/src/backend/modules/search/application/build-search-document';
 
 async function reindexAll() {
   console.log('🔄 Starting full reindex...');

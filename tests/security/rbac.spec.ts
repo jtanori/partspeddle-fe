@@ -57,7 +57,7 @@ function mockSession(role: string | null) {
 }
 
 async function loadProxy() {
-  const mod = await import('../../src/proxy');
+  const mod = await import('../../apps/web/src/proxy');
   return mod.proxy;
 }
 

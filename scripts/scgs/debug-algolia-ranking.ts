@@ -1,4 +1,4 @@
-import { algoliaClient, SEARCH_INDEX_NAME } from "../../src/backend/modules/search/infrastructure/algolia-client";
+import { algoliaClient, SEARCH_INDEX_NAME } from "../../apps/web/src/backend/modules/search/infrastructure/algolia-client";
 
 async function debugRanking(query: string) {
   try {

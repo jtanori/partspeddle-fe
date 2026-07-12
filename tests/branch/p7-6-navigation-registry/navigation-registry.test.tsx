@@ -106,7 +106,7 @@ describe('P7.6 PPDS Navigation Registry', () => {
 
   describe('guards', () => {
     it('exports permission and feature-flag guards', () => {
-      const source = readSource('src/navigation/index.ts');
+      const source = readSource('apps/web/src/navigation/index.ts');
       expect(source).toContain('hasPermission');
       expect(source).toContain('isFeatureEnabled');
     });

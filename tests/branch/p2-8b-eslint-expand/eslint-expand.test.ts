@@ -22,11 +22,11 @@ describe('P2.8b ESLint scope expansion', () => {
     expect(config).toContain('import globals from "globals"');
     expect(config).toContain('...globals.browser');
     expect(config).toContain('...globals.node');
-    expect(config).toContain('files: ["src/**/*.{ts,tsx}"]');
+    expect(config).toContain('files: ["apps/web/src/**/*.{ts,tsx}"]');
   });
 
   it('adds a client hydration helper without setState-in-effect', () => {
-    const hook = read('src/hooks/useIsClient.ts');
+    const hook = read('apps/web/src/hooks/useIsClient.ts');
     expect(hook).toContain('useSyncExternalStore');
     expect(hook).not.toContain('useEffect');
   });

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { SemanticReplayEngine } from '../../../src/domain/specification/scgs/replay/engine';
-import { CompiledSemanticArtifact } from '../../../src/domain/specification/scgs/types';
+import { SemanticReplayEngine } from '../../../apps/web/src/domain/specification/scgs/replay/engine';
+import { CompiledSemanticArtifact } from '../../../apps/web/src/domain/specification/scgs/types';
 
 function makeArtifact(version: string): CompiledSemanticArtifact {
   return {

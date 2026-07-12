@@ -2,9 +2,7 @@
 
 The Next.js 16 + App Router web application for PartsPeddle / VinTrack.
 
-## Future contents
-
-This directory will contain the application currently living at the repository root:
+## Contents
 
 - `src/app/` — App Router pages and API routes.
 - `src/components/` — React components.
@@ -12,10 +10,18 @@ This directory will contain the application currently living at the repository r
 - `src/store/` — Client state management.
 - `src/lib/` — Application-specific utilities.
 - `src/projection/` — UI read models.
+- `src/backend/` — Backend modules (e.g., search).
 - `public/` — Static assets.
 - `next.config.ts` — Next.js configuration.
-- `Dockerfile` — Application container image.
 
-## Status
+## Scripts
 
-Phase 1 scaffolding only. Application code will move here in Phase 2.
+```bash
+pnpm dev        # Start development server
+pnpm build      # Production build
+pnpm start      # Start production server
+pnpm lint       # Lint application source
+pnpm typecheck  # Type-check application source
+```
+
+The root `package.json` delegates these commands via `pnpm --filter @partspeddle/web`.

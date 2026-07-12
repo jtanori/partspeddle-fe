@@ -16,7 +16,7 @@ function fileExists(relativePath: string): boolean {
 
 describe('P2.2 server-side search fetch', () => {
   it('fetches initial search results in the server search page', () => {
-    const page = read('src/app/(public)/search/page.tsx');
+    const page = read('apps/web/src/app/(public)/search/page.tsx');
     expect(page).not.toContain("'use client'");
     expect(page).toContain('fetchSearchResults');
     expect(page).toContain('SearchPageClient');
@@ -24,27 +24,27 @@ describe('P2.2 server-side search fetch', () => {
   });
 
   it('adds a dedicated loading skeleton for search transitions', () => {
-    expect(fileExists('src/app/(public)/search/loading.tsx')).toBe(true);
-    const loading = read('src/app/(public)/search/loading.tsx');
+    expect(fileExists('apps/web/src/app/(public)/search/loading.tsx')).toBe(true);
+    const loading = read('apps/web/src/app/(public)/search/loading.tsx');
     expect(loading).toContain('Skeleton');
   });
 
   it('hydrates the client search page with server-provided initial data', () => {
-    const client = read('src/components/search/SearchPageClient.tsx');
+    const client = read('apps/web/src/components/search/SearchPageClient.tsx');
     expect(client).toContain('initialData');
     expect(client).toContain('requestKey');
     expect(client).toContain('skipInitialFetch');
   });
 
   it('parses URL search params into a stable request key', () => {
-    const parser = read('src/lib/search/parse-search-params.ts');
+    const parser = read('apps/web/src/lib/search/parse-search-params.ts');
     expect(parser).toContain('parseSearchParams');
     expect(parser).toContain('serializeSearchRequest');
     expect(parser).toContain('partType');
   });
 
   it('keeps subsequent filter changes on the client search API path', () => {
-    const controller = read('src/components/search/SearchResultsController.tsx');
+    const controller = read('apps/web/src/components/search/SearchResultsController.tsx');
     expect(controller).toContain('/api/search/parts');
     expect(controller).toContain('AbortController');
     expect(controller).toContain('skipInitialFetch');
