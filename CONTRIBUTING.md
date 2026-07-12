@@ -139,16 +139,25 @@ If you are working with an AI agent, read `AGENTS.md` first. It defines what the
 
 ### New backend capability
 
-Follow the canonical module structure established by `src/backend/modules/search/`:
+**Rule:** Every new backend capability or bounded context must be implemented as a canonical module under `src/backend/modules/<name>/`. Do not add new domain logic to `src/services/`, `src/repositories/`, or `src/domain/services/` when a module is the appropriate home.
+
+The canonical structure, as established by `src/backend/modules/search/` and documented in `docs/engineering/backend-modules.md`, is:
 
 ```text
 src/backend/modules/<name>/
-├── application/
-├── domain/
-├── infrastructure/
+├── application/          # Use cases, factories, public barrels
+├── domain/               # Ports and domain types
+├── infrastructure/       # Adapters (repositories, external clients)
 ├── tests/
-└── contract/
+│   ├── contract/
+│   ├── integration/
+│   ├── performance/
+│   └── resilience/
+├── contract/             # Operational contracts
+└── README.md
 ```
+
+Legacy paths may receive backward-compatible shims during migration, but new capabilities belong in modules.
 
 ### New tests
 

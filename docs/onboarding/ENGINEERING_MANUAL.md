@@ -234,6 +234,28 @@ ci-test/<name>           # pipeline validation branches
 - Open a PR back to `develop`.
 - Production releases are promoted via `develop → main` PRs.
 
+### Canonical architecture rule
+
+All new backend capabilities and bounded contexts must be implemented as canonical backend modules under `src/backend/modules/<name>/` whenever they fit the modular monolith pattern. New domain logic must not be added to `src/services/`, `src/repositories/`, or `src/domain/services/` when a module is the appropriate home.
+
+The canonical module structure is defined in `docs/engineering/backend-modules.md` and exemplified by `src/backend/modules/search/`:
+
+```text
+src/backend/modules/<name>/
+├── application/          # Use cases, factories, public barrels
+├── domain/               # Ports and domain types
+├── infrastructure/       # Adapters
+├── tests/
+│   ├── contract/
+│   ├── integration/
+│   ├── performance/
+│   └── resilience/
+├── contract/             # Operational contracts
+└── README.md
+```
+
+This rule is enforced in `AGENTS.md` and `CONTRIBUTING.md`.
+
 ### Commit conventions
 
 This repository uses [Conventional Commits](https://www.conventionalcommits.org/):
