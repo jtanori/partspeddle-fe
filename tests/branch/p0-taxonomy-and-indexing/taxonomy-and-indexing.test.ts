@@ -14,7 +14,7 @@ describe('P0 taxonomy source of truth and indexing', () => {
   it('loads taxonomy via API-backed useTaxonomy hook', () => {
     const hook = read('apps/web/src/hooks/useTaxonomy.ts');
     const route = read('apps/web/src/app/api/taxonomy/route.ts');
-    const repository = read('apps/web/src/repositories/impl/supabase-catalog.repository.ts');
+    const repository = read('apps/web/src/backend/modules/catalog/infrastructure/supabase-catalog.repository.ts');
     expect(hook).toContain('useTaxonomy');
     expect(hook).toContain('/api/taxonomy');
     expect(route).toContain('createRepositories');

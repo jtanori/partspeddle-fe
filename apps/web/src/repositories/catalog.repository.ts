@@ -1,7 +1,2 @@
-import { CatalogCategory, SpecificationDefinition, CatalogCategorySpecification } from '../domain/types/catalog.types';
-
-export interface CatalogRepository {
-  getCategory(slug: string): Promise<CatalogCategory | null>;
-  getSpecificationsForCategory(categoryId: string): Promise<CatalogCategorySpecification[]>;
-  getDefinition(id: string): Promise<SpecificationDefinition | null>;
-}
+// Backward-compatible shim. Moved to backend/modules/catalog/domain/catalog-repository.ts
+export type { CatalogRepository } from '@/backend/modules/catalog/domain/catalog-repository';

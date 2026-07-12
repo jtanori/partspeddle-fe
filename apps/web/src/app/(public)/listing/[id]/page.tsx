@@ -3,11 +3,9 @@ import { createAnonServerClient } from '@/lib/supabase-server';
 import PDPRoot from '@/components/pdp-modern/PDPRoot';
 import { SpecificationCompilerImpl } from '@/domain/services/specification.compiler';
 import { buildPDPView } from '@/projection/pdp';
-import { SpecificationRepository } from '@/repositories/specification.repository';
-import { CatalogRepository } from '@/repositories/catalog.repository';
-import { ListingRepository } from '@/repositories/listing.repository';
-import { SupabaseCatalogRepository } from '@/repositories/impl/supabase-catalog.repository';
-import { SupabaseListingRepository } from '@/repositories/impl/supabase-listing.repository';
+import { SpecificationRepository } from '@/backend/modules/catalog/domain/specification-repository';
+import { CatalogRepository, SupabaseCatalogRepository } from '@/backend/modules/catalog';
+import { ListingRepository, SupabaseListingRepository } from '@/backend/modules/listing';
 
 import { unstable_noStore as noStore } from 'next/cache';
 

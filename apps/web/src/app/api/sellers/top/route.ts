@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createRepositories } from '@/repositories/factory';
+import { createRepositories } from '@/backend/modules/shared/application/repository-factory';
 import { validateQuery } from '@/lib/api/validation';
 import { safeErrorResponse } from '@/lib/api/errors';
 import { rateLimit } from '@/lib/api/rate-limit';

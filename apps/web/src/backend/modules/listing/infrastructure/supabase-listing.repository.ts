@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { ListingRepository } from '../listing.repository';
+import { ListingRepository } from '../domain/listing-repository';
 import { MarketplaceListing } from '@/domain/types/marketplace.types';
 
 export class SupabaseListingRepository implements ListingRepository {
