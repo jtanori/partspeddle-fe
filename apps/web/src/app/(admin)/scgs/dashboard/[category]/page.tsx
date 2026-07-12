@@ -1,18 +1,64 @@
-import { buildDashboardReadModel } from '@/domain/specification/scgs/dashboard.projection';
+import { createReplayStore } from '@/backend/modules/scgs';
+import { buildDashboardReadModel, evaluateGovernanceDecision } from '@/backend/modules/scgs';
+import type { SemanticReplayTrace } from '@/backend/modules/scgs';
+import type { PTSVector, SCGSCIVerdict } from '@/backend/modules/scgs';
 import { HealthOverview } from './HealthOverview';
 import { DriftChart } from './DriftChart';
 import { ViolationTable } from './ViolationTable';
 
-// Mock data fetcher - in production this would be an API call
-async function getDashboardData(category: string) {
-  // In production, load artifacts/traces from store
+function extractPTSVector(trace: SemanticReplayTrace): PTSVector {
+  const ptsEvent = trace.events.find((e) => e.type === 'PTS_SHIFT');
   return {
-    category,
-    latestVerdict: { status: 'PASS' } as any,
-    stabilityIndex: 95.5,
-    driftTrend: { labels: ['v1', 'v2'], scores: [10, 5] },
-    recentViolations: [],
+    driftScore: ptsEvent?.driftScore ?? 0,
+    highDrift: ptsEvent?.wasHighDrift ?? false,
   };
+}
+
+function extractLatestVerdict(trace: SemanticReplayTrace): SCGSCIVerdict {
+  const ciEvent = trace.events.find((e) => e.type === 'CI_VERDICT');
+  return {
+    status: ciEvent?.verdict ?? 'PASS',
+    reasonCodes: ciEvent?.reasonCodes ?? [],
+    violations: ciEvent?.reasonCodes ?? [],
+  };
+}
+
+async function getDashboardData(category: string) {
+  const store = createReplayStore();
+  const traces = await store.list({ categoryId: category, limit: 50 });
+
+  if (traces.length === 0) {
+    // Fallback: produce a decision from an empty evolution so the dashboard
+    // renders even before the first trace is recorded.
+    const decision = evaluateGovernanceDecision({
+      evolution: { groupDiffs: [], facetDiffs: [], score: { severity: 'NONE' } },
+      triggeredBy: 'LOCAL_RUN',
+      environment: 'local',
+    });
+
+    return buildDashboardReadModel(
+      category,
+      [],
+      [],
+      [{ driftScore: decision.ptsScore, highDrift: false }],
+      { status: 'PASS', reasonCodes: [], violations: [] },
+    );
+  }
+
+  const artifacts = traces.map((t) => ({
+    listingId: t.listingId,
+    categoryId: t.categoryId,
+    version: t.version,
+    lineageId: `${t.traceId}` as any,
+    compiled: { grouped: [], facets: {}, flat: [] } as any,
+    checksum: t.snapshots[t.snapshots.length - 1]?.compiledArtifactHash ?? t.traceId,
+    metadata: { createdAt: t.metadata.createdAt, compilerVersion: t.compilerVersion },
+  }));
+
+  const ptsVectors = traces.map(extractPTSVector);
+  const latestVerdict = extractLatestVerdict(traces[0]);
+
+  return buildDashboardReadModel(category, artifacts, traces, ptsVectors, latestVerdict);
 }
 
 export default async function DashboardPage({ params }: { params: Promise<{ category: string }> }) {
