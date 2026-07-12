@@ -144,6 +144,5 @@
     "overrides": {
       "@storybook/builder-vite": "8.6.14"
     }
-  },
-  "lint-staged": "platform/tooling/lint-staged.config.js"
+  }
 }
