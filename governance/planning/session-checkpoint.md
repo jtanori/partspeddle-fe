@@ -201,13 +201,23 @@ backend/modules/<name>/
 
 ## In Progress
 
-_None — awaiting Phase 6 planning._
+1. **SCGS Phase 6 — Governance & CI Integration**
+   - Branch: `feat/scgs-phase-6-governance-ci-integration`
+   - Plan: `governance/planning/scgs-phase-6-implementation-plan.md`
+   - Objective: Make SCGS gates real in CI, add durable replay storage, harden
+     PRR, and wire the admin dashboard read-model.
 
 ---
 
 ## Next Steps
 
-1. Plan and execute SCGS Phase 6 (Governance & CI Integration) or marketplace feature work.
+1. Implement domain ports for replay storage and governance CI decision types.
+2. Build filesystem and Supabase Storage adapters with environment-based factory.
+3. Implement application use cases: evaluate-governance, replay-trace, run-prr,
+   build-dashboard-read-model.
+4. Implement `scgs:ci:decide`, `scgs:prr`, and `scgs:replay:validate` scripts.
+5. Add SCGS governance job to `.github/workflows/ci.yml`.
+6. Add module-owned tests and update documentation.
 
 ---
 
