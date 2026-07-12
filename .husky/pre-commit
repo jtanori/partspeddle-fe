@@ -1,1 +1,1 @@
-lint-staged
+bash platform/tooling/pre-commit.sh

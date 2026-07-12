@@ -30,7 +30,7 @@ test
     └── smoke-tests (needs: [configure, deploy-fly, deploy-supabase]; if: delivery branch + push)
 ```
 
-The `configure` job resolves the branch/environment mapping from `operations/delivery/branches.json` and is used by all delivery jobs.
+The `configure` job resolves the branch/environment mapping from `platform/operations/delivery/branches.json` and is used by all delivery jobs.
 
 The production path is identical but triggered by `push` to `main` and targets the `production` environment.
 
@@ -51,7 +51,7 @@ The production path is identical but triggered by `push` to `main` and targets t
 | `test`            | `ALGOLIA_APP_ID`, `ALGOLIA_ADMIN_KEY`, `ALGOLIA_SEARCH_INDEX_NAME`                        |
 | `storybook`       | —                                                                                         |
 | `security`        | —                                                                                         |
-| `configure`       | — (reads `operations/delivery/branches.json`)                                             |
+| `configure`       | — (reads `platform/operations/delivery/branches.json`)                                             |
 | `deploy-fly`      | `FLY_API_TOKEN`                                                                           |
 | `deploy-supabase` | `SUPABASE_ACCESS_TOKEN`, `STAGING_SUPABASE_PROJECT_ID` / `PRODUCTION_SUPABASE_PROJECT_ID` |
 | `smoke-tests`     | `STAGING_SUPABASE_URL`, `STAGING_SUPABASE_ANON_KEY`, `STAGING_SUPABASE_SERVICE_ROLE_KEY`  |
@@ -102,7 +102,7 @@ lint-staged
 ```
 git push develop
   → GitHub Actions: test, configure
-    → deploy-fly: flyctl deploy --config fly/fly.stage.toml
+    → deploy-fly: flyctl deploy --config platform/deployment/fly/fly.stage.toml --dockerfile platform/docker/Dockerfile
     → deploy-supabase:
         - supabase login
         - supabase link --project-ref <STAGING_SUPABASE_PROJECT_ID>
@@ -120,7 +120,7 @@ git push develop
 ```
 git push main
   → GitHub Actions: test, configure
-    → deploy-fly: flyctl deploy --config fly/fly.prod.toml
+    → deploy-fly: flyctl deploy --config platform/deployment/fly/fly.prod.toml --dockerfile platform/docker/Dockerfile
     → deploy-supabase:
         - supabase login
         - supabase link --project-ref <PRODUCTION_SUPABASE_PROJECT_ID>
@@ -140,15 +140,15 @@ The first validated promotion from `develop` to `main` completed on 2026-07-11. 
 ### Local fallbacks
 
 ```bash
-pnpm deploy:staging              # flyctl deploy --config fly/fly.stage.toml
-pnpm deploy:production           # flyctl deploy --config fly/fly.prod.toml
-bash scripts/ops/deploy.sh staging
-bash scripts/ops/deploy.sh production
+pnpm deploy:staging              # flyctl deploy --config platform/deployment/fly/fly.stage.toml --dockerfile platform/docker/Dockerfile
+pnpm deploy:production           # flyctl deploy --config platform/deployment/fly/fly.prod.toml --dockerfile platform/docker/Dockerfile
+bash platform/scripts/deployment/deploy.sh staging
+bash platform/scripts/deployment/deploy.sh production
 ```
 
 ### Observations
 
-- `scripts/ops/deploy.sh` still references `.env.staging` / `.env.production` for local deploys. This is acceptable for local fallbacks but must not be used in CI.
+- `platform/scripts/deployment/deploy.sh` still references `.env.staging` / `.env.production` for local deploys. This is acceptable for local fallbacks but must not be used in CI.
 - No automatic health check runs after Fly.io deploy in CI (targeted in Workstream F).
 - No migration verification runs after Supabase deploy in CI (targeted in Workstream F).
 
@@ -191,13 +191,13 @@ bash scripts/ops/deploy.sh production
 
 | Variable   | Used by                           | Notes                       |
 | ---------- | --------------------------------- | --------------------------- |
-| `TRACE_ID` | `scripts/scgs/replay-validate.ts` | Local SCGS replay debugging |
+| `TRACE_ID` | `platform/scripts/scgs/replay-validate.ts` | Local SCGS replay debugging |
 
 ### Observations
 
 - No central environment validation script exists yet (targeted in Workstream D).
 - `NODE_ENV` is set to `production` in the Dockerfile runner stage.
-- Several scripts under `scripts/` and `src/backend/modules/search/infrastructure/algolia-client.ts` load `.env` via `dotenv`. This is acceptable for local scripts but must not be relied upon in production runtime.
+- Several scripts under `platform/scripts/` and `src/backend/modules/search/infrastructure/algolia-client.ts` load `.env` via `dotenv`. This is acceptable for local scripts but must not be relied upon in production runtime.
 
 ---
 
@@ -227,14 +227,14 @@ Files that load `.env` directly (intended for local scripts/development):
 | ------------------------------------------------------------- | -------------------------------------------------------------- |
 | `src/lib/supabase-admin.ts`                                   | `import 'dotenv/config'`                                       |
 | `src/backend/modules/search/infrastructure/algolia-client.ts` | `dotenv.config({ path: path.resolve(process.cwd(), '.env') })` |
-| `scripts/search/configure-algolia.ts`                         | `dotenv.config(...)`                                           |
-| `scripts/search/sync-to-algolia.ts`                           | `dotenv.config(...)`                                           |
-| `scripts/db/verify-db.ts`                                     | `dotenv.config(...)`                                           |
-| `scripts/db/verify-algolia.ts`                                | `dotenv.config()`                                              |
-| `scripts/db/list-triggers.ts`                                 | `import 'dotenv/config'`                                       |
-| `scripts/seed/seed-production.ts`                             | `dotenv.config(...)`                                           |
-| `scripts/seed/seed-users.ts`                                  | `dotenv.config(...)`                                           |
-| `scripts/ops/deploy.sh`                                       | sources `.env.staging` / `.env.production`                     |
+| `platform/scripts/algolia/configure-algolia-index.ts`         | `dotenv.config(...)`                                           |
+| `platform/scripts/algolia/reindex-algolia.ts`                 | `dotenv.config(...)`                                           |
+| `platform/scripts/migration/verify-db.ts`                     | `dotenv.config(...)`                                           |
+| `platform/scripts/migration/verify-algolia.ts`                | `dotenv.config()`                                              |
+| `platform/scripts/migration/list-triggers.ts`                 | `import 'dotenv/config'`                                       |
+| `platform/scripts/bootstrap/seed-production.ts`               | `dotenv.config(...)`                                           |
+| `platform/scripts/bootstrap/seed-users.ts`                    | `dotenv.config(...)`                                           |
+| `platform/scripts/deployment/deploy.sh`                       | sources `.env.staging` / `.env.production`                     |
 
 ### Observations
 
@@ -308,7 +308,7 @@ Redact values, keep names.
 ## 7. Stage Dependency Map
 
 ```
-lint (pnpm lint: eslint --cache src scripts)
+lint (pnpm lint: eslint --cache apps/web/src platform/scripts)
   ↓
 typecheck (pnpm typecheck: tsc --noEmit)
   ↓
@@ -328,12 +328,12 @@ smoke-staging (needs both deploys)
 
 ### Deploy scripts
 
-- `pnpm deploy:staging` → `flyctl deploy --config fly/fly.stage.toml`
-- `pnpm deploy:production` → `flyctl deploy --config fly/fly.prod.toml`
+- `pnpm deploy:staging` → `flyctl deploy --config platform/deployment/fly/fly.stage.toml --dockerfile platform/docker/Dockerfile`
+- `pnpm deploy:production` → `flyctl deploy --config platform/deployment/fly/fly.prod.toml --dockerfile platform/docker/Dockerfile`
 
 ### Smoke test script
 
-- `pnpm ci:smoke:staging` → `tsx scripts/ci/smoke-staging.ts`
+- `pnpm ci:smoke:staging` → `tsx platform/scripts/ci/smoke-staging.ts`
 
 ---
 
@@ -347,11 +347,11 @@ smoke-staging (needs both deploys)
 | 4   | Several scripts load `.env` directly                       | Open         | Easy to accidentally depend on local files in CI        | Medium   | C/D              |
 | 5   | No deployment observability records                        | **Resolved** | Hard to trace releases or roll back                     | Medium   | G                |
 | 6   | Husky timing not instrumented                              | Open         | Cannot measure if pre-commit is <5s                     | Medium   | B                |
-| 7   | `scripts/ops/deploy.sh` sources `.env.*`                   | Open         | Local deploy fallback may be confused with CI path      | Low      | C                |
+| 7   | `platform/scripts/deployment/deploy.sh` sources `.env.*`                   | Open         | Local deploy fallback may be confused with CI path      | Low      | C                |
 | 8   | Repo-level Supabase keys duplicate staging env secrets     | Open         | Potential confusion about which secret is authoritative | Low      | D                |
 | 9   | Production GitHub environment needs Algolia secrets listed | **Resolved** | Missing deploy-time Algolia validation                  | Medium   | D                |
 
-Resolved findings are implemented in `.github/workflows/ci.yml` and `operations/delivery/`.
+Resolved findings are implemented in `.github/workflows/ci.yml` and `platform/operations/delivery/`.
 
 ---
 

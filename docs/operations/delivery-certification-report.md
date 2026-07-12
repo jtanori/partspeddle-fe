@@ -25,10 +25,10 @@ Current assessment: **approximately 85–90% complete**. The remaining work is c
 | DC-2   | Root cause isolated | Medium | Husky benchmark: 47s with hooks, 9s without; lint-staged orchestration dominates |
 | DC-3   | Complete      | High       | Dockerfile contains no `.env` references; `.dockerignore` excludes `.env*` |
 | DC-4   | Certified     | High       | GitHub Actions run `29151750670` concluded success for staging deploy + smoke tests |
-| DC-4.1 | Implemented   | Medium     | `scripts/ops/verify-production-access.ts`; pending operator run against production |
+| DC-4.1 | Implemented   | Medium     | `platform/scripts/deployment/verify-production-access.ts`; pending operator run against production |
 | DC-5   | Not started   | —          | Blocked until DC-0 through DC-8 and DC-4.1 are complete and operator approves |
-| DC-6   | Implemented   | High       | Runtime env validation in `/api/health`; `scripts/ops/verify-deployment.ts`; recovery runbook |
-| DC-6.5 | Implemented   | High       | Health contract `v1.0.0`; contract validator in `operations/kernel/contracts/health.contract.ts` |
+| DC-6   | Implemented   | High       | Runtime env validation in `/api/health`; `platform/scripts/deployment/verify-deployment.ts`; recovery runbook |
+| DC-6.5 | Implemented   | High       | Health contract `v1.0.0`; contract validator in `platform/operations/kernel/contracts/health.contract.ts` |
 | DC-7   | Architecturally complete | High | EGS schema, validator, classification, generated docs, secret governance policy |
 | DC-7.1 | In progress   | Medium     | `config/environment/generated/drift-matrix.md`; automated drift check pending |
 | DC-8   | Not started   | —          | Defined as four observability pillars; implementation pending DC-6/DC-7 validation |
@@ -59,7 +59,7 @@ Full results: `artifacts/delivery/benchmark-2026-07-11/summary.json`.
 
 ### Health Contract (DC-6.5)
 
-**Location:** `operations/kernel/contracts/health.contract.ts`  
+**Location:** `platform/operations/kernel/contracts/health.contract.ts`  
 **Version:** `1.0.0`  
 **Endpoint:** `GET /api/health`
 
@@ -83,13 +83,13 @@ The contract requires:
 
 **Validation:**
 
-- `scripts/ops/verify-deployment.ts` polls the endpoint and validates the contract.
-- `scripts/ops/assert-health-contract.ts` performs a one-shot assertion for CI.
+- `platform/scripts/deployment/verify-deployment.ts` polls the endpoint and validates the contract.
+- `platform/scripts/deployment/assert-health-contract.ts` performs a one-shot assertion for CI.
 - `.github/workflows/ci.yml` runs both after every staging deployment.
 
 ### Delivery Manifest
 
-**Location:** `operations/delivery/manifests/delivery.manifest.json`
+**Location:** `platform/operations/delivery/manifests/delivery.manifest.json`
 
 The manifest is the canonical descriptor of:
 
@@ -196,5 +196,5 @@ No merge to `develop` is authorized until this report is updated to show all gat
 - `docs/operations/recovery-runbook.md` — rollback and incident response procedures.
 - `docs/operations/secret-governance.md` — secret ownership and storage policy.
 - `artifacts/delivery/benchmark-2026-07-11/summary.json` — toolchain and Husky benchmark results.
-- `operations/delivery/manifests/delivery.manifest.json` — operational manifest.
-- `operations/kernel/contracts/health.contract.ts` — health contract schema and validator.
+- `platform/operations/delivery/manifests/delivery.manifest.json` — operational manifest.
+- `platform/operations/kernel/contracts/health.contract.ts` — health contract schema and validator.

@@ -9,14 +9,14 @@ function readSource(relativePath: string) {
 describe('P5.0 Deploy & Environment Secrets Review', () => {
   describe('Fly.io configuration', () => {
     it('staging fly.toml targets vintrack-stage', () => {
-      const source = readSource('fly/fly.stage.toml');
+      const source = readSource('platform/deployment/fly/fly.stage.toml');
       expect(source).toContain('app = "vintrack-stage"');
       expect(source).toContain('force_https = true');
       expect(source).toContain('path = "/api/health"');
     });
 
     it('production fly.toml targets vintrack-prod', () => {
-      const source = readSource('fly/fly.prod.toml');
+      const source = readSource('platform/deployment/fly/fly.prod.toml');
       expect(source).toContain('app = "vintrack-prod"');
       expect(source).toContain('force_https = true');
       expect(source).toContain('path = "/api/health"');

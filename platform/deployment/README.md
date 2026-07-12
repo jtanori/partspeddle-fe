@@ -2,12 +2,17 @@
 
 Deployment configuration and runbooks for the PartsPeddle platform.
 
-## Future contents
+## Layout
 
-- `fly/` — Fly.io application configuration.
-- `supabase/` — Supabase deployment helpers.
-- Environment-specific deployment manifests.
+| Directory | Purpose |
+|---|---|
+| `fly/` | Fly.io application configuration (`fly.stage.toml`, `fly.prod.toml`). |
+
+## Notes
+
+- `fly.toml` paths are referenced from the repository root by CI and local deploy scripts.
+- The Dockerfile path is configured in `fly.toml` and overridden on the command line.
 
 ## Status
 
-Phase 1 scaffolding only. Files will migrate here in Phase 4.
+Phase 4 complete. Fly.io configs migrated here from the root `fly/` directory.

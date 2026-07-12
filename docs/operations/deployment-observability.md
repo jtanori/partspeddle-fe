@@ -82,7 +82,7 @@ artifacts/delivery/production-deployment-<YYYY-MM-DD>.json
 
 ## Canonical manifest
 
-The delivery manifest at `operations/delivery/manifests/delivery.manifest.json` defines:
+The delivery manifest at `platform/operations/delivery/manifests/delivery.manifest.json` defines:
 
 - environments and their metadata,
 - the verification sequence,

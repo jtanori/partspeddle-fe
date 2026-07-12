@@ -13,7 +13,7 @@ function read(relativePath: string): string {
 describe('P2.8b ESLint scope expansion', () => {
   it('lints all of src, not only src/domain', () => {
     const pkg = read('package.json');
-    expect(pkg).toMatch(/"lint":\s*"eslint .*src scripts"/);
+    expect(pkg).toMatch(/"lint":\s*"eslint .*apps\/web\/src platform\/scripts"/);
     expect(pkg).not.toContain('"lint": "eslint src/domain scripts"');
   });
 

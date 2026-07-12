@@ -33,8 +33,8 @@ describe('P2.3 health check dependency verification', () => {
   });
 
   it('keeps Fly.io health probes pointed at /api/health', () => {
-    const stage = read('fly/fly.stage.toml');
-    const prod = read('fly/fly.prod.toml');
+    const stage = read('platform/deployment/fly/fly.stage.toml');
+    const prod = read('platform/deployment/fly/fly.prod.toml');
     expect(stage).toContain('path = "/api/health"');
     expect(prod).toContain('path = "/api/health"');
   });
