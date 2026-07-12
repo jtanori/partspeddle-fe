@@ -142,6 +142,8 @@ All new SCGS code must be authored inside this module. Legacy paths (`src/domain
 
 This alignment is non-negotiable. It is a prerequisite for Phase 1.
 
+> **Canonical Architecture Rule:** All new backend capabilities and bounded contexts must be implemented as canonical backend modules under `src/backend/modules/<name>/` whenever they fit the modular monolith pattern. This rule is documented in `AGENTS.md`, `CONTRIBUTING.md`, and `docs/onboarding/ENGINEERING_MANUAL.md`. SCGS is the first feature explicitly governed by this rule.
+
 ---
 
 ## 4. Implementation Roadmap

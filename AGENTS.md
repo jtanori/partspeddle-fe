@@ -19,6 +19,26 @@
 
 Shell commands are RTK-optimized. See `.agents/rtk.md` for mappings.
 
+## Canonical Architecture Rule
+
+All new backend capabilities and bounded contexts must be implemented as canonical backend modules under `apps/web/src/backend/modules/<name>/` whenever they fit the modular monolith pattern. The canonical structure is defined by `docs/engineering/backend-modules.md` and the reference module `apps/web/src/backend/modules/search/`:
+
+```text
+backend/modules/<name>/
+├── application/          # Use cases, factories, public barrels
+├── domain/               # Ports and domain types
+├── infrastructure/       # Adapters (repositories, external clients)
+├── tests/
+│   ├── contract/
+│   ├── integration/
+│   ├── performance/
+│   └── resilience/
+├── contract/             # Operational contracts
+└── README.md
+```
+
+This rule applies to all new features starting now. Agents must not add new backend logic to `src/services/`, `src/repositories/`, or `src/domain/services/` when a module is the appropriate home. Legacy paths may receive backward-compatible shims during migration, but new capabilities belong in modules.
+
 ## Planning Artifacts
 
 All session plans, checkpoints, and planning documents must be saved in the `governance/planning/` directory at the project root.
