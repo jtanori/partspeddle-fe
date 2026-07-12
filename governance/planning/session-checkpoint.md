@@ -181,21 +181,33 @@ backend/modules/<name>/
 
 ---
 
+## Completed
+
+7. **SCGS Phase 5 — Specification Framework**
+   - Branch: `feat/scgs-phase-5-specification-framework`
+   - Merged to `develop` via PR #121.
+   - Deliverables: canonical `SpecificationFramework` domain types in
+     `apps/web/src/backend/modules/scgs/domain/specification-framework.ts`;
+     `SpecificationFrameworkRepository` port and
+     `CatalogSpecificationFrameworkRepository` adapter;
+     `specification-framework-mapper` for canonical ↔ DTO mapping;
+     refactored `SpecificationCompilerImpl` and `compileListing` to consume
+     framework types; updated SCGS barrel exports; module-owned contract and
+     integration tests; new spec document
+     `docs/specifications/scgs-specification-framework.md` and updates to
+     `marketplace-semantic-model.md` / `scgs-compiler-pipeline.md`.
+
+---
+
 ## In Progress
 
-1. **SCGS Phase 5 — Specification Framework**
-   - Branch: `feat/scgs-phase-5-specification-framework`
-   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 5)
-   - Objective: Formalize canonical SCGS specification framework types, add
-     mapper and repository adapter, and refactor `SpecificationCompilerImpl`
-     to consume them.
+_None — awaiting Phase 6 planning._
 
 ---
 
 ## Next Steps
 
-1. Complete SCGS Phase 5 specification framework refactor.
-2. SCGS Phase 6 (Governance & CI Integration) or marketplace feature work.
+1. Plan and execute SCGS Phase 6 (Governance & CI Integration) or marketplace feature work.
 
 ---
 
