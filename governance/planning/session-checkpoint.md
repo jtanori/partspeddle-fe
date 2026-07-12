@@ -145,8 +145,9 @@ _None._
 
 ## Next Steps
 
-1. **Open PR for SCGS Phase 0+1** and merge to `develop`.
-2. **Product roadmap** — continue marketplace feature work after Phase 0+1 merges.
+1. **SCGS Phase 0+1 merged** to `develop` via PR #117.
+2. **Product roadmap** — continue marketplace feature work. Next initiative to be
+   selected from the SCGS spec implementation plan or the product backlog.
 
 ---
 
