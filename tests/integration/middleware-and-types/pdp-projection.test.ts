@@ -5,7 +5,10 @@ import {
   LineageId,
 } from '../../../apps/web/src/backend/modules/scgs/domain/compiled-semantic-artifact';
 import { Part, Seller } from '../../../apps/web/src/types';
-import { CompiledSpecificationSet } from '../../../apps/web/src/domain/specification/scgs/types';
+import { buildCompiledSpecificationSet } from '../../../apps/web/src/backend/modules/scgs/tests/fixtures';
+import { compileCompatibility } from '../../../apps/web/src/backend/modules/scgs/infrastructure/compatibility-compiler';
+import { compileFitment } from '../../../apps/web/src/backend/modules/scgs/infrastructure/fitment-compiler';
+import { compileTrustProfile } from '../../../apps/web/src/backend/modules/scgs/infrastructure/trust-compiler';
 
 const basePart: Part = {
   id: 'p1',
@@ -39,21 +42,43 @@ const baseSeller: Seller = {
   returnPolicy: '30-day returns',
 };
 
-const emptyCompiled: CompiledSpecificationSet = {
-  flat: [],
-  grouped: [],
-  facets: {},
-  rankingFactors: { listingQuality: 0.5, sellerTrust: 0.5, recency: 0.5 },
-};
+function makeArtifact(part: Part, seller: Seller | null): CompiledSemanticArtifact {
+  const rankingFactors = { listingQuality: 0.5, sellerTrust: 0.5, recency: 0.5 };
+  const compatibility = compileCompatibility({
+    entries: (part.compatibility || []).map(c => ({
+      make: c.make,
+      model: c.model,
+      years: c.years,
+      engine: c.engine,
+    })),
+    oemPartNumber: part.oemPartNumber,
+  });
+  const fitment = compileFitment({
+    compatibility: {
+      status: compatibility.status,
+      vehicles: compatibility.vehicles,
+    },
+  });
 
-function makeArtifact(part: Part): CompiledSemanticArtifact {
   return {
     listingId: part.id,
     categoryId: part.category || 'uncategorized',
     version: '1.0.0',
     lineageId: `${part.id}:1.0.0:abc` as LineageId,
     checksum: 'abc',
-    compiled: emptyCompiled,
+    compiled: buildCompiledSpecificationSet({
+      rankingFactors,
+      compatibility,
+      fitment,
+      trust: compileTrustProfile({
+        sellerTrustScore: rankingFactors.sellerTrust,
+        listingQualityScore: rankingFactors.listingQuality,
+        rating: seller?.rating,
+        reviewCount: seller?.reviewCount,
+        feedbackPercentage: seller?.feedbackPercentage,
+        shipsWithin: seller?.shipsWithin,
+      }),
+    }),
     metadata: {
       createdAt: new Date().toISOString(),
       compilerVersion: '1.0.0',
@@ -70,12 +95,6 @@ function makePresentation(part: Part, seller: Seller | null) {
     images: part.images || [],
     description: part.description || '',
     sku: part.trackingNumber,
-    compatibility: (part.compatibility || []).map((c) => ({
-      make: c.make,
-      model: c.model,
-      years: c.years,
-      engine: c.engine,
-    })),
     seller: {
       id: seller?.id || 'unknown',
       displayName: seller?.name || 'Unknown Seller',
@@ -89,7 +108,7 @@ function makePresentation(part: Part, seller: Seller | null) {
 describe('buildPDPViewModel projection', () => {
   it('produces a complete PDPViewModel from a part and seller', () => {
     const viewModel = buildPDPViewModel({
-      artifact: makeArtifact(basePart),
+      artifact: makeArtifact(basePart, baseSeller),
       presentation: makePresentation(basePart, baseSeller),
     });
 
@@ -99,14 +118,14 @@ describe('buildPDPViewModel projection', () => {
     expect(viewModel.pricing.partPrice).toBe(89.99);
     expect(viewModel.inventory.isInStock).toBe(true);
     expect(viewModel.seller.displayName).toBe('Test Auto Parts');
-    expect(viewModel.fitment.vehicles).toHaveLength(1);
+    expect(viewModel.fitment.vehicles).toHaveLength(2);
     expect(viewModel.images).toEqual(['img1.jpg']);
-    expect(viewModel.tabs.map((t) => t.id)).toContain('spec');
+    expect(viewModel.tabs.map(t => t.id)).toContain('spec');
   });
 
   it('handles a null seller gracefully', () => {
     const viewModel = buildPDPViewModel({
-      artifact: makeArtifact(basePart),
+      artifact: makeArtifact(basePart, null),
       presentation: makePresentation(basePart, null),
     });
     expect(viewModel.seller.displayName).toBe('Unknown Seller');
@@ -115,7 +134,7 @@ describe('buildPDPViewModel projection', () => {
 
   it('maps compatibility into fitment vehicles', () => {
     const viewModel = buildPDPViewModel({
-      artifact: makeArtifact(basePart),
+      artifact: makeArtifact(basePart, baseSeller),
       presentation: makePresentation(basePart, baseSeller),
     });
     const vehicle = viewModel.fitment.vehicles[0];

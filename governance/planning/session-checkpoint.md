@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/scgs-phase-0-1-canonical-foundation`
-**Status:** Implementing Phase 0 + Phase 1 of SCGS specification plan: canonical module migration + compiler artifact model.
+**Branch:** `develop`
+**Status:** SCGS Phase 3 (PDP Projection) merged to develop; ready for Phase 4 or marketplace feature work.
 
 ---
 
@@ -150,20 +150,34 @@ backend/modules/<name>/
 
 ---
 
+## Completed
+
+5. **SCGS Phase 3 — PDP Projection**
+   - Branch: `feat/scgs-phase-3-pdp-projection`
+   - Merged to `develop` via PR #119.
+   - Deliverables: Zod-based `PDPDataModel` / `PDPViewModel` contract in
+     `apps/web/src/backend/modules/scgs/contract/pdp-view-model.contract.ts`;
+     `buildPDPViewModel` application use case; PDP listing page updated to use
+     the canonical use case; legacy `viewmodels/pdp.viewmodel.ts` converted to
+     a shim; module-owned contract/integration tests; updated
+     `tests/integration/middleware-and-types/pdp-projection.test.ts`; spec
+     document `docs/specifications/scgs-pdp-projection-contract.md`.
+
 ## In Progress
 
-1. **SCGS Phase 3 — PDP Projection**
-   - Branch: `feat/scgs-phase-3-pdp-projection`
-   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 3)
-   - Objective: Define SCGS-owned `PDPViewModel` contract with Zod, create
-     `buildPDPViewModel` use case, and integrate it into the PDP page.\_
+1. **SCGS Phase 4 — Semantic Capabilities (Trust, Compatibility, Fitment)**
+   - Branch: `feat/scgs-phase-4-semantic-capabilities`
+   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 4)
+   - Objective: Add TrustProfile, CompatibilityConclusion, and FitmentConclusion
+     compilers to the SCGS canonical module and integrate them into the compiled
+     artifact and PDP projection.
 
 ---
 
 ## Next Steps
 
-1. **SCGS Phase 3 — PDP Projection** or continue with marketplace feature work.
-2. Select next initiative from the SCGS spec implementation plan or product backlog.
+1. Complete SCGS Phase 4 semantic capability compilers and integration.
+2. SCGS Phase 5 (Specification Framework) or marketplace feature work.
 
 ---
 

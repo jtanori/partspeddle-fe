@@ -8,6 +8,9 @@ import {
   buildSearchViewModel,
   SearchResultPresentation,
   CompiledSemanticArtifact,
+  compileTrustProfile,
+  compileCompatibility,
+  compileFitment,
 } from '@/backend/modules/scgs';
 import { logger } from '@/lib/logger';
 
@@ -29,6 +32,19 @@ function buildArtifactFromHit(hit: SearchDocument): CompiledSemanticArtifact {
   const listingId = hit.objectID;
   const categoryId = hit.category ?? 'unknown';
   const version = '1.0.0';
+  const rankingFactors = {
+    listingQuality: hit.listing_quality_score ?? 0.5,
+    sellerTrust: hit.seller_trust_score ?? 0.5,
+    recency: normalizeRecency(hit.created_at),
+  };
+  const trust = compileTrustProfile({
+    sellerTrustScore: rankingFactors.sellerTrust,
+    listingQualityScore: rankingFactors.listingQuality,
+  });
+  const compatibility = compileCompatibility({ entries: [] });
+  const fitment = compileFitment({
+    compatibility: { status: compatibility.status, vehicles: compatibility.vehicles },
+  });
 
   return {
     listingId,
@@ -40,11 +56,10 @@ function buildArtifactFromHit(hit: SearchDocument): CompiledSemanticArtifact {
       flat: [],
       grouped: [],
       facets: {},
-      rankingFactors: {
-        listingQuality: hit.listing_quality_score ?? 0.5,
-        sellerTrust: hit.seller_trust_score ?? 0.5,
-        recency: normalizeRecency(hit.created_at),
-      },
+      rankingFactors,
+      trust,
+      compatibility,
+      fitment,
     },
     metadata: {
       createdAt: new Date().toISOString(),

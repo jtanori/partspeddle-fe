@@ -36,6 +36,9 @@ interface CompiledSpecificationSet {
     sellerTrust: number; // 0..1
     recency: number; // 0..1
   };
+  trust: TrustProfile; // Compiled seller/platform trust
+  compatibility: CompatibilityConclusion; // Vehicle-part compatibility
+  fitment: FitmentConclusion; // Specific installation fitment
 }
 ```
 

@@ -13,6 +13,57 @@ SCGS owns:
 
 ## Value objects
 
+### `TrustProfile`
+
+Compiled semantic profile representing seller/platform trust.
+
+```ts
+interface TrustProfile {
+  score: number; // 0..1
+  level: 'high' | 'medium' | 'low' | 'unknown';
+  signals: TrustSignal[];
+  compiledAt: string; // ISO 8601
+}
+
+interface TrustSignal {
+  name: TrustSignalName;
+  value: number | string | boolean;
+  weight: number; // 0..1
+}
+```
+
+Trust is not a database field. It is a compiled conclusion produced by
+`TrustCompiler` from seller history, listing quality, and platform signals.
+
+### `CompatibilityConclusion`
+
+Semantic conclusion answering "can this part be used?" for a set of vehicles.
+
+```ts
+interface CompatibilityConclusion {
+  status: 'compatible' | 'conditional' | 'incompatible' | 'unknown';
+  confidence: number; // 0..1
+  vehicles: CompatibleVehicle[];
+  notes: string[];
+  compiledAt: string; // ISO 8601
+}
+```
+
+### `FitmentConclusion`
+
+Semantic conclusion answering "can this exact part be installed on this exact
+vehicle?" It is narrower than compatibility.
+
+```ts
+interface FitmentConclusion {
+  status: 'exact' | 'compatible' | 'conditional' | 'incompatible' | 'unknown';
+  fitmentScore: number; // 0..100
+  vehicles: FitmentVehicle[];
+  notes: string[];
+  compiledAt: string; // ISO 8601
+}
+```
+
 ### `GroupDiff`
 
 ```ts

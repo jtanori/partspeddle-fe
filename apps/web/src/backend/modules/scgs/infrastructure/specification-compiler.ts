@@ -8,14 +8,17 @@ import {
   SpecGroup,
   CompiledSpecificationSet,
 } from '../domain/compiled-specification-set';
-import {
-  CompiledSemanticArtifact,
-  LineageId,
-} from '../domain/compiled-semantic-artifact';
+import { CompiledSemanticArtifact, LineageId } from '../domain/compiled-semantic-artifact';
+import { compileTrustProfile } from './trust-compiler';
+import { compileCompatibility } from './compatibility-compiler';
+import { compileFitment } from './fitment-compiler';
+import type { TrustCompilerInput } from '../domain/trust-profile';
+import type { RawCompatibilityEntry } from '../domain/compatibility-conclusion';
 
 function coerceSpecificationValue(value: SpecificationValue): string | number | boolean {
   if (value === null || value === undefined) return '';
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
+    return value;
   return JSON.stringify(value);
 }
 
@@ -34,6 +37,12 @@ export interface SpecificationCompiler {
     listingId: string;
     categoryId: string;
     version?: string;
+    seller?: TrustCompilerInput;
+    compatibility?: {
+      entries: RawCompatibilityEntry[];
+      partNumber?: string;
+      oemPartNumber?: string;
+    };
   }): Promise<CompiledSemanticArtifact>;
 }
 
@@ -41,31 +50,43 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
   constructor(
     private readonly specRepo: SpecificationRepository,
     private readonly catalogRepo: CatalogRepository,
-    private readonly listingRepo: ListingRepository
+    private readonly listingRepo: ListingRepository,
   ) {}
 
   async compile(input: {
     listingId: string;
     categoryId: string;
     version?: string;
+    seller?: TrustCompilerInput;
+    compatibility?: {
+      entries: RawCompatibilityEntry[];
+      partNumber?: string;
+      oemPartNumber?: string;
+    };
   }): Promise<CompiledSemanticArtifact> {
-    const { listingId, categoryId, version = '1.0.0' } = input;
+    const {
+      listingId,
+      categoryId,
+      version = '1.0.0',
+      seller: sellerInput,
+      compatibility: compatibilityInput,
+    } = input;
 
     // Fetch dependencies
     const [specs, catSpecs, definitions, listing] = await Promise.all([
       this.specRepo.findByListingId(listingId),
       this.catalogRepo.getSpecificationsForCategory(categoryId),
       this.specRepo.getAllDefinitions(),
-      this.listingRepo.findById(listingId)
+      this.listingRepo.findById(listingId),
     ]);
 
     const flat: ResolvedSpec[] = [];
     const groupedMap: Record<string, SpecGroup> = {};
     const facets: Record<string, string | number | boolean> = {};
 
-    specs.forEach(spec => {
-      const def = definitions.find(d => d.key === spec.key);
-      const catSpec = catSpecs.find(cs => cs.spec_definition_id === def?.id);
+    specs.forEach((spec) => {
+      const def = definitions.find((d) => d.key === spec.key);
+      const catSpec = catSpecs.find((cs) => cs.spec_definition_id === def?.id);
 
       if (!def || !catSpec) return;
 
@@ -80,7 +101,7 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
         groupOrder: catSpec.display_order || 0,
         displayOrder: catSpec.display_order || 0,
         isSearchable: def.searchable,
-        isFacetable: def.facetable
+        isFacetable: def.facetable,
       };
 
       flat.push(resolved);
@@ -96,19 +117,47 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
     });
 
     const grouped = Object.values(groupedMap).sort((a, b) => a.order - b.order);
-    grouped.forEach(g => g.items.sort((a, b) => a.displayOrder - b.displayOrder));
+    grouped.forEach((g) => g.items.sort((a, b) => a.displayOrder - b.displayOrder));
+
+    const listingQuality = listing?.listingQualityScore ?? 0.5;
+    const sellerTrust = listing?.sellerTrustScore ?? 0.5;
+
+    const trustProfile = compileTrustProfile(
+      sellerInput ?? {
+        sellerTrustScore: sellerTrust,
+        listingQualityScore: listingQuality,
+      },
+    );
+
+    const compatibilityConclusion = compileCompatibility({
+      entries: compatibilityInput?.entries ?? [],
+      partNumber: compatibilityInput?.partNumber,
+      oemPartNumber: compatibilityInput?.oemPartNumber,
+      specifications: flat.map((s) => ({ key: s.key, value: s.value })),
+    });
+
+    const fitmentConclusion = compileFitment({
+      compatibility: {
+        status: compatibilityConclusion.status,
+        vehicles: compatibilityConclusion.vehicles,
+      },
+      specifications: flat.map((s) => ({ key: s.key, value: s.value })),
+    });
 
     const compiled: CompiledSpecificationSet = {
       flat,
       grouped,
       facets,
       rankingFactors: {
-        listingQuality: listing?.listingQualityScore ?? 0.5,
-        sellerTrust: listing?.sellerTrustScore ?? 0.5,
+        listingQuality,
+        sellerTrust,
         recency: listing
           ? 1.0 - (Date.now() - new Date(listing.createdAt).getTime()) / (30 * 86400000)
           : 0.5,
       },
+      trust: trustProfile,
+      compatibility: compatibilityConclusion,
+      fitment: fitmentConclusion,
     };
 
     const checksum = computeChecksum(compiled);

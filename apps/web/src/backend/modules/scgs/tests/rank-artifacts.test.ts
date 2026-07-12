@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { rankArtifacts } from '../application/rank-artifacts';
 import { CompiledSemanticArtifact } from '../domain/compiled-semantic-artifact';
+import { buildCompiledSpecificationSet } from './fixtures';
 
 function makeArtifact(listingId: string, listingQuality: number): CompiledSemanticArtifact {
   return {
@@ -9,12 +10,9 @@ function makeArtifact(listingId: string, listingQuality: number): CompiledSemant
     version: '1.0.0',
     lineageId: `${listingId}:1.0.0:abc` as CompiledSemanticArtifact['lineageId'],
     checksum: 'abc',
-    compiled: {
-      flat: [],
-      grouped: [],
-      facets: {},
+    compiled: buildCompiledSpecificationSet({
       rankingFactors: { listingQuality, sellerTrust: 0.5, recency: 0.5 },
-    },
+    }),
     metadata: { createdAt: new Date().toISOString(), compilerVersion: '1.0.0' },
   };
 }

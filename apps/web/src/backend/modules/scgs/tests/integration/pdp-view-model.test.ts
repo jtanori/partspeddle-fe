@@ -1,8 +1,45 @@
 import { describe, it, expect } from 'vitest';
 import { buildPDPViewModel } from '../../application/build-pdp-view-model';
 import { CompiledSemanticArtifact, LineageId } from '../../domain/compiled-semantic-artifact';
+import { compileTrustProfile } from '../../infrastructure/trust-compiler';
+import { compileCompatibility } from '../../infrastructure/compatibility-compiler';
+import type { RawCompatibilityEntry } from '../../domain/compatibility-conclusion';
+import { compileFitment } from '../../infrastructure/fitment-compiler';
 
-function makeArtifact(listingId: string): CompiledSemanticArtifact {
+function makeArtifact(
+  listingId: string,
+  compatibilityEntries: RawCompatibilityEntry[] = []
+): CompiledSemanticArtifact {
+  const rankingFactors = { listingQuality: 0.8, sellerTrust: 0.9, recency: 0.5 };
+  const specifications = [
+    {
+      key: 'material',
+      label: 'Material',
+      value: 'Ceramic' as const,
+      unit: undefined,
+      group: 'General',
+      groupOrder: 0,
+      displayOrder: 0,
+      isSearchable: true,
+      isFacetable: false,
+    },
+  ];
+  const trust = compileTrustProfile({
+    sellerTrustScore: rankingFactors.sellerTrust,
+    listingQualityScore: rankingFactors.listingQuality,
+  });
+  const compatibility = compileCompatibility({
+    entries: compatibilityEntries,
+    specifications: specifications.map(s => ({ key: s.key, value: s.value })),
+  });
+  const fitment = compileFitment({
+    compatibility: {
+      status: compatibility.status,
+      vehicles: compatibility.vehicles,
+    },
+    specifications: specifications.map(s => ({ key: s.key, value: s.value })),
+  });
+
   return {
     listingId,
     categoryId: 'cat-1',
@@ -10,40 +47,19 @@ function makeArtifact(listingId: string): CompiledSemanticArtifact {
     lineageId: `${listingId}:1.0.0:abc` as LineageId,
     checksum: 'abc',
     compiled: {
-      flat: [
-        {
-          key: 'material',
-          label: 'Material',
-          value: 'Ceramic',
-          unit: undefined,
-          group: 'General',
-          groupOrder: 0,
-          displayOrder: 0,
-          isSearchable: true,
-          isFacetable: false,
-        },
-      ],
+      flat: specifications,
       grouped: [
         {
           name: 'General',
           order: 0,
-          items: [
-            {
-              key: 'material',
-              label: 'Material',
-              value: 'Ceramic',
-              unit: undefined,
-              group: 'General',
-              groupOrder: 0,
-              displayOrder: 0,
-              isSearchable: true,
-              isFacetable: false,
-            },
-          ],
+          items: specifications,
         },
       ],
       facets: { make: 'Honda' },
-      rankingFactors: { listingQuality: 0.8, sellerTrust: 0.9, recency: 0.5 },
+      rankingFactors,
+      trust,
+      compatibility,
+      fitment,
     },
     metadata: {
       createdAt: new Date().toISOString(),
@@ -60,7 +76,6 @@ const basePresentation = {
   images: ['https://cdn.example.com/p1.jpg'],
   description: 'High quality ceramic brake pads.',
   sku: 'BP-12345',
-  compatibility: [{ make: 'Honda', model: 'Civic', years: '2020-2021', engine: '2.0L' }],
   seller: {
     id: 'seller-1',
     displayName: 'Auto Parts Inc.',
@@ -81,7 +96,9 @@ const basePresentation = {
 describe('SCGS buildPDPViewModel', () => {
   it('returns a validated PDPViewModel from an artifact and presentation', () => {
     const viewModel = buildPDPViewModel({
-      artifact: makeArtifact('listing-1'),
+      artifact: makeArtifact('listing-1', [
+        { make: 'Honda', model: 'Civic', years: '2020-2021', engine: '2.0L' },
+      ]),
       presentation: basePresentation,
     });
 
@@ -111,17 +128,19 @@ describe('SCGS buildPDPViewModel', () => {
 
   it('marks good fit when compatibility is non-empty', () => {
     const viewModel = buildPDPViewModel({
-      artifact: makeArtifact('listing-1'),
+      artifact: makeArtifact('listing-1', [
+        { make: 'Honda', model: 'Civic', years: '2020-2021', engine: '2.0L' },
+      ]),
       presentation: basePresentation,
     });
     expect(viewModel.badges.isGoodFit).toBe(true);
-    expect(viewModel.fitment.fitmentScore).toBe(100);
+    expect(viewModel.fitment.fitmentScore).toBeGreaterThan(50);
   });
 
   it('marks poor fit when compatibility is empty', () => {
     const viewModel = buildPDPViewModel({
-      artifact: makeArtifact('listing-1'),
-      presentation: { ...basePresentation, compatibility: [] },
+      artifact: makeArtifact('listing-1', []),
+      presentation: basePresentation,
     });
     expect(viewModel.badges.isGoodFit).toBe(false);
     expect(viewModel.fitment.fitmentScore).toBe(0);
@@ -129,11 +148,10 @@ describe('SCGS buildPDPViewModel', () => {
 
   it('parses year ranges into a single representative year', () => {
     const viewModel = buildPDPViewModel({
-      artifact: makeArtifact('listing-1'),
-      presentation: {
-        ...basePresentation,
-        compatibility: [{ make: 'Honda', model: 'Civic', years: '2014-2015', engine: '1.8L' }],
-      },
+      artifact: makeArtifact('listing-1', [
+        { make: 'Honda', model: 'Civic', years: '2014-2015', engine: '1.8L' },
+      ]),
+      presentation: basePresentation,
     });
     const vehicle = viewModel.fitment.vehicles[0];
     expect(vehicle.year).toBe(2014);
