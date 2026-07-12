@@ -13,7 +13,7 @@ describe('P5.10 Storybook Design System Documentation', () => {
   });
 
   it('has a canonical PDPRoot story', () => {
-    const source = readSource('apps/web/src/components/pdp-modern/PDPRoot.stories.tsx');
+    const source = readSource('src/components/pdp-modern/PDPRoot.stories.tsx');
     expect(source).toContain('PDPRoot');
     expect(source).toContain('export const Default');
   });

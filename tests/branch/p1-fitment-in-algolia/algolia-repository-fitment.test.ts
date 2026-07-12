@@ -15,7 +15,7 @@ vi.mock('@/backend/modules/search/infrastructure/algolia-client', () => ({
   INDEX_NEWEST: 'parts_newest',
 }));
 
-import { AlgoliaSearchRepository } from '../../../apps/web/src/backend/modules/search/infrastructure/algolia-search-repository';
+import { AlgoliaSearchRepository } from '../../../src/backend/modules/search/infrastructure/algolia-search-repository';
 
 describe('AlgoliaSearchRepository fitment search', () => {
   beforeEach(() => {

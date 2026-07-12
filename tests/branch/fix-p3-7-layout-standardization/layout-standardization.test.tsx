@@ -126,7 +126,7 @@ describe('P3.7 layout standardization', () => {
   describe('Route structure', () => {
     it('does not import AppWrapper/PublicShell in the root layout', () => {
       const rootLayout = fs.readFileSync(
-        path.resolve(__dirname, '../../../apps/web/src/app/layout.tsx'),
+        path.resolve(__dirname, '../../../src/app/layout.tsx'),
         'utf-8',
       );
       expect(rootLayout).not.toContain('AppWrapper');
@@ -134,8 +134,8 @@ describe('P3.7 layout standardization', () => {
     });
 
     it('moves the homepage into the public route group', () => {
-      const publicPage = path.resolve(__dirname, '../../../apps/web/src/app/(public)/page.tsx');
-      const rootPage = path.resolve(__dirname, '../../../apps/web/src/app/page.tsx');
+      const publicPage = path.resolve(__dirname, '../../../src/app/(public)/page.tsx');
+      const rootPage = path.resolve(__dirname, '../../../src/app/page.tsx');
       expect(fs.existsSync(publicPage)).toBe(true);
       expect(fs.existsSync(rootPage)).toBe(false);
     });

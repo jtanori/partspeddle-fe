@@ -23,7 +23,7 @@ Welcome to the PartsPeddle FE documentation.
 
 ## Process & Compliance
 
-- [Master Remediation Plan](../governance/planning/archive/master-plan-2026-07-11.md)
+- [Master Remediation Plan](../.planning/master-plan.md)
   - _Master backlog: P0–P6 priorities, dependencies, and execution order._
 - [PPSC Certification](PPSC-PRE-PROMOTION-SANITIZATION-CERTIFICATION.md)
 - [Certified Systems Impact](CERTIFIED_SYSTEMS_IMPACT.md)

@@ -17,7 +17,7 @@ vi.mock('@/backend/modules/search/infrastructure/algolia-client', () => ({
   INDEX_NEWEST: 'parts_newest',
 }));
 
-import { AlgoliaSearchRepository } from '../../../apps/web/src/backend/modules/search/infrastructure/algolia-search-repository';
+import { AlgoliaSearchRepository } from '../../../src/backend/modules/search/infrastructure/algolia-search-repository';
 
 describe('P1.3 ranking cleanup', () => {
   it('returns SearchResult without misleading debug payload', async () => {

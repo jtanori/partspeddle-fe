@@ -9,14 +9,14 @@ function readSource(relativePath: string) {
 describe('P5.0 Deploy & Environment Secrets Review', () => {
   describe('Fly.io configuration', () => {
     it('staging fly.toml targets vintrack-stage', () => {
-      const source = readSource('platform/deployment/fly/fly.stage.toml');
+      const source = readSource('fly/fly.stage.toml');
       expect(source).toContain('app = "vintrack-stage"');
       expect(source).toContain('force_https = true');
       expect(source).toContain('path = "/api/health"');
     });
 
     it('production fly.toml targets vintrack-prod', () => {
-      const source = readSource('platform/deployment/fly/fly.prod.toml');
+      const source = readSource('fly/fly.prod.toml');
       expect(source).toContain('app = "vintrack-prod"');
       expect(source).toContain('force_https = true');
       expect(source).toContain('path = "/api/health"');
@@ -64,9 +64,9 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
   });
 
-  describe('governance/planning/archive/master-plan-2026-07-11.md', () => {
+  describe('.planning/archive/master-plan-2026-07-11.md', () => {
     it('marks P5.0 Phase 3 as done', () => {
-      const source = readSource('governance/planning/archive/master-plan-2026-07-11.md');
+      const source = readSource('.planning/archive/master-plan-2026-07-11.md');
       const phase3Section = source.substring(
         source.indexOf('3. **Marketplace page convergence**'),
         source.indexOf('4. **PPDS documentation & Storybook**'),
@@ -76,7 +76,7 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
 
     it('marks P5.0 Phase 6 as done', () => {
-      const source = readSource('governance/planning/archive/master-plan-2026-07-11.md');
+      const source = readSource('.planning/archive/master-plan-2026-07-11.md');
       const phase6Section = source.substring(
         source.indexOf('6. **Seller workspace shell**'),
         source.indexOf('7. **Deploy & environment secrets review**'),
@@ -86,7 +86,7 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
 
     it('includes a deploy & environment secrets review phase', () => {
-      const source = readSource('governance/planning/archive/master-plan-2026-07-11.md');
+      const source = readSource('.planning/archive/master-plan-2026-07-11.md');
       expect(source).toContain('7. **Deploy & environment secrets review**');
       expect(source).toContain('vintrack-stage');
       expect(source).toContain('vintrack-prod');

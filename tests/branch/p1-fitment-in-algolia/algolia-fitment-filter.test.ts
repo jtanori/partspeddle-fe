@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AlgoliaSearchRepository } from '../../../apps/web/src/backend/modules/search/infrastructure/algolia-search-repository';
+import { AlgoliaSearchRepository } from '../../../src/backend/modules/search/infrastructure/algolia-search-repository';
 
 describe('AlgoliaSearchRepository fitment filter generation', () => {
   it('builds an exact fitment signature filter', () => {

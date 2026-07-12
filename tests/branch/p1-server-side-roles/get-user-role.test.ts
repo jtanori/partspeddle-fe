@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { getUserRole } from '../../../apps/web/src/lib/user-roles';
+import { getUserRole } from '../../../src/lib/user-roles';
 
 function createMockClient(returnValue: { role: string } | null, error?: Error) {
   return {

@@ -26,7 +26,7 @@ describe('P6.7 apply remediation migrations to remote-first databases', () => {
   });
 
   it('has a remote drift verification script', () => {
-    const script = read('platform/scripts/migration/verify-remote-drift.ts');
+    const script = read('scripts/db/verify-remote-drift.ts');
     expect(script).toContain('supabase db diff --linked --schema public');
     expect(script).toContain('process.exit(1)');
     expect(script).toContain('remote-drift-report.md');
@@ -34,11 +34,11 @@ describe('P6.7 apply remediation migrations to remote-first databases', () => {
 
   it('exposes the drift check as a package script', () => {
     const pkg = JSON.parse(read('package.json'));
-    expect(pkg.scripts['db:verify:remote-drift']).toBe('tsx platform/scripts/migration/verify-remote-drift.ts');
+    expect(pkg.scripts['db:verify:remote-drift']).toBe('tsx scripts/db/verify-remote-drift.ts');
   });
 
   it('has a remote migration dry-run script', () => {
-    const script = read('platform/scripts/migration/dry-run-remote-migrations.ts');
+    const script = read('scripts/db/dry-run-remote-migrations.ts');
     expect(script).toContain("'staging'");
     expect(script).toContain("'production'");
     expect(script).toContain('supabase db push --dry-run');
@@ -48,10 +48,10 @@ describe('P6.7 apply remediation migrations to remote-first databases', () => {
   it('exposes staging and production dry-run package scripts', () => {
     const pkg = JSON.parse(read('package.json'));
     expect(pkg.scripts['db:dry-run:staging']).toBe(
-      'tsx platform/scripts/migration/dry-run-remote-migrations.ts --env staging',
+      'tsx scripts/db/dry-run-remote-migrations.ts --env staging',
     );
     expect(pkg.scripts['db:dry-run:production']).toBe(
-      'tsx platform/scripts/migration/dry-run-remote-migrations.ts --env production',
+      'tsx scripts/db/dry-run-remote-migrations.ts --env production',
     );
   });
 

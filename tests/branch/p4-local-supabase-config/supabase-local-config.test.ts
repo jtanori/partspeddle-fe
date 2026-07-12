@@ -82,8 +82,8 @@ describe('P4.2 local Supabase environment', () => {
     });
   });
 
-  describe('governance/planning/archive/master-plan-2026-07-11.md', () => {
-    const plan = readFile('governance', 'planning', 'archive', 'master-plan-2026-07-11.md');
+  describe('.planning/archive/master-plan-2026-07-11.md', () => {
+    const plan = readFile('.planning', 'archive', 'master-plan-2026-07-11.md');
 
     it('places production Fly secrets in P3.5', () => {
       expect(plan).toContain('### P3.5 Update production Fly.io secrets');

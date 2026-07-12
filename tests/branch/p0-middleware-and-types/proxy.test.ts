@@ -22,7 +22,7 @@ vi.mock('@/lib/user-roles', () => ({
 const getUserRoleMock = vi.mocked(getUserRole);
 
 async function loadProxy() {
-  const mod = await import('../../../apps/web/src/proxy');
+  const mod = await import('../../../src/proxy');
   return mod.proxy;
 }
 
@@ -62,7 +62,7 @@ function mockSession(role: string | null) {
   getUserRoleMock.mockResolvedValue(role as any);
 }
 
-describe('apps/web/src/proxy (Next.js 16 proxy convention)', () => {
+describe('src/proxy (Next.js 16 proxy convention)', () => {
   beforeEach(() => {
     createServerClientMock.mockReset();
     getUserRoleMock.mockReset();

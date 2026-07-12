@@ -5,9 +5,9 @@ import path from 'node:path';
 const repoRoot = path.resolve(__dirname, '../../..');
 
 describe('P4.4 validate local migration replay', () => {
-  describe('platform/scripts/migration/compare-schema.ts', () => {
+  describe('scripts/db/compare-schema.ts', () => {
     it('exists', () => {
-      expect(fs.existsSync(path.join(repoRoot, 'platform', 'scripts', 'migration', 'compare-schema.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(repoRoot, 'scripts', 'db', 'compare-schema.ts'))).toBe(true);
     });
   });
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { CompiledSpecificationSet } from '../../apps/web/src/domain/services/specification.compiler';
-import { PartViewModel } from '../../apps/web/src/viewmodels/pdp.viewmodel';
-import { MarketplaceSearchDocument } from '../../apps/web/src/domain/types/search.types';
+import { CompiledSpecificationSet } from '../../src/domain/services/specification.compiler';
+import { PartViewModel } from '../../src/viewmodels/pdp.viewmodel';
+import { MarketplaceSearchDocument } from '../../src/domain/types/search.types';
 import { createFixture } from './C08_fixtures';
 import { driftSimulator } from './C08_drift_simulator';
 

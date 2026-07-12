@@ -29,33 +29,33 @@ function TestToastConsumer() {
 describe('P5.0 UX Polish', () => {
   describe('spinner to skeleton migration', () => {
     it('removes MainLoadingIndicator from public loading page', () => {
-      const source = readSource('apps/web/src/app/(public)/loading.tsx');
+      const source = readSource('src/app/(public)/loading.tsx');
       expect(source).not.toContain('MainLoadingIndicator');
       expect(source).toContain('Skeleton');
     });
 
     it('removes InlineLoadingIndicator from search loading page', () => {
-      const source = readSource('apps/web/src/app/(public)/search/loading.tsx');
+      const source = readSource('src/app/(public)/search/loading.tsx');
       expect(source).not.toContain('InlineLoadingIndicator');
       expect(source).toContain('Skeleton');
     });
 
     it('removes MainLoadingIndicator from AuthProvider', () => {
-      const source = readSource('apps/web/src/components/providers/AuthProvider.tsx');
+      const source = readSource('src/components/providers/AuthProvider.tsx');
       expect(source).not.toContain('MainLoadingIndicator');
       expect(source).toContain('Skeleton');
     });
 
     it('removes InlineLoadingIndicator from ProductSidebar', () => {
-      const source = readSource('apps/web/src/components/ProductSidebar.tsx');
+      const source = readSource('src/components/ProductSidebar.tsx');
       expect(source).not.toContain('InlineLoadingIndicator');
       expect(source).toContain('Skeleton');
     });
 
     it('removes spinner component files', async () => {
       const fs = await import('node:fs');
-      expect(fs.existsSync(resolve(process.cwd(), 'apps/web/src/components/common/InlineLoadingIndicator.tsx'))).toBe(false);
-      expect(fs.existsSync(resolve(process.cwd(), 'apps/web/src/components/common/MainLoadingIndicator.tsx'))).toBe(false);
+      expect(fs.existsSync(resolve(process.cwd(), 'src/components/common/InlineLoadingIndicator.tsx'))).toBe(false);
+      expect(fs.existsSync(resolve(process.cwd(), 'src/components/common/MainLoadingIndicator.tsx'))).toBe(false);
     });
   });
 
@@ -96,7 +96,7 @@ describe('P5.0 UX Polish', () => {
     });
 
     it('InventoryTable uses EmptyState and ErrorState', () => {
-      const source = readSource('apps/web/src/components/seller-dashboard/InventoryTable.tsx');
+      const source = readSource('src/components/seller-dashboard/InventoryTable.tsx');
       expect(source).toContain('EmptyState');
       expect(source).toContain('ErrorState');
     });
@@ -104,7 +104,7 @@ describe('P5.0 UX Polish', () => {
 
   describe('notification center', () => {
     it('Providers wraps app in ToastProvider', () => {
-      const source = readSource('apps/web/src/components/Providers.tsx');
+      const source = readSource('src/components/Providers.tsx');
       expect(source).toContain('ToastProvider');
     });
 
@@ -123,7 +123,7 @@ describe('P5.0 UX Polish', () => {
     });
 
     it('navbar no longer renders local floating toast bar', () => {
-      const source = readSource('apps/web/src/components/navbar/Navbar.tsx');
+      const source = readSource('src/components/navbar/Navbar.tsx');
       expect(source).not.toContain('Floating toast notification bar');
       expect(source).toContain('useToast');
     });
@@ -131,12 +131,12 @@ describe('P5.0 UX Polish', () => {
 
   describe('sticky panels', () => {
     it('seller inventory toolbar is sticky', () => {
-      const source = readSource('apps/web/src/app/(seller)/seller/inventory/page.tsx');
+      const source = readSource('src/app/(seller)/seller/inventory/page.tsx');
       expect(source).toContain('sticky');
     });
 
     it('search sidebar is sticky', () => {
-      const source = readSource('apps/web/src/components/search/SearchPageClient.tsx');
+      const source = readSource('src/components/search/SearchPageClient.tsx');
       expect(source).toContain('sticky');
     });
   });

@@ -9,8 +9,8 @@
 - **Region**: `sjc`
 - **Health Check**: `GET /api/health`
 - **Configuration Files**:
-  - Staging: `platform/deployment/fly/fly.stage.toml`
-  - Production: `platform/deployment/fly/fly.prod.toml`
+  - Staging: `fly/fly.stage.toml`
+  - Production: `fly/fly.prod.toml`
 
 ## 2. Database Layer
 
@@ -26,7 +26,7 @@
 - **Index Naming**:
   - `vintrack_parts_v1` (prod)
   - `vintrack_parts_staging` (stage)
-- **Configuration**: Managed via `platform/scripts/algolia/configure-algolia-index.ts`.
+- **Configuration**: Managed via `scripts/algolia/configure-algolia-index.ts`.
 
 ## 4. Required Secrets
 
@@ -46,17 +46,17 @@ Local fallback commands:
 # Staging
 pnpm deploy:staging
 # or
-bash platform/scripts/deployment/deploy.sh staging
+bash scripts/ops/deploy.sh staging
 
 # Production
 pnpm deploy:production
 # or
-bash platform/scripts/deployment/deploy.sh production
+bash scripts/ops/deploy.sh production
 ```
 
 _(Always deploy production from the `main` branch and staging from the `develop` branch.)_
 
-The app is containerized with `platform/docker/Dockerfile`; Fly.io is configured to use it via `[build] dockerfile` in `fly.toml` and the `--dockerfile` flag in CI.
+The app is containerized with the `Dockerfile` at the repository root; Fly.io detects and uses it automatically.
 
 ## 6. Custom Domains
 
@@ -84,6 +84,6 @@ AAAA  partspeddle.com            2a09:8280:1::13a:7b9a:0
 After adding the records, verify certificate issuance with:
 
 ```bash
-flyctl certs check stage.partspeddle.com --config platform/deployment/fly/fly.stage.toml
-flyctl certs check partspeddle.com --config platform/deployment/fly/fly.prod.toml
+flyctl certs check stage.partspeddle.com --config fly/fly.stage.toml
+flyctl certs check partspeddle.com --config fly/fly.prod.toml
 ```

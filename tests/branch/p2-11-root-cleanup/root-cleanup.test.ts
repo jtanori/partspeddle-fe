@@ -25,22 +25,22 @@ describe('P2.11 project root and scripts cleanup', () => {
     expect(exists('customFormatter.js')).toBe(false);
   });
 
-  it('relocates dev tooling under platform/scripts/tooling and docs/notes', () => {
-    expect(exists('platform/scripts/tooling/eslint-formatter.js')).toBe(true);
+  it('relocates dev tooling under scripts/tools and docs/notes', () => {
+    expect(exists('scripts/tools/eslint-formatter.js')).toBe(true);
     expect(exists('docs/notes/GEMINI.md')).toBe(true);
   });
 
-  it('points package.json scripts at platform script paths', () => {
+  it('points package.json scripts at reorganized script paths', () => {
     const pkg = read('package.json');
-    expect(pkg).toContain('"db:verify": "tsx platform/scripts/migration/verify-db.ts"');
-    expect(pkg).toContain('"search:process-outbox": "tsx platform/scripts/search/process-search-outbox.ts"');
-    expect(pkg).toContain('platform/scripts/search/audit-search-consistency.ts');
+    expect(pkg).toContain('"db:verify": "tsx scripts/db/verify-db.ts"');
+    expect(pkg).toContain('"search:process-outbox": "tsx scripts/search/process-search-outbox.ts"');
+    expect(pkg).toContain('scripts/search/audit-search-consistency.ts');
     expect(pkg).not.toContain('scripts/audit-search-consistency.ts');
     expect(pkg).not.toContain('db:seed:listings');
   });
 
-  it('keeps deploy helper under platform/scripts/deployment', () => {
-    expect(exists('platform/scripts/deployment/deploy.sh')).toBe(true);
+  it('keeps deploy helper under scripts/ops', () => {
+    expect(exists('scripts/ops/deploy.sh')).toBe(true);
     expect(exists('scripts/deploy.sh')).toBe(false);
   });
 });
