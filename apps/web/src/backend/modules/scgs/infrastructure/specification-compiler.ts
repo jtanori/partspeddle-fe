@@ -1,8 +1,5 @@
 import { createHash } from 'node:crypto';
-import { SpecificationRepository } from '@/repositories/specification.repository';
-import { CatalogRepository } from '@/repositories/catalog.repository';
 import { ListingRepository } from '@/repositories/listing.repository';
-import { SpecificationValue } from '@/domain/types/marketplace.types';
 import {
   ResolvedSpec,
   SpecGroup,
@@ -14,13 +11,7 @@ import { compileCompatibility } from './compatibility-compiler';
 import { compileFitment } from './fitment-compiler';
 import type { TrustCompilerInput } from '../domain/trust-profile';
 import type { RawCompatibilityEntry } from '../domain/compatibility-conclusion';
-
-function coerceSpecificationValue(value: SpecificationValue): string | number | boolean {
-  if (value === null || value === undefined) return '';
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
-    return value;
-  return JSON.stringify(value);
-}
+import type { SpecificationFrameworkRepository } from '../domain/specification-framework-repository';
 
 function computeChecksum(compiled: CompiledSpecificationSet): string {
   return createHash('sha256').update(JSON.stringify(compiled)).digest('hex');
@@ -46,10 +37,15 @@ export interface SpecificationCompiler {
   }): Promise<CompiledSemanticArtifact>;
 }
 
+/**
+ * SCGS specification compiler.
+ *
+ * Consumes the canonical SCGS specification framework (category template +
+ * listing values) and produces a lineage-aware compiled semantic artifact.
+ */
 export class SpecificationCompilerImpl implements SpecificationCompiler {
   constructor(
-    private readonly specRepo: SpecificationRepository,
-    private readonly catalogRepo: CatalogRepository,
+    private readonly frameworkRepo: SpecificationFrameworkRepository,
     private readonly listingRepo: ListingRepository,
   ) {}
 
@@ -72,11 +68,10 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
       compatibility: compatibilityInput,
     } = input;
 
-    // Fetch dependencies
-    const [specs, catSpecs, definitions, listing] = await Promise.all([
-      this.specRepo.findByListingId(listingId),
-      this.catalogRepo.getSpecificationsForCategory(categoryId),
-      this.specRepo.getAllDefinitions(),
+    // Fetch framework data and listing in parallel.
+    const [template, values, listing] = await Promise.all([
+      this.frameworkRepo.getCategoryTemplate(categoryId),
+      this.frameworkRepo.getValuesForListing(listingId),
       this.listingRepo.findById(listingId),
     ]);
 
@@ -84,22 +79,36 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
     const groupedMap: Record<string, SpecGroup> = {};
     const facets: Record<string, string | number | boolean> = {};
 
-    specs.forEach((spec) => {
-      const def = definitions.find((d) => d.key === spec.key);
-      const catSpec = catSpecs.find((cs) => cs.spec_definition_id === def?.id);
+    // Index definitions by key and map each definition to its group.
+    const allDefinitions = [
+      ...template.inheritedDefinitions,
+      ...template.groups.flatMap(g => g.definitions),
+    ];
+    const definitionByKey = new Map(allDefinitions.map(d => [d.key, d]));
+    const groupByDefinitionKey = new Map<string, { name: string; order: number }>();
+    template.groups.forEach((group) => {
+      group.definitions.forEach((def) => {
+        groupByDefinitionKey.set(def.key, { name: group.name, order: group.order });
+      });
+    });
 
-      if (!def || !catSpec) return;
+    values.forEach((specValue) => {
+      const def = definitionByKey.get(specValue.definition.key);
+      const group = def ? groupByDefinitionKey.get(def.key) : undefined;
+      const groupName = group?.name ?? 'General';
+      const groupOrder = group?.order ?? 0;
+      const displayOrder = group?.order ?? 0;
 
-      const groupName = catSpec.group_name || 'General';
+      if (!def) return;
 
       const resolved: ResolvedSpec = {
         key: def.key,
         label: def.label,
-        value: coerceSpecificationValue(spec.value),
+        value: specValue.resolvedValue,
         unit: def.unit,
         group: groupName,
-        groupOrder: catSpec.display_order || 0,
-        displayOrder: catSpec.display_order || 0,
+        groupOrder,
+        displayOrder,
         isSearchable: def.searchable,
         isFacetable: def.facetable,
       };
@@ -107,11 +116,11 @@ export class SpecificationCompilerImpl implements SpecificationCompiler {
       flat.push(resolved);
 
       if (def.facetable) {
-        facets[def.key] = coerceSpecificationValue(spec.value);
+        facets[def.key] = specValue.resolvedValue;
       }
 
       if (!groupedMap[groupName]) {
-        groupedMap[groupName] = { name: groupName, order: catSpec.display_order || 0, items: [] };
+        groupedMap[groupName] = { name: groupName, order: groupOrder, items: [] };
       }
       groupedMap[groupName].items.push(resolved);
     });

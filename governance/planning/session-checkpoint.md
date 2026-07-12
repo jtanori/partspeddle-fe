@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-12
 **Branch:** `develop`
-**Status:** SCGS Phase 3 (PDP Projection) merged to develop; ready for Phase 4 or marketplace feature work.
+**Status:** Implementing SCGS Phase 5 (Specification Framework); formalizing canonical specification types and refactoring the compiler to consume them.
 
 ---
 
@@ -163,21 +163,39 @@ backend/modules/<name>/
      `tests/integration/middleware-and-types/pdp-projection.test.ts`; spec
      document `docs/specifications/scgs-pdp-projection-contract.md`.
 
+## Completed
+
+6. **SCGS Phase 4 — Semantic Capabilities (Trust, Compatibility, Fitment)**
+   - Branch: `feat/scgs-phase-4-semantic-capabilities`
+   - Merged to `develop` via PR #120.
+   - Deliverables: `TrustProfile`, `CompatibilityConclusion`, and
+     `FitmentConclusion` domain types; `compileTrustProfile`,
+     `compileCompatibility`, and `compileFitment` compilers;
+     `CompiledSpecificationSet` extended with trust/compatibility/fitment;
+     `SpecificationCompilerImpl` and `compileListing` updated to invoke
+     compilers; `buildPDPViewModel` reads fitment from artifact; PDP page and
+     `/api/search/scgs` route provide compatibility/seller inputs; SCGS barrel
+     exports updated; test fixtures helper; module-owned contract/integration
+     tests; updated spec documents including
+     `docs/specifications/scgs-semantic-capabilities.md`.
+
+---
+
 ## In Progress
 
-1. **SCGS Phase 4 — Semantic Capabilities (Trust, Compatibility, Fitment)**
-   - Branch: `feat/scgs-phase-4-semantic-capabilities`
-   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 4)
-   - Objective: Add TrustProfile, CompatibilityConclusion, and FitmentConclusion
-     compilers to the SCGS canonical module and integrate them into the compiled
-     artifact and PDP projection.
+1. **SCGS Phase 5 — Specification Framework**
+   - Branch: `feat/scgs-phase-5-specification-framework`
+   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 5)
+   - Objective: Formalize canonical SCGS specification framework types, add
+     mapper and repository adapter, and refactor `SpecificationCompilerImpl`
+     to consume them.
 
 ---
 
 ## Next Steps
 
-1. Complete SCGS Phase 4 semantic capability compilers and integration.
-2. SCGS Phase 5 (Specification Framework) or marketplace feature work.
+1. Complete SCGS Phase 5 specification framework refactor.
+2. SCGS Phase 6 (Governance & CI Integration) or marketplace feature work.
 
 ---
 
