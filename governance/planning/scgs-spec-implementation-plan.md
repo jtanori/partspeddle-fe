@@ -81,27 +81,101 @@ For implementation purposes, the work falls into four buckets:
 | Replay storage uses local filesystem | SCGS Ch. 28 | No durable snapshot store. |
 | No lineage IDs on artifacts | SDLS Ch. 7 | Artifacts cannot be traced end-to-end. |
 | Governance controller not integrated into CI/workflow | SCGS Ch. 4 | Behavioral responses are not enforced. |
+| SCGS not structured as a canonical backend module | `docs/engineering/backend-modules.md` | SCGS lives in `src/domain/specification/scgs/` and `src/domain/services/` instead of `src/backend/modules/scgs/`. |
 
 ---
 
-## 3. Implementation Roadmap
+## 3. Canonical Architecture Alignment
+
+The repository's canonical module architecture is defined by `src/backend/modules/search/` and documented in `docs/engineering/backend-modules.md`:
+
+```text
+backend/modules/<name>/
+├── application/          # Use cases, factories, public barrels
+├── domain/               # Ports and domain types
+├── infrastructure/       # Adapters
+├── tests/
+│   ├── contract/
+│   ├── integration/
+│   ├── performance/
+│   └── resilience/
+├── contract/             # Operational contracts
+└── README.md
+```
+
+SCGS must become a first-class canonical module:
+
+```text
+apps/web/src/backend/modules/scgs/
+├── application/
+│   ├── compile-listing.ts           # primary use case
+│   ├── rank-artifacts.ts            # ranking use case
+│   ├── evaluate-governance.ts       # governance use case
+│   └── replay-trace.ts              # replay use case
+├── domain/
+│   ├── compiled-semantic-artifact.ts
+│   ├── ranked-artifact.ts
+│   ├── semantic-specification.ts
+│   ├── ranking-factors.ts
+│   ├── lineage.ts
+│   ├── governance-policy.ts
+│   └── replay/
+│       ├── trace.ts
+│       ├── event.ts
+│       └── validator.ts
+├── infrastructure/
+│   ├── specification-compiler.ts    # implements compiler port
+│   ├── ranking-engine.ts            # implements ranking port
+│   ├── replay-store.ts              # durable trace storage
+│   └── governance-controller.ts
+├── tests/
+│   ├── contract/
+│   ├── integration/
+│   ├── performance/
+│   └── resilience/
+├── contract/
+│   └── scgs-api-contract.md
+└── README.md
+```
+
+All new SCGS code must be authored inside this module. Legacy paths (`src/domain/specification/scgs/`, `src/domain/services/specification.compiler.ts`) remain as backward-compatible shims during migration and are removed in a later phase.
+
+This alignment is non-negotiable. It is a prerequisite for Phase 1.
+
+---
+
+## 4. Implementation Roadmap
 
 The roadmap is intentionally incremental. Each phase produces a mergeable, testable increment.
 
-### Phase 0 — Specification Documents (Planning)
+### Phase 0 — Canonical Foundation
 
-Create canonical specifications under `docs/specifications/`:
+This phase establishes the architectural foundation. It produces no new semantic capabilities; it only creates the canonical structure and documents.
 
-- `docs/specifications/marketplace-semantic-model.md` — formalize MSM.
-- `docs/specifications/semantic-data-lineage.md` — formalize SDLS.
-- `docs/specifications/scgs-domain-model.md` — extract domain objects from SCGS spec Vol. II.
-- `docs/specifications/scgs-compiler-pipeline.md` — extract compiler stages from SCGS spec Vol. III.
+Deliverables:
 
-These documents become the reference for all subsequent implementation. They do not change code.
+1. **Migrate SCGS to canonical module** at `apps/web/src/backend/modules/scgs/`:
+   - Create `application/`, `domain/`, `infrastructure/`, `tests/`, `contract/`, `README.md`.
+   - Move core types, compiler, ranking engine, diff engine, governance, replay, and controller into the module.
+   - Keep backward-compatible re-exports at legacy paths (`src/domain/specification/scgs/`, `src/domain/services/specification.compiler.ts`).
+   - Update imports in API routes, dashboard UI, and scripts.
 
-**Verification:** Review for accuracy and internal consistency.
+2. **Create canonical specifications** under `docs/specifications/`:
+   - `docs/specifications/marketplace-semantic-model.md` — formalize MSM.
+   - `docs/specifications/semantic-data-lineage.md` — formalize SDLS.
+   - `docs/specifications/scgs-domain-model.md` — extract domain objects from SCGS spec Vol. II.
+   - `docs/specifications/scgs-compiler-pipeline.md` — extract compiler stages from SCGS spec Vol. III.
+
+**Verification:**
+
+- `pnpm lint --cache`
+- `pnpm typecheck`
+- `pnpm vitest run tests/integration/scgs/`
+- `pnpm delivery:manifest:validate`
 
 ### Phase 1 — Compiler Artifact Model
+
+Strengthen the compiler inside the canonical module so it produces a richer, lineage-aware artifact.
 
 Strengthen the compiler so it produces a richer, lineage-aware artifact.
 
@@ -250,27 +324,37 @@ Deliverables:
 
 ---
 
-## 4. Recommended First Phase
+## 5. Recommended First Phase
 
 **Start with Phase 0 + Phase 1 together.**
 
-Phase 0 produces the canonical documents that justify every code change in Phase 1. Phase 1 delivers immediate value:
+Phase 0 does two things:
+
+1. Migrates SCGS into the canonical backend module structure (`src/backend/modules/scgs/`).
+2. Produces the canonical documents that justify every code change in Phase 1.
+
+Phase 1 delivers immediate value inside that canonical structure:
 
 - A lineage-aware compiler artifact.
 - A richer, explainable ranking engine.
 - A formal `RankedArtifact` type.
-- Better test coverage.
+- Better test coverage inside the module.
 
-This is the highest-ROI starting point because it hardens the existing SCGS foundation without touching UI or database schema significantly.
+This is the highest-ROI starting point because it hardens the existing SCGS foundation and aligns it with the canonical architecture without touching UI or database schema significantly.
 
 ### Phase 1 Detailed Deliverables
+
+All work happens inside `apps/web/src/backend/modules/scgs/`.
 
 #### 4.1 New and updated types
 
 Files:
 
-- `apps/web/src/domain/specification/scgs/types.ts`
-- `apps/web/src/domain/specification/scgs/ranking/ranking.types.ts`
+- `apps/web/src/backend/modules/scgs/domain/compiled-semantic-artifact.ts`
+- `apps/web/src/backend/modules/scgs/domain/ranked-artifact.ts`
+- `apps/web/src/backend/modules/scgs/domain/semantic-specification.ts`
+- `apps/web/src/backend/modules/scgs/domain/ranking-factors.ts`
+- `apps/web/src/backend/modules/scgs/domain/lineage.ts`
 
 Changes:
 
@@ -282,7 +366,7 @@ Changes:
 
 #### 4.2 Compiler refactor
 
-File: `apps/web/src/domain/services/specification.compiler.ts`
+File: `apps/web/src/backend/modules/scgs/infrastructure/specification-compiler.ts`
 
 Changes:
 
@@ -294,7 +378,7 @@ Changes:
 
 #### 4.3 Ranking engine improvements
 
-File: `apps/web/src/domain/specification/scgs/ranking/ranking.engine.ts`
+File: `apps/web/src/backend/modules/scgs/infrastructure/ranking-engine.ts`
 
 Changes:
 
@@ -309,16 +393,18 @@ File: `apps/web/src/app/api/search/scgs/route.ts`
 
 Changes:
 
+- Import SCGS use cases from the canonical module barrel.
 - Build `RankedArtifact[]` from ranking engine.
 - Build `SearchViewModel` from projection (Phase 2) or keep comparison payload during transition.
 
 #### 4.5 Tests
 
-New tests:
+New tests inside the module:
 
-- `tests/unit/scgs/compiler-stages.test.ts`
-- `tests/unit/scgs/ranking-explanation.test.ts`
-- `tests/integration/scgs/lineage.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/contract/artifact.contract.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/unit/compiler-stages.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/unit/ranking-explanation.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/integration/lineage.test.ts`
 
 Updated tests:
 
@@ -327,7 +413,7 @@ Updated tests:
 
 ---
 
-## 5. Out of Scope for This Plan
+## 6. Out of Scope for This Plan
 
 - Rewriting the search index pipeline (Algolia indexing remains separate).
 - Replacing the UI component library.
@@ -337,7 +423,7 @@ Updated tests:
 
 ---
 
-## 6. Success Criteria
+## 7. Success Criteria
 
 After all phases:
 
@@ -347,16 +433,17 @@ After all phases:
 - Ranking decisions are explainable.
 - CI blocks semantic drift violations.
 - `docs/specifications/` contains canonical MSM, SDLS, SCGS domain model, and compiler pipeline docs.
+- SCGS lives in the canonical backend module structure.
 
 After Phase 1:
 
 - `CompiledSemanticArtifact` has lineage ID and explicit compiler stages.
 - `RankingEngine` returns `RankedArtifact[]` with richer explanations.
-- All compiler and ranking tests pass.
+- All compiler and ranking tests pass inside `src/backend/modules/scgs/tests/`.
 
 ---
 
-## 7. Risks and Mitigations
+## 8. Risks and Mitigations
 
 | Risk | Mitigation |
 | ---- | ---------- |
@@ -368,6 +455,6 @@ After Phase 1:
 
 ---
 
-## 8. Next Action
+## 9. Next Action
 
-Approve this plan, then create branch `feat/scgs-phase-1-artifact-model` and begin Phase 0 + Phase 1.
+Approve this plan, then create branch `feat/scgs-phase-0-1-canonical-foundation` and begin Phase 0 + Phase 1.
