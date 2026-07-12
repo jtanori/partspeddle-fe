@@ -1,5 +1,5 @@
-export { CatalogRepository } from '../domain/catalog-repository';
-export { SpecificationRepository } from '../domain/specification-repository';
+export type { CatalogRepository } from '../domain/catalog-repository';
+export type { SpecificationRepository } from '../domain/specification-repository';
 export { SupabaseCatalogRepository } from '../infrastructure/supabase-catalog.repository';
 
 import { createAnonServerClient, createAuthClient } from '@/lib/supabase-server';

@@ -1,4 +1,4 @@
-export { ListingRepository } from '../domain/listing-repository';
+export type { ListingRepository } from '../domain/listing-repository';
 export { SupabaseListingRepository } from '../infrastructure/supabase-listing.repository';
 
 import { createAnonServerClient, createAuthClient } from '@/lib/supabase-server';

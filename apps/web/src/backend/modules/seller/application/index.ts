@@ -1,5 +1,5 @@
-export { SellerRepository } from '../domain/seller-repository';
-export { SellerProfile } from '../domain/seller-profile';
+export type { SellerRepository } from '../domain/seller-repository';
+export type { SellerProfile } from '../domain/seller-profile';
 export { SupabaseSellerRepository } from '../infrastructure/supabase-seller.repository';
 
 import { createAnonServerClient, createAuthClient } from '@/lib/supabase-server';
