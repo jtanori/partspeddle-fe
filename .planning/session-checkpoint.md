@@ -18,7 +18,7 @@
 
 ### CSP Hardening (Prep 1)
 
-- Implemented nonce-based CSP in `src/middleware.ts` using Web Crypto.
+- Implemented nonce-based CSP in `src/proxy.ts` using Web Crypto.
 - Moved CSP out of static `next.config.ts` headers; applied per-request via middleware.
 - Updated security header tests to assert nonce-aware `script-src` behavior.
 - Merged to `develop` via PR #101.
@@ -68,7 +68,7 @@
 
 ### 1. Production CSP is now nonce-based
 
-`src/middleware.ts` generates a per-request nonce and sets `Content-Security-Policy: script-src 'self' 'nonce-<value>' ...`. The temporary `'unsafe-inline'` relaxation has been removed from production. See `docs/engineering/security.md`.
+`src/proxy.ts` generates a per-request nonce and sets `Content-Security-Policy: script-src 'self' 'nonce-<value>' ...`. The temporary `'unsafe-inline'` relaxation has been removed from production. See `docs/engineering/security.md`.
 
 ### 2. Repository will evolve into a platform topology
 
