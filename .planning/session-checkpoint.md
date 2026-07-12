@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-11
 **Branch:** `feat/phase-2-app-extraction`
-**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 implementation plan drafted and under review.
+**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction implemented and ready for PR.
 
 ---
 
@@ -69,7 +69,7 @@
 
 ### 1. Production CSP is now nonce-based
 
-`src/proxy.ts` generates a per-request nonce and sets `Content-Security-Policy: script-src 'self' 'nonce-<value>' ...`. The temporary `'unsafe-inline'` relaxation has been removed from production. See `docs/engineering/security.md`.
+`apps/web/src/proxy.ts` generates a per-request nonce and sets `Content-Security-Policy: script-src 'self' 'nonce-<value>' ...`. The temporary `'unsafe-inline'` relaxation has been removed from production. See `docs/engineering/security.md`.
 
 ### 2. Repository will evolve into a platform topology
 
@@ -113,23 +113,26 @@ backend/modules/<name>/
    - Deliverables: updated `pnpm-workspace.yaml`, empty target directories with READMEs, `packages/config`, updated root `package.json`
    - Plan: `.planning/phase-1-implementation-plan.md`
 
+2. **Phase 2 — Application extraction to `apps/web/`** (ready for PR)
+   - Branch: `feat/phase-2-app-extraction`
+   - Deliverables: Next.js application moved to `apps/web/`, root converted to workspace orchestrator, config/scripts/docs/Dockerfile updated
+   - Plan: `.planning/phase-2-implementation-plan.md`
+
 ---
 
 ## In Progress
 
-1. **Phase 2 — Application extraction to `apps/web/`**
+1. **Phase 2 PR review and merge**
    - Branch: `feat/phase-2-app-extraction`
-   - Status: Plan approved. Implementation in progress.
-   - Plan: `.planning/phase-2-implementation-plan.md`
+   - Status: Implementation complete. Local verification passed. PR pending.
 
 ---
 
 ## Next Steps
 
-1. **Review and approve Phase 2 plan**.
-2. **Implement Phase 2** — move Next.js application into `apps/web/`.
-3. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
-4. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+1. **Open PR for Phase 2** and merge into `develop` once CI passes.
+2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
+3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
 ---
 
