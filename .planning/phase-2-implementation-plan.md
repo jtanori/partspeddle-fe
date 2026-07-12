@@ -192,15 +192,180 @@ pnpm build
 
 ---
 
-## Risks & Mitigations
+## Risk Mitigation Plan
 
-| Risk                           | Mitigation                                                                                         |
-| ------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `@/` aliases break in tests    | Update vitest/tsconfig resolution to point at `apps/web/tsconfig.json` or alias via vitest config. |
-| Tailwind misses app classes    | Update `content` glob in `packages/config/tailwind.config.ts`.                                     |
-| Dockerfile build fails         | Update COPY instructions to include workspace files; test with `flyctl deploy --build-only`.       |
-| CI lint/typecheck paths stale  | Root scripts delegate to workspace scripts; update `apps/web/package.json` scripts.                |
-| Storybook config path mismatch | Keep Storybook root config if it depends on app source, or move config with app.                   |
+Each flagged risk has a concrete prevention step and an early-detection checkpoint.
+
+### 1. `@/` alias resolution in tests
+
+**Prevention**
+
+- Before moving `src/`, inspect `vitest.config.ts` (or `vite.config.ts`) to confirm alias resolution source.
+- Add an explicit Vitest alias so tests resolve `@/` to `apps/web/src/` regardless of which `tsconfig.json` is loaded:
+
+  ```ts
+  export default defineConfig({
+    resolve: {
+      alias: {
+        '@/': path.resolve(__dirname, './apps/web/src/'),
+      },
+    },
+  });
+  ```
+
+- If the project uses `vite-tsconfig-paths`, verify the plugin loads `apps/web/tsconfig.json` or replace it with the explicit alias above during the transition.
+
+**Early detection**
+
+- Immediately after moving `src/` and before updating bulk relative imports, run:
+  ```bash
+  pnpm vitest run tests/security/headers.spec.ts
+  ```
+- If alias resolution fails, fix the Vitest config before touching any test files.
+
+**Impact reduction**
+
+- Keep a list of every test file that imports via `../../../src/...` and update them in a single commit after alias resolution is proven.
+- If a test still cannot resolve `@/`, temporarily use a relative path to `apps/web/src/` and flag it for cleanup rather than blocking the PR.
+
+---
+
+### 2. Tailwind misses app classes
+
+**Prevention**
+
+- Update `packages/config/tailwind.config.ts` to a broad glob that catches the new location:
+
+  ```ts
+  content: [
+    './apps/web/src/**/*.{js,ts,jsx,tsx,mdx}',
+    './apps/web/src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  ```
+
+- Keep the old `./src/**/*` glob in the array during the transition and remove it only after the build passes.
+
+**Early detection**
+
+- Run a Tailwind config validation after the move:
+  ```bash
+  pnpm tailwindcss --config packages/config/tailwind.config.ts --input apps/web/src/index.css --output /tmp/tailwind-check.css
+  ```
+- Search the generated CSS for a known class from `apps/web/src` (e.g., a layout or button class) to confirm scanning works.
+
+**Impact reduction**
+
+- If classes are missing, the fallback old glob still covers them until fixed.
+- UI regressions are caught by the existing Storybook build job, which will fail if styles are broken.
+
+---
+
+### 3. Dockerfile workspace COPY instructions
+
+**Prevention**
+
+- Restructure the Dockerfile in explicit stages:
+  1. Copy workspace metadata: `package.json`, `pnpm-lock.yaml`, `.npmrc`, `pnpm-workspace.yaml`.
+  2. Copy only `package.json` files from each workspace package (`apps/web`, `packages/config`, and any other package referenced by `apps/web`).
+  3. Run `pnpm install --frozen-lockfile`.
+  4. Copy the remaining source.
+  5. Run `pnpm build`.
+
+**Early detection**
+
+- Run a local build-only deploy before pushing the branch:
+  ```bash
+  pnpm deploy:staging:build-only
+  ```
+  or
+  ```bash
+  docker build .
+  ```
+- This validates the Dockerfile without affecting staging or production.
+
+**Impact reduction**
+
+- If the Docker build fails, the failure is isolated to the `security` CI job or local build; it does not block tests or lint.
+- Keep the old Dockerfile in a backup snippet in the PR description so it can be restored quickly.
+
+---
+
+### 4. CI lint/typecheck paths stale
+
+**Prevention**
+
+- Update root `package.json` scripts to delegate to the workspace:
+
+  ```json
+  {
+    "dev": "pnpm --filter @partspeddle/web dev",
+    "build": "pnpm --filter @partspeddle/web build",
+    "start": "pnpm --filter @partspeddle/web start",
+    "lint": "pnpm --filter @partspeddle/web lint",
+    "typecheck": "pnpm --filter @partspeddle/web typecheck"
+  }
+  ```
+
+- Update `apps/web/package.json` scripts to operate on the app directory:
+
+  ```json
+  {
+    "lint": "eslint --cache src",
+    "typecheck": "tsc --noEmit"
+  }
+  ```
+
+**Early detection**
+
+- Run `pnpm lint` and `pnpm typecheck` locally before pushing.
+- These commands are fast and will fail immediately if paths are wrong.
+
+**Impact reduction**
+
+- CI uses the same scripts as local development, so a local pass guarantees CI will pass the lint/typecheck step.
+
+---
+
+### 5. Storybook config path mismatch
+
+**Prevention**
+
+- Inspect `.storybook/main.ts` (or `.storybook/main.js`) for `stories` and `staticDirs` paths.
+- Update `stories` to point at `apps/web/src`:
+
+  ```ts
+  stories: ['../apps/web/src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
+  ```
+
+- Update `staticDirs` to `../apps/web/public` if it currently points to `./public`.
+
+**Early detection**
+
+- Run `pnpm storybook:build` locally after the move.
+- The Storybook Build CI job will also catch this.
+
+**Impact reduction**
+
+- If Storybook cannot be relocated cleanly, keep the `.storybook/` directory at the root but update its paths. Storybook at root is acceptable for a monorepo with one main app.
+
+---
+
+## Rollout Strategy
+
+To lower blast radius, implement Phase 2 in these ordered commits:
+
+1. **Config and tooling** — move `next.config.ts`, `tsconfig.json`, `tailwind.config.ts`, `postcss.config.js` to `apps/web/`; update shared configs; update root package scripts.
+2. **Source move** — move `src/` contents to `apps/web/src/`; update `apps/web/tsconfig.json` aliases; update Vitest/Tailwind/ESLint paths.
+3. **Tests and docs** — update relative imports in tests; update docs references.
+4. **Docker and CI** — update `Dockerfile`; verify CI still passes.
+5. **Cleanup** — remove empty root `src/`; remove transitional Tailwind old-path glob; update `apps/web/README.md`.
+
+After each commit, run the fast verification commands (`pnpm lint`, `pnpm typecheck`, scoped tests). Run `pnpm build` only after the source move is complete.
+
+## Rollback Plan
+
+- If CI fails on a step that cannot be quickly fixed, revert the branch to the previous commit rather than layering patches.
+- If the PR is merged and a production/deploy issue appears, revert PR #? on `develop` and open a hotfix branch.
 
 ---
 
