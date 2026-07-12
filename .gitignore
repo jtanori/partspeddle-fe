@@ -19,3 +19,4 @@ logs/
 .prettiercache
 storybook-static/
 backups/
+apps/web/next-env.d.ts

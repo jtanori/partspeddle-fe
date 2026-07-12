@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AlgoliaSearchRepository } from '@/backend/modules/search/infrastructure/algolia-search-repository';
 import { SearchFilters } from '@/backend/modules/search/domain/search-filters';
-import { RankingEngine } from '@/domain/specification/scgs/ranking/ranking.engine';
+import { RankingEngine } from '@/backend/modules/scgs';
 import { buildSearchProjection } from '@/projection/search';
 import { logger } from '@/lib/logger';
 

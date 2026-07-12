@@ -120,21 +120,33 @@ backend/modules/<name>/
 
 ---
 
-## In Progress
+## Completed
 
-1. **SCGS Phase 0 + Phase 1 — Canonical Foundation**
+3. **SCGS Phase 0 + Phase 1 — Canonical Foundation**
    - Branch: `feat/scgs-phase-0-1-canonical-foundation`
    - Plan: `governance/planning/scgs-spec-implementation-plan.md`
-   - Phase 0: Migrate SCGS to canonical backend module `apps/web/src/backend/modules/scgs/` and create canonical spec documents.
-   - Phase 1: Implement lineage-aware `CompiledSemanticArtifact`, `RankedArtifact`, explicit compiler stages, and richer ranking signals.
+   - Phase 0: Migrated SCGS to canonical backend module `apps/web/src/backend/modules/scgs/`;
+     created `README.md` and canonical spec documents in `docs/specifications/`;
+     added backward-compatible shims at legacy paths.
+   - Phase 1: Added `LineageId`, `SemanticSpecification`, and `RankedArtifact` types;
+     refactored `SpecificationCompilerImpl` to return `CompiledSemanticArtifact` with
+     deterministic `lineageId`/`checksum`; expanded ranking signals with normalized
+     contributions and explanations; created `compileListing` and `rankArtifacts`
+     application use cases; added module-owned tests in
+     `apps/web/src/backend/modules/scgs/tests/`.
+
+---
+
+## In Progress
+
+_None._
 
 ---
 
 ## Next Steps
 
-1. **Complete Phase 0** — migrate SCGS to canonical module and create spec documents.
-2. **Complete Phase 1** — compiler artifact model and ranking engine enhancements.
-3. **Product roadmap** — continue marketplace feature work after Phase 0+1 merges.
+1. **Open PR for SCGS Phase 0+1** and merge to `develop`.
+2. **Product roadmap** — continue marketplace feature work after Phase 0+1 merges.
 
 ---
 
