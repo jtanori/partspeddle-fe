@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/phase-8-engineering-manual`
-**Status:** Planning Phase 8 — Engineering Manual.
+**Branch:** `feat/scgs-spec-plan`
+**Status:** Creating SCGS specification implementation plan from `/Users/dev/Documents/SCGS/` specs.
 
 ---
 
@@ -120,9 +120,20 @@ backend/modules/<name>/
 
 ---
 
+## In Progress
+
+1. **SCGS Specification Implementation Plan**
+   - Branch: `feat/scgs-spec-plan`
+   - Goal: Convert the SCGS / PSPS / MSM specification documents into an actionable implementation plan aligned with the current SCGS codebase.
+   - Source specs: `/Users/dev/Documents/SCGS/1.0 SCGS Search Platform Specification.md`, `/Users/dev/Documents/SCGS/2.0 PartsPeddle Semantic Platform Specification (PSPS).md`, `/Users/dev/Documents/SCGS/3.0 Marketplace Semantic Model (MSM).md`.
+
+---
+
 ## Next Steps
 
-1. **Product roadmap** — resume marketplace feature work. Delivery certification and platform repository evolution foundation are complete.
+1. **Approve SCGS implementation plan** — review `governance/planning/scgs-spec-implementation-plan.md`.
+2. **Implement first SCGS phase** — create branch and execute the approved initial phase.
+3. **Product roadmap** — continue marketplace feature work in parallel where possible.
 
 ---
 
