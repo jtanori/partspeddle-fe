@@ -157,10 +157,9 @@ backend/modules/<name>/
 
 ## Next Steps
 
-1. **Phase 7 — Test taxonomy** — reorganize `tests/` by intent (unit, integration, e2e, certification, governance, regression, fixtures, helpers).
-2. **Phase 8 — Engineering Manual** — create `docs/onboarding/ENGINEERING_MANUAL.md`.
-3. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
-4. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+1. **Phase 8 — Engineering Manual** — create `docs/onboarding/ENGINEERING_MANUAL.md`.
+2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
+3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
 ---
 
