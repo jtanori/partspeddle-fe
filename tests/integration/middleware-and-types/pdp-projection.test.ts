@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { buildPDPView } from '../../../apps/web/src/projection/pdp';
+import { buildPDPViewModel } from '../../../apps/web/src/backend/modules/scgs/application/build-pdp-view-model';
+import {
+  CompiledSemanticArtifact,
+  LineageId,
+} from '../../../apps/web/src/backend/modules/scgs/domain/compiled-semantic-artifact';
 import { Part, Seller } from '../../../apps/web/src/types';
 import { CompiledSpecificationSet } from '../../../apps/web/src/domain/specification/scgs/types';
 
@@ -20,9 +24,7 @@ const basePart: Part = {
   description: 'Test description',
   images: ['img1.jpg'],
   sellerId: 's1',
-  compatibility: [
-    { make: 'Honda', model: 'Civic', years: '2014-2015', engine: '1.8L' },
-  ],
+  compatibility: [{ make: 'Honda', model: 'Civic', years: '2014-2015', engine: '1.8L' }],
 };
 
 const baseSeller: Seller = {
@@ -44,9 +46,52 @@ const emptyCompiled: CompiledSpecificationSet = {
   rankingFactors: { listingQuality: 0.5, sellerTrust: 0.5, recency: 0.5 },
 };
 
-describe('buildPDPView', () => {
-  it('produces a complete PartViewModel from a part and seller', () => {
-    const viewModel = buildPDPView(basePart, baseSeller, emptyCompiled);
+function makeArtifact(part: Part): CompiledSemanticArtifact {
+  return {
+    listingId: part.id,
+    categoryId: part.category || 'uncategorized',
+    version: '1.0.0',
+    lineageId: `${part.id}:1.0.0:abc` as LineageId,
+    checksum: 'abc',
+    compiled: emptyCompiled,
+    metadata: {
+      createdAt: new Date().toISOString(),
+      compilerVersion: '1.0.0',
+    },
+  };
+}
+
+function makePresentation(part: Part, seller: Seller | null) {
+  return {
+    title: part.title,
+    subtitle: part.subtitle || '',
+    price: part.price || 0,
+    condition: part.condition || 'Used',
+    images: part.images || [],
+    description: part.description || '',
+    sku: part.trackingNumber,
+    compatibility: (part.compatibility || []).map((c) => ({
+      make: c.make,
+      model: c.model,
+      years: c.years,
+      engine: c.engine,
+    })),
+    seller: {
+      id: seller?.id || 'unknown',
+      displayName: seller?.name || 'Unknown Seller',
+      rating: seller?.rating || 4.8,
+      location: seller?.location || 'Unknown',
+      responseTime: '24h',
+    },
+  };
+}
+
+describe('buildPDPViewModel projection', () => {
+  it('produces a complete PDPViewModel from a part and seller', () => {
+    const viewModel = buildPDPViewModel({
+      artifact: makeArtifact(basePart),
+      presentation: makePresentation(basePart, baseSeller),
+    });
 
     expect(viewModel.id).toBe('p1');
     expect(viewModel.title).toBe('2015 Honda Civic Alternator');
@@ -56,17 +101,23 @@ describe('buildPDPView', () => {
     expect(viewModel.seller.displayName).toBe('Test Auto Parts');
     expect(viewModel.fitment.vehicles).toHaveLength(1);
     expect(viewModel.images).toEqual(['img1.jpg']);
-    expect(viewModel.tabs.map(t => t.id)).toContain('spec');
+    expect(viewModel.tabs.map((t) => t.id)).toContain('spec');
   });
 
   it('handles a null seller gracefully', () => {
-    const viewModel = buildPDPView(basePart, null, emptyCompiled);
+    const viewModel = buildPDPViewModel({
+      artifact: makeArtifact(basePart),
+      presentation: makePresentation(basePart, null),
+    });
     expect(viewModel.seller.displayName).toBe('Unknown Seller');
     expect(viewModel.seller.id).toBe('unknown');
   });
 
   it('maps compatibility into fitment vehicles', () => {
-    const viewModel = buildPDPView(basePart, baseSeller, emptyCompiled);
+    const viewModel = buildPDPViewModel({
+      artifact: makeArtifact(basePart),
+      presentation: makePresentation(basePart, baseSeller),
+    });
     const vehicle = viewModel.fitment.vehicles[0];
     expect(vehicle.make).toBe('Honda');
     expect(vehicle.model).toBe('Civic');

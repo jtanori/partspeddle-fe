@@ -152,7 +152,11 @@ backend/modules/<name>/
 
 ## In Progress
 
-_None._
+1. **SCGS Phase 3 — PDP Projection**
+   - Branch: `feat/scgs-phase-3-pdp-projection`
+   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 3)
+   - Objective: Define SCGS-owned `PDPViewModel` contract with Zod, create
+     `buildPDPViewModel` use case, and integrate it into the PDP page.\_
 
 ---
 

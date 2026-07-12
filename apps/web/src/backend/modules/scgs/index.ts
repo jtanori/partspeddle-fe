@@ -50,10 +50,7 @@ export type {
   RankedResult,
   RankedArtifact,
 } from './infrastructure/ranking-types';
-export {
-  evaluateSystemState,
-  getBehavioralResponse,
-} from './infrastructure/governance-controller';
+export { evaluateSystemState, getBehavioralResponse } from './infrastructure/governance-controller';
 
 // Contract — projection schemas
 export {
@@ -83,3 +80,40 @@ export {
   type SearchResultPresentation,
   type BuildSearchViewModelInput,
 } from './application/build-search-view-model';
+export {
+  buildPDPViewModel,
+  type PDPViewModelPresentation,
+  type BuildPDPViewModelInput,
+} from './application/build-pdp-view-model';
+
+// Contract — PDP projection schemas
+export {
+  pdpSpecificationItemSchema,
+  pdpSpecificationGroupSchema,
+  pdpHeaderSchema,
+  pdpPricingSchema,
+  pdpInventorySchema,
+  pdpSellerSchema,
+  pdpFitmentVehicleSchema,
+  pdpFitmentSchema,
+  pdpBadgeSchema,
+  pdpShippingSchema,
+  pdpPartSummarySchema,
+  pdpDataSchema,
+} from './contract/pdp-view-model.contract';
+export type {
+  PDPSpecificationItemModel,
+  PDPSpecificationGroupModel,
+  PDPHeaderModel,
+  PDPPricingModel,
+  PDPInventoryModel,
+  PDPSellerModel,
+  PDPFitmentVehicleModel,
+  PDPFitmentModel,
+  PDPBadgeModel,
+  PDPShippingModel,
+  PDPPartSummaryModel,
+  PDPDataModel,
+  TabViewModel,
+  PDPViewModel,
+} from './contract/pdp-view-model.contract';
