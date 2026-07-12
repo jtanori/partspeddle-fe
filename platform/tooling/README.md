@@ -2,12 +2,19 @@
 
 Development tooling configuration for the PartsPeddle platform.
 
-## Future contents
+## Layout
 
-- Husky hooks.
-- lint-staged configuration.
-- Editor and IDE settings.
+| File | Purpose |
+|---|---|
+| `lint-staged.config.js` | lint-staged configuration (extracted from `package.json`). |
+| `pre-commit.sh` | Pre-commit hook logic delegated from `.husky/pre-commit`. |
+| `commit-msg.sh` | Commit-msg hook logic delegated from `.husky/commit-msg`. |
+
+## Notes
+
+- Husky still manages hooks from `.husky/`, but the hook scripts delegate here.
+- `package.json` references `lint-staged.config.js` via `"lint-staged": "platform/tooling/lint-staged.config.js"`.
 
 ## Status
 
-Phase 1 scaffolding only. Configs will migrate here in Phase 4.
+Phase 4 complete. lint-staged config extracted and husky hooks delegated.

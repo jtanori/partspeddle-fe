@@ -8,7 +8,7 @@ const ciPath = path.join(repoRoot, '.github', 'workflows', 'ci.yml');
 describe('P4.5 exercise Supabase CI/CD end-to-end', () => {
   describe('scripts/ci/smoke-staging.ts', () => {
     it('exists', () => {
-      expect(fs.existsSync(path.join(repoRoot, 'scripts', 'ci', 'smoke-staging.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(repoRoot, 'platform', 'scripts', 'ci', 'smoke-staging.ts'))).toBe(true);
     });
   });
 

@@ -163,11 +163,11 @@ pnpm ci:smoke:staging
 
 | Command                             | Purpose                                                          |
 | ----------------------------------- | ---------------------------------------------------------------- |
-| `pnpm lint`                         | ESLint on `src` and `scripts`.                                   |
+| `pnpm lint`                         | ESLint on `apps/web/src` and `platform/scripts`.                 |
 | `pnpm typecheck`                    | TypeScript without emit.                                         |
 | `pnpm build`                        | Production build.                                                |
 | `pnpm security:bundle-audit`        | Check client bundle for secrets or large imports.                |
-| `pnpm delivery:manifest:validate`   | Validate `operations/delivery/manifests/delivery.manifest.json`. |
+| `pnpm delivery:manifest:validate`   | Validate `platform/operations/delivery/manifests/delivery.manifest.json`. |
 | `pnpm env:validate`                 | Validate runtime environment variables.                          |
 | `pnpm deploy:verify <url>`          | Poll health endpoint until checks pass.                          |
 | `pnpm deploy:assert-contract <url>` | Validate health contract version.                                |

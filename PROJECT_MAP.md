@@ -12,15 +12,20 @@ Current state (today):
 
 ```text
 partspeddle-fe/
-├── src/                    # Next.js application and backend modules
+├── apps/web/               # Next.js application
+├── packages/               # Shared configuration
 ├── tests/                  # All tests (branch, certification, security)
 ├── docs/                   # Knowledge base
-├── scripts/                # Automation and operational scripts
-├── operations/             # Delivery manifests, verification, recovery
+├── platform/               # CI, deployment, scripts, tooling, operations
+│   ├── scripts/            # Automation and operational scripts
+│   ├── operations/         # Delivery manifests, verification, recovery
+│   ├── deployment/fly/     # Fly.io configuration
+│   ├── docker/             # Dockerfile
+│   ├── ci/                 # CI helpers
+│   └── tooling/            # Husky and lint-staged configs
 ├── supabase/               # Migrations, edge functions, config
 ├── .planning/              # Roadmaps, plans, session checkpoint
 ├── .scgs/                  # SCGS governance subsystem
-├── fly/                    # Fly.io configuration
 ├── config/                 # Shared configuration (EGS, environment)
 └── reports/ + artifacts/   # Generated outputs
 ```
@@ -71,7 +76,7 @@ The migration is tracked in `.planning/platform-repository-evolution.md`.
 2. `docs/operations/delivery-audit.md` — current CI/CD audit.
 3. `docs/operations/deployment-observability.md` — deployment artifacts.
 4. `docs/operations/secret-governance.md` — where secrets live.
-5. `operations/delivery/manifests/delivery.manifest.json` — canonical delivery descriptor.
+5. `platform/operations/delivery/manifests/delivery.manifest.json` — canonical delivery descriptor.
 
 ### I want to understand governance
 
@@ -105,10 +110,10 @@ The migration is tracked in `.planning/platform-repository-evolution.md`.
 | `src/store/`        | Client state management                               | `apps/web/src/store/`                                  |
 | `tests/`            | Branch, certification, security, and governance tests | `tests/` (taxonomy reorganized)                        |
 | `docs/`             | Knowledge base                                        | `docs/` (information architecture reorganized)         |
-| `scripts/`          | Automation, seeding, CI helpers                       | `platform/scripts/`                                    |
-| `.github/`          | GitHub Actions workflows                              | `platform/ci/`                                         |
-| `fly/`              | Fly.io configuration                                  | `platform/deployment/fly/`                             |
-| `operations/`       | Delivery manifests and verification specs             | `platform/operations/`                                 |
+| `platform/scripts/` | Automation, seeding, CI helpers                       | `platform/scripts/`                                    |
+| `.github/workflows/`| GitHub Actions workflows (must stay at root)          | `.github/workflows/`                                   |
+| `platform/deployment/fly/` | Fly.io configuration                           | `platform/deployment/fly/`                             |
+| `platform/operations/` | Delivery manifests and verification specs          | `platform/operations/`                                 |
 | `.planning/`        | Roadmaps, plans, session checkpoint                   | `governance/planning/`                                 |
 | `.scgs/`            | SCGS governance subsystem                             | `governance/scgs/`                                     |
 | `reports/`          | Generated audit and certification reports             | `artifacts/reports/`                                   |
@@ -123,7 +128,7 @@ The migration is tracked in `.planning/platform-repository-evolution.md`.
 | `AGENTS.md`                                                | Operating rules for agent-assisted development.   |
 | `.planning/platform-repository-evolution.md`               | Platform migration plan and target topology.      |
 | `.planning/session-checkpoint.md`                          | Current session state and next steps.             |
-| `operations/delivery/manifests/delivery.manifest.json`     | Canonical delivery descriptor.                    |
+| `platform/operations/delivery/manifests/delivery.manifest.json` | Canonical delivery descriptor.               |
 | `config/environment/schema.ts`                             | Single source of truth for environment variables. |
 | `artifacts/delivery/production-deployment-2026-07-11.json` | Record of first production promotion.             |
 
@@ -133,6 +138,9 @@ The migration is tracked in `.planning/platform-repository-evolution.md`.
 
 - [x] Prep 1 — nonce-based CSP implemented and merged.
 - [x] Prep 2 — documentation synchronized with delivery certification.
-- [ ] Phase 0 — navigation documents (this phase).
-- [ ] Phase 1 — workspace scaffolding and directory creation.
-- [ ] Phase 2+ — application extraction, module migration, governance promotion.
+- [x] Phase 0 — navigation documents.
+- [x] Phase 1 — workspace scaffolding and directory creation.
+- [x] Phase 2 — application extraction to `apps/web/`.
+- [x] Phase 3 — backend modularization.
+- [x] Phase 4 — platform consolidation (scripts, operations, fly, docker, tooling).
+- [ ] Phase 5+ — governance consolidation, documentation restructure, test taxonomy.

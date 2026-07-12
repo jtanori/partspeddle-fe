@@ -3,9 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./apps/web/src/*"]
+      "@/*": ["./apps/web/src/*"],
+      "@config/*": ["./config/*"],
+      "@operations/*": ["./platform/operations/*"]
     }
   },
-  "include": ["scripts", "operations"],
-  "exclude": ["supabase", "node_modules", "scripts/archive", "apps", "packages", ".next"]
+  "include": ["platform/scripts", "platform/operations", "apps/web/src", "config/environment"],
+  "exclude": ["supabase", "node_modules", "platform/scripts/archive", "apps/web/.next", "packages", ".next"]
 }

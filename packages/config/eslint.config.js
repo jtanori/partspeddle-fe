@@ -65,7 +65,7 @@ export default [js.configs.recommended, {
   ],
   rules: domainStrictRules,
 }, {
-  files: ["scripts/**/*.{ts,tsx,js}", "tests/**/*.{ts,tsx}", ".storybook/**/*.{ts,tsx,js}", "apps/web/*.{ts,tsx,js}", "apps/web/**/*.config.{ts,tsx,js}"],
+  files: ["platform/scripts/**/*.{ts,tsx,js}", "tests/**/*.{ts,tsx}", ".storybook/**/*.{ts,tsx,js}", "apps/web/*.{ts,tsx,js}", "apps/web/**/*.config.{ts,tsx,js}"],
   languageOptions: {
     parser: tsParser,
     parserOptions: {

@@ -120,14 +120,14 @@ In a production environment (e.g., Fly.io), the outbox processor runs as a long-
 
 ### Strategy: Background Machine (Recommended)
 
-The outbox is managed by `scripts/process-search-outbox.ts`.
+The outbox is managed by `platform/scripts/search/process-search-outbox.ts`.
 
 1.  **Dockerization**: The application image includes the worker script.
 2.  **Fly.io Process Groups** (future option): The worker can be added as a separate process group in `fly/fly.prod.toml`:
     ```toml
     [processes]
     app = "npm start"
-    worker = "pnpm exec tsx scripts/process-search-outbox.ts"
+    worker = "pnpm exec tsx platform/scripts/search/process-search-outbox.ts"
     ```
 3.  **Scaling**: The worker can be scaled independently of the web application.
 
@@ -141,7 +141,7 @@ If the schema or ranking logic changes significantly, you can force a full re-sy
 
 ```bash
 # Option A: Fast batch script (Direct push)
-pnpm exec tsx scripts/algolia/reindex-algolia.ts
+pnpm exec tsx platform/scripts/algolia/reindex-algolia.ts
 
 # Option B: Reliable queue (Via Outbox)
 # Queues all parts to be processed asynchronously by the background worker.
@@ -153,5 +153,5 @@ pnpm exec tsx -e "/* Custom script to queue IDs */"
 To update Algolia settings (searchable fields, ranking, replicas) without touching the Algolia dashboard:
 
 ```bash
-pnpm exec tsx scripts/algolia/configure-algolia-index.ts
+pnpm exec tsx platform/scripts/algolia/configure-algolia-index.ts
 ```

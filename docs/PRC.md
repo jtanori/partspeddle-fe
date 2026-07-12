@@ -420,7 +420,7 @@ Verify:
 
 Verify:
 
-- [ ] `fly/fly.stage.toml` and `fly/fly.prod.toml`
+- [ ] `platform/deployment/fly/fly.stage.toml` and `platform/deployment/fly/fly.prod.toml`
 - [ ] Health checks (`GET /api/health`)
 - [ ] Secrets documented
 
@@ -441,7 +441,7 @@ GET /api/health
 Execute:
 
 ```bash
-flyctl deploy --config fly/fly.stage.toml --build-only
+flyctl deploy --config platform/deployment/fly/fly.stage.toml --dockerfile platform/docker/Dockerfile --build-only
 ```
 
 ---

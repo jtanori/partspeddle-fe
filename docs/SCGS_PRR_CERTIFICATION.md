@@ -33,7 +33,7 @@
 
 ## 3. Determinism Audit
 
-*   **Local vs CI Parity**: Guaranteed by shared `scripts/scgs/` entry points.
+*   **Local vs CI Parity**: Guaranteed by shared `platform/scripts/scgs/` entry points.
 *   **Snapshot Replay**: `SnapshotStore` provides deterministic retrieval of semantic artifacts by version (SHA).
 
 ## 4. Final Certification

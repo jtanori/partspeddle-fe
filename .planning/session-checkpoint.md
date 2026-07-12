@@ -133,14 +133,14 @@ backend/modules/<name>/
 
 1. **Phase 4 — Platform consolidation**
    - Branch: `feat/phase-4-platform-consolidation`
-   - Status: Plan approved. Moving `scripts/`, `operations/`, `fly/`, `Dockerfile`, lint-staged, and husky configs under `platform/`. Updating all consumers and CI paths.
+   - Status: Implemented. Scoped checks pass (lint, typecheck, relevant branch/security tests, build, storybook build, delivery manifest validation). Ready to commit, push, and open PR #108.
    - Plan: `.planning/phase-4-implementation-plan.md`
 
 ---
 
 ## Next Steps
 
-1. **Implement Phase 4** on `feat/phase-4-platform-consolidation`, run scoped checks, update docs, open PR #108.
+1. **Commit, push, and open PR #108** for Phase 4.
 2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
 3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
