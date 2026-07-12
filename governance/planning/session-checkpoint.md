@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/dc-7-1-drift-automation`
-**Status:** Implementing DC-7.1 — automated Fly.io / GitHub environment drift detection.
+**Branch:** `feat/phase-8-engineering-manual`
+**Status:** Planning Phase 8 — Engineering Manual.
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### Delivery Certification (DC)
 
-- **DC-0 through DC-8 certified.**
+- **DC-0 through DC-8 certified, including DC-7.1.**
 - First `develop → main` production promotion succeeded via GitHub Actions run **#409** (`29169472375`).
 - Production deployment artifact recorded at `artifacts/delivery/production-deployment-2026-07-11.json`.
 - Production health check returns `200 OK`: `https://partspeddle.com/api/health`.
@@ -47,6 +47,14 @@
 - **Phase 5** — governance consolidation merged via PR #109.
 - **Phase 6** — documentation restructure merged via PR #112.
 - **Phase 7** — test taxonomy cleanup merged via PR #113.
+
+### DC-7.1 — Environment Drift Automation
+
+- Implemented `platform/scripts/deployment/verify-environment-drift.ts`.
+- Added `pnpm delivery:verify:env-drift` script.
+- Added unit tests in `tests/governance/environment/verify-environment-drift.test.ts` (19 tests).
+- Updated `docs/operations/delivery-audit.md` and `docs/operations/secret-governance.md`.
+- Merged to `develop` via PR #114.
 
 ### Planning Cleanup
 
@@ -100,17 +108,18 @@ backend/modules/<name>/
 
 ## In Progress
 
-1. **DC-7.1 — Environment Drift Automation**
-   - Branch: `feat/dc-7-1-drift-automation`
-   - Goal: Automated comparison of Fly.io and GitHub environment secrets against the canonical schema.
-   - Plan: derive expected secret names from `config/environment/schema.ts`, compare with live `flyctl secrets list` and `gh secret list --env`, report gaps/orphans without printing values.
+1. **Phase 8 — Engineering Manual**
+   - Branch: `feat/phase-8-engineering-manual`
+   - Goal: Create `docs/onboarding/ENGINEERING_MANUAL.md` as the single entry point for new contributors and operators.
+   - Plan: `governance/planning/phase-8-implementation-plan.md` (pending approval).
 
 ---
 
 ## Next Steps
 
-1. **Phase 8 — Engineering Manual** — create `docs/onboarding/ENGINEERING_MANUAL.md`.
-2. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+1. **Approve Phase 8 implementation plan** — review `governance/planning/phase-8-implementation-plan.md`.
+2. **Implement Engineering Manual** — write `docs/onboarding/ENGINEERING_MANUAL.md` and update navigation links.
+3. **Product roadmap** — resume marketplace feature work once Phase 8 is merged.
 
 ---
 
@@ -121,9 +130,10 @@ backend/modules/<name>/
 - CSP hardening (nonce-based CSP deployed).
 - A0 architecture work (delivery certification complete).
 - Phase 7 test taxonomy cleanup.
+- DC-7.1 environment drift automation.
 
 ## Still Relevant
 
 - `governance/planning/platform-repository-evolution.md` — active planning document.
+- `governance/planning/phase-8-implementation-plan.md` — pending implementation plan.
 - `artifacts/delivery/production-deployment-2026-07-11.json` — canonical DC-8 record.
-- `governance/planning/phase-8-engineering-manual.md` — pending implementation plan.

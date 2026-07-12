@@ -55,8 +55,10 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 ### I want to run the app locally
 
 1. `README.md` — prerequisites and quick start.
-2. `.env.example` — variables to copy into `.env.local`.
-3. `package.json` — scripts.
+2. `docs/onboarding/ENGINEERING_MANUAL.md` — complete orientation.
+3. `docs/onboarding/getting-started.md` — step-by-step local setup.
+4. `.env.example` — variables to copy into `.env.local`.
+5. `package.json` — scripts.
 
 ### I want to understand the architecture
 
@@ -164,5 +166,4 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 - [x] Phase 5 — governance consolidation.
 - [x] Phase 6 — documentation restructure.
 - [x] Phase 7 — test taxonomy.
-- [ ] Phase 8 — engineering manual.
-- [ ] Phase 8 — engineering manual.
+- [ ] Phase 8 — engineering manual. See `docs/onboarding/ENGINEERING_MANUAL.md`.
