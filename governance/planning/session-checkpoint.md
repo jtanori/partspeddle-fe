@@ -199,25 +199,32 @@ backend/modules/<name>/
 
 ---
 
+## Completed
+
+8. **SCGS Phase 6 — Governance & CI Integration**
+   - Branch: `feat/scgs-phase-6-governance-ci-integration`
+   - Merged to `develop` via PR #122.
+   - Deliverables: `ReplayStore` port with filesystem and Supabase Storage
+     adapters; `createReplayStore` factory; `evaluate-governance`,
+     `replay-trace`, and `run-prr` application use cases; real
+     `scgs:ci:decide`, `scgs:prr`, and `scgs:replay:validate` scripts; cleanup
+     of stale `package.json` scripts; `scgs-governance` CI job with
+     `continue-on-error: true`; admin dashboard wired to stored traces;
+     module-owned tests; updated `README.md` and
+     `docs/specifications/scgs-compiler-pipeline.md`.
+
+---
+
 ## In Progress
 
-1. **SCGS Phase 6 — Governance & CI Integration**
-   - Branch: `feat/scgs-phase-6-governance-ci-integration`
-   - Plan: `governance/planning/scgs-phase-6-implementation-plan.md`
-   - Objective: Make SCGS gates real in CI, add durable replay storage, harden
-     PRR, and wire the admin dashboard read-model.
+_None — awaiting next initiative._
 
 ---
 
 ## Next Steps
 
-1. Implement domain ports for replay storage and governance CI decision types.
-2. Build filesystem and Supabase Storage adapters with environment-based factory.
-3. Implement application use cases: evaluate-governance, replay-trace, run-prr,
-   build-dashboard-read-model.
-4. Implement `scgs:ci:decide`, `scgs:prr`, and `scgs:replay:validate` scripts.
-5. Add SCGS governance job to `.github/workflows/ci.yml`.
-6. Add module-owned tests and update documentation.
+1. Plan and execute the next SCGS phase (Phase 7 — Advanced Capabilities) or
+   marketplace feature work.
 
 ---
 
