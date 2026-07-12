@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `develop`
-**Status:** Phase 7 merged to develop via PR #113.
+**Branch:** `feat/dc-7-1-drift-automation`
+**Status:** Implementing DC-7.1 — automated Fly.io / GitHub environment drift detection.
 
 ---
 
@@ -37,33 +37,23 @@
 - Updated `AGENTS.md` to allow the agent to run verification commands when explicitly asked.
 - Merged to `develop` via PR #102.
 
-### Recent PRs Merged
+### Platform Repository Evolution
 
-- PR #92 — `develop → main` (initial production promotion attempt)
-- PR #93 — `fix(ci): resolve production deployment blockers`
-- PR #94 — `fix(ci): ensure Algolia indices exist before Fly deploy`
-- PR #95 — `fix(csp): allow inline scripts and relax Algolia health check for production`
-- PR #96 — `test(csp): update production CSP expectation`
-- PR #97 — `test(security): update production CSP expectation`
-- PR #98 — `chore(delivery): record production deployment artifact`
-- PR #99 — `revert(health): restore strict Algolia index health check`
-- PR #100 — `docs(delivery): update production artifact with final run details`
-- PR #101 — `feat(csp): nonce-based Content-Security-Policy via middleware`
-- PR #102 — `docs(agents): allow agent to run verification when explicitly asked`
-- PR #103 — `docs(prep): synchronize docs with delivery certification and CSP changes`
-- PR #104 — `Phase 0: platform navigation documents`
-- PR #105 — `Phase 1: workspace scaffolding`
-- PR #106 — `Phase 2: application extraction to apps/web`
-- PR #107 — `feat(phase-3): modularize backend repositories and ai service`
-- PR #108 — `feat(phase-4): consolidate platform tooling under platform/`
-- PR #109 — `feat(phase-5): consolidate governance subsystems under governance/`
+- **Phase 0** — navigation documents (`PROJECT_MAP.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`) merged via PR #104.
+- **Phase 1** — workspace scaffolding merged via PR #105.
+- **Phase 2** — application extraction to `apps/web/` merged via PR #106.
+- **Phase 3** — backend modularization merged via PR #107.
+- **Phase 4** — platform consolidation merged via PR #108.
+- **Phase 5** — governance consolidation merged via PR #109.
+- **Phase 6** — documentation restructure merged via PR #112.
+- **Phase 7** — test taxonomy cleanup merged via PR #113.
 
 ### Planning Cleanup
 
 - Archived completed delivery plans in `governance/planning/archive/`.
 - Archived completed P5/P6 security and phase plans in `governance/planning/archive/`.
 - Created platform repository evolution plan: `governance/planning/platform-repository-evolution.md`.
-- Created Phase 0 through Phase 6 implementation plans in `governance/planning/`.
+- Created Phase 0 through Phase 7 implementation plans in `governance/planning/`.
 
 ---
 
@@ -108,58 +98,19 @@ backend/modules/<name>/
 
 ---
 
-## Completed
-
-1. **Phase 1 — Workspace scaffolding** (merged via PR #105)
-   - Branch: `feat/phase-1-workspace-scaffolding`
-   - Deliverables: updated `pnpm-workspace.yaml`, empty target directories with READMEs, `packages/config`, updated root `package.json`
-   - Plan: `governance/planning/phase-1-implementation-plan.md`
-
-2. **Phase 2 — Application extraction to `apps/web/`** (merged via PR #106)
-   - Branch: `feat/phase-2-app-extraction`
-   - Deliverables: Next.js application moved to `apps/web/`, root converted to workspace orchestrator, config/scripts/docs/Dockerfile updated
-   - Plan: `governance/planning/phase-2-implementation-plan.md`
-
-3. **Phase 3 — Backend modularization** (merged via PR #107)
-   - Branch: `feat/phase-3-backend-modularization`
-   - Deliverables: backend modules for `catalog`, `listing`, `seller`, `ai`, and `shared`; repository interfaces moved to `domain/`, implementations to `infrastructure/`; backward-compatible shims at legacy paths; updated consumers and contract tests; `docs/engineering/backend-modules.md`
-   - Plan: `governance/planning/phase-3-implementation-plan.md`
-
-4. **Phase 4 — Platform consolidation** (merged via PR #108)
-   - Branch: `feat/phase-4-platform-consolidation`
-   - Deliverables: `scripts/` → `platform/scripts/`, `operations/` → `platform/operations/`, `fly/` + `Dockerfile` → `platform/deployment/` + `platform/docker/`, lint-staged/husky configs extracted to `platform/tooling/`, CI and docs updated.
-   - Plan: `governance/planning/phase-4-implementation-plan.md`
-
-5. **Phase 5 — Governance consolidation** (merged via PR #109)
-   - Branch: `feat/phase-5-governance-consolidation`
-   - Deliverables: SCGS, planning, architecture, decisions, and certification artifacts consolidated under `governance/`; paths updated in code, scripts, CI, and navigation documents.
-   - Plan: `governance/planning/phase-5-implementation-plan.md`
-
----
-
 ## In Progress
 
-1. **Phase 7 — Test taxonomy**
-   - Branch: `feat/phase-7-test-taxonomy`
-   - Status: Approved to delete pure architecture-evolution tests and reorganize `tests/` by intent.
-   - Plan: `governance/planning/phase-7-test-cleanup-proposal.md`
-
----
-
-## Completed
-
-6. **Phase 6 — Documentation restructure** (merged via PR #112)
-   - Branch: `feat/phase-6-docs-restructure`
-   - Deliverables: docs reorganized into `engineering/`, `operations/`, `product/`, `reference/`, `guides/`, `decisions/`, and `onboarding/`; certification artifacts moved to `governance/certification/evidence/`; navigation documents and branch tests updated.
-   - Plan: `governance/planning/phase-6-implementation-plan.md`
+1. **DC-7.1 — Environment Drift Automation**
+   - Branch: `feat/dc-7-1-drift-automation`
+   - Goal: Automated comparison of Fly.io and GitHub environment secrets against the canonical schema.
+   - Plan: derive expected secret names from `config/environment/schema.ts`, compare with live `flyctl secrets list` and `gh secret list --env`, report gaps/orphans without printing values.
 
 ---
 
 ## Next Steps
 
 1. **Phase 8 — Engineering Manual** — create `docs/onboarding/ENGINEERING_MANUAL.md`.
-2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
-3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+2. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
 ---
 
@@ -169,9 +120,10 @@ backend/modules/<name>/
 - Final `develop → main` merge (exercised successfully).
 - CSP hardening (nonce-based CSP deployed).
 - A0 architecture work (delivery certification complete).
+- Phase 7 test taxonomy cleanup.
 
 ## Still Relevant
 
 - `governance/planning/platform-repository-evolution.md` — active planning document.
-- `governance/planning/phase-6-implementation-plan.md` — active implementation plan.
 - `artifacts/delivery/production-deployment-2026-07-11.json` — canonical DC-8 record.
+- `governance/planning/phase-8-engineering-manual.md` — pending implementation plan.

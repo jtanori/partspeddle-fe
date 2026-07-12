@@ -20,6 +20,7 @@ This document defines where each class of environment variable must be stored.
 
 ### Staging Fly app (`vintrack-stage`)
 
+- `APP_URL`
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
@@ -27,8 +28,11 @@ This document defines where each class of environment variable must be stored.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `ALGOLIA_APP_ID`
 - `ALGOLIA_ADMIN_KEY`
+- `ALGOLIA_SEARCH_INDEX_NAME`
+- `ALGOLIA_INDEX_PRICE_ASC`
+- `ALGOLIA_INDEX_PRICE_DESC`
+- `ALGOLIA_INDEX_NEWEST`
 - `GEMINI_API_KEY`
-- `APP_URL`
 - `SUPABASE_WEBHOOK_SECRET` (if Edge Function webhooks are enabled)
 
 ### Production Fly app (`vintrack-prod`)
@@ -40,36 +44,44 @@ Same set as staging, with production values.
 - `FLY_API_TOKEN`
 - `SUPABASE_ACCESS_TOKEN`
 - `STAGING_SUPABASE_PROJECT_ID`
+- `STAGING_URL`
 - `STAGING_SUPABASE_URL`
 - `STAGING_SUPABASE_ANON_KEY`
 - `STAGING_SUPABASE_SERVICE_ROLE_KEY`
-- `ALGOLIA_APP_ID`
-- `ALGOLIA_ADMIN_KEY`
-- `ALGOLIA_SEARCH_INDEX_NAME`
 
 ### GitHub `production` environment
 
 - `FLY_API_TOKEN`
 - `SUPABASE_ACCESS_TOKEN`
 - `PRODUCTION_SUPABASE_PROJECT_ID`
-- `PRODUCTION_SUPABASE_URL`
-- `PRODUCTION_SUPABASE_ANON_KEY`
-- `PRODUCTION_SUPABASE_SERVICE_ROLE_KEY`
-- `ALGOLIA_APP_ID`
-- `ALGOLIA_ADMIN_KEY`
-- `ALGOLIA_SEARCH_INDEX_NAME`
 
 ## Audit procedure
 
-Run the following commands periodically and compare against `config/environment/generated/secrets.md`:
+Run the automated drift check against the canonical schema:
+
+```bash
+pnpm delivery:verify:env-drift --env staging
+pnpm delivery:verify:env-drift --env production
+```
+
+The tool compares secret *names* in Fly.io and GitHub environments against `config/environment/schema.ts` and reports:
+
+- **Missing secrets** — required by the schema but absent from the remote store.
+- **Orphaned secrets** — present in the remote store but not defined in the schema.
+
+Values are never printed.
+
+For manual verification, you can also list secrets directly:
 
 ```bash
 fly secrets list -a vintrack-stage
 fly secrets list -a vintrack-prod
+gh secret list --env staging
+gh secret list --env production
 ```
 
-Any secret listed in Fly but not in the schema is orphaned and should be removed.
-Any secret in the schema but missing from Fly is a deployment gap.
+Any secret listed remotely but not in the schema is orphaned and should be removed.
+Any secret in the schema but missing remotely is a deployment gap.
 
 ## Rotation
 

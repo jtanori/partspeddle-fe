@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-11  
 **Scope:** CI/CD pipeline, Husky/lint-staged, Docker build, environment variables, secrets inventory, deployment pipeline.  
-**Status:** D0 complete — DC-4, DC-6, DC-6.5, and DC-7 operationally certified. First `develop → main` production promotion completed successfully on 2026-07-11.
+**Status:** D0 complete — DC-4, DC-6, DC-6.5, DC-7, and DC-7.1 operationally certified. First `develop → main` production promotion completed successfully on 2026-07-11.
 
 ---
 
@@ -154,7 +154,51 @@ bash platform/scripts/deployment/deploy.sh production
 
 ---
 
-## 4. Environment Variable Inventory
+## 4. Environment Drift Certification (DC-7.1)
+
+The `pnpm delivery:verify:env-drift --env <staging|production>` command automates DC-7.1.
+
+It reads the canonical environment schema from `config/environment/schema.ts`, fetches secret names from `flyctl secrets list` and `gh secret list --env`, and reports:
+
+- Missing required secrets (schema expects them, remote store lacks them).
+- Orphaned secrets (remote store has them, schema does not).
+
+Only names are compared; values are never exposed.
+
+### Staging
+
+```bash
+pnpm delivery:verify:env-drift --env staging
+```
+
+Compared against:
+
+- Fly.io app `vintrack-stage`
+- GitHub environment `staging`
+
+### Production
+
+```bash
+pnpm delivery:verify:env-drift --env production
+```
+
+Compared against:
+
+- Fly.io app `vintrack-prod`
+- GitHub environment `production`
+
+### Test coverage
+
+Unit tests in `tests/governance/environment/verify-environment-drift.test.ts` cover:
+
+- Schema-derived expected secret names for Fly and both GitHub environments.
+- Missing and orphaned secret detection.
+- Environment-specific GitHub secret filtering (smoke-test secrets only required for staging).
+- CLI argument parsing and usage errors.
+
+---
+
+## 5. Environment Variable Inventory
 
 ### Application runtime variables
 
@@ -195,13 +239,13 @@ bash platform/scripts/deployment/deploy.sh production
 
 ### Observations
 
-- No central environment validation script exists yet (targeted in Workstream D).
+- Runtime validation is handled by `pnpm env:validate` and drift detection by `pnpm delivery:verify:env-drift`.
 - `NODE_ENV` is set to `production` in the Dockerfile runner stage.
 - Several scripts under `platform/scripts/` and `src/backend/modules/search/infrastructure/algolia-client.ts` load `.env` via `dotenv`. This is acceptable for local scripts but must not be relied upon in production runtime.
 
 ---
 
-## 5. `.env` Reference Map
+## 6. `.env` Reference Map
 
 ### Dockerfile
 
@@ -244,7 +288,7 @@ Files that load `.env` directly (intended for local scripts/development):
 
 ---
 
-## 6. Secrets Inventory
+## 7. Secrets Inventory
 
 ### GitHub repository-level secrets
 
@@ -261,29 +305,25 @@ Files that load `.env` directly (intended for local scripts/development):
 
 | Secret                              | Updated    |
 | ----------------------------------- | ---------- |
-| `ALGOLIA_ADMIN_KEY`                 | 2026-06-30 |
-| `ALGOLIA_APP_ID`                    | 2026-06-30 |
 | `FLY_API_TOKEN`                     | 2026-07-11 |
-| `STAGING_SUPABASE_ANON_KEY`         | 2026-07-11 |
-| `STAGING_SUPABASE_PROJECT_ID`       | 2026-07-07 |
-| `STAGING_SUPABASE_SERVICE_ROLE_KEY` | 2026-07-11 |
-| `STAGING_SUPABASE_URL`              | 2026-07-07 |
 | `SUPABASE_ACCESS_TOKEN`             | 2026-07-11 |
+| `STAGING_SUPABASE_PROJECT_ID`       | 2026-07-07 |
+| `STAGING_URL`                       | 2026-07-07 |
+| `STAGING_SUPABASE_URL`              | 2026-07-07 |
+| `STAGING_SUPABASE_ANON_KEY`         | 2026-07-11 |
+| `STAGING_SUPABASE_SERVICE_ROLE_KEY` | 2026-07-11 |
 
 ### GitHub `production` environment secrets
 
-| Secret                                 | Updated    |
-| -------------------------------------- | ---------- |
-| `FLY_API_TOKEN`                        | 2026-07-11 |
-| `PRODUCTION_SUPABASE_ANON_KEY`         | 2026-07-08 |
-| `PRODUCTION_SUPABASE_PROJECT_ID`       | 2026-07-07 |
-| `PRODUCTION_SUPABASE_SERVICE_ROLE_KEY` | 2026-07-08 |
-| `PRODUCTION_SUPABASE_URL`              | 2026-07-07 |
-| `SUPABASE_ACCESS_TOKEN`                | 2026-07-11 |
+| Secret                           | Updated    |
+| -------------------------------- | ---------- |
+| `FLY_API_TOKEN`                  | 2026-07-11 |
+| `SUPABASE_ACCESS_TOKEN`          | 2026-07-11 |
+| `PRODUCTION_SUPABASE_PROJECT_ID` | 2026-07-07 |
 
 ### Fly.io secrets
 
-**Pending user input.** Run:
+Run the automated drift check (`pnpm delivery:verify:env-drift`) or list manually:
 
 ```bash
 flyctl secrets list -a vintrack-stage
@@ -305,14 +345,14 @@ Redact values, keep names.
 
 ---
 
-## 7. Stage Dependency Map
+## 8. Stage Dependency Map
 
 ```
-lint (pnpm lint: eslint --cache apps/web/src platform/scripts)
+lint (pnpm lint --cache apps/web/src platform/scripts)
   ↓
 typecheck (pnpm typecheck: tsc --noEmit)
   ↓
-test (pnpm test: vitest run tests/c0_8 tests/certification tests/branch)
+test (pnpm test: vitest run tests/unit tests/integration tests/regression tests/governance tests/certification tests/performance)
   ↓
 storybook build (pnpm storybook:build)
 security tests (pnpm test -- tests/security; pnpm build && pnpm security:bundle-audit)
@@ -337,42 +377,41 @@ smoke-staging (needs both deploys)
 
 ---
 
-## 8. Findings & Risks
+## 9. Findings & Risks
 
-| #   | Finding                                                    | Status       | Risk                                                    | Priority | Owner Workstream |
+| #   | Findings & Risks                                                    | Status       | Risk                                                    | Priority | Owner Workstream |
 | --- | ---------------------------------------------------------- | ------------ | ------------------------------------------------------- | -------- | ---------------- |
 | 1   | No CI health-check job after Fly.io deploy                 | **Resolved** | A broken deployment can go unnoticed                    | High     | F                |
 | 2   | No migration verification after Supabase deploy            | **Resolved** | Drift between repo and remote may persist               | High     | F                |
-| 3   | No environment validation at build/start time              | Open         | Missing secrets fail late or silently                   | Medium   | D                |
+| 3   | Runtime environment validation is manual                   | Open         | Missing secrets fail late or silently                   | Medium   | D                |
 | 4   | Several scripts load `.env` directly                       | Open         | Easy to accidentally depend on local files in CI        | Medium   | C/D              |
 | 5   | No deployment observability records                        | **Resolved** | Hard to trace releases or roll back                     | Medium   | G                |
 | 6   | Husky timing not instrumented                              | Open         | Cannot measure if pre-commit is <5s                     | Medium   | B                |
-| 7   | `platform/scripts/deployment/deploy.sh` sources `.env.*`                   | Open         | Local deploy fallback may be confused with CI path      | Low      | C                |
+| 7   | `platform/scripts/deployment/deploy.sh` sources `.env.*`   | Open         | Local deploy fallback may be confused with CI path      | Low      | C                |
 | 8   | Repo-level Supabase keys duplicate staging env secrets     | Open         | Potential confusion about which secret is authoritative | Low      | D                |
-| 9   | Production GitHub environment needs Algolia secrets listed | **Resolved** | Missing deploy-time Algolia validation                  | Medium   | D                |
+| 9   | No automated environment drift detection                   | **Resolved** | Manual audits miss missing or orphaned secrets          | Medium   | E                |
 
-Resolved findings are implemented in `.github/workflows/ci.yml` and `platform/operations/delivery/`.
+Resolved findings are implemented in `.github/workflows/ci.yml`, `platform/operations/delivery/`, and `platform/scripts/deployment/`.
 
 ---
 
-## 9. Recommended Next Steps
+## 10. Recommended Next Steps
 
 1. **Workstream C — Docker hardening:** Verify `docker build .` passes without local env files and document the immutable-image contract.
 2. **Workstream B — Husky stabilization:** Instrument and profile pre-commit; root-cause any slowness.
 3. **Workstream D — Environment standardization:** Keep `config/environment/generated/*.md` synchronized with `schema.ts`; close any gaps between repo-level and environment secrets.
-4. **Workstream E — Fly.io verification:** Collect Fly.io secret lists and compare against the required-env inventory.
-5. **Workstream G — Deployment observability:** Expand deployment artifacts to include image digest and Fly release version, and emit one artifact per environment.
+4. **Workstream G — Deployment observability:** Expand deployment artifacts to include image digest and Fly release version, and emit one artifact per environment.
 
 ---
 
-## 10. Data Still Needed
+## 11. Data Still Needed
 
 To keep the audit current:
 
-1. Fly.io secret names for both apps (values redacted):
+1. Run the automated drift check to confirm current remote state:
    ```bash
-   flyctl secrets list -a vintrack-stage
-   flyctl secrets list -a vintrack-prod
+   pnpm delivery:verify:env-drift --env staging
+   pnpm delivery:verify:env-drift --env production
    ```
 2. Confirmation that the environment variable inventory above is complete and accurate.
 3. Optional: output of `docker build .` from a clean working tree.
