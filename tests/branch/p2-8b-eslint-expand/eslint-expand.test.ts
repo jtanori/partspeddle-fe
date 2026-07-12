@@ -18,7 +18,7 @@ describe('P2.8b ESLint scope expansion', () => {
   });
 
   it('configures browser and node globals in eslint.config.js', () => {
-    const config = read('eslint.config.js');
+    const config = read('packages/config/eslint.config.js');
     expect(config).toContain('import globals from "globals"');
     expect(config).toContain('...globals.browser');
     expect(config).toContain('...globals.node');
