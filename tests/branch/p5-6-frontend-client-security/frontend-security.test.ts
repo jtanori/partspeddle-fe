@@ -71,7 +71,7 @@ describe('P5.6 frontend and client-side security', () => {
 
   it('auth slice does not reference role localStorage key', () => {
     const source = fs.readFileSync(
-      path.resolve(process.cwd(), 'src/store/slices/authSlice.ts'),
+      path.resolve(process.cwd(), 'apps/web/src/store/slices/authSlice.ts'),
       'utf-8',
     );
     expect(source).not.toContain('parts_peddle_user_role');

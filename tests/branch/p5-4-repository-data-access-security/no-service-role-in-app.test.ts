@@ -3,20 +3,20 @@ import fs from 'fs';
 import path from 'path';
 
 const PROJECT_ROOT = process.cwd();
-const APP_DIR = path.resolve(PROJECT_ROOT, 'src/app');
-const COMPONENTS_DIR = path.resolve(PROJECT_ROOT, 'src/components');
+const APP_DIR = path.resolve(PROJECT_ROOT, 'apps/web/src/app');
+const COMPONENTS_DIR = path.resolve(PROJECT_ROOT, 'apps/web/src/components');
 
 // API routes that are allowed to use the service-role client because they
 // execute RPCs, storage uploads, or admin batch operations. These must be
 // documented in docs/DATA_ACCESS.md.
 const DOCUMENTED_EXCEPTIONS = new Set([
-  'src/app/api/seller/assets/upload/route.ts',
-  'src/app/api/seller/upload-logo/route.ts',
-  'src/app/api/seller/inventory/commit/route.ts',
-  'src/app/api/seller/drafts/[id]/publish/route.ts',
-  'src/app/api/admin/search/reindex/route.ts',
-  'src/app/api/admin/search/reindex/[partId]/route.ts',
-  'src/app/api/seller/profile/route.ts',
+  'apps/web/src/app/api/seller/assets/upload/route.ts',
+  'apps/web/src/app/api/seller/upload-logo/route.ts',
+  'apps/web/src/app/api/seller/inventory/commit/route.ts',
+  'apps/web/src/app/api/seller/drafts/[id]/publish/route.ts',
+  'apps/web/src/app/api/admin/search/reindex/route.ts',
+  'apps/web/src/app/api/admin/search/reindex/[partId]/route.ts',
+  'apps/web/src/app/api/seller/profile/route.ts',
 ]);
 
 function* walk(dir: string): Generator<string> {
@@ -75,7 +75,7 @@ describe('P5.4 repository and data-access security', () => {
     const content = fs.readFileSync(dataAccessPath, 'utf-8');
     expect(content).toContain('Service-role exceptions');
     for (const exception of DOCUMENTED_EXCEPTIONS) {
-      expect(content).toContain(exception.replace(/^src\//, ''));
+      expect(content).toContain(exception);
     }
   });
 });

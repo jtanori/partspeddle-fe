@@ -93,11 +93,11 @@ describe('P5.0 Seller Workspace Shell', () => {
 
     it('each new page source imports PageHeader', () => {
       const pages = [
-        'src/app/(seller)/seller/listings/page.tsx',
-        'src/app/(seller)/seller/customers/page.tsx',
-        'src/app/(seller)/seller/messages/page.tsx',
-        'src/app/(seller)/seller/analytics/page.tsx',
-        'src/app/(seller)/seller/financial/page.tsx',
+        'apps/web/src/app/(seller)/seller/listings/page.tsx',
+        'apps/web/src/app/(seller)/seller/customers/page.tsx',
+        'apps/web/src/app/(seller)/seller/messages/page.tsx',
+        'apps/web/src/app/(seller)/seller/analytics/page.tsx',
+        'apps/web/src/app/(seller)/seller/financial/page.tsx',
       ];
       for (const page of pages) {
         const source = readSource(page);
@@ -136,14 +136,14 @@ describe('P5.0 Seller Workspace Shell', () => {
 
   describe('loading state migration', () => {
     it('InventoryTable no longer imports InlineLoadingIndicator and imports Skeleton', () => {
-      const source = readSource('src/components/seller-dashboard/InventoryTable.tsx');
+      const source = readSource('apps/web/src/components/seller-dashboard/InventoryTable.tsx');
       expect(source).not.toContain('InlineLoadingIndicator');
       expect(source).toContain("from '@/components/ui/skeleton'");
       expect(source).toContain('<Skeleton');
     });
 
     it('SettingsForm no longer imports InlineLoadingIndicator and imports Skeleton', () => {
-      const source = readSource('src/components/seller-dashboard/SettingsForm.tsx');
+      const source = readSource('apps/web/src/components/seller-dashboard/SettingsForm.tsx');
       expect(source).not.toContain('InlineLoadingIndicator');
       expect(source).toContain("from '@/components/ui/skeleton'");
       expect(source).toContain('<Skeleton');

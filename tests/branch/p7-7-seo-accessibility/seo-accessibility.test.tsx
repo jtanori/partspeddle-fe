@@ -33,7 +33,7 @@ describe('P7.7 SEO & Accessibility Hardening', () => {
   });
 
   it('public info pages include canonical metadata helper', () => {
-    const source = readSource('src/components/layout/PublicInfoPage.tsx');
+    const source = readSource('apps/web/src/components/layout/PublicInfoPage.tsx');
     expect(source).toContain('publicInfoMetadata');
   });
 });

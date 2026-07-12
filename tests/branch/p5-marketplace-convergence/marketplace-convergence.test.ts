@@ -16,7 +16,7 @@ function exists(relativePath: string): boolean {
 
 describe('P5.0 Phase 3 — marketplace convergence cleanup', () => {
   it('uses PPDS surface tokens in the root layout', () => {
-    const layout = read('src/app/layout.tsx');
+    const layout = read('apps/web/src/app/layout.tsx');
     expect(layout).toContain('bg-surface-secondary');
     expect(layout).toContain('text-foreground-primary');
     expect(layout).not.toContain('bg-base-cream');
@@ -24,13 +24,13 @@ describe('P5.0 Phase 3 — marketplace convergence cleanup', () => {
   });
 
   it('uses PPDS surface tokens on the listing page wrapper', () => {
-    const listing = read('src/app/(public)/listing/[id]/page.tsx');
+    const listing = read('apps/web/src/app/(public)/listing/[id]/page.tsx');
     expect(listing).toContain('bg-surface-secondary');
     expect(listing).not.toContain('bg-base-cream');
   });
 
   it('uses PPDS tokens in the public shell', () => {
-    const shell = read('src/components/layout/PublicShell.tsx');
+    const shell = read('apps/web/src/components/layout/PublicShell.tsx');
     expect(shell).toContain('bg-surface-secondary');
     expect(shell).toContain('text-foreground-primary');
     expect(shell).not.toContain('bg-base-cream');
@@ -38,15 +38,15 @@ describe('P5.0 Phase 3 — marketplace convergence cleanup', () => {
   });
 
   it('uses PPDS tokens in loading indicators', () => {
-    const skeleton = read('src/components/ui/skeleton.tsx');
+    const skeleton = read('apps/web/src/components/ui/skeleton.tsx');
 
     expect(skeleton).toContain('bg-surface-muted');
     expect(skeleton).toContain('bg-surface-primary');
     expect(skeleton).not.toContain('bg-[#0E0E0E]');
     expect(skeleton).not.toContain('text-[#B87333]');
 
-    expect(exists('src/components/common/MainLoadingIndicator.tsx')).toBe(false);
-    expect(exists('src/components/common/InlineLoadingIndicator.tsx')).toBe(false);
+    expect(exists('apps/web/src/components/common/MainLoadingIndicator.tsx')).toBe(false);
+    expect(exists('apps/web/src/components/common/InlineLoadingIndicator.tsx')).toBe(false);
   });
 
   it('migrated all pdp-modern components away from legacy pp-* tokens', () => {

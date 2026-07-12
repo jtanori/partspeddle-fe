@@ -13,7 +13,7 @@ function read(relativePath: string): string {
 describe('P2.8d ESLint strict domain rules', () => {
   it('enforces no-explicit-any and no-unused-vars as errors in src/domain', () => {
     const config = read('packages/config/eslint.config.js');
-    expect(config).toContain('src/domain/**/*.{ts,tsx}');
+    expect(config).toContain('apps/web/src/domain/**/*.{ts,tsx}');
     expect(config).toContain('"@typescript-eslint/no-explicit-any": "error"');
     expect(config).toContain('"@typescript-eslint/no-unused-vars": "error"');
   });
@@ -25,9 +25,9 @@ describe('P2.8d ESLint strict domain rules', () => {
   });
 
   it('removes any from domain diff and compiler types', () => {
-    const types = read('src/domain/specification/scgs/types.ts');
-    const diffEngine = read('src/domain/specification/scgs/diff.engine.ts');
-    const compiler = read('src/domain/services/specification.compiler.ts');
+    const types = read('apps/web/src/domain/specification/scgs/types.ts');
+    const diffEngine = read('apps/web/src/domain/specification/scgs/diff.engine.ts');
+    const compiler = read('apps/web/src/domain/services/specification.compiler.ts');
 
     expect(types).not.toMatch(/\bany\b/);
     expect(diffEngine).not.toMatch(/\bany\b/);

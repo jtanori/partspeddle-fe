@@ -109,14 +109,14 @@ describe('P2.4 search result mapping and display', () => {
   });
 
   it('maps API hits using display labels instead of raw slugs', () => {
-    const mapper = read('src/lib/api-mappers.ts');
+    const mapper = read('apps/web/src/lib/api-mappers.ts');
     expect(mapper).toContain('category_label || row.category');
     expect(mapper).toContain('part_type_label || row.part_type');
   });
 
   it('requests Algolia facet counts and display fields in the repository', () => {
     const repository = read(
-      'src/backend/modules/search/infrastructure/algolia-search-repository.ts',
+      'apps/web/src/backend/modules/search/infrastructure/algolia-search-repository.ts',
     );
     expect(repository).toContain('category_label');
     expect(repository).toContain('part_type_label');

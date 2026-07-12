@@ -16,20 +16,20 @@ function fileExists(relativePath: string): boolean {
 
 describe('P2.7 global store refactor', () => {
   it('splits the monolithic store into focused slices', () => {
-    expect(fileExists('src/store/slices/authSlice.ts')).toBe(true);
-    expect(fileExists('src/store/slices/cartSlice.ts')).toBe(true);
-    expect(fileExists('src/store/slices/searchSlice.ts')).toBe(true);
-    expect(fileExists('src/store/slices/sellerNavSlice.ts')).toBe(true);
-    expect(fileExists('src/store/slices/uiSlice.ts')).toBe(true);
+    expect(fileExists('apps/web/src/store/slices/authSlice.ts')).toBe(true);
+    expect(fileExists('apps/web/src/store/slices/cartSlice.ts')).toBe(true);
+    expect(fileExists('apps/web/src/store/slices/searchSlice.ts')).toBe(true);
+    expect(fileExists('apps/web/src/store/slices/sellerNavSlice.ts')).toBe(true);
+    expect(fileExists('apps/web/src/store/slices/uiSlice.ts')).toBe(true);
 
-    const rootStore = read('src/store/useAppStore.ts');
+    const rootStore = read('apps/web/src/store/useAppStore.ts');
     expect(rootStore).toContain('createAuthSlice');
     expect(rootStore).toContain('createCartSlice');
     expect(rootStore).not.toContain('localStorage.getItem');
   });
 
   it('exposes focused selector hooks for each domain', () => {
-    const hooks = read('src/store/hooks.ts');
+    const hooks = read('apps/web/src/store/hooks.ts');
     expect(hooks).toContain('useAuthStore');
     expect(hooks).toContain('useCartStore');
     expect(hooks).toContain('useSearchStore');
@@ -39,10 +39,10 @@ describe('P2.7 global store refactor', () => {
   });
 
   it('migrates presentation components to focused store hooks', () => {
-    const authProvider = read('src/components/providers/AuthProvider.tsx');
-    const pdp = read('src/components/pdp-modern/PDPRoot.tsx');
-    const overlays = read('src/components/UIOverlays.tsx');
-    const sellerLayout = read('src/app/(seller)/layout.tsx');
+    const authProvider = read('apps/web/src/components/providers/AuthProvider.tsx');
+    const pdp = read('apps/web/src/components/pdp-modern/PDPRoot.tsx');
+    const overlays = read('apps/web/src/components/UIOverlays.tsx');
+    const sellerLayout = read('apps/web/src/app/(seller)/layout.tsx');
 
     expect(authProvider).toContain('useAuthStore');
     expect(authProvider).not.toContain('useAppStore');
@@ -60,8 +60,8 @@ describe('P2.7 global store refactor', () => {
   });
 
   it('keeps auth logout in the auth slice only', () => {
-    const authSlice = read('src/store/slices/authSlice.ts');
-    const cartSlice = read('src/store/slices/cartSlice.ts');
+    const authSlice = read('apps/web/src/store/slices/authSlice.ts');
+    const cartSlice = read('apps/web/src/store/slices/cartSlice.ts');
 
     expect(authSlice).toContain('logout');
     expect(authSlice).toContain('supabase.auth.signOut');
@@ -69,8 +69,8 @@ describe('P2.7 global store refactor', () => {
   });
 
   it('persists cart state through shared storage helpers', () => {
-    const storage = read('src/store/storage.ts');
-    const cartSlice = read('src/store/slices/cartSlice.ts');
+    const storage = read('apps/web/src/store/storage.ts');
+    const cartSlice = read('apps/web/src/store/slices/cartSlice.ts');
 
     expect(storage).toContain('safeGetItem');
     expect(storage).toContain('safeSetItem');

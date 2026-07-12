@@ -12,9 +12,9 @@ function read(relativePath: string): string {
 
 describe('P0 taxonomy source of truth and indexing', () => {
   it('loads taxonomy via API-backed useTaxonomy hook', () => {
-    const hook = read('src/hooks/useTaxonomy.ts');
-    const route = read('src/app/api/taxonomy/route.ts');
-    const repository = read('src/repositories/impl/supabase-catalog.repository.ts');
+    const hook = read('apps/web/src/hooks/useTaxonomy.ts');
+    const route = read('apps/web/src/app/api/taxonomy/route.ts');
+    const repository = read('apps/web/src/repositories/impl/supabase-catalog.repository.ts');
     expect(hook).toContain('useTaxonomy');
     expect(hook).toContain('/api/taxonomy');
     expect(route).toContain('createRepositories');
@@ -25,7 +25,7 @@ describe('P0 taxonomy source of truth and indexing', () => {
   });
 
   it('indexes category and part_type by English slugs with display labels', () => {
-    const builder = read('src/backend/modules/search/application/build-search-document.ts');
+    const builder = read('apps/web/src/backend/modules/search/application/build-search-document.ts');
     expect(builder).toContain('category: category?.slug_en');
     expect(builder).toContain('category_label:');
     expect(builder).toContain('part_type: partType?.slug_en');
@@ -40,14 +40,14 @@ describe('P0 taxonomy source of truth and indexing', () => {
   });
 
   it('filters search results using taxonomy slugs in ProductSidebar', () => {
-    const sidebar = read('src/components/ProductSidebar.tsx');
+    const sidebar = read('apps/web/src/components/ProductSidebar.tsx');
     expect(sidebar).toContain('useTaxonomy');
     expect(sidebar).toContain('cat.slug_en');
     expect(sidebar).toContain('type.slug_en');
   });
 
   it('unifies score computation between webhook and batch builder', () => {
-    const builder = read('src/backend/modules/search/application/build-search-document.ts');
+    const builder = read('apps/web/src/backend/modules/search/application/build-search-document.ts');
     const webhook = read('supabase/functions/sync-algolia-webhook/index.ts');
     expect(builder).toContain('listing_quality_score');
     expect(builder).toContain('seller_trust_score');

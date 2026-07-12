@@ -62,7 +62,7 @@ function mockSession(role: string | null) {
   getUserRoleMock.mockResolvedValue(role as any);
 }
 
-describe('src/proxy (Next.js 16 proxy convention)', () => {
+describe('apps/web/src/proxy (Next.js 16 proxy convention)', () => {
   beforeEach(() => {
     createServerClientMock.mockReset();
     getUserRoleMock.mockReset();

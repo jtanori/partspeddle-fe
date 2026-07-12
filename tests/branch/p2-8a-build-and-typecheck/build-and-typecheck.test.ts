@@ -17,20 +17,20 @@ describe('P2.8a build and typecheck gate', () => {
   });
 
   it('exports a stable search hit mapper alias', () => {
-    const mapper = read('src/lib/search-hit-mapper.ts');
+    const mapper = read('apps/web/src/lib/search-hit-mapper.ts');
     expect(mapper).toContain('mapAlgoliaHitToPart');
     expect(mapper).toContain('mapSearchHitToPart');
   });
 
   it('maps UI search filters to repository filters in server search', () => {
-    const serverSearch = read('src/lib/search/server-search.ts');
+    const serverSearch = read('apps/web/src/lib/search/server-search.ts');
     expect(serverSearch).toContain('SearchFilters as UiSearchFilters');
     expect(serverSearch).toContain('SearchFilters as RepositorySearchFilters');
     expect(serverSearch).toContain('mapAlgoliaHitToPart');
   });
 
   it('types search results controller filters with SearchFilters', () => {
-    const controller = read('src/components/search/SearchResultsController.tsx');
+    const controller = read('apps/web/src/components/search/SearchResultsController.tsx');
     expect(controller).toContain('filters: SearchFilters');
     expect(controller).not.toContain('filters: Record<string, unknown>');
   });

@@ -8,7 +8,7 @@ function readSource(relativePath: string): string {
 
 describe('P7.2 Link Audit', () => {
   describe('footer links', () => {
-    const footer = readSource('src/components/Footer.tsx');
+    const footer = readSource('apps/web/src/components/Footer.tsx');
 
     it('uses real social platform URLs', () => {
       expect(footer).toContain('https://www.facebook.com');
@@ -40,7 +40,7 @@ describe('P7.2 Link Audit', () => {
   });
 
   describe('auth footer links', () => {
-    const authFooter = readSource('src/components/auth/AuthFooter.tsx');
+    const authFooter = readSource('apps/web/src/components/auth/AuthFooter.tsx');
 
     it('links to terms, privacy, and contact', () => {
       expect(authFooter).toContain("href: '/terms'");
@@ -55,12 +55,12 @@ describe('P7.2 Link Audit', () => {
 
   describe('navbar links', () => {
     it('CTAButton routes buyer SELL PARTS to /seller/create', () => {
-      const source = readSource('src/components/navbar/shared/CTAButton.tsx');
+      const source = readSource('apps/web/src/components/navbar/shared/CTAButton.tsx');
       expect(source).toContain("router.push('/seller/create')");
     });
 
     it('UserMenuContent routes to seller workspace and public pages', () => {
-      const source = readSource('src/components/navbar/shared/UserMenuContent.tsx');
+      const source = readSource('apps/web/src/components/navbar/shared/UserMenuContent.tsx');
       expect(source).toContain("router.push('/seller/settings')");
       expect(source).toContain("router.push('/watchlist')");
       expect(source).toContain("router.push('/seller/orders')");
@@ -69,12 +69,12 @@ describe('P7.2 Link Audit', () => {
     });
 
     it('MobileNavbar Browse routes to /search', () => {
-      const source = readSource('src/components/navbar/shared/MobileNavbar.tsx');
+      const source = readSource('apps/web/src/components/navbar/shared/MobileNavbar.tsx');
       expect(source).toContain("router.push('/search')");
     });
 
     it('BottomTabBar routes tabs to real pages', () => {
-      const source = readSource('src/components/navbar/BottomTabBar.tsx');
+      const source = readSource('apps/web/src/components/navbar/BottomTabBar.tsx');
       expect(source).toContain("router.push('/')");
       expect(source).toContain("router.push('/search')");
       expect(source).toContain("router.push('/seller/orders')");
@@ -84,24 +84,24 @@ describe('P7.2 Link Audit', () => {
 
   describe('homepage links', () => {
     it('FeaturedSellers View Inventory links to public seller profile', () => {
-      const source = readSource('src/components/homepage/FeaturedSellers.tsx');
+      const source = readSource('apps/web/src/components/homepage/FeaturedSellers.tsx');
       expect(source).toContain('router.push(`/seller/${seller.id}`)');
     });
 
     it('HighFidelityHero logged-in SELL PARTS links to /seller/create', () => {
-      const source = readSource('src/components/homepage/HighFidelityHero.tsx');
+      const source = readSource('apps/web/src/components/homepage/HighFidelityHero.tsx');
       expect(source).toContain("router.push('/seller/create')");
     });
   });
 
   describe('search page links', () => {
     it('SellerGridCard View Inventory links to public seller profile', () => {
-      const source = readSource('src/components/search/cards/SellerGridCard.tsx');
+      const source = readSource('apps/web/src/components/search/cards/SellerGridCard.tsx');
       expect(source).toContain('router.push(`/seller/${seller.id}`)');
     });
 
     it('VIN suggestions route to /search until decode-vin exists', () => {
-      const source = readSource('src/components/search/utils/search-command-registry.ts');
+      const source = readSource('apps/web/src/components/search/utils/search-command-registry.ts');
       expect(source).toContain("type: 'vin'");
       expect(source).toContain('router.push(`/search?q=${encodeURIComponent(s.label)}`)');
       expect(source).not.toContain('/decode-vin');
@@ -110,37 +110,37 @@ describe('P7.2 Link Audit', () => {
 
   describe('PDP links', () => {
     it('PDPRoot category breadcrumb links to /search with category filter', () => {
-      const source = readSource('src/components/pdp-modern/PDPRoot.tsx');
+      const source = readSource('apps/web/src/components/pdp-modern/PDPRoot.tsx');
       expect(source).toContain(
         'href={`/search?category=${encodeURIComponent(viewModel.header.subtitle)}`}',
       );
     });
 
     it('SellerSupportCard links to public seller profile', () => {
-      const source = readSource('src/components/pdp-modern/SellerSupportCard.tsx');
+      const source = readSource('apps/web/src/components/pdp-modern/SellerSupportCard.tsx');
       expect(source).toContain('href={`/seller/${seller.id}`}');
     });
 
     it('NeedHelp has chat, tel, and mailto actions', () => {
-      const source = readSource('src/components/pdp-modern/NeedHelp.tsx');
+      const source = readSource('apps/web/src/components/pdp-modern/NeedHelp.tsx');
       expect(source).toContain('href="/chat"');
       expect(source).toContain('href="tel:+18005550199"');
       expect(source).toContain('href="mailto:support@partspeddle.com"');
     });
 
     it('DescriptionFitmentPanel links to fitment page', () => {
-      const source = readSource('src/components/pdp-modern/DescriptionFitmentPanel.tsx');
+      const source = readSource('apps/web/src/components/pdp-modern/DescriptionFitmentPanel.tsx');
       expect(source).toContain('href={`/listing/${partId}/fitment`}');
     });
 
     it('CompatibleParts rows link to PDP and view-more links to compatible-parts page', () => {
-      const source = readSource('src/components/pdp-modern/CompatibleParts.tsx');
+      const source = readSource('apps/web/src/components/pdp-modern/CompatibleParts.tsx');
       expect(source).toContain('href={`/listing/${part.id}`}');
       expect(source).toContain('href={`/listing/${partId}/compatible-parts`}');
     });
 
     it('RecentlyViewed rows link to PDP and view-all links to recently-viewed page', () => {
-      const source = readSource('src/components/pdp-modern/RecentlyViewed.tsx');
+      const source = readSource('apps/web/src/components/pdp-modern/RecentlyViewed.tsx');
       expect(source).toContain('href={`/listing/${part.id}`}');
       expect(source).toContain('href="/recently-viewed"');
     });
@@ -149,12 +149,12 @@ describe('P7.2 Link Audit', () => {
   describe('missing public pages exist', () => {
     it('has about, contact, terms, privacy, salvage-network, trust-verification pages', () => {
       const pages = [
-        'src/app/(public)/about/page.tsx',
-        'src/app/(public)/contact/page.tsx',
-        'src/app/(public)/terms/page.tsx',
-        'src/app/(public)/privacy/page.tsx',
-        'src/app/(public)/salvage-network/page.tsx',
-        'src/app/(public)/trust-verification/page.tsx',
+        'apps/web/src/app/(public)/about/page.tsx',
+        'apps/web/src/app/(public)/contact/page.tsx',
+        'apps/web/src/app/(public)/terms/page.tsx',
+        'apps/web/src/app/(public)/privacy/page.tsx',
+        'apps/web/src/app/(public)/salvage-network/page.tsx',
+        'apps/web/src/app/(public)/trust-verification/page.tsx',
       ];
       for (const page of pages) {
         expect(() => readSource(page)).not.toThrow();
@@ -163,10 +163,10 @@ describe('P7.2 Link Audit', () => {
 
     it('has profile, watchlist, chat, and recently-viewed pages', () => {
       const pages = [
-        'src/app/(public)/profile/page.tsx',
-        'src/app/(public)/watchlist/page.tsx',
-        'src/app/(public)/chat/page.tsx',
-        'src/app/(public)/recently-viewed/page.tsx',
+        'apps/web/src/app/(public)/profile/page.tsx',
+        'apps/web/src/app/(public)/watchlist/page.tsx',
+        'apps/web/src/app/(public)/chat/page.tsx',
+        'apps/web/src/app/(public)/recently-viewed/page.tsx',
       ];
       for (const page of pages) {
         expect(() => readSource(page)).not.toThrow();
@@ -175,8 +175,8 @@ describe('P7.2 Link Audit', () => {
 
     it('has PDP sub-routes', () => {
       const routes = [
-        'src/app/(public)/listing/[id]/fitment/page.tsx',
-        'src/app/(public)/listing/[id]/compatible-parts/page.tsx',
+        'apps/web/src/app/(public)/listing/[id]/fitment/page.tsx',
+        'apps/web/src/app/(public)/listing/[id]/compatible-parts/page.tsx',
       ];
       for (const route of routes) {
         expect(() => readSource(route)).not.toThrow();
