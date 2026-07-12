@@ -14,7 +14,7 @@ Current state (today):
 partspeddle-fe/
 ├── apps/web/               # Next.js application
 ├── packages/               # Shared configuration
-├── tests/                  # All tests (branch, certification, security)
+├── tests/                  # Test taxonomy (unit, integration, e2e, certification, governance, performance, regression)
 ├── docs/                   # Knowledge base
 ├── platform/               # CI, deployment, scripts, tooling, operations
 │   ├── scripts/            # Automation and operational scripts
@@ -108,7 +108,15 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 | `src/hooks/`                         | React hooks                                           | `apps/web/src/hooks/` + `packages/shared/`             |
 | `src/types/`                         | Cross-cutting TypeScript types                        | `packages/types/`                                      |
 | `src/store/`                         | Client state management                               | `apps/web/src/store/`                                  |
-| `tests/`                             | Branch, certification, security, and governance tests | `tests/` (taxonomy reorganized)                        |
+| `tests/unit/`                        | Isolated tests for pure functions, domain logic, store slices | `tests/unit/`                                  |
+| `tests/integration/`                 | API routes, repositories, modules, middleware, UI wiring | `tests/integration/`                            |
+| `tests/e2e/`                         | Playwright browser smoke tests                       | `tests/e2e/`                                           |
+| `tests/certification/`               | PRC/DC certification gates                           | `tests/certification/`                                 |
+| `tests/governance/`                  | Security, architecture, policy, environment checks   | `tests/governance/`                                    |
+| `tests/performance/`                 | Resilience, chaos, and load tests                    | `tests/performance/`                                   |
+| `tests/regression/`                  | Backward-compatibility suites                        | `tests/regression/`                                    |
+| `tests/fixtures/` + `tests/helpers/`| Shared test data and utilities                       | `tests/fixtures/` + `tests/helpers/`                   |
+| `tests/`                             | Test taxonomy root                                   | `tests/`                                               |
 | `docs/`                              | Knowledge base                                        | `docs/` (information architecture reorganized)         |
 | `docs/engineering/`                  | How the system is built                               | `docs/engineering/`                                    |
 | `docs/operations/`                   | How to run, deploy, and recover                       | `docs/operations/`                                     |
@@ -154,6 +162,7 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 - [x] Phase 3 — backend modularization.
 - [x] Phase 4 — platform consolidation (scripts, operations, fly, docker, tooling).
 - [x] Phase 5 — governance consolidation.
-- [ ] Phase 6 — documentation restructure.
-- [ ] Phase 7 — test taxonomy.
+- [x] Phase 6 — documentation restructure.
+- [x] Phase 7 — test taxonomy.
+- [ ] Phase 8 — engineering manual.
 - [ ] Phase 8 — engineering manual.

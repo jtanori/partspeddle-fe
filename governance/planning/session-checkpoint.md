@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/phase-6-docs-restructure`
-**Status:** Prep 1 and Prep 2 complete. Phases 0–5 merged to develop. Phase 6 documentation restructure approved; implementation in progress.
+**Branch:** `feat/phase-7-test-taxonomy`
+**Status:** Phase 7 complete. Tests reorganized under `tests/{unit,integration,e2e,certification,governance,performance,regression,fixtures,helpers}/`. Verification passed; ready for PR.
 
 ---
 
@@ -139,7 +139,10 @@ backend/modules/<name>/
 
 ## In Progress
 
-_None. Phase 6 is merged to `develop`._
+1. **Phase 7 — Test taxonomy**
+   - Branch: `feat/phase-7-test-taxonomy`
+   - Status: Approved to delete pure architecture-evolution tests and reorganize `tests/` by intent.
+   - Plan: `governance/planning/phase-7-test-cleanup-proposal.md`
 
 ---
 

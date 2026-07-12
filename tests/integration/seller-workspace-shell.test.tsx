@@ -1,0 +1,115 @@
+import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+
+import SellerListingsPage from '@/app/(seller)/seller/listings/page';
+import SellerCustomersPage from '@/app/(seller)/seller/customers/page';
+import SellerMessagesPage from '@/app/(seller)/seller/messages/page';
+import SellerAnalyticsPage from '@/app/(seller)/seller/analytics/page';
+import SellerFinancialPage from '@/app/(seller)/seller/financial/page';
+
+vi.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
+}));
+
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
+vi.mock('@/assets/images/logo_solid.png', () => ({
+  default: '/mock-logo.png',
+}));
+
+vi.mock('@/store/hooks', () => ({
+  useAuthStore: () => ({ user: null, setProfile: vi.fn(), logout: vi.fn() }),
+}));
+
+vi.mock('@/hooks/useSellerProfile', () => ({
+  useSellerProfile: () => ({ profile: null, loading: false }),
+}));
+
+vi.mock('@/context/InventoryWizardContext', () => ({
+  InventoryWizardProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('@/components/drawers/YardControlCore', () => ({
+  YardControlCore: () => null,
+}));
+
+vi.mock('@/components/search/SearchCommandPalette', () => ({
+  SearchCommandPalette: () => null,
+}));
+
+vi.mock('@/components/search/utils/search-command-registry', () => ({
+  useSearchCommandRegistry: () => ({ executeCommand: vi.fn() }),
+}));
+
+vi.mock('@/hooks/useCommandPalette', () => ({
+  useCommandPalette: () => ({ open: false, setOpen: vi.fn() }),
+}));
+
+describe('P5.0 Seller Workspace Shell', () => {
+  describe('placeholder pages', () => {
+    it('listings page renders with PageHeader', () => {
+      render(<SellerListingsPage />);
+      expect(screen.getByRole('heading', { name: 'Listings' })).toBeDefined();
+      expect(screen.getByText('Manage published drafts and active part listings.')).toBeDefined();
+    });
+
+    it('customers page renders with PageHeader', () => {
+      render(<SellerCustomersPage />);
+      expect(screen.getByRole('heading', { name: 'Customers' })).toBeDefined();
+    });
+
+    it('messages page renders with PageHeader', () => {
+      render(<SellerMessagesPage />);
+      expect(screen.getByRole('heading', { name: 'Messages' })).toBeDefined();
+    });
+
+    it('analytics page renders with PageHeader', () => {
+      render(<SellerAnalyticsPage />);
+      expect(screen.getByRole('heading', { name: 'Analytics' })).toBeDefined();
+    });
+
+    it('financial page renders with PageHeader', () => {
+      render(<SellerFinancialPage />);
+      expect(screen.getByRole('heading', { name: 'Financial' })).toBeDefined();
+    });
+
+  });
+
+  describe('seller layout sidebar', () => {
+    it('includes workspace navigation hrefs', { timeout: 20000 }, async () => {
+      const { default: SellerLayout } = await import('@/app/(seller)/layout');
+      render(
+        <SellerLayout>
+          <div data-testid="content">Content</div>
+        </SellerLayout>,
+      );
+
+      const requiredHrefs = [
+        '/seller/listings',
+        '/seller/customers',
+        '/seller/messages',
+        '/seller/analytics',
+        '/seller/financial',
+      ];
+
+      const links = screen.getAllByRole('link');
+      const hrefs = links.map((link) => link.getAttribute('href'));
+
+      for (const href of requiredHrefs) {
+        expect(hrefs).toContain(href);
+      }
+    });
+  });
+
+});

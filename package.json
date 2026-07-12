@@ -24,7 +24,7 @@
     "deploy:production": "flyctl deploy --config platform/deployment/fly/fly.prod.toml --dockerfile platform/docker/Dockerfile",
     "deploy:production:build-only": "flyctl deploy --config platform/deployment/fly/fly.prod.toml --dockerfile platform/docker/Dockerfile --build-only",
     "preinstall": "npx only-allow pnpm",
-    "test": "vitest run tests/c0_8 tests/certification tests/branch",
+    "test": "vitest run tests/unit tests/integration tests/regression tests/governance tests/certification tests/performance",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test",
     "test:e2e:smoke:local": "E2E_BASE_URL=http://localhost:3000 playwright test",
