@@ -36,6 +36,7 @@
     "env:report": "tsx platform/scripts/deployment/env-report.ts",
     "delivery:manifest:validate": "tsx platform/scripts/deployment/validate-delivery-manifest.ts",
     "delivery:verify:production-access": "tsx platform/scripts/deployment/verify-production-access.ts",
+    "delivery:verify:env-drift": "tsx platform/scripts/deployment/verify-environment-drift.ts",
     "db:seed": "tsx platform/scripts/bootstrap/seed-staging.ts",
     "db:seed:staging": "tsx platform/scripts/bootstrap/seed-staging.ts",
     "db:seed:users": "tsx platform/scripts/bootstrap/seed-users.ts",
