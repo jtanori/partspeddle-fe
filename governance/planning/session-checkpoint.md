@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/scgs-spec-plan`
-**Status:** Creating SCGS specification implementation plan from `/Users/dev/Documents/SCGS/` specs.
+**Branch:** `feat/scgs-phase-0-1-canonical-foundation`
+**Status:** Implementing Phase 0 + Phase 1 of SCGS specification plan: canonical module migration + compiler artifact model.
 
 ---
 
@@ -122,18 +122,19 @@ backend/modules/<name>/
 
 ## In Progress
 
-1. **SCGS Specification Implementation Plan**
-   - Branch: `feat/scgs-spec-plan`
-   - Goal: Convert the SCGS / PSPS / MSM specification documents into an actionable implementation plan aligned with the current SCGS codebase.
-   - Source specs: `/Users/dev/Documents/SCGS/1.0 SCGS Search Platform Specification.md`, `/Users/dev/Documents/SCGS/2.0 PartsPeddle Semantic Platform Specification (PSPS).md`, `/Users/dev/Documents/SCGS/3.0 Marketplace Semantic Model (MSM).md`.
+1. **SCGS Phase 0 + Phase 1 — Canonical Foundation**
+   - Branch: `feat/scgs-phase-0-1-canonical-foundation`
+   - Plan: `governance/planning/scgs-spec-implementation-plan.md`
+   - Phase 0: Migrate SCGS to canonical backend module `apps/web/src/backend/modules/scgs/` and create canonical spec documents.
+   - Phase 1: Implement lineage-aware `CompiledSemanticArtifact`, `RankedArtifact`, explicit compiler stages, and richer ranking signals.
 
 ---
 
 ## Next Steps
 
-1. **Approve SCGS implementation plan** — review `governance/planning/scgs-spec-implementation-plan.md`.
-2. **Implement first SCGS phase** — create branch and execute the approved initial phase.
-3. **Product roadmap** — continue marketplace feature work in parallel where possible.
+1. **Complete Phase 0** — migrate SCGS to canonical module and create spec documents.
+2. **Complete Phase 1** — compiler artifact model and ranking engine enhancements.
+3. **Product roadmap** — continue marketplace feature work after Phase 0+1 merges.
 
 ---
 
