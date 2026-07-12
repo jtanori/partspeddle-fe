@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
-**Date:** 2026-07-11
-**Branch:** `feat/phase-2-app-extraction`
-**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction implemented, PR #106 opened, CI failure diagnosed and fixed.
+**Date:** 2026-07-12
+**Branch:** `develop`
+**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction merged to develop via PR #106.
 
 ---
 
@@ -53,6 +53,7 @@
 - PR #103 — `docs(prep): synchronize docs with delivery certification and CSP changes`
 - PR #104 — `Phase 0: platform navigation documents`
 - PR #105 — `Phase 1: workspace scaffolding`
+- PR #106 — `Phase 2: application extraction to apps/web`
 
 ### Planning Cleanup
 
@@ -113,7 +114,7 @@ backend/modules/<name>/
    - Deliverables: updated `pnpm-workspace.yaml`, empty target directories with READMEs, `packages/config`, updated root `package.json`
    - Plan: `.planning/phase-1-implementation-plan.md`
 
-2. **Phase 2 — Application extraction to `apps/web/`** (ready for PR)
+2. **Phase 2 — Application extraction to `apps/web/`** (merged via PR #106)
    - Branch: `feat/phase-2-app-extraction`
    - Deliverables: Next.js application moved to `apps/web/`, root converted to workspace orchestrator, config/scripts/docs/Dockerfile updated
    - Plan: `.planning/phase-2-implementation-plan.md`
@@ -122,15 +123,13 @@ backend/modules/<name>/
 
 ## In Progress
 
-1. **Phase 2 PR review and merge**
-   - Branch: `feat/phase-2-app-extraction`
-   - Status: PR #106 opened. CI failed on test paths still pointing to root `src/` and `next.config.ts`. Fixes applied and verified locally; push in progress.
+_None._
 
 ---
 
 ## Next Steps
 
-1. **Open PR for Phase 2** and merge into `develop` once CI passes.
+1. **Begin Phase 3** of the platform-repository-evolution plan (see `.planning/platform-repository-evolution.md`).
 2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
 3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
