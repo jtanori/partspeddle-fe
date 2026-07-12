@@ -27,7 +27,7 @@ const domainStrictRules = {
 export default [js.configs.recommended, {
   ignores: ["node_modules/**", ".next/**", "dist/**"],
 }, {
-  files: ["src/**/*.{ts,tsx}"],
+  files: ["apps/web/src/**/*.{ts,tsx}", "src/**/*.{ts,tsx}"],
   languageOptions: {
     parser: tsParser,
     parserOptions: {
@@ -56,16 +56,18 @@ export default [js.configs.recommended, {
     react: { version: "detect" },
   },
 }, {
-  files: ["src/domain/**/*.{ts,tsx}"],
+  files: ["apps/web/src/domain/**/*.{ts,tsx}", "src/domain/**/*.{ts,tsx}"],
   rules: domainStrictRules,
 }, {
   files: [
+    "apps/web/src/backend/modules/search/application/build-search-document.ts",
+    "apps/web/src/backend/modules/search/infrastructure/algolia-search-repository.ts",
     "src/backend/modules/search/application/build-search-document.ts",
     "src/backend/modules/search/infrastructure/algolia-search-repository.ts",
   ],
   rules: domainStrictRules,
 }, {
-  files: ["scripts/**/*.{ts,tsx,js}", "tests/**/*.{ts,tsx}"],
+  files: ["scripts/**/*.{ts,tsx,js}", "tests/**/*.{ts,tsx}", ".storybook/**/*.{ts,tsx,js}", "apps/web/*.{ts,tsx,js}", "apps/web/**/*.config.{ts,tsx,js}"],
   languageOptions: {
     parser: tsParser,
     parserOptions: {

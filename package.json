@@ -13,11 +13,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint --cache src scripts",
-    "typecheck": "tsc --noEmit",
+    "dev": "pnpm --filter @partspeddle/web dev",
+    "build": "pnpm --filter @partspeddle/web build",
+    "start": "pnpm --filter @partspeddle/web start",
+    "lint": "pnpm --filter @partspeddle/web lint",
+    "typecheck": "pnpm --filter @partspeddle/web typecheck && tsc --noEmit",
     "clean": "rm -rf .next dist",
     "deploy:staging": "flyctl deploy --config fly/fly.stage.toml",
     "deploy:staging:build-only": "flyctl deploy --config fly/fly.stage.toml --build-only",

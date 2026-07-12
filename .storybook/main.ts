@@ -2,13 +2,13 @@ import type { StorybookConfig } from '@storybook/react-vite';
 import path from 'path';
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: ['../apps/web/src/**/*.mdx', '../apps/web/src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: ['@storybook/addon-essentials', '@storybook/addon-a11y'],
   framework: {
     name: '@storybook/react-vite',
     options: {},
   },
-  staticDirs: ['../public'],
+  staticDirs: ['../apps/web/public'],
   core: {
     disableTelemetry: true,
   },
@@ -16,7 +16,7 @@ const config: StorybookConfig = {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve(__dirname, '../src'),
+      '@': path.resolve(__dirname, '../apps/web/src'),
       'next/image': path.resolve(__dirname, '../__mocks__/next/image.tsx'),
       'next/link': path.resolve(__dirname, '../__mocks__/next/link.tsx'),
     };

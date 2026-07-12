@@ -10,7 +10,10 @@ import type { Config } from 'tailwindcss';
  * `docs/notes/p5-deprecated-components.md`).
  */
 const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './apps/web/src/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   theme: {
     extend: {
       // Legacy aliases — do not use in new code.
