@@ -27,7 +27,7 @@ const domainStrictRules = {
 export default [js.configs.recommended, {
   ignores: ["node_modules/**", ".next/**", "dist/**"],
 }, {
-  files: ["apps/web/src/**/*.{ts,tsx}", "src/**/*.{ts,tsx}"],
+  files: ["apps/web/src/**/*.{ts,tsx}"],
   languageOptions: {
     parser: tsParser,
     parserOptions: {
@@ -56,14 +56,12 @@ export default [js.configs.recommended, {
     react: { version: "detect" },
   },
 }, {
-  files: ["apps/web/src/domain/**/*.{ts,tsx}", "src/domain/**/*.{ts,tsx}"],
+  files: ["apps/web/src/domain/**/*.{ts,tsx}"],
   rules: domainStrictRules,
 }, {
   files: [
     "apps/web/src/backend/modules/search/application/build-search-document.ts",
     "apps/web/src/backend/modules/search/infrastructure/algolia-search-repository.ts",
-    "src/backend/modules/search/application/build-search-document.ts",
-    "src/backend/modules/search/infrastructure/algolia-search-repository.ts",
   ],
   rules: domainStrictRules,
 }, {

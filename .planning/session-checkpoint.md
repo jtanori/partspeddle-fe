@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-11
 **Branch:** `feat/phase-2-app-extraction`
-**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction implemented and ready for PR.
+**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction implemented, PR #106 opened, CI failure diagnosed and fixed.
 
 ---
 
@@ -124,7 +124,7 @@ backend/modules/<name>/
 
 1. **Phase 2 PR review and merge**
    - Branch: `feat/phase-2-app-extraction`
-   - Status: Implementation complete. Local verification passed. PR pending.
+   - Status: PR #106 opened. CI failed on test paths still pointing to root `src/` and `next.config.ts`. Fixes applied and verified locally; push in progress.
 
 ---
 

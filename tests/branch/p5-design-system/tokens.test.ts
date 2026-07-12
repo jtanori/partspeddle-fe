@@ -6,9 +6,9 @@ const repoRoot = process.cwd();
 const read = (...segments: string[]) => fs.readFileSync(path.join(repoRoot, ...segments), 'utf-8');
 
 describe('P5.0 design tokens', () => {
-  const css = read('src', 'index.css');
+  const css = read('apps', 'web', 'src', 'index.css');
   const tailwindConfig = read('packages', 'config', 'tailwind.config.ts');
-  const pdprRoot = read('src', 'components', 'pdp-modern', 'PDPRoot.tsx');
+  const pdprRoot = read('apps', 'web', 'src', 'components', 'pdp-modern', 'PDPRoot.tsx');
 
   it('exposes the new systematic token set in src/index.css', () => {
     const lowerCss = css.toLowerCase();
@@ -47,9 +47,9 @@ describe('P5.0 design tokens', () => {
 
   it('new Phase 2 components avoid hardcoded hex values', () => {
     const dirs = [
-      path.join(repoRoot, 'src', 'components', 'ui'),
-      path.join(repoRoot, 'src', 'components', 'design-system'),
-      path.join(repoRoot, 'src', 'components', 'pdp-modern'),
+      path.join(repoRoot, 'apps', 'web', 'src', 'components', 'ui'),
+      path.join(repoRoot, 'apps', 'web', 'src', 'components', 'design-system'),
+      path.join(repoRoot, 'apps', 'web', 'src', 'components', 'pdp-modern'),
     ];
     const hexPattern = /#(?:[0-9a-fA-F]{3}){1,2}/;
     const legacyPattern = /(?:bg|text|border|rounded)-pp-/;

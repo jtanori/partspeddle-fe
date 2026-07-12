@@ -16,7 +16,7 @@
     "dev": "pnpm --filter @partspeddle/web dev",
     "build": "pnpm --filter @partspeddle/web build",
     "start": "pnpm --filter @partspeddle/web start",
-    "lint": "pnpm --filter @partspeddle/web lint",
+    "lint": "eslint --cache apps/web/src scripts",
     "typecheck": "pnpm --filter @partspeddle/web typecheck && tsc --noEmit",
     "clean": "rm -rf .next dist",
     "deploy:staging": "flyctl deploy --config fly/fly.stage.toml",

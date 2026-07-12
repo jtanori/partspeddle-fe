@@ -14,7 +14,7 @@ function read(relativePath: string): string {
 
 describe('dev server image host configuration', () => {
   it('allows seeded picsum.photos URLs in next/image remotePatterns', () => {
-    const nextConfig = read('next.config.ts');
+    const nextConfig = read('apps/web/next.config.ts');
     expect(nextConfig).toContain('picsum.photos');
     expect(nextConfig).toContain('remotePatterns');
   });

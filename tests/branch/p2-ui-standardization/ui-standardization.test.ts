@@ -49,7 +49,7 @@ describe('P2.1 UI/UX standardization', () => {
   it('uses next/image and a static placeholder asset for grid cards', () => {
     const gridCard = read('apps/web/src/components/search/cards/ProductGridCard.tsx');
     const partImages = read('apps/web/src/lib/part-images.ts');
-    const nextConfig = read('next.config.ts');
+    const nextConfig = read('apps/web/next.config.ts');
     expect(gridCard).toContain('next/image');
     expect(gridCard).toContain('DEFAULT_PART_IMAGE');
     expect(partImages).toContain('default_listing.png');
