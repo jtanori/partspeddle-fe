@@ -163,7 +163,7 @@ jobs:
         run: pnpm install
 
       - name: Run security tests
-        run: pnpm test -- tests/security
+        run: pnpm test -- tests/governance/security
 
       - name: Run bundle audit
         run: pnpm build && pnpm security:bundle-audit

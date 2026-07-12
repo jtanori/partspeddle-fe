@@ -8,39 +8,52 @@ This document describes the testing taxonomy, where to add new tests, and how to
 
 Tests are organized by intent, not by file type. A single function may have unit-style assertions inside an integration test file; what matters is the scope of the test.
 
-### `tests/branch/`
+### `tests/unit/`
 
-**Purpose:** Tests tied to a specific branch, feature, or fix. These are the bulk of the automated suite and act as acceptance tests for merged work.
+**Purpose:** Fast, isolated tests for pure functions, domain logic, view-model builders, and store slices.
 
-**When to add:** Every feature branch should add or update a test file here.
+**When to add:** For pure behavior with no I/O, network, or browser.
 
-**Naming:** `tests/branch/<phase-or-topic>/<descriptive-name>.test.ts`
+**Naming:** `tests/unit/<domain>/<descriptive-name>.test.ts`
 
 **Example commands:**
 
 ```bash
-pnpm test tests/branch/p2-9-security-headers/security-headers.test.ts
-pnpm test tests/branch/p5-6-frontend-client-security/frontend-security.test.ts
+pnpm test tests/unit/get-user-role.test.ts
+pnpm test tests/unit/search/build-search-document.spec.ts
 ```
 
-### `tests/security/`
+### `tests/integration/`
 
-**Purpose:** Cross-cutting security assertions that must always pass: headers, secrets leakage, RBAC, API auth.
+**Purpose:** Tests for API routes, repositories, backend modules, middleware, database migrations, and UI component wiring.
 
-**When to add:** When a security invariant is introduced or a new attack vector is identified.
+**When to add:** For behavior that crosses one or more real subsystems (often with mocked external services).
+
+**Naming:** `tests/integration/<domain>/<descriptive-name>.test.ts`
 
 **Example commands:**
 
 ```bash
-pnpm test tests/security/headers.spec.ts
-pnpm test tests/security/rbac.spec.ts
-pnpm test tests/security/api-auth.spec.ts
-pnpm test tests/security/secrets.spec.ts
+pnpm test tests/integration/middleware-and-types/proxy.test.ts
+pnpm test tests/integration/search/fitment-in-algolia
+```
+
+### `tests/e2e/`
+
+**Purpose:** Playwright browser smoke tests for critical user journeys.
+
+**When to add:** For flows that must work in a real browser against a running application.
+
+**Example commands:**
+
+```bash
+pnpm test:e2e:smoke:local
+pnpm test:e2e:smoke:staging
 ```
 
 ### `tests/certification/`
 
-**Purpose:** Tests that verify production-readiness criteria (PRC/DC gates).
+**Purpose:** Compliance and certification gates for platform guarantees.
 
 **When to add:** When a certification gate needs an automated check.
 
@@ -50,60 +63,59 @@ pnpm test tests/security/secrets.spec.ts
 pnpm test tests/certification
 ```
 
-### `tests/functional/`
+### `tests/governance/`
 
-**Purpose:** Functional tests that exercise user flows without requiring a deployed environment.
+**Purpose:** Security, architecture, policy, and environment-validation tests.
 
-**When to add:** For workflows that span multiple components but do not need a browser.
+**When to add:** When a security invariant, architecture rule, or policy check is introduced.
 
-**Example command:**
-
-```bash
-pnpm test tests/functional
-```
-
-### `tests/e2e/`
-
-**Purpose:** End-to-end tests, including Playwright smoke tests.
-
-**When to add:** For critical user journeys that must work in a real browser.
+**Naming:** `tests/governance/<domain>/<descriptive-name>.test.ts`
 
 **Example commands:**
 
 ```bash
-pnpm test:e2e:smoke:local
+pnpm test tests/governance/security/headers.spec.ts
+pnpm test tests/governance/security/rbac.spec.ts
+pnpm test tests/governance/security/api-auth.spec.ts
+pnpm test tests/governance/security/secrets.spec.ts
 ```
 
-### `tests/chaos/`
+### `tests/performance/`
 
-**Purpose:** Failure-mode and resilience tests.
+**Purpose:** Resilience, chaos, and load-oriented tests.
 
-**When to add:** When introducing retries, circuit breakers, or degradation behavior.
+**When to add:** When introducing retries, circuit breakers, degradation behavior, or benchmarks.
 
 **Example command:**
 
 ```bash
-pnpm test tests/chaos
+pnpm test tests/performance
 ```
 
-### `tests/c0_8/`
+### `tests/regression/`
 
-**Purpose:** C0.8 coverage and regression tests.
+**Purpose:** Backward-compatibility suites that guard against accidental breakage.
 
-**When to add:** When a coverage or regression gate is defined.
+**When to add:** For coverage gates, semantic parity checks, and layout/link audits.
 
 **Example command:**
 
 ```bash
-pnpm test tests/c0_8
+pnpm test tests/regression
 ```
+
+### `tests/fixtures/` and `tests/helpers/`
+
+**Purpose:** Shared test data and utilities. These directories contain no tests.
+
+**When to add:** When the same data or helper is needed by multiple suites.
 
 ### Module-specific tests
 
 Canonical backend modules keep their tests inside the module:
 
 ```text
-src/backend/modules/search/tests/
+backend/modules/search/tests/
 ├── contract/
 ├── integration/
 ├── observability/
@@ -117,24 +129,28 @@ These are included in the default `pnpm test` run.
 
 ## Running tests
 
-### Default branch/certification/security suite
+### Default suite
 
 ```bash
 pnpm test
 ```
 
-This runs `vitest run tests/c0_8 tests/certification tests/branch` by default.
+This runs:
+
+```bash
+vitest run tests/unit tests/integration tests/regression tests/governance tests/certification tests/performance
+```
 
 ### Single file
 
 ```bash
-pnpm test tests/security/headers.spec.ts
+pnpm test tests/governance/security/headers.spec.ts
 ```
 
 ### Security tests
 
 ```bash
-pnpm test tests/security
+pnpm test tests/governance/security
 ```
 
 ### With coverage
@@ -192,7 +208,7 @@ pnpm ci:smoke:staging
 
 ## Writing a new test
 
-1. Choose the directory that matches the test's intent (`tests/branch/`, `tests/security/`, etc.).
+1. Choose the directory that matches the test's intent (`tests/unit/`, `tests/integration/`, `tests/governance/`, etc.).
 2. Create a descriptive file name ending in `.test.ts` or `.spec.ts`.
 3. Import from `@/` aliases rather than relative paths where possible.
 4. Run the single file before running the full suite:
