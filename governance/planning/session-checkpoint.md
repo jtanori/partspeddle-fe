@@ -137,29 +137,29 @@ backend/modules/<name>/
 
 ---
 
+## Completed
+
+4. **SCGS Phase 2 — Search Projection Contract**
+   - Branch: `feat/scgs-phase-2-search-projection-contract`
+   - Merged to `develop` via PR #118.
+   - Deliverables: Zod-based `SearchViewModel` contract in
+     `apps/web/src/backend/modules/scgs/contract/search-view-model.contract.ts`;
+     `buildSearchViewModel` application use case; `/api/search/scgs` returns
+     validated `SearchViewModel`; shim in `domain/view-models/search.ts`;
+     module-owned contract/integration tests; spec document.
+
+---
+
 ## In Progress
 
-1. **SCGS Phase 2 — Search Projection Contract**
-   - Branch: `feat/scgs-phase-2-search-projection-contract`
-   - Plan: `governance/planning/scgs-spec-implementation-plan.md` (Fase 2)
-   - Objective: Define Zod-based `SearchViewModel` contract owned by SCGS,
-     build it from `RankedArtifact[]`, and make `/api/search/scgs` return it
-     as the primary response.
-
-## Next Steps
-
-1. **Complete Phase 2** — implement `buildSearchViewModel`, contract tests,
-   update route, and merge to `develop`.
-2. **Product roadmap** — continue with Phase 3 (PDP Projection) or marketplace
-   feature work after Phase 2 merges._
+_None._
 
 ---
 
 ## Next Steps
 
-1. **SCGS Phase 0+1 merged** to `develop` via PR #117.
-2. **Product roadmap** — continue marketplace feature work. Next initiative to be
-   selected from the SCGS spec implementation plan or the product backlog.
+1. **SCGS Phase 3 — PDP Projection** or continue with marketplace feature work.
+2. Select next initiative from the SCGS spec implementation plan or product backlog.
 
 ---
 
