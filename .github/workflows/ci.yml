@@ -119,6 +119,44 @@ jobs:
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
           ALGOLIA_SEARCH_INDEX_NAME: ${{ secrets.ALGOLIA_SEARCH_INDEX_NAME }}
 
+  scgs-governance:
+    name: SCGS Governance
+    needs: test
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: SCGS CI decision
+        run: pnpm scgs:ci:decide
+        env:
+          SCGS_ENV: ci
+          SCGS_DRY_RUN: false
+          SCGS_REPLAY_STORE: filesystem
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: SCGS PRR
+        run: pnpm scgs:prr
+        env:
+          SCGS_ENV: ci
+          SCGS_REPLAY_STORE: filesystem
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
   storybook:
     name: Storybook Build
     needs: test

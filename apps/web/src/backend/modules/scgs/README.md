@@ -25,22 +25,33 @@ apps/web/src/backend/modules/scgs/
 │   ├── compiled-specification-set.ts
 │   ├── compiled-semantic-artifact.ts
 │   ├── diff.ts
+│   ├── governance/            # CI decision and PRR report types
+│   │   ├── ci-decision.ts
+│   │   └── prr-report.ts
 │   ├── governance-policy.ts
 │   ├── pts.ts
 │   ├── semantic-specification.ts
 │   └── replay/
 │       ├── engine.ts
-│       ├── store.ts
+│       ├── replay-store.port.ts
+│       ├── store.ts           # backward-compatible re-export
 │       ├── types.ts
 │       └── validator.ts
 ├── application/               # Use cases / projections
 │   ├── build-dashboard-read-model.ts
 │   ├── compile-listing.ts
-│   └── rank-artifacts.ts
+│   ├── evaluate-governance.ts
+│   ├── rank-artifacts.ts
+│   ├── replay-trace.ts
+│   └── run-prr.ts
 ├── infrastructure/            # I/O, repositories, controllers
 │   ├── governance-controller.ts
 │   ├── ranking-engine.ts
 │   ├── ranking-types.ts
+│   ├── replay/                # storage adapters
+│   │   ├── filesystem-replay-store.ts
+│   │   ├── supabase-replay-store.ts
+│   │   └── replay-store.factory.ts
 │   └── specification-compiler.ts
 ├── tests/                     # Module-owned tests
 ├── index.ts                   # Public barrel
@@ -86,6 +97,51 @@ Temporary shims remain in the legacy locations:
 
 They re-export the canonical module. New code must use `@/backend/modules/scgs`.
 The shims will be removed in a future cleanup pass.
+
+## Governance & CI (Phase 6)
+
+SCGS now provides real governance gates:
+
+- **`evaluateGovernanceDecision`** — combines PTS drift, governance policy, and
+  system state into a `PASS | WARN | BLOCK` CI decision.
+- **`replayTrace`** — generates, persists, and validates a replay trace between
+  two compiled artifacts.
+- **`runPRR`** — runs the Production Readiness Review checks:
+  - Determinism
+  - PTS stability
+  - Snapshot integrity
+  - PTS contract integrity
+- **`createReplayStore`** — environment-based factory that selects a filesystem
+  adapter (dev/local) or Supabase Storage adapter (CI/production).
+
+### Scripts
+
+```bash
+# CI gate — exits 0/1/2 for PASS/WARN/BLOCK
+pnpm scgs:ci:decide
+
+# Production Readiness Review
+pnpm scgs:prr
+
+# Replay validation against stored trace
+TRACE_ID=... SCGS_PREVIOUS_ARTIFACT_URI=... SCGS_CURRENT_ARTIFACT_URI=... pnpm scgs:replay:validate
+```
+
+### CI workflow
+
+`.github/workflows/ci.yml` includes an `scgs-governance` job after the `test`
+job. The job starts with `continue-on-error: true` while the baseline is
+established.
+
+### Storage configuration
+
+| Variable                    | Purpose                             |
+| --------------------------- | ----------------------------------- |
+| `SCGS_REPLAY_STORE`         | `filesystem` or `supabase`          |
+| `SCGS_STORAGE_BUCKET`       | Supabase Storage bucket name        |
+| `SCGS_STORAGE_PATH_PREFIX`  | Prefix for stored objects           |
+| `SUPABASE_URL`              | Supabase project URL                |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key for storage writes |
 
 ## Ranking signals
 

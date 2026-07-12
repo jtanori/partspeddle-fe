@@ -69,9 +69,11 @@ export { diffGroups, diffFacets, scoreDiff, deepEqual } from './domain/diff';
 
 // Domain — replay
 export type { SemanticReplayEvent, SemanticReplayTrace } from './domain/replay/types';
+export type { ReplayStore, ReplayStoreListOptions } from './domain/replay/replay-store.port';
 export { SemanticReplayEngine } from './domain/replay/engine';
-export { ReplayStore } from './domain/replay/store';
 export { ReplayValidator } from './domain/replay/validator';
+export type { CIDecision, CIDecisionInput, CIDecisionStatus } from './domain/governance/ci-decision';
+export type { PRRReport, PRRCheck, PRRCheckStatus } from './domain/governance/prr-report';
 
 // Infrastructure — compiler, ranking, governance controller
 export type { SpecificationCompiler } from './infrastructure/specification-compiler';
@@ -98,6 +100,10 @@ export type {
   RankedArtifact,
 } from './infrastructure/ranking-types';
 export { evaluateSystemState, getBehavioralResponse } from './infrastructure/governance-controller';
+export { FilesystemReplayStore } from './infrastructure/replay/filesystem-replay-store';
+export { SupabaseReplayStore } from './infrastructure/replay/supabase-replay-store';
+export { createReplayStore } from './infrastructure/replay/replay-store.factory';
+export type { ReplayStoreFactoryEnv } from './infrastructure/replay/replay-store.factory';
 
 // Contract — projection schemas
 export {
@@ -133,6 +139,9 @@ export {
   type PDPViewModelPresentation,
   type BuildPDPViewModelInput,
 } from './application/build-pdp-view-model';
+export { evaluateGovernanceDecision } from './application/evaluate-governance';
+export { replayTrace, type ReplayTraceInput, type ReplayTraceResult } from './application/replay-trace';
+export { runPRR, type RunPRRInput } from './application/run-prr';
 
 // Contract — PDP projection schemas
 export {
