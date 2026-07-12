@@ -190,11 +190,11 @@ These two items must land before the large-scale repository reorganization begin
 
 **Goal:** Introduce pnpm workspaces and the new top-level directories without moving application code.
 
-- [ ] Add `pnpm-workspace.yaml` referencing `apps/*` and `packages/*`.
-- [ ] Create empty target directories with `README.md` files.
-- [ ] Move shared config into `packages/config`.
-- [ ] Update root `package.json` to reference workspace packages.
-- [ ] Ensure CI still passes.
+- [x] Add `pnpm-workspace.yaml` referencing `apps/*` and `packages/*`.
+- [x] Create empty target directories with `README.md` files.
+- [x] Move shared config into `packages/config`.
+- [x] Update root `package.json` to reference workspace packages.
+- [x] Ensure CI still passes.
 
 ### Phase 2 — Application extraction
 

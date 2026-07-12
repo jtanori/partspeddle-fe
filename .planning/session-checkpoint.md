@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-11
-**Branch:** `feat/phase-0-platform-docs`
-**Status:** Prep 1 (nonce-based CSP) and Prep 2 (documentation sync) complete. Phase 0 of platform repository evolution approved and in progress.
+**Branch:** `feat/phase-1-workspace-scaffolding`
+**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding approved and in progress.
 
 ---
 
@@ -18,7 +18,7 @@
 
 ### CSP Hardening (Prep 1)
 
-- Implemented nonce-based CSP in `src/middleware.ts` using Web Crypto.
+- Implemented nonce-based CSP in `src/proxy.ts` using Web Crypto.
 - Moved CSP out of static `next.config.ts` headers; applied per-request via middleware.
 - Updated security header tests to assert nonce-aware `script-src` behavior.
 - Merged to `develop` via PR #101.
@@ -51,6 +51,8 @@
 - PR #101 — `feat(csp): nonce-based Content-Security-Policy via middleware`
 - PR #102 — `docs(agents): allow agent to run verification when explicitly asked`
 - PR #103 — `docs(prep): synchronize docs with delivery certification and CSP changes`
+- PR #104 — `Phase 0: platform navigation documents`
+- PR #105 — `Phase 1: workspace scaffolding` (open)
 
 ### Planning Cleanup
 
@@ -58,6 +60,7 @@
 - Archived completed P5/P6 security and phase plans in `.planning/archive/`.
 - Created platform repository evolution plan: `.planning/platform-repository-evolution.md`.
 - Created Phase 0 implementation plan: `.planning/phase-0-implementation-plan.md`.
+- Created Phase 1 implementation plan: `.planning/phase-1-implementation-plan.md`.
 
 ---
 
@@ -65,7 +68,7 @@
 
 ### 1. Production CSP is now nonce-based
 
-`src/middleware.ts` generates a per-request nonce and sets `Content-Security-Policy: script-src 'self' 'nonce-<value>' ...`. The temporary `'unsafe-inline'` relaxation has been removed from production. See `docs/engineering/security.md`.
+`src/proxy.ts` generates a per-request nonce and sets `Content-Security-Policy: script-src 'self' 'nonce-<value>' ...`. The temporary `'unsafe-inline'` relaxation has been removed from production. See `docs/engineering/security.md`.
 
 ### 2. Repository will evolve into a platform topology
 
@@ -104,17 +107,17 @@ backend/modules/<name>/
 
 ## In Progress
 
-1. **Phase 0 — Platform navigation documents**
-   - Branch: `feat/phase-0-platform-docs`
-   - Deliverables: `PROJECT_MAP.md`, `ARCHITECTURE.md`, `TESTING.md`, `CONTRIBUTING.md`, `GOVERNANCE.md`
-   - Plan: `.planning/phase-0-implementation-plan.md`
+1. **Phase 1 — Workspace scaffolding**
+   - Branch: `feat/phase-1-workspace-scaffolding`
+   - Deliverables: updated `pnpm-workspace.yaml`, empty target directories with READMEs, `packages/config`, updated root `package.json`
+   - Plan: `.planning/phase-1-implementation-plan.md`
 
 ---
 
 ## Next Steps
 
-1. **Complete Phase 0** — write and merge the five navigation documents.
-2. **Phase 1** — introduce pnpm workspaces and new top-level directories.
+1. **Complete Phase 1** — create workspace scaffolding and merge.
+2. **Phase 2** — move the Next.js application into `apps/web/`.
 3. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
 4. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
@@ -130,5 +133,5 @@ backend/modules/<name>/
 ## Still Relevant
 
 - `.planning/platform-repository-evolution.md` — active planning document.
-- `.planning/phase-0-implementation-plan.md` — active implementation plan.
+- `.planning/phase-1-implementation-plan.md` — active implementation plan.
 - `artifacts/delivery/production-deployment-2026-07-11.json` — canonical DC-8 record.

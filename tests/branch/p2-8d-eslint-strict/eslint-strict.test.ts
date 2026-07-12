@@ -12,14 +12,14 @@ function read(relativePath: string): string {
 
 describe('P2.8d ESLint strict domain rules', () => {
   it('enforces no-explicit-any and no-unused-vars as errors in src/domain', () => {
-    const config = read('eslint.config.js');
+    const config = read('packages/config/eslint.config.js');
     expect(config).toContain('src/domain/**/*.{ts,tsx}');
     expect(config).toContain('"@typescript-eslint/no-explicit-any": "error"');
     expect(config).toContain('"@typescript-eslint/no-unused-vars": "error"');
   });
 
   it('keeps relaxed any rules for the broader src tree', () => {
-    const config = read('eslint.config.js');
+    const config = read('packages/config/eslint.config.js');
     expect(config).toContain('"@typescript-eslint/no-explicit-any": "off"');
     expect(config).toContain('"@typescript-eslint/no-unused-vars": "warn"');
   });

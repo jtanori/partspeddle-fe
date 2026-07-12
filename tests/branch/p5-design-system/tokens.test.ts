@@ -7,7 +7,7 @@ const read = (...segments: string[]) => fs.readFileSync(path.join(repoRoot, ...s
 
 describe('P5.0 design tokens', () => {
   const css = read('src', 'index.css');
-  const tailwindConfig = read('tailwind.config.ts');
+  const tailwindConfig = read('packages', 'config', 'tailwind.config.ts');
   const pdprRoot = read('src', 'components', 'pdp-modern', 'PDPRoot.tsx');
 
   it('exposes the new systematic token set in src/index.css', () => {

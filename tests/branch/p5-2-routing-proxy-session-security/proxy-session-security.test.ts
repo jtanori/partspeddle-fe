@@ -228,7 +228,10 @@ describe('P5.2 routing, proxy, and session security', () => {
       const responseCookiesSet = vi.fn();
       const nextSpy = vi
         .spyOn(NextResponse, 'next')
-        .mockReturnValue({ cookies: { set: responseCookiesSet } } as any);
+        .mockReturnValue({
+          cookies: { set: responseCookiesSet },
+          headers: { set: vi.fn() },
+        } as any);
 
       createServerClientMock.mockImplementation((_url: string, _key: string, config: any) => {
         // Trigger a cookie refresh immediately to exercise setAll.

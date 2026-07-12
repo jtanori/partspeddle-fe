@@ -2,6 +2,20 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { tracer } from '@/lib/observability';
 import { getUserRole, type UserRole } from '@/lib/user-roles';
+import { buildContentSecurityPolicy } from '@/lib/security-headers';
+
+/**
+ * Generate a 16-byte cryptographically-secure nonce and return it as a
+ * base64-encoded string.
+ *
+ * This runs in the Edge Runtime, so we use Web Crypto instead of Node's
+ * `crypto` module and avoid `Buffer`.
+ */
+function generateNonce(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes));
+}
 
 export async function proxy(request: NextRequest) {
   const start = Date.now();
@@ -116,6 +130,11 @@ export async function proxy(request: NextRequest) {
   });
 
   const response = await responsePromise;
+
+  // Apply a request-scoped Content-Security-Policy with a fresh nonce so
+  // Next.js App Router can hydrate without allowing 'unsafe-inline' scripts.
+  const nonce = generateNonce();
+  response.headers.set('Content-Security-Policy', buildContentSecurityPolicy(nonce));
 
   if (request.nextUrl.pathname === '/') {
     console.log(

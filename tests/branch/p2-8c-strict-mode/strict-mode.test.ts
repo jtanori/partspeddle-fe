@@ -11,8 +11,8 @@ function read(relativePath: string): string {
 }
 
 describe('P2.8c TypeScript strict mode', () => {
-  it('enables strict mode in tsconfig.json', () => {
-    const tsconfig = read('tsconfig.json');
+  it('enables strict mode in tsconfig.base.json', () => {
+    const tsconfig = read('packages/config/tsconfig.base.json');
     expect(tsconfig).toContain('"strict": true');
     expect(tsconfig).not.toContain('"strict": false');
   });
@@ -31,8 +31,6 @@ describe('P2.8c TypeScript strict mode', () => {
 
   it('aligns mobile filter setter typing with SearchPageClient', () => {
     const searchPage = read('src/components/search/SearchPageClient.tsx');
-    expect(searchPage).toContain(
-      'SearchFilters | ((prev: SearchFilters) => SearchFilters)',
-    );
+    expect(searchPage).toContain('SearchFilters | ((prev: SearchFilters) => SearchFilters)');
   });
 });
