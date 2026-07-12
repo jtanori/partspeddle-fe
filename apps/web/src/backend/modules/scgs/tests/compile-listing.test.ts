@@ -41,7 +41,7 @@ describe('SCGS compileListing use case', () => {
   it('returns a lineage-aware artifact', async () => {
     const artifact = await compileListing(
       { listingId: 'l1', categoryId: 'c1', version: '1.0.0' },
-      createMockDeps()
+      createMockDeps(),
     );
 
     expect(artifact.listingId).toBe('l1');
@@ -53,12 +53,28 @@ describe('SCGS compileListing use case', () => {
   });
 
   it('uses a default version when omitted', async () => {
-    const artifact = await compileListing(
-      { listingId: 'l1', categoryId: 'c1' },
-      createMockDeps()
-    );
+    const artifact = await compileListing({ listingId: 'l1', categoryId: 'c1' }, createMockDeps());
 
     expect(artifact.version).toBe('1.0.0');
     expect(artifact.lineageId).toMatch(/^l1:1\.0\.0:/);
+  });
+
+  it('populates trust, compatibility, and fitment conclusions', async () => {
+    const artifact = await compileListing(
+      { listingId: 'l1', categoryId: 'c1', version: '1.0.0' },
+      createMockDeps(),
+      {
+        compatibility: {
+          entries: [{ make: 'Honda', model: 'Civic', years: '2020', engine: '2.0L' }],
+        },
+      },
+    );
+
+    expect(artifact.compiled.trust.score).toBeGreaterThan(0);
+    expect(artifact.compiled.trust.level).toBeDefined();
+    expect(artifact.compiled.compatibility.status).toBe('compatible');
+    expect(artifact.compiled.compatibility.vehicles).toHaveLength(1);
+    expect(artifact.compiled.fitment.status).toBeDefined();
+    expect(artifact.compiled.fitment.fitmentScore).toBeGreaterThanOrEqual(0);
   });
 });

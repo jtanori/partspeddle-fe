@@ -1,3 +1,7 @@
+import type { TrustProfile } from './trust-profile';
+import type { CompatibilityConclusion } from './compatibility-conclusion';
+import type { FitmentConclusion } from './fitment-conclusion';
+
 export interface ResolvedSpec {
   key: string;
   label: string;
@@ -31,4 +35,10 @@ export interface CompiledSpecificationSet {
     responseRate?: number;
     conversionScore?: number;
   };
+  /** Compiled trust profile (Phase 4). */
+  trust: TrustProfile;
+  /** Compiled compatibility conclusion (Phase 4). */
+  compatibility: CompatibilityConclusion;
+  /** Compiled fitment conclusion (Phase 4). */
+  fitment: FitmentConclusion;
 }

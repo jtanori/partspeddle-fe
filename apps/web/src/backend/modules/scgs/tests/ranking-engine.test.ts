@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { RankingEngine } from '../infrastructure/ranking-engine';
 import { CompiledSpecificationSet } from '../domain/compiled-specification-set';
+import { buildCompiledSpecificationSet } from './fixtures';
 
 type RankingArtifact = {
   listingId: string;
@@ -13,12 +14,9 @@ function mockArtifact(
 ): RankingArtifact {
   return {
     listingId,
-    compiled: {
-      flat: [],
-      grouped: [],
-      facets: {},
+    compiled: buildCompiledSpecificationSet({
       rankingFactors: factors,
-    },
+    }),
   };
 }
 
@@ -50,7 +48,7 @@ describe('SCGS RankingEngine', () => {
     ];
 
     const ranked = RankingEngine.rank(artifacts);
-    const contributionFactors = ranked[0].explanation.contributions.map(c => c.factor);
+    const contributionFactors = ranked[0].explanation.contributions.map((c) => c.factor);
 
     expect(contributionFactors).toContain('image_quality_score');
     expect(contributionFactors).toContain('inventory_completeness_score');
@@ -65,7 +63,9 @@ describe('SCGS RankingEngine', () => {
     ];
 
     const ranked = RankingEngine.rank(artifacts);
-    const quality = ranked[0].explanation.contributions.find(c => c.factor === 'listing_quality_score');
+    const quality = ranked[0].explanation.contributions.find(
+      (c) => c.factor === 'listing_quality_score',
+    );
 
     expect(quality?.normalizedValue).toBe(1);
     expect(quality?.rawValue).toBe(1.5);
@@ -87,6 +87,6 @@ describe('SCGS RankingEngine', () => {
 
     const ranked = RankingEngine.rank(artifacts);
     expect(ranked[0].score).toBe(0);
-    expect(ranked[0].explanation.contributions.every(c => c.normalizedValue === 0)).toBe(true);
+    expect(ranked[0].explanation.contributions.every((c) => c.normalizedValue === 0)).toBe(true);
   });
 });

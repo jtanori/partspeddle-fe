@@ -18,7 +18,8 @@ export interface PDPViewModelPresentation {
   images: string[];
   description: string;
   sku?: string;
-  compatibility: Array<{
+  /** @deprecated Compatibility is now compiled into the artifact. */
+  compatibility?: Array<{
     make: string;
     model: string;
     years: string;
@@ -39,11 +40,6 @@ export interface BuildPDPViewModelInput {
   presentation: PDPViewModelPresentation;
 }
 
-function parseYearRange(years: string): number {
-  const match = years.match(/\d{4}/);
-  return match ? parseInt(match[0], 10) : 0;
-}
-
 /**
  * Application use case: build a validated SCGS PDP view model from a compiled
  * semantic artifact and its presentation data.
@@ -52,10 +48,11 @@ export function buildPDPViewModel(input: BuildPDPViewModelInput): PDPViewModel {
   const { artifact, presentation } = input;
   const compiled = artifact.compiled;
   const factors = compiled.rankingFactors;
+  const fitment = compiled.fitment;
 
   const isOEM = presentation.condition.toUpperCase() === 'NEW';
   const isTested = factors.sellerTrust >= 0.6 || factors.listingQuality >= 0.6;
-  const isGoodFit = presentation.compatibility.length > 0;
+  const isGoodFit = fitment.fitmentScore > 50;
 
   const data: PDPDataModel = {
     id: artifact.listingId,
@@ -103,13 +100,13 @@ export function buildPDPViewModel(input: BuildPDPViewModelInput): PDPViewModel {
       responseTime: presentation.seller.responseTime ?? '24h',
     },
     fitment: {
-      confidence: isGoodFit ? 'high' : 'low',
-      fitmentScore: isGoodFit ? 100 : 0,
-      vehicles: presentation.compatibility.map((c) => ({
-        year: parseYearRange(c.years),
-        make: c.make,
-        model: c.model,
-        engine: c.engine,
+      confidence: fitment.status === 'exact' || fitment.status === 'compatible' ? 'high' : 'low',
+      fitmentScore: fitment.fitmentScore,
+      vehicles: fitment.vehicles.map((v) => ({
+        year: v.year,
+        make: v.make,
+        model: v.model,
+        engine: v.engine,
       })),
     },
     badges: {

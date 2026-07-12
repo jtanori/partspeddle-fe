@@ -29,6 +29,28 @@ export type {
 
 export type { SemanticSpecification } from './domain/semantic-specification';
 
+// Domain — semantic capabilities (Phase 4)
+export type {
+  TrustProfile,
+  TrustLevel,
+  TrustSignal,
+  TrustSignalName,
+  TrustCompilerInput,
+} from './domain/trust-profile';
+export type {
+  CompatibilityConclusion,
+  CompatibilityStatus,
+  CompatibleVehicle,
+  RawCompatibilityEntry,
+  CompatibilityCompilerInput,
+} from './domain/compatibility-conclusion';
+export type {
+  FitmentConclusion,
+  FitmentStatus,
+  FitmentVehicle,
+  FitmentCompilerInput,
+} from './domain/fitment-conclusion';
+
 export { evaluateGovernance, DEFAULT_POLICY } from './domain/governance-policy';
 export { evaluatePTS } from './domain/pts';
 export { diffGroups, diffFacets, scoreDiff, deepEqual } from './domain/diff';
@@ -42,6 +64,12 @@ export { ReplayValidator } from './domain/replay/validator';
 // Infrastructure — compiler, ranking, governance controller
 export type { SpecificationCompiler } from './infrastructure/specification-compiler';
 export { SpecificationCompilerImpl } from './infrastructure/specification-compiler';
+export { compileTrustProfile } from './infrastructure/trust-compiler';
+export {
+  compileCompatibility,
+  parseYearRange as parseCompatibilityYearRange,
+} from './infrastructure/compatibility-compiler';
+export { compileFitment } from './infrastructure/fitment-compiler';
 export { RankingEngine } from './infrastructure/ranking-engine';
 export type {
   RankingFeatureFactors,
@@ -74,6 +102,7 @@ export type {
 export type { SCGSReadModel } from './application/build-dashboard-read-model';
 export { buildDashboardReadModel } from './application/build-dashboard-read-model';
 export { compileListing } from './application/compile-listing';
+export type { CompileListingOptions } from './application/compile-listing';
 export { rankArtifacts } from './application/rank-artifacts';
 export {
   buildSearchViewModel,

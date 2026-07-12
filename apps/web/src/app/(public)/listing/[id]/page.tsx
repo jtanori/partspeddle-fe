@@ -20,10 +20,6 @@ function buildPresentation(
   part: Record<string, unknown>,
   seller: Record<string, unknown> | null,
 ): PDPViewModelPresentation {
-  const compatibility = Array.isArray(part.compatibility)
-    ? (part.compatibility as Array<{ make: string; model: string; years: string; engine?: string }>)
-    : [];
-
   return {
     title: String(part.title ?? ''),
     subtitle: typeof part.subtitle === 'string' ? part.subtitle : undefined,
@@ -32,7 +28,6 @@ function buildPresentation(
     images: Array.isArray(part.images) ? (part.images as string[]) : [],
     description: String(part.description ?? ''),
     sku: typeof part.trackingNumber === 'string' ? part.trackingNumber : undefined,
-    compatibility,
     seller: {
       id: seller?.id ? String(seller.id) : 'unknown',
       displayName: seller?.name ? String(seller.name) : 'Unknown Seller',
@@ -41,6 +36,33 @@ function buildPresentation(
       responseTime: seller?.responseTime ? String(seller.responseTime) : undefined,
     },
     crossSell: [],
+  };
+}
+
+function buildCompatibilityInput(part: Record<string, unknown>) {
+  const entries = Array.isArray(part.compatibility)
+    ? (part.compatibility as Array<{ make: string; model: string; years: string; engine?: string }>)
+    : [];
+
+  return {
+    entries,
+    partNumber: typeof part.partNumber === 'string' ? part.partNumber : undefined,
+    oemPartNumber: typeof part.oemPartNumber === 'string' ? part.oemPartNumber : undefined,
+  };
+}
+
+function buildSellerTrustInput(
+  seller: Record<string, unknown> | null,
+  part: Record<string, unknown>,
+) {
+  return {
+    sellerTrustScore: typeof part.sellerTrustScore === 'number' ? part.sellerTrustScore : 0.5,
+    listingQualityScore: typeof part.listingQualityScore === 'number' ? part.listingQualityScore : 0.5,
+    rating: typeof seller?.rating === 'number' ? seller.rating : undefined,
+    reviewCount: typeof seller?.reviewCount === 'number' ? seller.reviewCount : undefined,
+    feedbackPercentage: typeof seller?.feedbackPercentage === 'number' ? seller.feedbackPercentage : undefined,
+    verificationStatus: seller?.verification_status ? String(seller.verification_status) : undefined,
+    responseTime: seller?.responseTime ? String(seller.responseTime) : undefined,
   };
 }
 
@@ -59,11 +81,13 @@ export default async function ListingDetailPage({ params }: Props) {
     return <div>Part not found</div>;
   }
 
+  const partRecord = part as unknown as Record<string, unknown>;
+
   // Explicitly fetch seller profile
   const { data: seller } = await supabase
     .from('seller_profiles')
     .select('*')
-    .eq('user_id', (part as unknown as Record<string, unknown>).seller_id)
+    .eq('user_id', partRecord.seller_id)
     .maybeSingle();
 
   const specRepo: SpecificationRepository = {
@@ -76,10 +100,12 @@ export default async function ListingDetailPage({ params }: Props) {
   const artifact = await compiler.compile({
     listingId: id,
     categoryId: part.categoryId,
+    seller: buildSellerTrustInput(seller, partRecord),
+    compatibility: buildCompatibilityInput(partRecord),
   });
   const viewModel = buildPDPViewModel({
     artifact,
-    presentation: buildPresentation(part as unknown as Record<string, unknown>, seller),
+    presentation: buildPresentation(partRecord, seller),
   });
 
   return (

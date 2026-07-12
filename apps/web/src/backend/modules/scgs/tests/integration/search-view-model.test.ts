@@ -2,11 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { buildSearchViewModel } from '../../application/build-search-view-model';
 import { RankedArtifact } from '../../infrastructure/ranking-types';
 import { SearchFilters } from '@/types';
+import { buildCompiledSpecificationSet } from '../fixtures';
 
-function makeRankedArtifact(
-  listingId: string,
-  listingQuality: number,
-): RankedArtifact {
+function makeRankedArtifact(listingId: string, listingQuality: number): RankedArtifact {
   return {
     artifact: {
       listingId,
@@ -14,12 +12,10 @@ function makeRankedArtifact(
       version: '1.0.0',
       lineageId: `${listingId}:1.0.0:abc` as RankedArtifact['artifact']['lineageId'],
       checksum: 'abc',
-      compiled: {
-        flat: [],
-        grouped: [],
+      compiled: buildCompiledSpecificationSet({
         facets: { make: 'Honda' },
         rankingFactors: { listingQuality, sellerTrust: 0.5, recency: 0.5 },
-      },
+      }),
       metadata: { createdAt: new Date().toISOString(), compilerVersion: '1.0.0' },
     },
     result: {
@@ -49,10 +45,7 @@ const baseFilters: SearchFilters = {
 
 describe('SCGS buildSearchViewModel', () => {
   it('returns a validated SearchViewModel', () => {
-    const ranked = [
-      makeRankedArtifact('a', 0.9),
-      makeRankedArtifact('b', 0.5),
-    ];
+    const ranked = [makeRankedArtifact('a', 0.9), makeRankedArtifact('b', 0.5)];
 
     const viewModel = buildSearchViewModel({
       rankedArtifacts: ranked,
@@ -76,10 +69,7 @@ describe('SCGS buildSearchViewModel', () => {
   });
 
   it('preserves the ranking order from RankedArtifact[]', () => {
-    const ranked = [
-      makeRankedArtifact('low', 0.3),
-      makeRankedArtifact('high', 0.9),
-    ];
+    const ranked = [makeRankedArtifact('low', 0.3), makeRankedArtifact('high', 0.9)];
 
     const viewModel = buildSearchViewModel({
       rankedArtifacts: ranked,
@@ -114,7 +104,7 @@ describe('SCGS buildSearchViewModel', () => {
       total: 1,
     });
 
-    const categoryFacet = viewModel.facets.find(f => f.key === 'category');
+    const categoryFacet = viewModel.facets.find((f) => f.key === 'category');
     expect(categoryFacet).toBeDefined();
     expect(categoryFacet!.values).toContainEqual({
       value: 'Brakes',
