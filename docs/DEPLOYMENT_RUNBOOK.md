@@ -22,7 +22,7 @@
 
 1. `git push` to `develop`.
 2. CI `ci.yml` runs tests/lint.
-3. Fly.io deployment is triggered automatically using `fly/fly.stage.toml`.
+3. Fly.io deployment is triggered automatically using `platform/deployment/fly/fly.stage.toml`.
 4. **Post-Deployment**: Run validation suite (see Operational Validation below).
 
 ### Local fallback
@@ -30,21 +30,21 @@
 ```bash
 pnpm deploy:staging
 # or
-bash scripts/ops/deploy.sh staging
+bash platform/scripts/deployment/deploy.sh staging
 ```
 
 ## Production Deployment
 
 1. Merge validated code to `main`.
 2. CI `ci.yml` runs tests/lint.
-3. Fly.io deployment is triggered automatically using `fly/fly.prod.toml`.
+3. Fly.io deployment is triggered automatically using `platform/deployment/fly/fly.prod.toml`.
 
 ### Local fallback
 
 ```bash
 pnpm deploy:production
 # or
-bash scripts/ops/deploy.sh production
+bash platform/scripts/deployment/deploy.sh production
 ```
 
 ---
@@ -173,7 +173,7 @@ After a change lands on `develop`, the `smoke-staging` CI job runs automatically
 ## What the smoke job checks
 
 1. `GET https://stage.partspeddle.com/api/health` returns HTTP 200.
-2. `scripts/search/process-search-outbox.ts` runs against staging and completes without errors.
+2. `platform/scripts/search/process-search-outbox.ts` runs against staging and completes without errors.
 3. `POST /functions/v1/send-message-notification` returns a non-5xx response (401 is expected for an unauthenticated request; any 5xx means the function is not deployed or unhealthy).
 
 ## Required staging secrets

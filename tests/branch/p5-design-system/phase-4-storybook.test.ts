@@ -64,23 +64,23 @@ describe('P5.0 Phase 4 — PPDS Documentation & Storybook', () => {
 
   it('has stories for UI primitives', () => {
     const primitives = [
-      'src/components/ui/button.stories.tsx',
-      'src/components/ui/badge.stories.tsx',
-      'src/components/ui/card.stories.tsx',
-      'src/components/ui/chip.stories.tsx',
-      'src/components/ui/skeleton.stories.tsx',
-      'src/components/ui/tabs.stories.tsx',
-      'src/components/ui/accordion.stories.tsx',
-      'src/components/ui/breadcrumb.stories.tsx',
-      'src/components/ui/pagination.stories.tsx',
-      'src/components/ui/search-input.stories.tsx',
-      'src/components/ui/filter-group.stories.tsx',
-      'src/components/ui/modal.stories.tsx',
-      'src/components/ui/drawer.stories.tsx',
-      'src/components/ui/toast.stories.tsx',
-      'src/components/ui/tooltip.stories.tsx',
-      'src/components/ui/scroll-area.stories.tsx',
-      'src/components/ui/sheet.stories.tsx',
+      'apps/web/src/components/ui/button.stories.tsx',
+      'apps/web/src/components/ui/badge.stories.tsx',
+      'apps/web/src/components/ui/card.stories.tsx',
+      'apps/web/src/components/ui/chip.stories.tsx',
+      'apps/web/src/components/ui/skeleton.stories.tsx',
+      'apps/web/src/components/ui/tabs.stories.tsx',
+      'apps/web/src/components/ui/accordion.stories.tsx',
+      'apps/web/src/components/ui/breadcrumb.stories.tsx',
+      'apps/web/src/components/ui/pagination.stories.tsx',
+      'apps/web/src/components/ui/search-input.stories.tsx',
+      'apps/web/src/components/ui/filter-group.stories.tsx',
+      'apps/web/src/components/ui/modal.stories.tsx',
+      'apps/web/src/components/ui/drawer.stories.tsx',
+      'apps/web/src/components/ui/toast.stories.tsx',
+      'apps/web/src/components/ui/tooltip.stories.tsx',
+      'apps/web/src/components/ui/scroll-area.stories.tsx',
+      'apps/web/src/components/ui/sheet.stories.tsx',
     ];
     for (const file of primitives) {
       expect(exists(file), `Expected ${file} to exist`).toBe(true);
@@ -89,15 +89,15 @@ describe('P5.0 Phase 4 — PPDS Documentation & Storybook', () => {
 
   it('has stories for design-system composites', () => {
     const composites = [
-      'src/components/design-system/price.stories.tsx',
-      'src/components/design-system/rating.stories.tsx',
-      'src/components/design-system/inventory-count.stories.tsx',
-      'src/components/design-system/seller-summary.stories.tsx',
-      'src/components/design-system/image-gallery.stories.tsx',
-      'src/components/design-system/specification-table.stories.tsx',
-      'src/components/design-system/vehicle-lineage.stories.tsx',
-      'src/components/design-system/part-card.stories.tsx',
-      'src/components/design-system/seller-card.stories.tsx',
+      'apps/web/src/components/design-system/price.stories.tsx',
+      'apps/web/src/components/design-system/rating.stories.tsx',
+      'apps/web/src/components/design-system/inventory-count.stories.tsx',
+      'apps/web/src/components/design-system/seller-summary.stories.tsx',
+      'apps/web/src/components/design-system/image-gallery.stories.tsx',
+      'apps/web/src/components/design-system/specification-table.stories.tsx',
+      'apps/web/src/components/design-system/vehicle-lineage.stories.tsx',
+      'apps/web/src/components/design-system/part-card.stories.tsx',
+      'apps/web/src/components/design-system/seller-card.stories.tsx',
     ];
     for (const file of composites) {
       expect(exists(file), `Expected ${file} to exist`).toBe(true);
@@ -106,13 +106,13 @@ describe('P5.0 Phase 4 — PPDS Documentation & Storybook', () => {
 
   it('has stories for workspace shell components', () => {
     const workspace = [
-      'src/components/workspace/workspace-layout.stories.tsx',
-      'src/components/workspace/top-navigation.stories.tsx',
-      'src/components/workspace/toolbar.stories.tsx',
-      'src/components/workspace/sidebar.stories.tsx',
-      'src/components/workspace/page-header.stories.tsx',
-      'src/components/workspace/inspector-panel.stories.tsx',
-      'src/components/workspace/density-provider.stories.tsx',
+      'apps/web/src/components/workspace/workspace-layout.stories.tsx',
+      'apps/web/src/components/workspace/top-navigation.stories.tsx',
+      'apps/web/src/components/workspace/toolbar.stories.tsx',
+      'apps/web/src/components/workspace/sidebar.stories.tsx',
+      'apps/web/src/components/workspace/page-header.stories.tsx',
+      'apps/web/src/components/workspace/inspector-panel.stories.tsx',
+      'apps/web/src/components/workspace/density-provider.stories.tsx',
     ];
     for (const file of workspace) {
       expect(exists(file), `Expected ${file} to exist`).toBe(true);
@@ -120,8 +120,8 @@ describe('P5.0 Phase 4 — PPDS Documentation & Storybook', () => {
   });
 
   it('has shared fixtures for stories', () => {
-    expect(exists('src/components/__fixtures__/parts.ts')).toBe(true);
-    expect(exists('src/components/__fixtures__/sellers.ts')).toBe(true);
+    expect(exists('apps/web/src/components/__fixtures__/parts.ts')).toBe(true);
+    expect(exists('apps/web/src/components/__fixtures__/sellers.ts')).toBe(true);
   });
 
   it(

@@ -71,17 +71,17 @@ function mockSession(role: string | null) {
 }
 
 async function loadProxy() {
-  const mod = await import('../../../src/proxy');
+  const mod = await import('../../../apps/web/src/proxy');
   return mod.proxy;
 }
 
 async function loadSellerAuth() {
-  const mod = await import('../../../src/lib/seller-auth');
+  const mod = await import('../../../apps/web/src/lib/seller-auth');
   return mod;
 }
 
 async function loadAdminAuth() {
-  const mod = await import('../../../src/lib/admin-auth');
+  const mod = await import('../../../apps/web/src/lib/admin-auth');
   return mod.requireAdmin;
 }
 
@@ -228,7 +228,10 @@ describe('P5.2 routing, proxy, and session security', () => {
       const responseCookiesSet = vi.fn();
       const nextSpy = vi
         .spyOn(NextResponse, 'next')
-        .mockReturnValue({ cookies: { set: responseCookiesSet } } as any);
+        .mockReturnValue({
+          cookies: { set: responseCookiesSet },
+          headers: { set: vi.fn() },
+        } as any);
 
       createServerClientMock.mockImplementation((_url: string, _key: string, config: any) => {
         // Trigger a cookie refresh immediately to exercise setAll.

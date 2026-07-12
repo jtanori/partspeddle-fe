@@ -1,0 +1,19 @@
+{
+  "extends": "../../packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@config/*": ["../../config/*"],
+      "@operations/*": ["../../platform/operations/*"]
+    }
+  },
+  "include": [
+    "src",
+    "../../config/environment",
+    "../../platform/operations/kernel",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

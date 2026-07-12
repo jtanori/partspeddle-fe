@@ -39,25 +39,25 @@ describe('P7.5 PartsPeddle Support Center', () => {
 
   describe('API routes', () => {
     it('has POST /api/support/conversation', () => {
-      const source = readSource('src/app/api/support/conversation/route.ts');
+      const source = readSource('apps/web/src/app/api/support/conversation/route.ts');
       expect(source).toContain("from('support_conversations')");
       expect(source).toContain('.insert(');
     });
 
     it('has POST /api/support/message', () => {
-      const source = readSource('src/app/api/support/message/route.ts');
+      const source = readSource('apps/web/src/app/api/support/message/route.ts');
       expect(source).toContain("from('support_messages')");
       expect(source).toContain('.insert(');
     });
 
     it('has GET /api/support/history', () => {
-      const source = readSource('src/app/api/support/history/route.ts');
+      const source = readSource('apps/web/src/app/api/support/history/route.ts');
       expect(source).toContain("from('support_conversations')");
       expect(source).toContain('export async function GET');
     });
 
     it('has POST /api/support/close', () => {
-      const source = readSource('src/app/api/support/close/route.ts');
+      const source = readSource('apps/web/src/app/api/support/close/route.ts');
       expect(source).toContain("from('support_conversations')");
       expect(source).toContain("status: 'closed'");
     });
@@ -65,29 +65,29 @@ describe('P7.5 PartsPeddle Support Center', () => {
 
   describe('UI components', () => {
     it('exports SupportLauncher and SupportMessenger', () => {
-      const source = readSource('src/components/support/index.ts');
+      const source = readSource('apps/web/src/components/support/index.ts');
       expect(source).toContain('SupportLauncher');
       expect(source).toContain('SupportMessenger');
     });
 
     it('SupportLauncher renders SupportMessenger', () => {
-      const source = readSource('src/components/support/SupportLauncher.tsx');
+      const source = readSource('apps/web/src/components/support/SupportLauncher.tsx');
       expect(source).toContain('SupportMessenger');
     });
 
     it('SupportMessenger integrates realtime support channel', () => {
-      const source = readSource('src/components/support/SupportMessenger.tsx');
+      const source = readSource('apps/web/src/components/support/SupportMessenger.tsx');
       expect(source).toContain('subscribeToSupportConversation');
       expect(source).toContain('/api/support/message');
     });
 
     it('useSupportConversation starts conversations via API', () => {
-      const source = readSource('src/hooks/useSupportConversation.ts');
+      const source = readSource('apps/web/src/hooks/useSupportConversation.ts');
       expect(source).toContain('/api/support/conversation');
     });
 
     it('has a dedicated support realtime channel', () => {
-      const source = readSource('src/lib/realtime/support-channel.ts');
+      const source = readSource('apps/web/src/lib/realtime/support-channel.ts');
       expect(source).toContain("table: 'support_messages'");
       expect(source).toContain('support-conversation:');
     });
@@ -95,7 +95,7 @@ describe('P7.5 PartsPeddle Support Center', () => {
 
   describe('integration', () => {
     it('PublicShell renders SupportLauncher', () => {
-      const source = readSource('src/components/layout/PublicShell.tsx');
+      const source = readSource('apps/web/src/components/layout/PublicShell.tsx');
       expect(source).toContain('SupportLauncher');
     });
   });

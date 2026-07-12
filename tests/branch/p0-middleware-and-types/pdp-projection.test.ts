@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { buildPDPView } from '../../../src/projection/pdp';
-import { Part, Seller } from '../../../src/types';
-import { CompiledSpecificationSet } from '../../../src/domain/specification/scgs/types';
+import { buildPDPView } from '../../../apps/web/src/projection/pdp';
+import { Part, Seller } from '../../../apps/web/src/types';
+import { CompiledSpecificationSet } from '../../../apps/web/src/domain/specification/scgs/types';
 
 const basePart: Part = {
   id: 'p1',

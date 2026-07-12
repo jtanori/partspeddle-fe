@@ -1,52 +1,13 @@
 {
+  "extends": "./packages/config/tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
-    "module": "ESNext",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "types": [
-      "next/image-types/global",
-      "node"
-    ],
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "allowJs": true,
-    "jsx": "react-jsx",
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+      "@/*": ["./apps/web/src/*"],
+      "@config/*": ["./config/*"],
+      "@operations/*": ["./platform/operations/*"]
+    }
   },
-  "include": [
-    "src",
-    "app",
-    "scripts",
-    "operations",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
-  "exclude": [
-    "supabase",
-    "node_modules",
-    "scripts/archive"
-  ]
+  "include": ["platform/scripts", "platform/operations", "apps/web/src", "config/environment"],
+  "exclude": ["supabase", "node_modules", "platform/scripts/archive", "apps/web/.next", "packages", ".next"]
 }
