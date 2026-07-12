@@ -13,5 +13,5 @@
 
 - **Constraint**: No code may be promoted to `main` without a passing **Pre-Promotion Sanitization Certification (PPSC)**.
 - **Zero Tolerance**: 100% test pass rate required. No "Pass with Warnings".
-- **Certified Systems**: Any changes to Platinum-certified subsystems (e.g., Search Platform) must include a `CERTIFIED_SYSTEM_CHANGELOG.md` justifying all modifications and deletions.
+- **Certified Systems**: Any changes to Platinum-certified subsystems (e.g., Search Platform) must include a [`../governance/certification/evidence/certified-system-changelog.md`](../governance/certification/evidence/certified-system-changelog.md) justifying all modifications and deletions.
 - **Levels**: Certification must pass both Level 1 (Sanitation) and Level 2 (Promotion).

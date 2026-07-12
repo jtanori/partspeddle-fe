@@ -19,7 +19,7 @@ function readDir(dir: string): string[] {
 
 describe('P6.7 apply remediation migrations to remote-first databases', () => {
   it('has a formal remote-migration checklist document', () => {
-    const doc = read('docs/P6_7_REMOTE_MIGRATION_CHECKLIST.md');
+    const doc = read('docs/operations/p6-7-remote-migration-checklist.md');
     expect(doc).toContain('Remote Migration Application Checklist');
     expect(doc).toContain('supabase db push --dry-run');
     expect(doc).toContain('Rotate the exposed service-role JWT');
@@ -34,7 +34,9 @@ describe('P6.7 apply remediation migrations to remote-first databases', () => {
 
   it('exposes the drift check as a package script', () => {
     const pkg = JSON.parse(read('package.json'));
-    expect(pkg.scripts['db:verify:remote-drift']).toBe('tsx platform/scripts/migration/verify-remote-drift.ts');
+    expect(pkg.scripts['db:verify:remote-drift']).toBe(
+      'tsx platform/scripts/migration/verify-remote-drift.ts',
+    );
   });
 
   it('has a remote migration dry-run script', () => {
@@ -73,7 +75,11 @@ describe('P6.7 apply remediation migrations to remote-first databases', () => {
 
   it('rebaseline migration drops legacy triggers before later migrations run', () => {
     const rebaseline = read('supabase/migrations/20260704000000_rebaseline_public_schema.sql');
-    expect(rebaseline).toContain('DROP TRIGGER IF EXISTS "sync-algolia-webhook" ON "public"."parts"');
-    expect(rebaseline).toContain('DROP TRIGGER IF EXISTS "notify-new-message" ON "public"."messages"');
+    expect(rebaseline).toContain(
+      'DROP TRIGGER IF EXISTS "sync-algolia-webhook" ON "public"."parts"',
+    );
+    expect(rebaseline).toContain(
+      'DROP TRIGGER IF EXISTS "notify-new-message" ON "public"."messages"',
+    );
   });
 });

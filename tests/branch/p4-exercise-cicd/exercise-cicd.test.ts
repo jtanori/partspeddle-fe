@@ -8,7 +8,9 @@ const ciPath = path.join(repoRoot, '.github', 'workflows', 'ci.yml');
 describe('P4.5 exercise Supabase CI/CD end-to-end', () => {
   describe('platform/scripts/ci/smoke-staging.ts', () => {
     it('exists', () => {
-      expect(fs.existsSync(path.join(repoRoot, 'platform', 'scripts', 'ci', 'smoke-staging.ts'))).toBe(true);
+      expect(
+        fs.existsSync(path.join(repoRoot, 'platform', 'scripts', 'ci', 'smoke-staging.ts')),
+      ).toBe(true);
     });
   });
 
@@ -26,7 +28,9 @@ describe('P4.5 exercise Supabase CI/CD end-to-end', () => {
     });
 
     it('only runs smoke-tests on delivery branches', () => {
-      expect(workflow).toMatch(/smoke-tests:[\s\S]*?needs\.configure\.outputs\.is-delivery-branch == 'true'/m);
+      expect(workflow).toMatch(
+        /smoke-tests:[\s\S]*?needs\.configure\.outputs\.is-delivery-branch == 'true'/m,
+      );
     });
   });
 
@@ -43,8 +47,11 @@ describe('P4.5 exercise Supabase CI/CD end-to-end', () => {
     });
   });
 
-  describe('docs/DEPLOYMENT_RUNBOOK.md', () => {
-    const runbook = fs.readFileSync(path.join(repoRoot, 'docs', 'DEPLOYMENT_RUNBOOK.md'), 'utf-8');
+  describe('docs/operations/deployment-runbook.md', () => {
+    const runbook = fs.readFileSync(
+      path.join(repoRoot, 'docs', 'operations', 'deployment-runbook.md'),
+      'utf-8',
+    );
 
     it('documents end-to-end deploy verification', () => {
       expect(runbook).toMatch(/^#+ .*End-to-end deploy verification/m);

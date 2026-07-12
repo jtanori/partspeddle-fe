@@ -49,9 +49,9 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
   });
 
-  describe('DEPLOYMENT_RUNBOOK.md', () => {
+  describe('docs/operations/deployment-runbook.md', () => {
     it('documents Fly.io application secrets', () => {
-      const source = readSource('docs/DEPLOYMENT_RUNBOOK.md');
+      const source = readSource('docs/operations/deployment-runbook.md');
       expect(source).toContain('Fly.io Application Secrets');
       expect(source).toContain('flyctl secrets set');
       expect(source).toContain('flyctl secrets list --app vintrack-stage');
@@ -59,7 +59,7 @@ describe('P5.0 Deploy & Environment Secrets Review', () => {
     });
 
     it('includes GEMINI_API_KEY in production secrets', () => {
-      const source = readSource('docs/DEPLOYMENT_RUNBOOK.md');
+      const source = readSource('docs/operations/deployment-runbook.md');
       expect(source).toContain('GEMINI_API_KEY');
     });
   });

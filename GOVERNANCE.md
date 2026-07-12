@@ -14,7 +14,7 @@ PartsPeddle has several overlapping governance concepts. They exist because the 
 - **Certification** proves the system is ready for production.
 - **Contracts** encode operational guarantees between subsystems.
 
-If you only remember one thing: **the canonical plan is in `governance/planning/`, the canonical checklist is `docs/PRC.md`, and the canonical delivery descriptor is `platform/operations/delivery/manifests/delivery.manifest.json`.**
+If you only remember one thing: **the canonical plan is in `governance/planning/`, the canonical checklist is `docs/guides/prc.md`, and the canonical delivery descriptor is `platform/operations/delivery/manifests/delivery.manifest.json`.**
 
 ---
 
@@ -48,7 +48,7 @@ If you only remember one thing: **the canonical plan is in `governance/planning/
 
 **Purpose:** Defines the tests that must pass before a release is considered production-ready.
 
-**Where it lives:** Embedded in `docs/PRC.md` and `tests/certification/`.
+**Where it lives:** Embedded in `docs/guides/prc.md` and `tests/certification/`.
 
 **When to care:** When adding a new certification gate or changing production-readiness criteria.
 
@@ -56,12 +56,12 @@ If you only remember one thing: **the canonical plan is in `governance/planning/
 
 **Purpose:** Formal evidence that the system meets production standards.
 
-- **PRC** — Production Readiness Certification. The master checklist is `docs/PRC.md`.
+- **PRC** — Production Readiness Certification. The master checklist is `docs/guides/prc.md`.
 - **DC** — Delivery Certification. Tracks the CI/CD pipeline, deployment, and operational gates. Recent evidence is in `docs/operations/delivery-audit.md` and `artifacts/delivery/`.
 
 **Where it lives:**
 
-- Checklist: `docs/PRC.md`
+- Checklist: `docs/guides/prc.md`
 - Audit: `docs/operations/delivery-audit.md`
 - Evidence: `governance/certification/evidence/`, `governance/certification/reports/`, `artifacts/`
 
@@ -97,7 +97,7 @@ Key files:
 
 - `operations/delivery/manifests/delivery.manifest.json`
 - `src/backend/modules/search/contract/`
-- `docs/API_SECURITY.md`
+- `docs/engineering/api-security.md`
 
 **When to care:** When two subsystems exchange data or depend on each other's behavior.
 
@@ -128,7 +128,7 @@ Implementation (src/)
   ↓
 SCGS validation (governance/scgs/, replay, diff)
   ↓
-Test & certification (tests/, docs/PRC.md)
+Test & certification (tests/, docs/guides/prc.md)
   ↓
 PRR / PTS review
   ↓
@@ -145,15 +145,15 @@ Not every change triggers every gate. A small bug fix goes through tests and PR 
 
 ## Authority map
 
-| Decision type           | Canonical source                                                                      |
-| ----------------------- | ------------------------------------------------------------------------------------- |
-| What to build next      | `governance/planning/platform-repository-evolution.md`                                          |
-| How to structure code   | `ARCHITECTURE.md` + `src/backend/modules/search/`                                     |
-| Is it production ready? | `docs/PRC.md` + `docs/operations/delivery-audit.md`                                   |
-| Where do secrets go?    | `docs/operations/secret-governance.md`                                                |
-| How to deploy           | `docs/DEPLOYMENT_RUNBOOK.md` + `platform/operations/delivery/manifests/delivery.manifest.json` |
-| What tests must pass    | `TESTING.md` + `tests/certification/`                                                 |
-| Agent rules             | `AGENTS.md`                                                                           |
+| Decision type           | Canonical source                                                                                          |
+| ----------------------- | --------------------------------------------------------------------------------------------------------- |
+| What to build next      | `governance/planning/platform-repository-evolution.md`                                                    |
+| How to structure code   | `ARCHITECTURE.md` + `src/backend/modules/search/`                                                         |
+| Is it production ready? | `docs/guides/prc.md` + `docs/operations/delivery-audit.md`                                                |
+| Where do secrets go?    | `docs/operations/secret-governance.md`                                                                    |
+| How to deploy           | `docs/operations/deployment-runbook.md` + `platform/operations/delivery/manifests/delivery.manifest.json` |
+| What tests must pass    | `TESTING.md` + `tests/certification/`                                                                     |
+| Agent rules             | `AGENTS.md`                                                                                               |
 
 ---
 
@@ -161,7 +161,7 @@ Not every change triggers every gate. A small bug fix goes through tests and PR 
 
 - Propose planning changes by editing or adding a document in `governance/planning/` and opening a PR.
 - Propose architecture changes by adding an ADR in `governance/decisions/`.
-- Update `docs/PRC.md` when a certification gate changes.
+- Update `docs/guides/prc.md` when a certification gate changes.
 - Update `docs/operations/delivery-audit.md` when the CI/CD pipeline changes.
 
 ---
@@ -171,5 +171,5 @@ Not every change triggers every gate. A small bug fix goes through tests and PR 
 - `PROJECT_MAP.md` — repository navigation.
 - `ARCHITECTURE.md` — structural decisions.
 - `CONTRIBUTING.md` — contributor workflows.
-- `docs/PRC.md` — production readiness checklist.
+- `docs/guides/prc.md` — production readiness checklist.
 - `docs/operations/delivery-audit.md` — delivery audit.

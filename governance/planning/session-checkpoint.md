@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `feat/phase-5-governance-consolidation`
-**Status:** Prep 1 and Prep 2 complete. Phases 0–4 merged to develop. Phase 5 governance consolidation approved; implementation in progress.
+**Branch:** `feat/phase-6-docs-restructure`
+**Status:** Prep 1 and Prep 2 complete. Phases 0–5 merged to develop. Phase 6 documentation restructure approved; implementation in progress.
 
 ---
 
@@ -29,7 +29,7 @@
 - Created `docs/operations/deployment-observability.md` with deployment artifact schema.
 - Updated `docs/operations/secret-governance.md` and `config/environment/README.md` with production Algolia secrets.
 - Created `docs/engineering/security.md` documenting the nonce-based CSP.
-- Updated `docs/PRC.md` Section 11 and `README.md`.
+- Updated `docs/guides/prc.md` Section 11 and `README.md`.
 - Merged to `develop` via PR #103.
 
 ### Agent Rules
@@ -56,17 +56,14 @@
 - PR #106 — `Phase 2: application extraction to apps/web`
 - PR #107 — `feat(phase-3): modularize backend repositories and ai service`
 - PR #108 — `feat(phase-4): consolidate platform tooling under platform/`
+- PR #109 — `feat(phase-5): consolidate governance subsystems under governance/`
 
 ### Planning Cleanup
 
 - Archived completed delivery plans in `governance/planning/archive/`.
 - Archived completed P5/P6 security and phase plans in `governance/planning/archive/`.
 - Created platform repository evolution plan: `governance/planning/platform-repository-evolution.md`.
-- Created Phase 0 implementation plan: `governance/planning/phase-0-implementation-plan.md`.
-- Created Phase 1 implementation plan: `governance/planning/phase-1-implementation-plan.md`.
-- Created Phase 2 implementation plan: `governance/planning/phase-2-implementation-plan.md`.
-- Created Phase 3 implementation plan: `governance/planning/phase-3-implementation-plan.md`.
-- Created Phase 4 implementation plan: `governance/planning/phase-4-implementation-plan.md`.
+- Created Phase 0 through Phase 6 implementation plans in `governance/planning/`.
 
 ---
 
@@ -133,20 +130,25 @@ backend/modules/<name>/
    - Deliverables: `scripts/` → `platform/scripts/`, `operations/` → `platform/operations/`, `fly/` + `Dockerfile` → `platform/deployment/` + `platform/docker/`, lint-staged/husky configs extracted to `platform/tooling/`, CI and docs updated.
    - Plan: `governance/planning/phase-4-implementation-plan.md`
 
+5. **Phase 5 — Governance consolidation** (merged via PR #109)
+   - Branch: `feat/phase-5-governance-consolidation`
+   - Deliverables: SCGS, planning, architecture, decisions, and certification artifacts consolidated under `governance/`; paths updated in code, scripts, CI, and navigation documents.
+   - Plan: `governance/planning/phase-5-implementation-plan.md`
+
 ---
 
 ## In Progress
 
-1. **Phase 5 — Governance consolidation**
-   - Branch: `feat/phase-5-governance-consolidation`
-   - Status: Implemented. Scoped checks pass (lint, typecheck, branch/security tests, build, storybook build, delivery manifest validation). Ready to commit, push, and open PR.
-   - Plan: `governance/planning/phase-5-implementation-plan.md`
+1. **Phase 6 — Documentation restructure**
+   - Branch: `feat/phase-6-docs-restructure`
+   - Status: Implemented. Docs reorganized into `engineering/`, `operations/`, `product/`, `reference/`, `guides/`, `decisions/`, and `onboarding/`. Certification artifacts moved to `governance/certification/evidence/`. Branch tests and navigation documents updated. Ready for scoped verification and PR.
+   - Plan: `governance/planning/phase-6-implementation-plan.md`
 
 ---
 
 ## Next Steps
 
-1. **Complete Phase 5 implementation** and open PR.
+1. **Complete Phase 6 implementation** and open PR.
 2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
 3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
@@ -161,10 +163,6 @@ backend/modules/<name>/
 
 ## Still Relevant
 
-- `governance/planning/platform-repository-evolution.md` — active planning document (will move during this phase).
-- `governance/planning/phase-1-implementation-plan.md` — active implementation plan (will move during this phase).
-- `governance/planning/phase-2-implementation-plan.md` — active implementation plan (will move during this phase).
-- `governance/planning/phase-3-implementation-plan.md` — active implementation plan (will move during this phase).
-- `governance/planning/phase-4-implementation-plan.md` — active implementation plan (will move during this phase).
-- `governance/planning/phase-5-implementation-plan.md` — active implementation plan.
+- `governance/planning/platform-repository-evolution.md` — active planning document.
+- `governance/planning/phase-6-implementation-plan.md` — active implementation plan.
 - `artifacts/delivery/production-deployment-2026-07-11.json` — canonical DC-8 record.

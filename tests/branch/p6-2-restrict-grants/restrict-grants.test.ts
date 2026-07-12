@@ -39,8 +39,8 @@ describe('P6.2 restrict grants and default privileges', () => {
     expect(migration).toContain('GRANT ALL ON ALL TABLES IN SCHEMA "public" TO "service_role"');
   });
 
-  it('documents the grant model in RLS_POLICY_MAP.md', () => {
-    const map = read('docs/RLS_POLICY_MAP.md');
+  it('documents the grant model in rls-policy-map.md', () => {
+    const map = read('docs/engineering/rls-policy-map.md');
     expect(map).toContain('service_role');
     expect(map).toContain('authenticated');
     expect(map).toContain('anon');

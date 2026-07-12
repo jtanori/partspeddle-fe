@@ -4,7 +4,7 @@ import path from 'path';
 
 describe('P5.7 database security alignment', () => {
   it('has an RLS policy map documenting parts, seller_profiles, and listing_drafts', () => {
-    const mapPath = path.resolve(process.cwd(), 'docs', 'RLS_POLICY_MAP.md');
+    const mapPath = path.resolve(process.cwd(), 'docs', 'engineering', 'rls-policy-map.md');
     const content = fs.readFileSync(mapPath, 'utf-8');
     expect(content).toContain('parts');
     expect(content).toContain('seller_profiles');

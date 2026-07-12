@@ -47,4 +47,4 @@ And confirm the page hydrates with no CSP violations in the browser console.
 ## Related documents
 
 - `docs/operations/secret-governance.md` — where each class of secret is stored.
-- `docs/PRC.md` Section 11 — security certification checklist.
+- `docs/guides/prc.md` Section 11 — security certification checklist.

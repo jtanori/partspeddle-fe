@@ -8,7 +8,7 @@ const COMPONENTS_DIR = path.resolve(PROJECT_ROOT, 'apps/web/src/components');
 
 // API routes that are allowed to use the service-role client because they
 // execute RPCs, storage uploads, or admin batch operations. These must be
-// documented in docs/DATA_ACCESS.md.
+// documented in docs/engineering/data-access.md.
 const DOCUMENTED_EXCEPTIONS = new Set([
   'apps/web/src/app/api/seller/assets/upload/route.ts',
   'apps/web/src/app/api/seller/upload-logo/route.ts',
@@ -69,8 +69,8 @@ describe('P5.4 repository and data-access security', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('documents all app-layer service-role exceptions in DATA_ACCESS.md', () => {
-    const dataAccessPath = path.resolve(PROJECT_ROOT, 'docs', 'DATA_ACCESS.md');
+  it('documents all app-layer service-role exceptions in data-access.md', () => {
+    const dataAccessPath = path.resolve(PROJECT_ROOT, 'docs', 'engineering', 'data-access.md');
     expect(fs.existsSync(dataAccessPath)).toBe(true);
     const content = fs.readFileSync(dataAccessPath, 'utf-8');
     expect(content).toContain('Service-role exceptions');

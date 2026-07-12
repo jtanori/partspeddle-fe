@@ -44,7 +44,10 @@ describe('P4.1 Supabase CI/CD', () => {
     it('gates Supabase deploy on the test and configure jobs', () => {
       const sectionStart = workflow.indexOf('deploy-supabase:');
       const sectionEnd = workflow.indexOf('smoke-tests:', sectionStart);
-      const section = workflow.slice(sectionStart, sectionEnd > sectionStart ? sectionEnd : undefined);
+      const section = workflow.slice(
+        sectionStart,
+        sectionEnd > sectionStart ? sectionEnd : undefined,
+      );
       expect(section).toContain('needs: [test, configure]');
     });
 
@@ -54,8 +57,11 @@ describe('P4.1 Supabase CI/CD', () => {
     });
   });
 
-  describe('docs/DEPLOYMENT_RUNBOOK.md', () => {
-    const runbook = fs.readFileSync(path.join(repoRoot, 'docs', 'DEPLOYMENT_RUNBOOK.md'), 'utf-8');
+  describe('docs/operations/deployment-runbook.md', () => {
+    const runbook = fs.readFileSync(
+      path.join(repoRoot, 'docs', 'operations', 'deployment-runbook.md'),
+      'utf-8',
+    );
 
     it('documents Supabase CI/CD', () => {
       expect(runbook).toMatch(/^#+ .*Supabase CI\/CD/m);

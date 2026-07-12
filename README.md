@@ -51,7 +51,7 @@
 
 ## Documentation
 
-- `docs/DEPLOYMENT_RUNBOOK.md` — full deployment procedure.
+- `docs/operations/deployment-runbook.md` — full deployment procedure.
 - `docs/operations/delivery-audit.md` — current delivery pipeline audit.
 - `docs/operations/deployment-observability.md` — deployment artifact format and records.
 - `docs/operations/secret-governance.md` — secret storage policy.
@@ -72,4 +72,4 @@ git checkout main
 pnpm deploy:production
 ```
 
-See `docs/DEPLOYMENT_RUNBOOK.md` for the full procedure.
+See `docs/operations/deployment-runbook.md` for the full procedure.

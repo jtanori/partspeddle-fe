@@ -62,7 +62,7 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 
 1. `ARCHITECTURE.md` — high-level structure and convergence target.
 2. `src/backend/modules/search/` — canonical module architecture reference.
-3. `docs/NEXT_APP_ROUTER_ARCHITECTURE.md` — App Router decisions.
+3. `docs/engineering/next-app-router-architecture.md` — App Router decisions.
 
 ### I want to contribute code
 
@@ -72,7 +72,7 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 
 ### I want to deploy or operate the system
 
-1. `docs/DEPLOYMENT_RUNBOOK.md` — full deployment procedure.
+1. `docs/operations/deployment-runbook.md` — full deployment procedure.
 2. `docs/operations/delivery-audit.md` — current CI/CD audit.
 3. `docs/operations/deployment-observability.md` — deployment artifacts.
 4. `docs/operations/secret-governance.md` — where secrets live.
@@ -82,58 +82,65 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 
 1. `GOVERNANCE.md` — glossary and interaction map.
 2. `governance/planning/platform-repository-evolution.md` — platform migration plan.
-3. `docs/PRC.md` — Production Readiness Certification checklist.
+3. `docs/guides/prc.md` — Production Readiness Certification checklist.
 4. `governance/scgs/` — SCGS subsystem code and policies.
 
 ### I want to understand security
 
 1. `docs/engineering/security.md` — CSP and application security.
-2. `docs/API_SECURITY.md` — API security baseline.
+2. `docs/engineering/api-security.md` — API security baseline.
 3. `docs/operations/secret-governance.md` — secret storage policy.
 
 ---
 
 ## Directory reference
 
-| Directory           | Current purpose                                       | Future home (target)                                   |
-| ------------------- | ----------------------------------------------------- | ------------------------------------------------------ |
-| `src/app/`          | Next.js App Router pages and API routes               | `apps/web/src/app/`                                    |
-| `src/components/`   | React components (247+)                               | `apps/web/src/components/` + `packages/ui/`            |
-| `src/backend/`      | Backend modules (`search`, future modules)            | `backend/modules/`                                     |
-| `src/domain/`       | Domain types and logic                                | Inside each `backend/modules/<domain>/domain/`         |
-| `src/projection/`   | Read models for UI pages                              | `apps/web/src/projection/` or `packages/shared/`       |
-| `src/repositories/` | Data access layer                                     | Inside each `backend/modules/<domain>/infrastructure/` |
-| `src/services/`     | Legacy service layer                                  | Migrated into backend modules                          |
-| `src/lib/`          | Shared utilities and helpers                          | `packages/shared/`                                     |
-| `src/hooks/`        | React hooks                                           | `apps/web/src/hooks/` + `packages/shared/`             |
-| `src/types/`        | Cross-cutting TypeScript types                        | `packages/types/`                                      |
-| `src/store/`        | Client state management                               | `apps/web/src/store/`                                  |
-| `tests/`            | Branch, certification, security, and governance tests | `tests/` (taxonomy reorganized)                        |
-| `docs/`             | Knowledge base                                        | `docs/` (information architecture reorganized)         |
-| `platform/scripts/` | Automation, seeding, CI helpers                       | `platform/scripts/`                                    |
-| `.github/workflows/`| GitHub Actions workflows (must stay at root)          | `.github/workflows/`                                   |
-| `platform/deployment/fly/` | Fly.io configuration                           | `platform/deployment/fly/`                             |
-| `platform/operations/` | Delivery manifests and verification specs          | `platform/operations/`                                 |
-| `governance/planning/`        | Roadmaps, plans, session checkpoint                   | `governance/planning/`                                 |
-| `governance/scgs/`            | SCGS governance subsystem                             | `governance/scgs/`                                     |
-| `governance/architecture/`    | Architecture models and specifications                | `governance/architecture/`                             |
-| `governance/decisions/`       | Architecture Decision Records (ADRs)                  | `governance/decisions/`                                |
-| `governance/certification/evidence/` | Certification evidence and matrices            | `governance/certification/evidence/`                   |
-| `governance/certification/reports/`  | Generated audit and certification reports      | `governance/certification/reports/`                    |
-| `artifacts/`        | Deployment artifacts and benchmarks                   | `artifacts/`                                           |
+| Directory                            | Current purpose                                       | Future home (target)                                   |
+| ------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------ |
+| `src/app/`                           | Next.js App Router pages and API routes               | `apps/web/src/app/`                                    |
+| `src/components/`                    | React components (247+)                               | `apps/web/src/components/` + `packages/ui/`            |
+| `src/backend/`                       | Backend modules (`search`, future modules)            | `backend/modules/`                                     |
+| `src/domain/`                        | Domain types and logic                                | Inside each `backend/modules/<domain>/domain/`         |
+| `src/projection/`                    | Read models for UI pages                              | `apps/web/src/projection/` or `packages/shared/`       |
+| `src/repositories/`                  | Data access layer                                     | Inside each `backend/modules/<domain>/infrastructure/` |
+| `src/services/`                      | Legacy service layer                                  | Migrated into backend modules                          |
+| `src/lib/`                           | Shared utilities and helpers                          | `packages/shared/`                                     |
+| `src/hooks/`                         | React hooks                                           | `apps/web/src/hooks/` + `packages/shared/`             |
+| `src/types/`                         | Cross-cutting TypeScript types                        | `packages/types/`                                      |
+| `src/store/`                         | Client state management                               | `apps/web/src/store/`                                  |
+| `tests/`                             | Branch, certification, security, and governance tests | `tests/` (taxonomy reorganized)                        |
+| `docs/`                              | Knowledge base                                        | `docs/` (information architecture reorganized)         |
+| `docs/engineering/`                  | How the system is built                               | `docs/engineering/`                                    |
+| `docs/operations/`                   | How to run, deploy, and recover                       | `docs/operations/`                                     |
+| `docs/product/`                      | Product and feature plans                             | `docs/product/`                                        |
+| `docs/reference/`                    | Technical lookup material                             | `docs/reference/`                                      |
+| `docs/guides/`                       | Certifications and integration playbooks              | `docs/guides/`                                         |
+| `docs/decisions/`                    | ADR index                                             | `docs/decisions/`                                      |
+| `docs/onboarding/`                   | New-contributor orientation                           | `docs/onboarding/`                                     |
+| `platform/scripts/`                  | Automation, seeding, CI helpers                       | `platform/scripts/`                                    |
+| `.github/workflows/`                 | GitHub Actions workflows (must stay at root)          | `.github/workflows/`                                   |
+| `platform/deployment/fly/`           | Fly.io configuration                                  | `platform/deployment/fly/`                             |
+| `platform/operations/`               | Delivery manifests and verification specs             | `platform/operations/`                                 |
+| `governance/planning/`               | Roadmaps, plans, session checkpoint                   | `governance/planning/`                                 |
+| `governance/scgs/`                   | SCGS governance subsystem                             | `governance/scgs/`                                     |
+| `governance/architecture/`           | Architecture models and specifications                | `governance/architecture/`                             |
+| `governance/decisions/`              | Architecture Decision Records (ADRs)                  | `governance/decisions/`                                |
+| `governance/certification/evidence/` | Certification evidence and matrices                   | `governance/certification/evidence/`                   |
+| `governance/certification/reports/`  | Generated audit and certification reports             | `governance/certification/reports/`                    |
+| `artifacts/`                         | Deployment artifacts and benchmarks                   | `artifacts/`                                           |
 
 ---
 
 ## Canonical files
 
-| File                                                       | Why it matters                                    |
-| ---------------------------------------------------------- | ------------------------------------------------- |
-| `AGENTS.md`                                                | Operating rules for agent-assisted development.   |
-| `governance/planning/platform-repository-evolution.md`               | Platform migration plan and target topology.      |
-| `governance/planning/session-checkpoint.md`                          | Current session state and next steps.             |
-| `platform/operations/delivery/manifests/delivery.manifest.json` | Canonical delivery descriptor.               |
-| `config/environment/schema.ts`                             | Single source of truth for environment variables. |
-| `artifacts/delivery/production-deployment-2026-07-11.json` | Record of first production promotion.             |
+| File                                                            | Why it matters                                    |
+| --------------------------------------------------------------- | ------------------------------------------------- |
+| `AGENTS.md`                                                     | Operating rules for agent-assisted development.   |
+| `governance/planning/platform-repository-evolution.md`          | Platform migration plan and target topology.      |
+| `governance/planning/session-checkpoint.md`                     | Current session state and next steps.             |
+| `platform/operations/delivery/manifests/delivery.manifest.json` | Canonical delivery descriptor.                    |
+| `config/environment/schema.ts`                                  | Single source of truth for environment variables. |
+| `artifacts/delivery/production-deployment-2026-07-11.json`      | Record of first production promotion.             |
 
 ---
 
@@ -146,4 +153,7 @@ The migration is tracked in `governance/planning/platform-repository-evolution.m
 - [x] Phase 2 — application extraction to `apps/web/`.
 - [x] Phase 3 — backend modularization.
 - [x] Phase 4 — platform consolidation (scripts, operations, fly, docker, tooling).
-- [ ] Phase 5+ — governance consolidation, documentation restructure, test taxonomy.
+- [x] Phase 5 — governance consolidation.
+- [ ] Phase 6 — documentation restructure.
+- [ ] Phase 7 — test taxonomy.
+- [ ] Phase 8 — engineering manual.

@@ -68,8 +68,8 @@ describe('P4.2 local Supabase environment', () => {
     });
   });
 
-  describe('docs/DEPLOYMENT_RUNBOOK.md', () => {
-    const runbook = readFile('docs', 'DEPLOYMENT_RUNBOOK.md');
+  describe('docs/operations/deployment-runbook.md', () => {
+    const runbook = readFile('docs', 'operations', 'deployment-runbook.md');
 
     it('documents local Supabase development', () => {
       expect(runbook).toMatch(/^#.*Local Supabase development/m);

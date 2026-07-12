@@ -13,7 +13,9 @@ function read(relativePath: string): string {
 describe('P6.1 tighten overly permissive RLS policies', () => {
   it('has a migration that tightens part_images public read', () => {
     const migration = read('supabase/migrations/20260710000000_tighten_rls_policies.sql');
-    expect(migration).toContain('DROP POLICY IF EXISTS "Public read access" ON "public"."part_images"');
+    expect(migration).toContain(
+      'DROP POLICY IF EXISTS "Public read access" ON "public"."part_images"',
+    );
     expect(migration).toContain('Public read access for available parts');
     expect(migration).toContain("p.status = 'AVAILABLE'");
   });
@@ -27,7 +29,9 @@ describe('P6.1 tighten overly permissive RLS policies', () => {
   it('strengthens offers insert policy with part availability and seller match', () => {
     const migration = read('supabase/migrations/20260710000000_tighten_rls_policies.sql');
     expect(migration).toContain('Buyers can create offers for available parts');
-    expect(migration).toContain('SELECT seller_id FROM "public"."parts" WHERE id = part_id AND status =');
+    expect(migration).toContain(
+      'SELECT seller_id FROM "public"."parts" WHERE id = part_id AND status =',
+    );
   });
 
   it('strengthens conversations insert policy with part availability and seller match', () => {
@@ -45,7 +49,7 @@ describe('P6.1 tighten overly permissive RLS policies', () => {
   });
 
   it('documents the tightened policies in the RLS policy map', () => {
-    const map = read('docs/RLS_POLICY_MAP.md');
+    const map = read('docs/engineering/rls-policy-map.md');
     expect(map).toContain('part_images');
     expect(map).toContain('fraud_events');
     expect(map).toContain('risk_scores');

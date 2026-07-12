@@ -38,7 +38,7 @@ Canonical part-page design: `/Users/dev/Documents/PartsPeddle/design-proposal.pn
 | `src/components/pdp-modern/PriceBlock.tsx`              | `text-pp-text` (×3), `text-pp-success` (×2), `bg-pp-text`, `bg-pp-primary`, `bg-pp-success`, `rounded-pp-atom` (×4), `rounded-pp-card` (×1), hardcoded colors | tokens, `Button`, `Badge`                                | Pending                                 |
 | `src/components/homepage/FinalCTA.tsx`                  | `.pp-container`                                                                                                                                               | `Container` / `Content`                                  | Pending                                 |
 | `src/components/homepage/GridWrapper.tsx`               | `.pp-container`                                                                                                                                               | `Container` / `Content`                                  | Pending                                 |
-| `docs/PDP_V2_VISUAL_SPEC.md`                            | `pp-*` references                                                                                                                                             | Update spec to new token names                           | Pending                                 |
+| `docs/product/pdp-v2-visual-spec.md`                    | `pp-*` references                                                                                                                                             | Update spec to new token names                           | Pending                                 |
 
 ## Components to replace/remove
 

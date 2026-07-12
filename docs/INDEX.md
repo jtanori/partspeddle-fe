@@ -1,46 +1,50 @@
 # Documentation Index
 
-Welcome to the PartsPeddle FE documentation.
+> **This index is preserved for backwards compatibility.**  
+> The primary knowledge-base entry point is now [`README.md`](README.md).
+
+---
 
 ## Search Platform (Master Guide)
 
-- [Search Engine Infrastructure](SEARCH_INFRASTRUCTURE.md)
+- [Search Engine Infrastructure](reference/search/infrastructure.md)
   - _High-level system guide, data modeling, synchronization, and ranking principles._
 
 ### Search Technical References (Details)
 
-- [Search Data Flow](SEARCH_DATA_FLOW.md)
-- [Search Index Contract](SEARCH_INDEX_CONTRACT.md)
-- [Search V2 Index Spec](SEARCH_V2_INDEX_SPEC.md)
-- [Search Architecture Snapshot](SEARCH_ARCHITECTURE_SNAPSHOT.md)
-- [Search Command Surface V2 Plan](SEARCH_COMMAND_SURFACE_V2_PLAN.md)
-- [Search Source of Truth](SEARCH_SOURCE_OF_TRUTH.md)
+- [Search Data Flow](reference/search/data-flow.md)
+- [Search Index Contract](reference/search/index-contract.md)
+- [Search V2 Index Spec](reference/search/v2-index-spec.md)
+- [Search Architecture Snapshot](reference/search/architecture-snapshot.md)
+- [Search Command Surface V2 Plan](product/search-command-surface-v2-plan.md)
+- [Search Source of Truth](reference/search/source-of-truth.md)
 
 ## Core Architecture
 
-- [System of Record](SYSTEM_OF_RECORD.md)
-- [Next App Router Architecture](NEXT_APP_ROUTER_ARCHITECTURE.md)
+- [System of Record](engineering/system-of-record.md)
+- [Next App Router Architecture](engineering/next-app-router-architecture.md)
+- [Backend Modules](engineering/backend-modules.md)
 
 ## Process & Compliance
 
 - [Master Remediation Plan](../governance/planning/archive/master-plan-2026-07-11.md)
   - _Master backlog: P0–P6 priorities, dependencies, and execution order._
-- [PPSC Certification](PPSC-PRE-PROMOTION-SANITIZATION-CERTIFICATION.md)
-- [Certified Systems Impact](CERTIFIED_SYSTEMS_IMPACT.md)
-- [Certified System Changelog](CERTIFIED_SYSTEM_CHANGELOG.md)
-- [Component Reachability](COMPONENT_REACHABILITY.md)
+- [PPSC Certification](guides/ppsc-pre-promotion-sanitization-certification.md)
+- [Certified Systems Impact](../governance/certification/evidence/certified-systems-impact.md)
+- [Certified System Changelog](../governance/certification/evidence/certified-system-changelog.md)
+- [Component Reachability](engineering/component-reachability.md)
 
 ## Operations
 
-- [Deployment Runbook](DEPLOYMENT_RUNBOOK.md)
-- [Disaster Recovery](DISASTER_RECOVERY.md)
-- [Fly.io Infrastructure](FLYIO_INFRASTRUCTURE.md)
+- [Deployment Runbook](operations/deployment-runbook.md)
+- [Disaster Recovery](operations/disaster-recovery.md)
+- [Fly.io Infrastructure](operations/flyio-infrastructure.md)
 
 ## Other
 
-- [PDP Modernization Plan](PDP_MODERNIZATION_PLAN.md)
-- [Route Inventory](ROUTE_INVENTORY.md)
-- [PRC (General)](PRC.md)
+- [PDP Modernization Plan](product/pdp-modernization-plan.md)
+- [Route Inventory](reference/route-inventory.md)
+- [PRC (General)](guides/prc.md)
 
 ---
 

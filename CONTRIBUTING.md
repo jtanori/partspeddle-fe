@@ -164,7 +164,7 @@ See `TESTING.md` for the test taxonomy. In short:
 ## Planning and governance
 
 - Active plans live in `governance/planning/`.
-- Certification checklists live in `docs/PRC.md` and `governance/certification/evidence/`.
+- Certification checklists live in `docs/guides/prc.md` and `governance/certification/evidence/`.
 - Architecture decisions should be recorded in `governance/decisions/`.
 
 If your change touches planning, certification, or governance, update the relevant document in the same PR.
@@ -180,7 +180,7 @@ Only designated delivery branches trigger automatic deployments:
 | `develop` | staging            |
 | `main`    | production         |
 
-See `docs/DEPLOYMENT_RUNBOOK.md` for manual deploy procedures and `docs/operations/delivery-audit.md` for the CI/CD overview.
+See `docs/operations/deployment-runbook.md` for manual deploy procedures and `docs/operations/delivery-audit.md` for the CI/CD overview.
 
 ---
 

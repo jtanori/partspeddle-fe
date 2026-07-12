@@ -259,6 +259,6 @@ Deployment topology and verification are defined in:
 ## Related documents
 
 - `PROJECT_MAP.md` — repository table of contents.
-- `docs/NEXT_APP_ROUTER_ARCHITECTURE.md` — App Router-specific decisions.
+- `docs/engineering/next-app-router-architecture.md` — App Router-specific decisions.
 - `governance/planning/platform-repository-evolution.md` — phased migration plan.
 - `src/backend/modules/search/` — canonical module reference.

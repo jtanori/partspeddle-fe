@@ -161,16 +161,16 @@ pnpm ci:smoke:staging
 
 ## Other verification commands
 
-| Command                             | Purpose                                                          |
-| ----------------------------------- | ---------------------------------------------------------------- |
-| `pnpm lint`                         | ESLint on `apps/web/src` and `platform/scripts`.                 |
-| `pnpm typecheck`                    | TypeScript without emit.                                         |
-| `pnpm build`                        | Production build.                                                |
-| `pnpm security:bundle-audit`        | Check client bundle for secrets or large imports.                |
+| Command                             | Purpose                                                                   |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| `pnpm lint`                         | ESLint on `apps/web/src` and `platform/scripts`.                          |
+| `pnpm typecheck`                    | TypeScript without emit.                                                  |
+| `pnpm build`                        | Production build.                                                         |
+| `pnpm security:bundle-audit`        | Check client bundle for secrets or large imports.                         |
 | `pnpm delivery:manifest:validate`   | Validate `platform/operations/delivery/manifests/delivery.manifest.json`. |
-| `pnpm env:validate`                 | Validate runtime environment variables.                          |
-| `pnpm deploy:verify <url>`          | Poll health endpoint until checks pass.                          |
-| `pnpm deploy:assert-contract <url>` | Validate health contract version.                                |
+| `pnpm env:validate`                 | Validate runtime environment variables.                                   |
+| `pnpm deploy:verify <url>`          | Poll health endpoint until checks pass.                                   |
+| `pnpm deploy:assert-contract <url>` | Validate health contract version.                                         |
 
 ---
 
@@ -208,5 +208,5 @@ pnpm ci:smoke:staging
 ## Related documents
 
 - `CONTRIBUTING.md` — contributor workflow and verification expectations.
-- `docs/PRC.md` — Production Readiness Certification checklist.
+- `docs/guides/prc.md` — Production Readiness Certification checklist.
 - `PROJECT_MAP.md` — repository navigation.

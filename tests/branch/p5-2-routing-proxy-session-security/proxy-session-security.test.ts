@@ -261,9 +261,9 @@ describe('P5.2 routing, proxy, and session security', () => {
     });
   });
 
-  describe('ROUTE_AUTH_MATRIX.md documents the canonical matrix', () => {
+  describe('docs/engineering/route-auth-matrix.md documents the canonical matrix', () => {
     it('exists and covers page and API route rows', () => {
-      const matrixPath = path.resolve(process.cwd(), 'docs', 'ROUTE_AUTH_MATRIX.md');
+      const matrixPath = path.resolve(process.cwd(), 'docs', 'engineering', 'route-auth-matrix.md');
       const content = fs.readFileSync(matrixPath, 'utf-8');
 
       expect(content).toContain('Cookie session');
