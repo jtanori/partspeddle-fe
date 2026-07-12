@@ -106,20 +106,23 @@ backend/modules/<name>/
 
 ---
 
-## In Progress
+## Completed
 
-1. **Phase 8 — Engineering Manual**
+1. **DC-7.1 — Environment Drift Automation**
+   - Branch: `feat/dc-7-1-drift-automation`
+   - Merged to `develop` via PR #114.
+   - Deliverables: `platform/scripts/deployment/verify-environment-drift.ts`, `pnpm delivery:verify:env-drift`, `tests/governance/environment/verify-environment-drift.test.ts`, updated `docs/operations/delivery-audit.md` and `docs/operations/secret-governance.md`.
+
+2. **Phase 8 — Engineering Manual**
    - Branch: `feat/phase-8-engineering-manual`
-   - Goal: Create `docs/onboarding/ENGINEERING_MANUAL.md` as the single entry point for new contributors and operators.
-   - Plan: `governance/planning/phase-8-implementation-plan.md` (pending approval).
+   - Merged to `develop` via PR #115.
+   - Deliverables: `docs/onboarding/ENGINEERING_MANUAL.md`, updated `docs/onboarding/README.md` and `PROJECT_MAP.md`.
 
 ---
 
 ## Next Steps
 
-1. **Approve Phase 8 implementation plan** — review `governance/planning/phase-8-implementation-plan.md`.
-2. **Implement Engineering Manual** — write `docs/onboarding/ENGINEERING_MANUAL.md` and update navigation links.
-3. **Product roadmap** — resume marketplace feature work once Phase 8 is merged.
+1. **Product roadmap** — resume marketplace feature work. Delivery certification and platform repository evolution foundation are complete.
 
 ---
 
@@ -131,9 +134,11 @@ backend/modules/<name>/
 - A0 architecture work (delivery certification complete).
 - Phase 7 test taxonomy cleanup.
 - DC-7.1 environment drift automation.
+- Phase 8 engineering manual.
 
 ## Still Relevant
 
 - `governance/planning/platform-repository-evolution.md` — active planning document.
-- `governance/planning/phase-8-implementation-plan.md` — pending implementation plan.
+- `governance/planning/phase-8-implementation-plan.md` — implementation record.
+- `docs/onboarding/ENGINEERING_MANUAL.md` — new-contributor entry point.
 - `artifacts/delivery/production-deployment-2026-07-11.json` — canonical DC-8 record.
