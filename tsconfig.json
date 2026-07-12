@@ -1,40 +1,9 @@
 {
+  "extends": "./packages/config/tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
-    "module": "ESNext",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "types": [
-      "next/image-types/global",
-      "node"
-    ],
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "allowJs": true,
-    "jsx": "react-jsx",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "src",
@@ -44,9 +13,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "supabase",
-    "node_modules",
-    "scripts/archive"
-  ]
+  "exclude": ["supabase", "node_modules", "scripts/archive"]
 }
