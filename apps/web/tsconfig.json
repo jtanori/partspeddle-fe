@@ -3,9 +3,17 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@config/*": ["../../config/*"],
+      "@operations/*": ["../../operations/*"]
     }
   },
-  "include": ["src", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+  "include": [
+    "src",
+    "../../config/environment",
+    "../../operations/kernel",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }

@@ -1,5 +1,5 @@
-import { ReplayStore } from '../../src/domain/specification/scgs/replay/store';
-import { ReplayValidator } from '../../src/domain/specification/scgs/replay/validator';
+import { ReplayStore } from '../../apps/web/src/domain/specification/scgs/replay/store';
+import { ReplayValidator } from '../../apps/web/src/domain/specification/scgs/replay/validator';
 
 async function main() {
     const traceId = process.env.TRACE_ID;

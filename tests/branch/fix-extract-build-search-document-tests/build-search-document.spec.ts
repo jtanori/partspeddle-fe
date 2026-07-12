@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BuildSearchDocumentUseCase } from '../../../src/backend/modules/search/application/build-search-document';
+import { BuildSearchDocumentUseCase } from '../../../apps/web/src/backend/modules/search/application/build-search-document';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
 vi.mock('@/lib/supabase-admin', () => ({

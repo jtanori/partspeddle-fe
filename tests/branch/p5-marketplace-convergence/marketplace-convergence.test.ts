@@ -50,7 +50,7 @@ describe('P5.0 Phase 3 — marketplace convergence cleanup', () => {
   });
 
   it('migrated all pdp-modern components away from legacy pp-* tokens', () => {
-    const pdpDir = path.resolve(__dirname, '../../../src/components/pdp-modern');
+    const pdpDir = path.resolve(__dirname, '../../../apps/web/src/components/pdp-modern');
     const files = fs.readdirSync(pdpDir).filter((f) => f.endsWith('.tsx'));
     const legacyPattern =
       /(?:bg|text|border|rounded|px|py|gap|space-x|space-y)-pp-|["']pp-(?:primary|text|success|surface|card|gap|pad|atom)["'];/;
@@ -62,7 +62,7 @@ describe('P5.0 Phase 3 — marketplace convergence cleanup', () => {
   });
 
   it('migrated all pdp-modern components away from hardcoded hex colors', () => {
-    const pdpDir = path.resolve(__dirname, '../../../src/components/pdp-modern');
+    const pdpDir = path.resolve(__dirname, '../../../apps/web/src/components/pdp-modern');
     const files = fs.readdirSync(pdpDir).filter((f) => f.endsWith('.tsx'));
     const hexPattern = /#(?:[0-9a-fA-F]{3}){1,2}/;
 

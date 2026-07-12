@@ -1,4 +1,4 @@
-import { supabaseDb } from "../../src/services/supabase-db";
+import { supabaseDb } from "../../apps/web/src/services/supabase-db";
 import { SEARCH_PARITY_CORPUS } from "./fixtures/search-corpus";
 
 async function auditSignals() {

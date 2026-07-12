@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { ENVIRONMENT_VARIABLES, EnvScope } from '../../config/environment/schema';
+import { ENVIRONMENT_VARIABLES, EnvScope } from '@config/environment/schema';
 
 /**
  * Runtime environment validator.
  *
  * This module re-exports typed server/public objects derived from the
- * canonical schema in `config/environment/schema.ts`. It preserves the
+ * canonical schema in `@config/environment/schema.ts`. It preserves the
  * original behavior:
  *
  * - In production, missing/invalid variables throw.

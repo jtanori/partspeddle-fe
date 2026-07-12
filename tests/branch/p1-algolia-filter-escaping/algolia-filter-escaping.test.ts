@@ -15,8 +15,8 @@ vi.mock('@/backend/modules/search/infrastructure/algolia-client', () => ({
   INDEX_NEWEST: 'parts_newest',
 }));
 
-import { AlgoliaSearchRepository } from '../../../src/backend/modules/search/infrastructure/algolia-search-repository';
-import { SearchFilters } from '../../../src/backend/modules/search/domain/search-filters';
+import { AlgoliaSearchRepository } from '../../../apps/web/src/backend/modules/search/infrastructure/algolia-search-repository';
+import { SearchFilters } from '../../../apps/web/src/backend/modules/search/domain/search-filters';
 
 describe('P1.5 Algolia filter escaping', () => {
   beforeEach(() => {

@@ -12,7 +12,11 @@ RUN corepack enable
 
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml .npmrc ./
+# Copy workspace metadata first so pnpm understands the monorepo layout.
+COPY package.json pnpm-lock.yaml .npmrc pnpm-workspace.yaml ./
+# Copy workspace package manifests so pnpm can install their dependencies.
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/config/package.json ./packages/config/package.json
 # Skip husky install in the build container (no .git directory).
 ENV HUSKY=0
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -20,6 +24,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps ./apps
+COPY --from=deps /app/packages ./packages
 COPY . .
 # Do not bake environment files into the image.
 # Fly.io injects runtime secrets; the image must be environment-agnostic.
@@ -37,8 +43,9 @@ RUN addgroup --system --gid 1001 nodejs && \
     chown -R nextjs:nodejs /app
 USER nextjs
 
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Standalone output is produced under apps/web/.next/standalone.
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
 EXPOSE 3000
 CMD ["node", "server.js"]

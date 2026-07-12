@@ -67,12 +67,12 @@ Passing Score:
 Verify:
 
 ```text
-src/app
-src/components
-src/features
-src/lib
-src/types
-src/hooks
+apps/web/src/app
+apps/web/src/components
+apps/web/src/features
+apps/web/src/lib
+apps/web/src/types
+apps/web/src/hooks
 ```
 
 ### Pass Criteria
@@ -120,7 +120,7 @@ npm run build
 Generate:
 
 ```bash
-find src/app -name page.tsx
+find apps/web/src/app -name page.tsx
 ```
 
 Verify every route.
@@ -483,8 +483,8 @@ Evidence and automated tests for the security gate introduced in P5.
 
 Verify:
 
-- [ ] CSP present and production CSP omits `'unsafe-inline'` for scripts via a per-request nonce — evidence: `src/proxy.ts`, `src/lib/security-headers.ts`, `tests/security/headers.spec.ts`
-- [ ] HSTS `max-age=63072000; includeSubDomains; preload` — evidence: `src/lib/security-headers.ts`
+- [ ] CSP present and production CSP omits `'unsafe-inline'` for scripts via a per-request nonce — evidence: `apps/web/src/proxy.ts`, `apps/web/src/lib/security-headers.ts`, `tests/security/headers.spec.ts`
+- [ ] HSTS `max-age=63072000; includeSubDomains; preload` — evidence: `apps/web/src/lib/security-headers.ts`
 - [ ] X-Frame-Options `DENY`
 - [ ] X-Content-Type-Options `nosniff`
 - [ ] Referrer-Policy and Permissions-Policy present
@@ -518,9 +518,9 @@ Automated tests:
 Verify:
 
 - [ ] No secrets in repository
-- [ ] Logger redacts tokens, API keys, and PII — evidence: `tests/security/secrets.spec.ts`, `src/lib/logger.ts`
+- [ ] Logger redacts tokens, API keys, and PII — evidence: `tests/security/secrets.spec.ts`, `apps/web/src/lib/logger.ts`
 - [ ] Client bundle audit passes — evidence: `pnpm security:bundle-audit`
-- [ ] API error responses do not leak internal details — evidence: `src/lib/api/errors.ts`
+- [ ] API error responses do not leak internal details — evidence: `apps/web/src/lib/api/errors.ts`
 
 ---
 

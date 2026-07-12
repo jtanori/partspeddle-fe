@@ -12,8 +12,8 @@ Keep a strict CSP that blocks inline scripts in production while still allowing 
 
 ### How it works
 
-- `src/proxy.ts` generates a 16-byte cryptographically-secure nonce on every request using Web Crypto.
-- The proxy sets `Content-Security-Policy` via `buildContentSecurityPolicy(nonce)` from `src/lib/security-headers.ts`.
+- `apps/web/src/proxy.ts` generates a 16-byte cryptographically-secure nonce on every request using Web Crypto.
+- The proxy sets `Content-Security-Policy` via `buildContentSecurityPolicy(nonce)` from `apps/web/src/lib/security-headers.ts`.
 - The policy uses `script-src 'self' 'nonce-<value>'` so Next.js can attach the same nonce to its inline Flight bootstrap scripts.
 - Other static security headers (`Strict-Transport-Security`, `X-Frame-Options`, etc.) remain in `next.config.ts` because they do not need a per-request value.
 
@@ -39,8 +39,8 @@ And confirm the page hydrates with no CSP violations in the browser console.
 
 ### Files
 
-- `src/proxy.ts` — nonce generation and request-scoped CSP header.
-- `src/lib/security-headers.ts` — policy builder and static header definitions.
+- `apps/web/src/proxy.ts` — nonce generation and request-scoped CSP header.
+- `apps/web/src/lib/security-headers.ts` — policy builder and static header definitions.
 - `next.config.ts` — static security headers.
 - `tests/security/headers.spec.ts` — automated assertions.
 

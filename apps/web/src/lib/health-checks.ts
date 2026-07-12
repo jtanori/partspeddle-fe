@@ -1,4 +1,4 @@
-import { validateRuntime } from '../../config/environment/validate';
+import { validateRuntime } from '@config/environment/validate';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import {
   algoliaClient,

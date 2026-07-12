@@ -22,7 +22,7 @@ vi.mock('@/lib/user-roles', () => ({
 const getUserRoleMock = vi.mocked(getUserRole);
 
 async function loadProxy() {
-  const mod = await import('../../../src/proxy');
+  const mod = await import('../../../apps/web/src/proxy');
   return mod.proxy;
 }
 

@@ -1,8 +1,8 @@
-import { supabaseAdmin } from "../src/lib/supabase-admin";
+import { supabaseAdmin } from "../apps/web/src/lib/supabase-admin";
 import {
   algoliaClient,
   SEARCH_INDEX_NAME,
-} from "../src/backend/modules/search/infrastructure/algolia-client";
+} from "../apps/web/src/backend/modules/search/infrastructure/algolia-client";
 
 async function reconcileSearchIndex() {
   console.log("🔍 Starting index drift detection...");

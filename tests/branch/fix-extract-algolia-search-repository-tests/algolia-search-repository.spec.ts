@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { AlgoliaSearchRepository } from '../../../src/backend/modules/search/infrastructure/algolia-search-repository';
-import { SearchFilters } from '../../../src/backend/modules/search/domain/search-filters';
+import { AlgoliaSearchRepository } from '../../../apps/web/src/backend/modules/search/infrastructure/algolia-search-repository';
+import { SearchFilters } from '../../../apps/web/src/backend/modules/search/domain/search-filters';
 
 describe('AlgoliaSearchRepository', () => {
   const repo = new AlgoliaSearchRepository();

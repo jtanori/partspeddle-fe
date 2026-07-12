@@ -1,7 +1,10 @@
 {
   "extends": "./packages/config/tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./apps/web/src/*"]
+    }
   },
   "include": ["scripts", "operations"],
   "exclude": ["supabase", "node_modules", "scripts/archive", "apps", "packages", ".next"]
