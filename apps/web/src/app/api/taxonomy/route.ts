@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createRepositories } from '@/repositories/factory';
+import { createRepositories } from '@/backend/modules/shared/application/repository-factory';
 import { safeErrorResponse } from '@/lib/api/errors';
 import { logger } from '@/lib/logger';
 

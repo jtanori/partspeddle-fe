@@ -1,6 +1,2 @@
-import { MarketplaceListing } from '@/domain/types/marketplace.types';
-
-export interface ListingRepository {
-  findById(id: string): Promise<MarketplaceListing | null>;
-  // Future: findBySeller(sellerId: string): Promise<MarketplaceListing[]>;
-}
+// Backward-compatible shim. Moved to backend/modules/listing/domain/listing-repository.ts
+export { ListingRepository } from '@/backend/modules/listing/domain/listing-repository';

@@ -3,7 +3,7 @@ import { ImageIcon, ScanLine, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { DraftMedia as DraftMediaType, DraftMediaImage } from '@/domain/types/listing-draft';
-import { analyzeListingImage } from '@/services/ai-vision';
+import { analyzeListingImage } from '@/backend/modules/ai';
 
 interface DraftMediaProps {
   value: DraftMediaType;

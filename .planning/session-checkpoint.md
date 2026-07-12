@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-12
-**Branch:** `develop`
-**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction merged to develop via PR #106.
+**Branch:** `feat/phase-3-backend-modularization`
+**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 application extraction merged to develop via PR #106. Phase 3 backend modularization implemented; scoped tests pass; documentation updated; PR pending.
 
 ---
 
@@ -123,15 +123,19 @@ backend/modules/<name>/
 
 ## In Progress
 
-_None._
+1. **Phase 3 — Backend modularization**
+   - Branch: `feat/phase-3-backend-modularization`
+   - Status: Implemented. Scoped lint and tests pass. Documentation updated. PR pending.
+   - Plan: `.planning/phase-3-implementation-plan.md`_
 
 ---
 
 ## Next Steps
 
-1. **Begin Phase 3** of the platform-repository-evolution plan (see `.planning/platform-repository-evolution.md`).
-2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
-3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+1. **Review and approve Phase 3 plan** (`./planning/phase-3-implementation-plan.md`).
+2. **Implement Phase 3** on `feat/phase-3-backend-modularization` and open a PR.
+3. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
+4. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
 ---
 

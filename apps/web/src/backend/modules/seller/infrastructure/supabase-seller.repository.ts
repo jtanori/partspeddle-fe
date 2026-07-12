@@ -1,16 +1,8 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { SellerProfile } from '../domain/seller-profile';
+import { SellerRepository } from '../domain/seller-repository';
 
-export interface SellerProfile {
-  id: string;
-  business_name: string | null;
-  location: string | null;
-  whatsapp: string | null;
-  verification_status: string | null;
-  created_at: string;
-  users?: { avatar_url: string | null }[] | null;
-}
-
-export class SupabaseSellerRepository {
+export class SupabaseSellerRepository implements SellerRepository {
   constructor(private readonly client: Pick<SupabaseClient, 'from'>) {}
 
   async findTopSellers(limit: number): Promise<SellerProfile[]> {

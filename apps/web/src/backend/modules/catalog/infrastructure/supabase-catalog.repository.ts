@@ -1,10 +1,10 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { CatalogRepository } from '../catalog.repository';
+import { CatalogRepository } from '../domain/catalog-repository';
 import {
   CatalogCategory,
   CatalogCategorySpecification,
   SpecificationDefinition,
-} from '../../domain/types/catalog.types';
+} from '@/domain/types/catalog.types';
 import { buildTaxonomy } from '@/lib/taxonomy';
 
 export class SupabaseCatalogRepository implements CatalogRepository {

@@ -1,7 +1,2 @@
-import { ListingSpecification } from '@/domain/types/marketplace.types';
-import { SpecificationDefinition } from '../domain/types/catalog.types';
-
-export interface SpecificationRepository {
-  findByListingId(listingId: string): Promise<ListingSpecification[]>;
-  getAllDefinitions(): Promise<SpecificationDefinition[]>;
-}
+// Backward-compatible shim. Moved to backend/modules/catalog/domain/specification-repository.ts
+export { SpecificationRepository } from '@/backend/modules/catalog/domain/specification-repository';
