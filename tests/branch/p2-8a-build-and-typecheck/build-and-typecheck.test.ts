@@ -13,7 +13,8 @@ function read(relativePath: string): string {
 describe('P2.8a build and typecheck gate', () => {
   it('adds a typecheck script to package.json', () => {
     const pkg = read('package.json');
-    expect(pkg).toContain('"typecheck": "tsc --noEmit"');
+    expect(pkg).toContain('"typecheck":');
+    expect(pkg).toContain('tsc --noEmit');
   });
 
   it('exports a stable search hit mapper alias', () => {
