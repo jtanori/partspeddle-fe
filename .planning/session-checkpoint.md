@@ -119,7 +119,7 @@ backend/modules/<name>/
 
 1. **Phase 2 — Application extraction to `apps/web/`**
    - Branch: `feat/phase-2-app-extraction`
-   - Status: Implementation plan drafted; awaiting review before coding begins.
+   - Status: Plan approved. Implementation in progress.
    - Plan: `.planning/phase-2-implementation-plan.md`
 
 ---
