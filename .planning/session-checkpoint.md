@@ -1,8 +1,8 @@
 # Session Checkpoint — PartsPeddle
 
 **Date:** 2026-07-11
-**Branch:** `develop`
-**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop.
+**Branch:** `feat/phase-2-app-extraction`
+**Status:** Prep 1 and Prep 2 complete. Phase 0 navigation documents merged. Phase 1 workspace scaffolding merged to develop. Phase 2 implementation plan drafted and under review.
 
 ---
 
@@ -61,6 +61,7 @@
 - Created platform repository evolution plan: `.planning/platform-repository-evolution.md`.
 - Created Phase 0 implementation plan: `.planning/phase-0-implementation-plan.md`.
 - Created Phase 1 implementation plan: `.planning/phase-1-implementation-plan.md`.
+- Created Phase 2 implementation plan: `.planning/phase-2-implementation-plan.md`.
 
 ---
 
@@ -116,15 +117,19 @@ backend/modules/<name>/
 
 ## In Progress
 
-None.
+1. **Phase 2 — Application extraction to `apps/web/`**
+   - Branch: `feat/phase-2-app-extraction`
+   - Status: Implementation plan drafted; awaiting review before coding begins.
+   - Plan: `.planning/phase-2-implementation-plan.md`
 
 ---
 
 ## Next Steps
 
-1. **Phase 2** — move the Next.js application into `apps/web/`.
-2. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
-3. **Product roadmap** — resume marketplace feature work now that delivery is certified.
+1. **Review and approve Phase 2 plan**.
+2. **Implement Phase 2** — move Next.js application into `apps/web/`.
+3. **DC-7.1 drift automation** — automated comparison of Fly/GitHub secrets against the drift matrix.
+4. **Product roadmap** — resume marketplace feature work now that delivery is certified.
 
 ---
 
