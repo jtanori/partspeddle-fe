@@ -5,7 +5,9 @@ import {
   SpecificationCompilerImpl,
   buildPDPViewModel,
   PDPViewModelPresentation,
+  PDPPartSummaryModel,
   CatalogSpecificationFrameworkRepository,
+  buildRecommendations,
 } from '@/backend/modules/scgs';
 import { SpecificationRepository } from '@/backend/modules/catalog/domain/specification-repository';
 import { CatalogRepository, SupabaseCatalogRepository } from '@/backend/modules/catalog';
@@ -20,6 +22,7 @@ interface Props {
 function buildPresentation(
   part: Record<string, unknown>,
   seller: Record<string, unknown> | null,
+  crossSell: PDPPartSummaryModel[] = [],
 ): PDPViewModelPresentation {
   return {
     title: String(part.title ?? ''),
@@ -36,7 +39,7 @@ function buildPresentation(
       location: seller?.location ? String(seller.location) : 'Unknown',
       responseTime: seller?.responseTime ? String(seller.responseTime) : undefined,
     },
-    crossSell: [],
+    crossSell,
   };
 }
 
@@ -105,9 +108,22 @@ export default async function ListingDetailPage({ params }: Props) {
     seller: buildSellerTrustInput(seller, partRecord),
     compatibility: buildCompatibilityInput(partRecord),
   });
+  const recommendations = await buildRecommendations({
+    source: artifact,
+    excludeIds: [id],
+    limit: 6,
+  });
+
+  const crossSell: PDPPartSummaryModel[] = recommendations.map((r) => ({
+    id: r.id,
+    title: r.title,
+    price: r.price,
+    imageUrl: r.imageUrl,
+  }));
+
   const viewModel = buildPDPViewModel({
     artifact,
-    presentation: buildPresentation(partRecord, seller),
+    presentation: buildPresentation(partRecord, seller, crossSell),
   });
 
   return (

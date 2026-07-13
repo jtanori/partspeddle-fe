@@ -30,6 +30,8 @@ apps/web/src/backend/modules/scgs/
 │   │   └── prr-report.ts
 │   ├── governance-policy.ts
 │   ├── pts.ts
+│   ├── recommendation.ts      # recommendation domain types
+│   ├── search-intent.ts       # semantic query intent types
 │   ├── semantic-specification.ts
 │   └── replay/
 │       ├── engine.ts
@@ -39,6 +41,8 @@ apps/web/src/backend/modules/scgs/
 │       └── validator.ts
 ├── application/               # Use cases / projections
 │   ├── build-dashboard-read-model.ts
+│   ├── build-live-search-view-model.ts
+│   ├── build-recommendations.ts
 │   ├── compile-listing.ts
 │   ├── evaluate-governance.ts
 │   ├── rank-artifacts.ts
@@ -46,13 +50,19 @@ apps/web/src/backend/modules/scgs/
 │   └── run-prr.ts
 ├── infrastructure/            # I/O, repositories, controllers
 │   ├── governance-controller.ts
+│   ├── query-intent-parser.ts
 │   ├── ranking-engine.ts
 │   ├── ranking-types.ts
+│   ├── recommendation-compiler.ts
 │   ├── replay/                # storage adapters
 │   │   ├── filesystem-replay-store.ts
 │   │   ├── supabase-replay-store.ts
 │   │   └── replay-store.factory.ts
 │   └── specification-compiler.ts
+├── contract/                  # Operational / projection contracts
+│   ├── live-search-view-model.contract.ts
+│   ├── pdp-view-model.contract.ts
+│   └── search-view-model.contract.ts
 ├── tests/                     # Module-owned tests
 ├── index.ts                   # Public barrel
 └── README.md
@@ -158,6 +168,24 @@ The ranking engine consumes the following normalized signals:
 
 Each contribution includes a `normalizedValue` and human-readable `explanation`.
 
+## Phase 7 — Advanced Capabilities
+
+Semantic search, live-search autocomplete, and recommendations.
+
+- **`parseQueryIntent`** — classifies queries as `PART_NAME`, `VIN`,
+  `OEM_PART_NUMBER`, or `YMM` and extracts entities.
+- **`buildLiveSearchViewModel`** — produces a grouped, ranked autocomplete
+  projection from Algolia hits + SCGS intent parsing.
+- **`/api/search/live`** — public endpoint returning the validated
+  `LiveSearchViewModel`.
+- **`compileRecommendations` / `buildRecommendations`** — scores candidate
+  listings by compatibility overlap, category/part-type similarity, make/model
+  match, and seller trust.
+- **`/api/listings/[id]/recommendations`** — public endpoint returning related
+  parts for a listing.
+- **PDP wiring** — `buildPDPViewModel` now populates `crossSell` from
+  `buildRecommendations`.
+
 ## Testing
 
 Run module-owned tests:
@@ -167,6 +195,10 @@ pnpm vitest run apps/web/src/backend/modules/scgs/tests/ranking-engine.test.ts
 pnpm vitest run apps/web/src/backend/modules/scgs/tests/rank-artifacts.test.ts
 pnpm vitest run apps/web/src/backend/modules/scgs/tests/compile-listing.test.ts
 pnpm vitest run apps/web/src/backend/modules/scgs/tests/lineage.test.ts
+pnpm vitest run apps/web/src/backend/modules/scgs/tests/unit/query-intent-parser.test.ts
+pnpm vitest run apps/web/src/backend/modules/scgs/tests/integration/build-live-search-view-model.test.ts
+pnpm vitest run apps/web/src/backend/modules/scgs/tests/integration/recommendation-compiler.test.ts
+pnpm vitest run apps/web/src/backend/modules/scgs/tests/integration/build-recommendations.test.ts
 ```
 
 Run integration/certification tests:
@@ -177,4 +209,5 @@ pnpm vitest run tests/integration/middleware-and-types/scgs-replay.test.ts
 pnpm vitest run tests/integration/scgs/scgs-ranking-resurrection.test.ts
 pnpm vitest run tests/certification/c08_specification_parity.test.ts
 pnpm vitest run tests/integration/middleware-and-types/pdp-projection.test.ts
+pnpm vitest run tests/integration/search-api.spec.ts
 ```
