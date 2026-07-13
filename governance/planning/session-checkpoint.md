@@ -217,14 +217,20 @@ backend/modules/<name>/
 
 ## In Progress
 
-_None — awaiting next initiative._
+1. **SCGS Phase 7 — Advanced Capabilities**
+   - Branch: `feat/scgs-phase-7-advanced-capabilities`
+   - Plan: `governance/planning/scgs-phase-7-implementation-plan.md`
+   - Objective: Add semantic query intent parsing, SCGS-powered live search
+     autocomplete, and a recommendation engine for PDP cross-sell.
 
 ---
 
 ## Next Steps
 
-1. Plan and execute the next SCGS phase (Phase 7 — Advanced Capabilities) or
-   marketplace feature work.
+1. Implement semantic query intent parser.
+2. Create `LiveSearchViewModel` contract and `buildLiveSearchViewModel` use case.
+3. Implement recommendation compiler and wire PDP crossSell.
+4. Add module-owned tests and update documentation.
 
 ---
 
