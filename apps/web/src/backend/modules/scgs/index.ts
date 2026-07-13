@@ -122,6 +122,20 @@ export type {
   SearchMetaModel,
   SearchViewModel,
 } from './contract/search-view-model.contract';
+export {
+  liveSearchIntentSchema,
+  liveSearchSuggestionSchema,
+  liveSearchGroupSchema,
+  liveSearchMetaSchema,
+  liveSearchViewModelSchema,
+} from './contract/live-search-view-model.contract';
+export type {
+  LiveSearchIntentModel,
+  LiveSearchSuggestionModel,
+  LiveSearchGroupModel,
+  LiveSearchMetaModel,
+  LiveSearchViewModel,
+} from './contract/live-search-view-model.contract';
 
 // Application — read models / projections
 export type { SCGSReadModel } from './application/build-dashboard-read-model';
@@ -129,6 +143,10 @@ export { buildDashboardReadModel } from './application/build-dashboard-read-mode
 export { compileListing } from './application/compile-listing';
 export type { CompileListingOptions } from './application/compile-listing';
 export { rankArtifacts } from './application/rank-artifacts';
+export { buildRecommendations } from './application/build-recommendations';
+export type { BuildRecommendationsInput } from './application/build-recommendations';
+export { compileRecommendations } from './infrastructure/recommendation-compiler';
+export type { Recommendation, RecommendationInput } from './domain/recommendation';
 export {
   buildSearchViewModel,
   type SearchResultPresentation,
@@ -142,6 +160,10 @@ export {
 export { evaluateGovernanceDecision } from './application/evaluate-governance';
 export { replayTrace, type ReplayTraceInput, type ReplayTraceResult } from './application/replay-trace';
 export { runPRR, type RunPRRInput } from './application/run-prr';
+export { buildLiveSearchViewModel } from './application/build-live-search-view-model';
+export type { BuildLiveSearchViewModelInput } from './application/build-live-search-view-model';
+export { parseQueryIntent } from './infrastructure/query-intent-parser';
+export type { SearchIntent, SearchIntentType, VehicleEntity } from './domain/search-intent';
 
 // Contract — PDP projection schemas
 export {

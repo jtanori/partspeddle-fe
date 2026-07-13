@@ -124,3 +124,55 @@ Governance behavior is covered by:
 - `apps/web/src/backend/modules/scgs/tests/integration/replay-trace.test.ts`
 - `apps/web/src/backend/modules/scgs/tests/integration/filesystem-replay-store.test.ts`
 - `apps/web/src/backend/modules/scgs/tests/unit/replay-store.factory.test.ts`
+
+## Phase 7 — Advanced Capabilities
+
+SCGS extends beyond compilation and governance into search experience and
+recommendations.
+
+### Semantic query intent parsing
+
+`parseQueryIntent(query)` classifies user input before it reaches the search
+index:
+
+- `VIN` — 17-character vehicle identification number.
+- `OEM_PART_NUMBER` — alphanumeric part number with at least one digit.
+- `YMM` — year + make + model pattern.
+- `PART_NAME` — default free-text search.
+
+### Live search projection
+
+`buildLiveSearchViewModel(query)` combines intent parsing with a lightweight
+Algolia query and returns grouped autocomplete suggestions:
+
+- `products` — matching listings.
+- `vehicles` — inferred year/make/model buckets.
+- `taxonomy` — category suggestions.
+- `manufacturers` — make suggestions.
+
+The projection is exposed at `/api/search/live`.
+
+### Recommendations
+
+`buildRecommendations(sourceArtifact)` scores candidate listings using signals
+already present in the SCGS artifact and Algolia documents:
+
+- Compatibility overlap (`COMPATIBILITY_OVERLAP`).
+- Same category (`SAME_CATEGORY`).
+- Same part type (`SAME_PART_TYPE`).
+- Same make/model (`SAME_MAKE`, `SAME_MODEL`).
+- Verified seller (`VERIFIED_SELLER`).
+- High trust seller (`HIGH_TRUST_SELLER`).
+
+The top candidates populate `crossSell` in the PDP view model and are exposed
+at `/api/listings/[id]/recommendations`.
+
+### Tests
+
+Advanced capability tests:
+
+- `apps/web/src/backend/modules/scgs/tests/unit/query-intent-parser.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/contract/live-search-view-model.contract.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/integration/build-live-search-view-model.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/integration/recommendation-compiler.test.ts`
+- `apps/web/src/backend/modules/scgs/tests/integration/build-recommendations.test.ts`
